@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../services/vibration_service.dart';
+import '../badge_dot.dart';
 
 /// 배경·그림자 없는 플랫 SVG 아이콘 버튼
 ///
@@ -26,6 +27,7 @@ class FlatIconButton extends StatelessWidget {
     this.tapSize = 42,
     this.iconColor,
     this.alignment = Alignment.center,
+    this.showBadge = false,
   });
 
   /// SVG 에셋 경로
@@ -46,6 +48,9 @@ class FlatIconButton extends StatelessWidget {
   /// 탭 영역 내 아이콘 정렬 (기본값: 중앙)
   final Alignment alignment;
 
+  /// 우상단 빨간 점 배지 표시 여부 (기본값: false)
+  final bool showBadge;
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -60,13 +65,16 @@ class FlatIconButton extends StatelessWidget {
         height: tapSize.w,
         child: Align(
           alignment: alignment,
-          child: SvgPicture.asset(
-            assetPath,
-            width: iconSize.w,
-            height: iconSize.w,
-            colorFilter: iconColor != null
-                ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
-                : null,
+          child: BadgeDot(
+            show: showBadge,
+            child: SvgPicture.asset(
+              assetPath,
+              width: iconSize.w,
+              height: iconSize.w,
+              colorFilter: iconColor != null
+                  ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
+                  : null,
+            ),
           ),
         ),
       ),

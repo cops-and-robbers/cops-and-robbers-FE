@@ -21,6 +21,7 @@ import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/utils/url_launcher_util.dart';
 import '../../../../core/services/permission/game_entry_gate.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
+import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/remote_config/remote_config_service.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_shadows.dart';
@@ -41,7 +42,9 @@ import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/widgets/speech_bubble.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../router/current_branch_index_provider.dart';
 import '../../../../router/route_paths.dart';
+import '../../../notice/presentation/providers/notice_provider.dart';
 import '../game_creation_entry.dart';
 import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -569,6 +572,22 @@ class _HomePageState extends ConsumerState<HomePage> {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final remoteConfig = RemoteConfigService.instance;
+
+    // 공지 배지는 소켓이 없어 홈이 다시 보이는 순간이 새 공지를 확인할 기회다.
+    // 공지 화면에서 돌아올 때는 공지 화면이 markSeen으로 이미 내렸다.
+    ref.listen(currentBranchIndexProvider, (previous, next) {
+      if (previous == next || next != RoutePaths.homeBranchIndex) return;
+      ref.invalidate(hasNewNoticeProvider);
+    });
+    ref.listen(lifecycleStateProvider, (previous, next) {
+      if (next.valueOrNull != AppLifecycleState.resumed) return;
+      // 홈이 안 보이면 다시 받지 않는다 — 홈 탭으로 돌아올 때 받는다.
+      if (ref.read(currentBranchIndexProvider) != RoutePaths.homeBranchIndex) {
+        return;
+      }
+      ref.invalidate(hasNewNoticeProvider);
+    });
+
     return Scaffold(
       backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
@@ -584,10 +603,20 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         actions: [
           // 다색 SVG라 iconColor를 주지 않는다(원본 색 유지).
-          FlatIconButton(
-            assetPath: AppIcons.noti,
-            onPressed: () => context.push(RoutePaths.notices),
-            alignment: Alignment.centerRight,
+          // 배지만 Consumer로 감싼다 — 홈 build 전체가 공지 조회마다 다시 그려지지 않게.
+          Consumer(
+            builder: (context, ref, _) => FlatIconButton(
+              assetPath: AppIcons.noti,
+              onPressed: () async {
+                await context.push(RoutePaths.notices);
+                // 공지 화면이 열려 있는 동안 올라온 공지는 홈 탭 번호도 앱 복귀도
+                // 바꾸지 않아 다른 갱신 계기가 닿지 않는다 — 돌아온 지금 다시 받는다.
+                if (!context.mounted) return;
+                ref.invalidate(hasNewNoticeProvider);
+              },
+              alignment: Alignment.centerRight,
+              showBadge: ref.watch(hasNewNoticeProvider).valueOrNull == true,
+            ),
           ),
           // 상단바 액션의 우측 여백은 본문 거터와 같은 16으로 통일돼 있다.
           SizedBox(width: AppSpacing.horizontal16),

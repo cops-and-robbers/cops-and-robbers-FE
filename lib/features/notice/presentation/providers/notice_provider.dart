@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/dio_client.dart';
@@ -7,6 +8,7 @@ import '../../data/datasources/notice_remote_datasource.dart';
 import '../../data/repositories/notice_repository_impl.dart';
 import '../../domain/entities/notice_category.dart';
 import '../../domain/entities/notice_entity.dart';
+import '../../domain/new_notice.dart';
 import '../../domain/repositories/notice_repository.dart';
 
 part 'notice_provider.g.dart';
@@ -93,5 +95,51 @@ class NoticesNotifier extends _$NoticesNotifier {
             category: ref.read(selectedNoticeCategoryProvider),
           ),
     );
+  }
+}
+
+/// 홈 공지 아이콘의 "새 공지" 배지
+///
+/// 서버는 읽음 상태를 들지 않는다 — 공지는 전원에게 같은 내용이라 앱이 마지막으로
+/// 본 공지 id만 기기에 저장해 비교한다(브레인 DEC-0038). 재설치하면 저장값이 사라져
+/// 옛 공지에 배지가 한 번 뜨는 것은 감수한다.
+///
+/// 홈이 셸에서 계속 watch하므로 `keepAlive`를 쓰지 않는다. 다시 받는 시점은 홈이
+/// 정한다(탭 복귀·앱 복귀).
+@riverpod
+class HasNewNotice extends _$HasNewNotice {
+  static const _lastSeenKey = 'notice_last_seen_id';
+  static const _pageSize = 10;
+
+  @override
+  Future<bool> build() async {
+    // 언어는 read — id는 언어와 무관해 언어를 바꿨다고 다시 받을 이유가 없다.
+    final page = await ref
+        .watch(noticeRepositoryProvider)
+        .getNotices(
+          page: 0,
+          size: _pageSize,
+          language: ref.read(appLocaleProvider).locale.languageCode,
+        );
+    final prefs = await SharedPreferences.getInstance();
+    return isNewerNotice(
+      newestId: newestNoticeId(page.items),
+      lastSeenId: prefs.getInt(_lastSeenKey),
+    );
+  }
+
+  /// 공지 첫 페이지(카테고리 전체)를 봤을 때 부른다.
+  ///
+  /// 저장값은 내리지 않는다 — 최신 공지가 삭제돼 목록의 최대 id가 작아져도 이미 본
+  /// 기록은 그대로다.
+  Future<void> markSeen(List<NoticeEntity> items) async {
+    final newestId = newestNoticeId(items);
+    if (newestId == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    final lastSeenId = prefs.getInt(_lastSeenKey);
+    if (lastSeenId == null || newestId > lastSeenId) {
+      await prefs.setInt(_lastSeenKey, newestId);
+    }
+    state = const AsyncData(false);
   }
 }

@@ -14,6 +14,7 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/vibration_service.dart';
+import '../../../../core/widgets/badge_dot.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -203,28 +204,9 @@ class _CommunityPageState extends ConsumerState<CommunityPage> {
       // 48보다 작으면 최소 폭을 채우려 좌우에 여백이 붙어, 뒤의 SizedBox(16)
       // 만으로는 우측 여백이 16이 되지 않는다(20일 때 18이었다).
       padding: EdgeInsets.only(left: AppSpacing.horizontal24),
-      icon: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          SvgPicture.asset(assetPath, width: 24.w, height: 24.h),
-          // 아이콘 자체를 바꾸지 않고 배지만 얹는다 — icon_noti_on.svg로
-          // 통째로 바꾸면 두 svg의 내부 여백이 달라 전환할 때 종 모양이
-          // 미세하게 움직여 보였다(실측).
-          if (showBadge)
-            Positioned(
-              right: -3.w,
-              top: -3.h,
-              child: Container(
-                width: 6.w,
-                height: 6.h,
-                decoration: BoxDecoration(
-                  color: AppColors.red,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.white, width: 1.w),
-                ),
-              ),
-            ),
-        ],
+      icon: BadgeDot(
+        show: showBadge,
+        child: SvgPicture.asset(assetPath, width: 24.w, height: 24.h),
       ),
     );
   }
