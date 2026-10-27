@@ -607,7 +607,13 @@ class _HomePageState extends ConsumerState<HomePage> {
           Consumer(
             builder: (context, ref, _) => FlatIconButton(
               assetPath: AppIcons.noti,
-              onPressed: () => context.push(RoutePaths.notices),
+              onPressed: () async {
+                await context.push(RoutePaths.notices);
+                // 공지 화면이 열려 있는 동안 올라온 공지는 홈 탭 번호도 앱 복귀도
+                // 바꾸지 않아 다른 갱신 계기가 닿지 않는다 — 돌아온 지금 다시 받는다.
+                if (!context.mounted) return;
+                ref.invalidate(hasNewNoticeProvider);
+              },
               alignment: Alignment.centerRight,
               showBadge: ref.watch(hasNewNoticeProvider).valueOrNull == true,
             ),
