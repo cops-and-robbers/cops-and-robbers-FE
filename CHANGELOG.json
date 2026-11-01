@@ -1,11 +1,40 @@
 {
   "metadata": {
-    "lastUpdated": "2026-10-27T07:17:20Z",
-    "currentVersion": "3.2.6",
+    "lastUpdated": "2026-11-01T11:45:58Z",
+    "currentVersion": "3.2.7",
     "projectType": "flutter",
-    "totalReleases": 146
+    "totalReleases": 147
   },
   "releases": [
+    {
+      "version": "3.2.7",
+      "project_type": "flutter",
+      "date": "2026-11-01",
+      "pr_number": 654,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새 기능**\n\n  * 당겨서 새로고침을 사이렌과 파동으로 교체 #652\n\n* **문서**\n\n  * 당겨서 새로고침 작업 리포트와 v3.2.6 릴리즈 노트 추가\n\n* **기타**\n\n  * Merge pull request #653 from cops-and-robbers/20261101_#652_당겨서_새로고침_표시_교체\n  * 이슈 문서 #652\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "당겨서 새로고침을 사이렌과 파동으로 교체 #652"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "당겨서 새로고침 작업 리포트와 v3.2.6 릴리즈 노트 추가"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #653 from cops-and-robbers/20261101_#652_당겨서_새로고침_표시_교체",
+            "이슈 문서 #652"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.2.6",
       "project_type": "flutter",
