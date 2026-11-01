@@ -2692,5 +2692,9 @@
   "onboardingStartButton": "시작하기",
   "@onboardingStartButton": {
     "description": "온보딩 마지막 장 — 온보딩을 닫고 로그인으로 진행"
+  },
+  "refreshLoadingLabel": "불러오는 중이에요",
+  "@refreshLoadingLabel": {
+    "description": "당겨서 새로고침 중 스크린리더가 읽는 문구 (화면에는 보이지 않음)"
   }
 }
