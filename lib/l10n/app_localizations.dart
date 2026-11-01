@@ -4956,6 +4956,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'시작하기'**
   String get onboardingStartButton;
+
+  /// 당겨서 새로고침 중 스크린리더가 읽는 문구 (화면에는 보이지 않음)
+  ///
+  /// In ko, this message translates to:
+  /// **'불러오는 중이에요'**
+  String get refreshLoadingLabel;
 }
 
 class _AppLocalizationsDelegate

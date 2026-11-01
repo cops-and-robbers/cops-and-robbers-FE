@@ -2622,4 +2622,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get onboardingStartButton => '시작하기';
+
+  @override
+  String get refreshLoadingLabel => '불러오는 중이에요';
 }

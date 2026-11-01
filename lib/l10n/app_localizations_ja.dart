@@ -2622,4 +2622,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get onboardingStartButton => '始める';
+
+  @override
+  String get refreshLoadingLabel => '読み込み中';
 }
