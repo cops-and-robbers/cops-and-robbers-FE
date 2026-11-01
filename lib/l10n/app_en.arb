@@ -889,5 +889,6 @@
   "onboardingCommunityBody": "Look for players nearby in the community. Check the place and time, then join right from the app",
   "buttonSkip": "Skip",
   "settingsGuideAppIntro": "See the intro again",
-  "onboardingStartButton": "Get started"
+  "onboardingStartButton": "Get started",
+  "refreshLoadingLabel": "Loading"
 }

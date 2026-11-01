@@ -2826,4 +2826,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingStartButton => 'Get started';
+
+  @override
+  String get refreshLoadingLabel => 'Loading';
 }
