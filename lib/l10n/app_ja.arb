@@ -890,5 +890,12 @@
   "buttonSkip": "スキップ",
   "settingsGuideAppIntro": "アプリ紹介をもう一度見る",
   "onboardingStartButton": "始める",
-  "refreshLoadingLabel": "読み込み中"
+  "refreshLoadingLabel": "読み込み中",
+  "gameMenuOpen": "メニューを開く",
+  "gameMenuClose": "メニューを閉じる",
+  "gameMenuGrid": "座標",
+  "gameMenuParticipants": "参加者",
+  "gameMenuArrest": "逮捕",
+  "gameMenuMyQr": "マイQR",
+  "gameMenuEvidence": "証拠ボード"
 }

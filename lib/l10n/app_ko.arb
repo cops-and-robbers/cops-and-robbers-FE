@@ -2696,5 +2696,33 @@
   "refreshLoadingLabel": "불러오는 중이에요",
   "@refreshLoadingLabel": {
     "description": "당겨서 새로고침 중 스크린리더가 읽는 문구 (화면에는 보이지 않음)"
+  },
+  "gameMenuOpen": "메뉴 열기",
+  "@gameMenuOpen": {
+    "description": "인게임 플로팅 메뉴를 여는 버튼의 스크린리더 문구"
+  },
+  "gameMenuClose": "메뉴 닫기",
+  "@gameMenuClose": {
+    "description": "인게임 플로팅 메뉴를 닫는 버튼의 스크린리더 문구"
+  },
+  "gameMenuGrid": "좌표",
+  "@gameMenuGrid": {
+    "description": "플로팅 메뉴 항목: 좌표 격자 켜고 끄기"
+  },
+  "gameMenuParticipants": "참가자",
+  "@gameMenuParticipants": {
+    "description": "플로팅 메뉴 항목: 참가자 목록"
+  },
+  "gameMenuArrest": "체포",
+  "@gameMenuArrest": {
+    "description": "플로팅 메뉴 항목: 경찰의 QR 스캔"
+  },
+  "gameMenuMyQr": "내 QR",
+  "@gameMenuMyQr": {
+    "description": "플로팅 메뉴 항목: 도둑의 QR 보여 주기"
+  },
+  "gameMenuEvidence": "증거보드",
+  "@gameMenuEvidence": {
+    "description": "플로팅 메뉴 항목: 이벤트 게임 경찰의 증거보드"
   }
 }
