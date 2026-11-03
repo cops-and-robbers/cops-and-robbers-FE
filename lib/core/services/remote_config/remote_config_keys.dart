@@ -1,6 +1,6 @@
 /// Firebase Remote Config 파라미터 키 및 fail-safe 기본값.
 ///
-/// Firebase 콘솔에 아래 11개 파라미터를 동일한 키로 생성해야 한다.
+/// Firebase 콘솔에 아래 14개 파라미터를 동일한 키로 생성해야 한다.
 class RemoteConfigKeys {
   RemoteConfigKeys._();
 
@@ -36,6 +36,15 @@ class RemoteConfigKeys {
 
   /// 원격 배너 이동 링크 (String)
   static const String bannerLinkUrl = 'banner_link_url';
+
+  /// 이벤트 증거 1번 사진 주소 (String). 비면 앱에 든 사진 2장을 쓴다
+  static const String eventEvidenceImage1Url = 'event_evidence_image_1_url';
+
+  /// 이벤트 증거 2번 사진 주소 (String). 비면 사진은 1장이다
+  static const String eventEvidenceImage2Url = 'event_evidence_image_2_url';
+
+  /// 이벤트 증거 3번 사진 주소 (String). 비면 사진은 2장까지다
+  static const String eventEvidenceImage3Url = 'event_evidence_image_3_url';
 }
 
 /// Remote Config fetch 실패 시 사용하는 fail-safe 기본값.
@@ -56,5 +65,8 @@ class RemoteConfigDefaults {
     RemoteConfigKeys.bannerEnabled: false,
     RemoteConfigKeys.bannerImageUrl: '',
     RemoteConfigKeys.bannerLinkUrl: '',
+    RemoteConfigKeys.eventEvidenceImage1Url: '',
+    RemoteConfigKeys.eventEvidenceImage2Url: '',
+    RemoteConfigKeys.eventEvidenceImage3Url: '',
   };
 }

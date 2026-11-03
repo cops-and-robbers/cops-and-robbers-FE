@@ -30,6 +30,7 @@ import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
+import '../../../../core/services/remote_config/remote_config_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
@@ -60,6 +61,8 @@ import '../../domain/zone_grid.dart';
 import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
+import '../../domain/event_evidence.dart';
+import '../providers/event_evidence_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../providers/lock_screen_status_controller.dart';
 import '../providers/game_result_provider.dart';
@@ -381,6 +384,17 @@ class _GamePageState extends ConsumerState<GamePage>
     // 복원 실패(저장소 I/O 예외)가 게임 초기화 전체를 막지 않도록 비치명 처리한다.
     // 빈 집합으로 시작 — _persistMyArrests의 영속화 실패 비치명 처리와 동일 철학.
     if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) {
+      // 체포 순간에 받으면 사진이 늦게 뜬다. 입장 때 미리 받고, 기다리지는 않는다 (#657)
+      unawaited(
+        ref
+            .read(eventEvidenceNotifierProvider.notifier)
+            .prepare(
+              _gameId,
+              eventEvidenceUrlsFrom(
+                RemoteConfigService.instance.eventEvidenceImageValues,
+              ),
+            ),
+      );
       try {
         await ref
             .read(gameEventNotifierProvider.notifier)
@@ -1841,6 +1855,7 @@ class _GamePageState extends ConsumerState<GamePage>
       await EventResultBoard.show(
         context: context,
         arrestCount: arrestCount,
+        evidence: ref.read(eventEvidenceNotifierProvider),
         onGoHome: () {
           if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) {
             return;
@@ -2189,6 +2204,7 @@ class _GamePageState extends ConsumerState<GamePage>
         EventArrestSuccessDialog.show(
           context: context,
           evidenceIndex: s.myArrestedRobberIds.length,
+          evidence: ref.read(eventEvidenceNotifierProvider),
           robberNickname:
               s.lastMyArrestNickname ??
               AppLocalizations.of(context).gameRoleRobberLabel,
@@ -2907,6 +2923,7 @@ class _GamePageState extends ConsumerState<GamePage>
   void _showEvidenceBoard() {
     final l10n = AppLocalizations.of(context);
     EventResultBoard.show(
+      evidence: ref.read(eventEvidenceNotifierProvider),
       context: context,
       arrestCount: ref
           .read(gameEventNotifierProvider)

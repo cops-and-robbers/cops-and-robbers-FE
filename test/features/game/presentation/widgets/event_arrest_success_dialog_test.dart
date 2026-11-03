@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/features/game/domain/event_evidence.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/event_arrest_success_dialog.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -55,5 +56,29 @@ void main() {
         'assets/events/evidence$slot.png',
       );
     }
+  });
+
+  testWidgets('second_arrest_repeats_photo_when_event_has_one_photo', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      const EventArrestSuccessDialog(
+        evidenceIndex: 2,
+        robberNickname: 'x',
+        evidence: EventEvidence(
+          photos: [
+            EventEvidencePhoto(assetPath: 'assets/events/evidence1.png'),
+          ],
+          aspectRatio: 1,
+        ),
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('event_evidence_1')), findsOneWidget);
+    expect(
+      (tester.widget<Image>(find.byType(Image)).image as AssetImage).assetName,
+      'assets/events/evidence1.png',
+    );
   });
 }

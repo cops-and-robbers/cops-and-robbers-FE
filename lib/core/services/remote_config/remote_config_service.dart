@@ -21,6 +21,7 @@ import 'remote_config_keys.dart';
 /// - `banner_enabled` (bool): 원격 배너 활성 여부
 /// - `banner_image_url` (String): 원격 배너 이미지 주소
 /// - `banner_link_url` (String): 원격 배너 이동 링크
+/// - `event_evidence_image_1_url` ~ `event_evidence_image_3_url` (String): 이벤트 증거 사진 주소
 class RemoteConfigService {
   RemoteConfigService._();
 
@@ -145,4 +146,13 @@ class RemoteConfigService {
   String get bannerLinkUrl => _isInitialized
       ? _remoteConfig.getString(RemoteConfigKeys.bannerLinkUrl)
       : '';
+
+  /// 이벤트 증거 사진 주소 값 3개. 빈 값 처리 규칙은 게임 기능이 정한다.
+  List<String> get eventEvidenceImageValues => _isInitialized
+      ? [
+          _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage1Url),
+          _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage2Url),
+          _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage3Url),
+        ]
+      : const [];
 }
