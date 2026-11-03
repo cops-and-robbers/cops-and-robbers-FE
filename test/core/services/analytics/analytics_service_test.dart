@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -65,6 +66,29 @@ void main() {
         ),
       ).called(1);
     });
+
+    test(
+      'logGameStart_sends_again_when_next_round_uses_same_game_id',
+      () async {
+        final start = DateTime(2026, 11, 4, 12);
+        await withClock(Clock.fixed(start), () async {
+          await service.logGameStart(gameId: 7, team: 'POLICE');
+        });
+        await withClock(
+          Clock.fixed(start.add(const Duration(minutes: 10))),
+          () async {
+            await service.logGameStart(gameId: 7, team: 'POLICE');
+          },
+        );
+
+        verify(
+          () => analytics.logEvent(
+            name: 'game_start',
+            parameters: {'team': 'POLICE'},
+          ),
+        ).called(2);
+      },
+    );
 
     test('logGameStart_sends_again_when_next_game_starts', () async {
       await service.logGameStart(gameId: 7, team: 'POLICE');

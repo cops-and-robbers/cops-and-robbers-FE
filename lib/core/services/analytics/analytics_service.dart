@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -26,8 +27,11 @@ class AnalyticsService {
 
   final FirebaseAnalytics? _analytics;
 
-  /// game_start를 이미 보낸 게임. 대기실 소켓 신호와 복귀 확인이 겹쳐도 한 번만 센다.
-  final Set<int> _gameStartLoggedIds = {};
+  /// 대기실 소켓 신호와 복귀 확인이 겹치는 시간. 같은 방의 다음 라운드는 gameId가
+  /// 같으므로 gameId만으로 막으면 안 되고, 가장 짧은 판도 10분이라 여기에 걸리지 않는다.
+  static const Duration _gameStartDedupWindow = Duration(minutes: 1);
+
+  final Map<int, DateTime> _gameStartLoggedAt = {};
 
   Future<void> _log(String name, [Map<String, Object>? parameters]) async {
     try {
@@ -67,7 +71,10 @@ class AnalyticsService {
     required String team,
     int? participantCount,
   }) async {
-    if (!_gameStartLoggedIds.add(gameId)) return;
+    final now = clock.now();
+    final last = _gameStartLoggedAt[gameId];
+    if (last != null && now.difference(last) < _gameStartDedupWindow) return;
+    _gameStartLoggedAt[gameId] = now;
     await _log('game_start', {
       'team': team,
       'participant_count': ?participantCount,
