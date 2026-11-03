@@ -2696,5 +2696,62 @@
   "refreshLoadingLabel": "불러오는 중이에요",
   "@refreshLoadingLabel": {
     "description": "당겨서 새로고침 중 스크린리더가 읽는 문구 (화면에는 보이지 않음)"
+  },
+  "arCaptureTitle": "캐릭터를 틀 안에 맞춰요",
+  "@arCaptureTitle": {
+    "description": "AR 포착 화면 상단 안내"
+  },
+  "arCaptureHold": "{seconds}초 더 유지해요",
+  "@arCaptureHold": {
+    "description": "AR 포착 중 남은 유지 시간",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "arCaptureDone": "포착했어요",
+  "@arCaptureDone": {
+    "description": "AR 포착 성공 안내"
+  },
+  "gameMenuParticipants": "참가자",
+  "@gameMenuParticipants": {
+    "description": "게임 + 메뉴의 참가자 항목"
+  },
+  "gameMenuGrid": "좌표",
+  "@gameMenuGrid": {
+    "description": "게임 + 메뉴의 좌표 격자 켜고 끄기 항목"
+  },
+  "gameMenuCapture": "포착",
+  "@gameMenuCapture": {
+    "description": "게임 + 메뉴의 AR 포착 항목"
+  },
+  "arCaptureRaisePhone": "폰을 세워요",
+  "@arCaptureRaisePhone": {
+    "description": "AR 포착 중 폰을 내려다보는 자세일 때 안내"
+  },
+  "arCaptureRealign": "틀에 다시 맞춰요",
+  "@arCaptureRealign": {
+    "description": "AR 포착 중 캐릭터가 틀을 벗어났을 때 안내"
+  },
+  "arCaptureMissionProgress": "미션 {current} / {total}",
+  "@arCaptureMissionProgress": {
+    "description": "AR 포착 성공 후 전체 미션 진행도",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "gameMenuArrest": "체포",
+  "@gameMenuArrest": {
+    "description": "게임 + 메뉴의 체포 항목 (경찰이 도둑 QR을 스캔)"
+  },
+  "gameMenuMyQr": "내 QR",
+  "@gameMenuMyQr": {
+    "description": "게임 + 메뉴의 QR 보여주기 항목 (도둑, 좀비 모드의 사람)"
   }
 }

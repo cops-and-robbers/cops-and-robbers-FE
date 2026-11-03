@@ -2625,4 +2625,41 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => '불러오는 중이에요';
+
+  @override
+  String get arCaptureTitle => '캐릭터를 틀 안에 맞춰요';
+
+  @override
+  String arCaptureHold(int seconds) {
+    return '$seconds초 더 유지해요';
+  }
+
+  @override
+  String get arCaptureDone => '포착했어요';
+
+  @override
+  String get gameMenuParticipants => '참가자';
+
+  @override
+  String get gameMenuGrid => '좌표';
+
+  @override
+  String get gameMenuCapture => '포착';
+
+  @override
+  String get arCaptureRaisePhone => '폰을 세워요';
+
+  @override
+  String get arCaptureRealign => '틀에 다시 맞춰요';
+
+  @override
+  String arCaptureMissionProgress(int current, int total) {
+    return '미션 $current / $total';
+  }
+
+  @override
+  String get gameMenuArrest => '체포';
+
+  @override
+  String get gameMenuMyQr => '내 QR';
 }

@@ -2829,4 +2829,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => 'Loading';
+
+  @override
+  String get arCaptureTitle => 'Fit the character inside the frame';
+
+  @override
+  String arCaptureHold(int seconds) {
+    return 'Hold for $seconds more sec';
+  }
+
+  @override
+  String get arCaptureDone => 'Captured';
+
+  @override
+  String get gameMenuParticipants => 'Players';
+
+  @override
+  String get gameMenuGrid => 'Grid';
+
+  @override
+  String get gameMenuCapture => 'Capture';
+
+  @override
+  String get arCaptureRaisePhone => 'Hold your phone upright';
+
+  @override
+  String get arCaptureRealign => 'Fit it back inside the frame';
+
+  @override
+  String arCaptureMissionProgress(int current, int total) {
+    return 'Mission $current / $total';
+  }
+
+  @override
+  String get gameMenuArrest => 'Arrest';
+
+  @override
+  String get gameMenuMyQr => 'My QR';
 }

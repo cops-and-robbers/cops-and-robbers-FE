@@ -890,5 +890,16 @@
   "buttonSkip": "スキップ",
   "settingsGuideAppIntro": "アプリ紹介をもう一度見る",
   "onboardingStartButton": "始める",
-  "refreshLoadingLabel": "読み込み中"
+  "refreshLoadingLabel": "読み込み中",
+  "arCaptureTitle": "キャラクターを枠の中に合わせてください",
+  "arCaptureHold": "あと{seconds}秒キープしてください",
+  "arCaptureDone": "捕捉しました",
+  "gameMenuParticipants": "参加者",
+  "gameMenuGrid": "座標",
+  "gameMenuCapture": "捕捉",
+  "arCaptureRaisePhone": "スマホを立ててください",
+  "arCaptureRealign": "もう一度枠に合わせてください",
+  "arCaptureMissionProgress": "ミッション {current} / {total}",
+  "gameMenuArrest": "逮捕",
+  "gameMenuMyQr": "マイQR"
 }

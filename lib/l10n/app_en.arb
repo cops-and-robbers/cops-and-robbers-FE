@@ -890,5 +890,16 @@
   "buttonSkip": "Skip",
   "settingsGuideAppIntro": "See the intro again",
   "onboardingStartButton": "Get started",
-  "refreshLoadingLabel": "Loading"
+  "refreshLoadingLabel": "Loading",
+  "arCaptureTitle": "Fit the character inside the frame",
+  "arCaptureHold": "Hold for {seconds} more sec",
+  "arCaptureDone": "Captured",
+  "gameMenuParticipants": "Players",
+  "gameMenuGrid": "Grid",
+  "gameMenuCapture": "Capture",
+  "arCaptureRaisePhone": "Hold your phone upright",
+  "arCaptureRealign": "Fit it back inside the frame",
+  "arCaptureMissionProgress": "Mission {current} / {total}",
+  "gameMenuArrest": "Arrest",
+  "gameMenuMyQr": "My QR"
 }

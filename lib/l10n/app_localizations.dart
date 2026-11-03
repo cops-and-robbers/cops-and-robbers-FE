@@ -4962,6 +4962,72 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'불러오는 중이에요'**
   String get refreshLoadingLabel;
+
+  /// AR 포착 화면 상단 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'캐릭터를 틀 안에 맞춰요'**
+  String get arCaptureTitle;
+
+  /// AR 포착 중 남은 유지 시간
+  ///
+  /// In ko, this message translates to:
+  /// **'{seconds}초 더 유지해요'**
+  String arCaptureHold(int seconds);
+
+  /// AR 포착 성공 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'포착했어요'**
+  String get arCaptureDone;
+
+  /// 게임 + 메뉴의 참가자 항목
+  ///
+  /// In ko, this message translates to:
+  /// **'참가자'**
+  String get gameMenuParticipants;
+
+  /// 게임 + 메뉴의 좌표 격자 켜고 끄기 항목
+  ///
+  /// In ko, this message translates to:
+  /// **'좌표'**
+  String get gameMenuGrid;
+
+  /// 게임 + 메뉴의 AR 포착 항목
+  ///
+  /// In ko, this message translates to:
+  /// **'포착'**
+  String get gameMenuCapture;
+
+  /// AR 포착 중 폰을 내려다보는 자세일 때 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'폰을 세워요'**
+  String get arCaptureRaisePhone;
+
+  /// AR 포착 중 캐릭터가 틀을 벗어났을 때 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'틀에 다시 맞춰요'**
+  String get arCaptureRealign;
+
+  /// AR 포착 성공 후 전체 미션 진행도
+  ///
+  /// In ko, this message translates to:
+  /// **'미션 {current} / {total}'**
+  String arCaptureMissionProgress(int current, int total);
+
+  /// 게임 + 메뉴의 체포 항목 (경찰이 도둑 QR을 스캔)
+  ///
+  /// In ko, this message translates to:
+  /// **'체포'**
+  String get gameMenuArrest;
+
+  /// 게임 + 메뉴의 QR 보여주기 항목 (도둑, 좀비 모드의 사람)
+  ///
+  /// In ko, this message translates to:
+  /// **'내 QR'**
+  String get gameMenuMyQr;
 }
 
 class _AppLocalizationsDelegate

@@ -2625,4 +2625,41 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => '読み込み中';
+
+  @override
+  String get arCaptureTitle => 'キャラクターを枠の中に合わせてください';
+
+  @override
+  String arCaptureHold(int seconds) {
+    return 'あと$seconds秒キープしてください';
+  }
+
+  @override
+  String get arCaptureDone => '捕捉しました';
+
+  @override
+  String get gameMenuParticipants => '参加者';
+
+  @override
+  String get gameMenuGrid => '座標';
+
+  @override
+  String get gameMenuCapture => '捕捉';
+
+  @override
+  String get arCaptureRaisePhone => 'スマホを立ててください';
+
+  @override
+  String get arCaptureRealign => 'もう一度枠に合わせてください';
+
+  @override
+  String arCaptureMissionProgress(int current, int total) {
+    return 'ミッション $current / $total';
+  }
+
+  @override
+  String get gameMenuArrest => '逮捕';
+
+  @override
+  String get gameMenuMyQr => 'マイQR';
 }

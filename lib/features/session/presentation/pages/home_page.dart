@@ -48,6 +48,7 @@ import '../../../notice/presentation/providers/notice_provider.dart';
 import '../game_creation_entry.dart';
 import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../game/presentation/pages/game_menu_test_page.dart';
 import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
 import '../../data/models/join_game_response.dart';
@@ -307,6 +308,19 @@ class _HomePageState extends ConsumerState<HomePage> {
               rootNavigator.pop();
               rootNavigator.push(
                 MaterialPageRoute(builder: (context) => const TestWidgetPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: Text('인게임 메뉴 시험', style: AppTextStyles.paragraph_14),
+            onTap: () {
+              final rootNavigator = Navigator.of(context, rootNavigator: true);
+              rootNavigator.pop();
+              rootNavigator.push(
+                MaterialPageRoute(
+                  builder: (context) => const GameMenuTestPage(),
+                ),
               );
             },
           ),
@@ -632,7 +646,18 @@ class _HomePageState extends ConsumerState<HomePage> {
               onPressed: _showDevMenu,
               child: const Icon(Icons.bug_report),
             )
-          : null,
+          // #655 실기기 시험용 버튼. main에 머지하기 전에 제거한다.
+          : FloatingActionButton(
+              mini: true,
+              backgroundColor: AppColors.black,
+              foregroundColor: AppColors.white,
+              onPressed: () => Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(
+                  builder: (context) => const GameMenuTestPage(),
+                ),
+              ),
+              child: const Icon(Icons.bug_report),
+            ),
 
       // 좌우 패딩은 스크롤 영역만 갖는다 — 앱바는 자체 여백을 쓴다.
       body: SingleChildScrollView(
