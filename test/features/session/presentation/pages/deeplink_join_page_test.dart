@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,6 +21,8 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
 
 class _MockJoinUseCase extends Mock implements JoinGameByInviteUseCase {}
+
+class _MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
 
 /// 게이트 결과를 주입하는 페이크. ensure 호출 여부도 기록한다 — "게이트가
 /// 평가되었는가/스킵되었는가"가 관찰 대상이므로.
@@ -71,6 +74,7 @@ void main() {
     WidgetTester tester, {
     required _FakeGate gate,
     required AuthResultEntity? user,
+    AnalyticsService? analytics,
   }) async {
     // LoadingPage 가 ScreenUtil(.w/.h/.sp)을 사용하므로 화면 크기 + ScreenUtilInit 필요
     tester.view.physicalSize = const Size(1125, 2436);
@@ -98,6 +102,7 @@ void main() {
           path: '/waiting-room/:id',
           builder: (_, _) => const Text('WAITING_ROOM'),
         ),
+        GoRoute(path: '/game/:id', builder: (_, _) => const Text('GAME_PAGE')),
       ],
     );
 
@@ -107,7 +112,9 @@ void main() {
           gameEntryGateProvider.overrideWithValue(gate),
           authNotifierProvider.overrideWith(() => _FakeAuthNotifier(user)),
           joinGameByInviteUseCaseProvider.overrideWithValue(joinUseCase),
-          analyticsServiceProvider.overrideWithValue(fakeAnalytics),
+          analyticsServiceProvider.overrideWithValue(
+            analytics ?? fakeAnalytics,
+          ),
         ],
         child: ScreenUtilInit(
           designSize: const Size(375, 812),
@@ -151,6 +158,35 @@ void main() {
       expect(find.text('WAITING_ROOM'), findsOneWidget);
     },
   );
+
+  testWidgets('records_game_start_and_routes_game_when_joined_event_game', (
+    tester,
+  ) async {
+    final firebase = _MockFirebaseAnalytics();
+    when(
+      () => firebase.logEvent(
+        name: any(named: 'name'),
+        parameters: any(named: 'parameters'),
+      ),
+    ).thenAnswer((_) async {});
+    when(() => joinUseCase.execute(any())).thenAnswer(
+      (_) async =>
+          const GameJoinResult(gameId: 7, participantId: 1, isEventGame: true),
+    );
+
+    await pumpPage(
+      tester,
+      gate: _FakeGate(true),
+      user: loggedInUser,
+      analytics: AnalyticsService(analytics: firebase),
+    );
+
+    expect(find.text('GAME_PAGE'), findsOneWidget);
+    verify(
+      () =>
+          firebase.logEvent(name: 'game_start', parameters: {'team': 'POLICE'}),
+    ).called(1);
+  });
 
   testWidgets(
     'skips_gate_and_saves_pending_invite_and_routes_login_when_not_logged_in',

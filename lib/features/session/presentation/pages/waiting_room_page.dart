@@ -280,6 +280,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         if (_isDisposed || !mounted) return;
         final team = info.team;
         final participantId = info.participantId;
+        // 앱을 내려 둔 사이 시작돼 소켓 신호를 못 받은 경우도 게임 시작으로 센다 (#627)
+        _logGameStart(gameId: info.gameId, team: team);
         context.go(
           '${RoutePaths.gameWithId(info.gameId.toString())}?team=$team&pid=$participantId',
         );
@@ -819,6 +821,21 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   static const int _maxGameStartRetries = 10;
   int _gameStartRetryCount = 0;
 
+  void _logGameStart({required int gameId, required String team}) {
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .logGameStart(
+            gameId: gameId,
+            team: team,
+            participantCount: ref
+                .read(waitingRoomParticipantsProvider)
+                .participants
+                .length,
+          ),
+    );
+  }
+
   /// GAME_START 이벤트 수신 시 호출
   void _onGameStartEvent(LobbyEventDto event) {
     final participantInfo = ref.read(gameParticipantNotifierProvider);
@@ -841,17 +858,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     final participantId = participantInfo.participantId!;
 
     // 게임 시작 퍼널 이벤트
-    unawaited(
-      ref
-          .read(analyticsServiceProvider)
-          .logGameStart(
-            team: team,
-            participantCount: ref
-                .read(waitingRoomParticipantsProvider)
-                .participants
-                .length,
-          ),
-    );
+    final gameId = int.tryParse(widget.sessionId);
+    if (gameId != null) _logGameStart(gameId: gameId, team: team);
 
     // startTime을 직접 추출 (GameStartData.fromJson은 message 필드 누락 시 예외 발생 가능)
     final startTimeStr = event.data['startTime'] as String?;
