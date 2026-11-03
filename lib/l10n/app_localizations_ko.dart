@@ -1277,9 +1277,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRulesHint => '규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요';
 
   @override
-  String get gameGridToggle => '좌표 격자';
-
-  @override
   String get unitPerson => '명';
 
   @override
@@ -2625,4 +2622,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => '불러오는 중이에요';
+
+  @override
+  String get gameMenuOpen => '메뉴 열기';
+
+  @override
+  String get gameMenuClose => '메뉴 닫기';
+
+  @override
+  String get gameMenuGrid => '좌표';
+
+  @override
+  String get gameMenuParticipants => '참가자';
+
+  @override
+  String get gameMenuArrest => '체포';
+
+  @override
+  String get gameMenuMyQr => '내 QR';
+
+  @override
+  String get gameMenuEvidence => '증거보드';
 }

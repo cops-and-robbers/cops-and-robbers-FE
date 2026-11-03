@@ -1364,9 +1364,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startRulesHint => 'Tap ⓘ at the top right to see the rules again';
 
   @override
-  String get gameGridToggle => 'Coordinate grid';
-
-  @override
   String get unitPerson => 'people';
 
   @override
@@ -2829,4 +2826,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => 'Loading';
+
+  @override
+  String get gameMenuOpen => 'Open menu';
+
+  @override
+  String get gameMenuClose => 'Close menu';
+
+  @override
+  String get gameMenuGrid => 'Grid';
+
+  @override
+  String get gameMenuParticipants => 'Players';
+
+  @override
+  String get gameMenuArrest => 'Arrest';
+
+  @override
+  String get gameMenuMyQr => 'My QR';
+
+  @override
+  String get gameMenuEvidence => 'Evidence';
 }

@@ -2438,12 +2438,6 @@ abstract class AppLocalizations {
   /// **'규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요'**
   String get startRulesHint;
 
-  /// 인게임 지도 좌측 하단 좌표 격자 켜기/끄기 버튼의 접근성 라벨 (#636)
-  ///
-  /// In ko, this message translates to:
-  /// **'좌표 격자'**
-  String get gameGridToggle;
-
   /// 공통 — 인원수 단위 (명)
   ///
   /// In ko, this message translates to:
@@ -4962,6 +4956,48 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'불러오는 중이에요'**
   String get refreshLoadingLabel;
+
+  /// 인게임 플로팅 메뉴를 여는 버튼의 스크린리더 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'메뉴 열기'**
+  String get gameMenuOpen;
+
+  /// 인게임 플로팅 메뉴를 닫는 버튼의 스크린리더 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'메뉴 닫기'**
+  String get gameMenuClose;
+
+  /// 플로팅 메뉴 항목: 좌표 격자 켜고 끄기
+  ///
+  /// In ko, this message translates to:
+  /// **'좌표'**
+  String get gameMenuGrid;
+
+  /// 플로팅 메뉴 항목: 참가자 목록
+  ///
+  /// In ko, this message translates to:
+  /// **'참가자'**
+  String get gameMenuParticipants;
+
+  /// 플로팅 메뉴 항목: 경찰의 QR 스캔
+  ///
+  /// In ko, this message translates to:
+  /// **'체포'**
+  String get gameMenuArrest;
+
+  /// 플로팅 메뉴 항목: 도둑의 QR 보여 주기
+  ///
+  /// In ko, this message translates to:
+  /// **'내 QR'**
+  String get gameMenuMyQr;
+
+  /// 플로팅 메뉴 항목: 이벤트 게임 경찰의 증거보드
+  ///
+  /// In ko, this message translates to:
+  /// **'증거보드'**
+  String get gameMenuEvidence;
 }
 
 class _AppLocalizationsDelegate

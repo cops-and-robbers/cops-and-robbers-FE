@@ -458,7 +458,6 @@
   "dispatchRobberLead": "The Cops are moving",
   "dispatchRobberMain": "Watch out!",
   "startRulesHint": "Tap ⓘ at the top right to see the rules again",
-  "gameGridToggle": "Coordinate grid",
   "unitPerson": "people",
   "unitMinutes": "min",
   "gameSettingNoLocationShareWarning": "The Robbers' locations will not be shared!",
@@ -890,5 +889,12 @@
   "buttonSkip": "Skip",
   "settingsGuideAppIntro": "See the intro again",
   "onboardingStartButton": "Get started",
-  "refreshLoadingLabel": "Loading"
+  "refreshLoadingLabel": "Loading",
+  "gameMenuOpen": "Open menu",
+  "gameMenuClose": "Close menu",
+  "gameMenuGrid": "Grid",
+  "gameMenuParticipants": "Players",
+  "gameMenuArrest": "Arrest",
+  "gameMenuMyQr": "My QR",
+  "gameMenuEvidence": "Evidence"
 }
