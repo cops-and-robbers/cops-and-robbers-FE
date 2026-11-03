@@ -1364,9 +1364,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startRulesHint => 'Tap ⓘ at the top right to see the rules again';
 
   @override
-  String get gameGridToggle => 'Coordinate grid';
-
-  @override
   String get unitPerson => 'people';
 
   @override

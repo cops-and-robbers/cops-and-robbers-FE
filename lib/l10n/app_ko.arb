@@ -1180,10 +1180,6 @@
   "@startRulesHint": {
     "description": "ⓘ 위치 1회 안내 — 위쪽 공지 배너"
   },
-  "gameGridToggle": "좌표 격자",
-  "@gameGridToggle": {
-    "description": "인게임 지도 좌측 하단 좌표 격자 켜기/끄기 버튼의 접근성 라벨 (#636)"
-  },
   "unitPerson": "명",
   "@unitPerson": {
     "description": "공통 — 인원수 단위 (명)"

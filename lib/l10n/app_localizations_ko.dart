@@ -1277,9 +1277,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRulesHint => '규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요';
 
   @override
-  String get gameGridToggle => '좌표 격자';
-
-  @override
   String get unitPerson => '명';
 
   @override

@@ -2438,12 +2438,6 @@ abstract class AppLocalizations {
   /// **'규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요'**
   String get startRulesHint;
 
-  /// 인게임 지도 좌측 하단 좌표 격자 켜기/끄기 버튼의 접근성 라벨 (#636)
-  ///
-  /// In ko, this message translates to:
-  /// **'좌표 격자'**
-  String get gameGridToggle;
-
   /// 공통 — 인원수 단위 (명)
   ///
   /// In ko, this message translates to:

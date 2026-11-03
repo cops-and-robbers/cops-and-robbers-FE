@@ -1278,9 +1278,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startRulesHint => 'ルールは右上のⓘからいつでも確認できます';
 
   @override
-  String get gameGridToggle => '座標グリッド';
-
-  @override
   String get unitPerson => '人';
 
   @override
