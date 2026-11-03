@@ -124,7 +124,11 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
           unawaited(
             ref
                 .read(analyticsServiceProvider)
-                .logGameStart(gameId: gameId, team: GameTeam.police),
+                .logGameStart(
+                  gameId: gameId,
+                  team: GameTeam.police,
+                  isEventGame: true,
+                ),
           );
           context.go(
             '${RoutePaths.gameWithId(gameId.toString())}'

@@ -67,6 +67,26 @@ void main() {
       ).called(1);
     });
 
+    test('logGameStart_sends_once_when_event_game_is_joined_again', () async {
+      final start = DateTime(2026, 11, 4, 12);
+      for (final minutes in [0, 5]) {
+        await withClock(Clock.fixed(start.add(Duration(minutes: minutes))), () {
+          return service.logGameStart(
+            gameId: 7,
+            team: 'POLICE',
+            isEventGame: true,
+          );
+        });
+      }
+
+      verify(
+        () => analytics.logEvent(
+          name: 'game_start',
+          parameters: {'team': 'POLICE'},
+        ),
+      ).called(1);
+    });
+
     test(
       'logGameStart_sends_again_when_next_round_uses_same_game_id',
       () async {
@@ -75,7 +95,7 @@ void main() {
           await service.logGameStart(gameId: 7, team: 'POLICE');
         });
         await withClock(
-          Clock.fixed(start.add(const Duration(minutes: 10))),
+          Clock.fixed(start.add(const Duration(minutes: 1))),
           () async {
             await service.logGameStart(gameId: 7, team: 'POLICE');
           },

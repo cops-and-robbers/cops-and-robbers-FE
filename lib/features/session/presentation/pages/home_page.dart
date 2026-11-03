@@ -405,7 +405,11 @@ class _HomePageState extends ConsumerState<HomePage> {
           unawaited(
             ref
                 .read(analyticsServiceProvider)
-                .logGameStart(gameId: response.gameId, team: GameTeam.police),
+                .logGameStart(
+                  gameId: response.gameId,
+                  team: GameTeam.police,
+                  isEventGame: true,
+                ),
           );
           context.go(
             '${RoutePaths.gameWithId('${response.gameId}')}'

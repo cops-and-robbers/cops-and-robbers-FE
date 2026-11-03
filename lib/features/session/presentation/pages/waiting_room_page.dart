@@ -821,7 +821,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   static const int _maxGameStartRetries = 10;
   int _gameStartRetryCount = 0;
 
-  /// GAME_START 이벤트 수신 시 호출
   void _logGameStart({required int gameId, required String team}) {
     unawaited(
       ref
@@ -837,6 +836,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     );
   }
 
+  /// GAME_START 이벤트 수신 시 호출
   void _onGameStartEvent(LobbyEventDto event) {
     final participantInfo = ref.read(gameParticipantNotifierProvider);
     if (participantInfo == null || participantInfo.participantId == null) {
