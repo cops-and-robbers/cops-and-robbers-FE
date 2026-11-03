@@ -19,23 +19,24 @@ class EventEvidenceImageLoader {
   Future<double?> aspectRatioOf(String url) async {
     final completer = Completer<double?>();
     final stream = NetworkImage(url).resolve(ImageConfiguration.empty);
-    final listener = ImageStreamListener(
+    late final ImageStreamListener listener;
+    listener = ImageStreamListener(
       (info, _) {
         if (!completer.isCompleted) {
           completer.complete(info.image.width / info.image.height);
         }
         info.dispose();
+        stream.removeListener(listener);
       },
       onError: (_, _) {
         if (!completer.isCompleted) completer.complete(null);
+        stream.removeListener(listener);
       },
     );
+    // 시간이 지나도 듣기를 멈추지 않는다. 듣는 쪽 없이 받기에 실패하면
+    // Flutter가 처리되지 않은 오류로 보고한다.
     stream.addListener(listener);
-    try {
-      return await completer.future.timeout(_timeout, onTimeout: () => null);
-    } finally {
-      stream.removeListener(listener);
-    }
+    return completer.future.timeout(_timeout, onTimeout: () => null);
   }
 }
 
