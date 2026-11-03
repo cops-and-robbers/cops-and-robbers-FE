@@ -21,8 +21,10 @@ class EventEvidenceImageLoader {
     final stream = NetworkImage(url).resolve(ImageConfiguration.empty);
     final listener = ImageStreamListener(
       (info, _) {
-        if (completer.isCompleted) return;
-        completer.complete(info.image.width / info.image.height);
+        if (!completer.isCompleted) {
+          completer.complete(info.image.width / info.image.height);
+        }
+        info.dispose();
       },
       onError: (_, _) {
         if (!completer.isCompleted) completer.complete(null);
@@ -44,14 +46,20 @@ EventEvidenceImageLoader eventEvidenceImageLoader(Ref ref) =>
 /// 지금 판의 증거 사진.
 ///
 /// 게임 중에 Remote Config가 바뀌어도 팝업과 보드의 사진이 어긋나지 않도록
-/// 게임 화면에 들어갈 때 한 번만 주소를 고정한다 (#657).
+/// 게임마다 한 번만 주소를 고정한다 (#657). 위치 권한을 다시 허용하면 게임 연결이
+/// 한 번 더 도는데, 그때 다시 읽으면 같은 판에서 사진이 바뀐다.
 @Riverpod(keepAlive: true)
 class EventEvidenceNotifier extends _$EventEvidenceNotifier {
   @override
   EventEvidence build() => EventEvidence.bundled;
 
+  int? _preparedGameId;
+
   /// 입장 때 호출한다. 사진 받기를 기다리지 않아도 판은 진행할 수 있다.
-  Future<void> prepare(List<String> urls) async {
+  Future<void> prepare(int gameId, List<String> urls) async {
+    if (_preparedGameId == gameId) return;
+    _preparedGameId = gameId;
+
     final evidence = EventEvidence.fromUrls(urls);
     state = evidence;
     if (urls.isEmpty) return;
@@ -63,12 +71,13 @@ class EventEvidenceNotifier extends _$EventEvidenceNotifier {
 
     // 그사이 다음 판에 들어갔으면 뒤늦은 결과로 덮어쓰지 않는다
     if (!identical(state, evidence)) return;
+    // 지금 못 받아도 주소는 버리지 않는다. 통신이 돌아오면 화면에서 다시 받는다.
+    // 사진들은 비율이 같으니 1번을 못 받았어도 받은 사진의 비율을 쓴다.
     state = EventEvidence(
-      photos: [
-        for (var i = 0; i < evidence.count; i++)
-          ratios[i] == null ? evidence.photos[i].bundled : evidence.photos[i],
-      ],
-      aspectRatio: ratios.first ?? EventEvidence.bundledAspectRatio,
+      photos: evidence.photos,
+      aspectRatio:
+          ratios.whereType<double>().firstOrNull ??
+          EventEvidence.bundledAspectRatio,
     );
   }
 }

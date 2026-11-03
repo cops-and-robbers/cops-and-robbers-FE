@@ -279,6 +279,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('shows_bundled_photo_when_remote_photo_takes_too_long', (
+    tester,
+  ) async {
+    const remote = EventEvidence(
+      photos: [
+        EventEvidencePhoto(
+          assetPath: 'assets/events/evidence1.png',
+          url: 'https://example.com/slow.png',
+        ),
+      ],
+      aspectRatio: 9 / 16,
+    );
+
+    await _pump(
+      tester,
+      EventResultBoard(arrestCount: 1, onGoHome: () {}, evidence: remote),
+    );
+    await tester.pump(const Duration(seconds: 6));
+
+    expect(
+      tester
+          .widgetList<Image>(find.byType(Image))
+          .map((image) => image.image)
+          .whereType<AssetImage>()
+          .map((image) => image.assetName),
+      contains('assets/events/evidence1.png'),
+    );
+  });
+
   testWidgets('shows_arrest_count_text_and_only_home_button', (tester) async {
     await _pump(tester, EventResultBoard(arrestCount: 2, onGoHome: () {}));
     final l10n = AppLocalizations.of(

@@ -6,8 +6,6 @@ class EventEvidencePhoto {
 
   final String assetPath;
   final String? url;
-
-  EventEvidencePhoto get bundled => EventEvidencePhoto(assetPath: assetPath);
 }
 
 /// 한 판에서 쓰는 증거 사진 묶음.

@@ -2,7 +2,6 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../../../features/game/domain/event_evidence.dart';
 import 'remote_config_keys.dart';
 
 /// Firebase Remote Config 서비스
@@ -148,12 +147,12 @@ class RemoteConfigService {
       ? _remoteConfig.getString(RemoteConfigKeys.bannerLinkUrl)
       : '';
 
-  /// 이벤트 증거 사진 주소. 비어 있으면 앱에 든 사진을 쓴다.
-  List<String> get eventEvidenceImageUrls => _isInitialized
-      ? eventEvidenceUrlsFrom([
+  /// 이벤트 증거 사진 주소 값 3개. 빈 값 처리 규칙은 게임 기능이 정한다.
+  List<String> get eventEvidenceImageValues => _isInitialized
+      ? [
           _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage1Url),
           _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage2Url),
           _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage3Url),
-        ])
+        ]
       : const [];
 }

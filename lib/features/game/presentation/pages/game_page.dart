@@ -61,6 +61,7 @@ import '../../domain/zone_grid.dart';
 import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
+import '../../domain/event_evidence.dart';
 import '../providers/event_evidence_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../providers/lock_screen_status_controller.dart';
@@ -387,7 +388,12 @@ class _GamePageState extends ConsumerState<GamePage>
       unawaited(
         ref
             .read(eventEvidenceNotifierProvider.notifier)
-            .prepare(RemoteConfigService.instance.eventEvidenceImageUrls),
+            .prepare(
+              _gameId,
+              eventEvidenceUrlsFrom(
+                RemoteConfigService.instance.eventEvidenceImageValues,
+              ),
+            ),
       );
       try {
         await ref

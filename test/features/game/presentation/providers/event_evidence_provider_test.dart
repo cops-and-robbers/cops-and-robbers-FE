@@ -52,27 +52,13 @@ void main() {
   });
 
   group('EventEvidenceNotifier', () {
-    test('third_slot_falls_back_to_second_bundled_photo', () async {
-      final container = _container({'a': 1.0, 'b': 1.0, 'c': null});
-
-      await container.read(eventEvidenceNotifierProvider.notifier).prepare([
-        'a',
-        'b',
-        'c',
-      ]);
-
-      final photos = container.read(eventEvidenceNotifierProvider).photos;
-      expect(photos, hasLength(3));
-      expect(photos[2].url, isNull);
-      expect(photos[2].assetPath, 'assets/events/evidence2.png');
-    });
+    EventEvidenceNotifier notifierOf(ProviderContainer c) =>
+        c.read(eventEvidenceNotifierProvider.notifier);
 
     test('uses_bundled_photos_when_no_url_is_set', () async {
       final container = _container({});
 
-      await container
-          .read(eventEvidenceNotifierProvider.notifier)
-          .prepare(const []);
+      await notifierOf(container).prepare(1, const []);
 
       expect(
         container.read(eventEvidenceNotifierProvider),
@@ -83,10 +69,7 @@ void main() {
     test('uses_first_photo_ratio_when_all_photos_load', () async {
       final container = _container({'a': 1.5, 'b': 1.5});
 
-      await container.read(eventEvidenceNotifierProvider.notifier).prepare([
-        'a',
-        'b',
-      ]);
+      await notifierOf(container).prepare(1, ['a', 'b']);
 
       final evidence = container.read(eventEvidenceNotifierProvider);
       expect(evidence.aspectRatio, 1.5);
@@ -96,34 +79,43 @@ void main() {
     test('keeps_one_slot_when_one_url_is_set', () async {
       final container = _container({'a': 1.0});
 
-      await container.read(eventEvidenceNotifierProvider.notifier).prepare([
-        'a',
-      ]);
+      await notifierOf(container).prepare(1, ['a']);
 
       expect(container.read(eventEvidenceNotifierProvider).count, 1);
     });
 
-    test('falls_back_to_bundled_photo_only_for_slot_that_failed', () async {
+    test('keeps_url_so_screen_can_retry_when_photo_fails_to_load', () async {
       final container = _container({'a': 1.0, 'b': null});
 
-      await container.read(eventEvidenceNotifierProvider.notifier).prepare([
-        'a',
-        'b',
-      ]);
+      await notifierOf(container).prepare(1, ['a', 'b']);
 
       final photos = container.read(eventEvidenceNotifierProvider).photos;
-      expect(photos[0].url, 'a');
-      expect(photos[1].url, isNull);
+      expect(photos[1].url, 'b');
       expect(photos[1].assetPath, 'assets/events/evidence2.png');
     });
 
-    test('uses_bundled_ratio_when_first_photo_fails', () async {
-      final container = _container({'a': null, 'b': 1.0});
+    test('third_slot_falls_back_to_second_bundled_photo', () async {
+      final container = _container({'a': 1.0, 'b': 1.0, 'c': null});
 
-      await container.read(eventEvidenceNotifierProvider.notifier).prepare([
-        'a',
-        'b',
-      ]);
+      await notifierOf(container).prepare(1, ['a', 'b', 'c']);
+
+      final photos = container.read(eventEvidenceNotifierProvider).photos;
+      expect(photos, hasLength(3));
+      expect(photos[2].assetPath, 'assets/events/evidence2.png');
+    });
+
+    test('uses_loaded_photo_ratio_when_first_photo_fails', () async {
+      final container = _container({'a': null, 'b': 16 / 9, 'c': 16 / 9});
+
+      await notifierOf(container).prepare(1, ['a', 'b', 'c']);
+
+      expect(container.read(eventEvidenceNotifierProvider).aspectRatio, 16 / 9);
+    });
+
+    test('uses_bundled_ratio_when_no_photo_loads', () async {
+      final container = _container({'a': null});
+
+      await notifierOf(container).prepare(1, ['a']);
 
       expect(
         container.read(eventEvidenceNotifierProvider).aspectRatio,
@@ -131,13 +123,26 @@ void main() {
       );
     });
 
+    test('keeps_first_photos_when_same_game_prepares_again', () async {
+      final container = _container({'old': 1.0, 'new': 1.0});
+      final notifier = notifierOf(container);
+
+      await notifier.prepare(1, ['old']);
+      await notifier.prepare(1, ['new']);
+
+      expect(
+        container.read(eventEvidenceNotifierProvider).photos.single.url,
+        'old',
+      );
+    });
+
     test('ignores_late_result_when_next_game_already_prepared', () async {
       final slow = Completer<double?>();
       final container = _container({'old': slow.future, 'new': 1.0});
-      final notifier = container.read(eventEvidenceNotifierProvider.notifier);
+      final notifier = notifierOf(container);
 
-      final first = notifier.prepare(['old']);
-      await notifier.prepare(['new']);
+      final first = notifier.prepare(1, ['old']);
+      await notifier.prepare(2, ['new']);
       slow.complete(0.5);
       await first;
 
