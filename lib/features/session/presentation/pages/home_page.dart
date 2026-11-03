@@ -401,6 +401,12 @@ class _HomePageState extends ConsumerState<HomePage> {
       if (mounted) {
         if (response.isEventGame || kEventGameDevOverride) {
           // 이벤트 모드 — 로비 스킵, 경찰로 인게임 직행
+          // 대기실 소켓 신호를 받지 않으므로 여기서 게임 시작을 기록한다 (#627)
+          unawaited(
+            ref
+                .read(analyticsServiceProvider)
+                .logGameStart(gameId: response.gameId, team: GameTeam.police),
+          );
           context.go(
             '${RoutePaths.gameWithId('${response.gameId}')}'
             '?team=${GameTeam.police}&pid=${response.participantId}',

@@ -26,6 +26,9 @@ class AnalyticsService {
 
   final FirebaseAnalytics? _analytics;
 
+  /// game_start를 이미 보낸 게임. 대기실 소켓 신호와 복귀 확인이 겹쳐도 한 번만 센다.
+  final Set<int> _gameStartLoggedIds = {};
+
   Future<void> _log(String name, [Map<String, Object>? parameters]) async {
     try {
       await _analytics?.logEvent(name: name, parameters: parameters);
@@ -57,11 +60,19 @@ class AnalyticsService {
       _log('game_join', {'method': method});
 
   /// 게임 시작 (GAME_START 수신)
+  ///
+  /// 이벤트 게임은 대기실 인원을 알 수 없어 [participantCount]를 생략한다.
   Future<void> logGameStart({
+    required int gameId,
     required String team,
-    required int participantCount,
-  }) =>
-      _log('game_start', {'team': team, 'participant_count': participantCount});
+    int? participantCount,
+  }) async {
+    if (!_gameStartLoggedIds.add(gameId)) return;
+    await _log('game_start', {
+      'team': team,
+      'participant_count': ?participantCount,
+    });
+  }
 
   /// 게임 종료 (GAME_OVER 수신)
   Future<void> logGameOver({

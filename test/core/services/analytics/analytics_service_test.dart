@@ -46,6 +46,38 @@ void main() {
       ).called(1);
     });
 
+    test('logGameStart_sends_once_when_same_game_reported_twice', () async {
+      await service.logGameStart(
+        gameId: 7,
+        team: 'ROBBER',
+        participantCount: 5,
+      );
+      await service.logGameStart(
+        gameId: 7,
+        team: 'ROBBER',
+        participantCount: 5,
+      );
+
+      verify(
+        () => analytics.logEvent(
+          name: 'game_start',
+          parameters: {'team': 'ROBBER', 'participant_count': 5},
+        ),
+      ).called(1);
+    });
+
+    test('logGameStart_sends_again_when_next_game_starts', () async {
+      await service.logGameStart(gameId: 7, team: 'POLICE');
+      await service.logGameStart(gameId: 8, team: 'POLICE');
+
+      verify(
+        () => analytics.logEvent(
+          name: 'game_start',
+          parameters: {'team': 'POLICE'},
+        ),
+      ).called(2);
+    });
+
     test('log_methods_do_not_throw_when_firebase_unavailable', () async {
       // Firebase 초기화 실패 시 analytics=null → 전체 no-op이어야 한다
       final noFirebase = AnalyticsService(analytics: null);
