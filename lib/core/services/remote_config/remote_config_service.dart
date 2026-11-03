@@ -2,6 +2,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../../features/game/domain/event_evidence.dart';
 import 'remote_config_keys.dart';
 
 /// Firebase Remote Config 서비스
@@ -21,6 +22,7 @@ import 'remote_config_keys.dart';
 /// - `banner_enabled` (bool): 원격 배너 활성 여부
 /// - `banner_image_url` (String): 원격 배너 이미지 주소
 /// - `banner_link_url` (String): 원격 배너 이동 링크
+/// - `event_evidence_image_1_url` ~ `event_evidence_image_3_url` (String): 이벤트 증거 사진 주소
 class RemoteConfigService {
   RemoteConfigService._();
 
@@ -145,4 +147,13 @@ class RemoteConfigService {
   String get bannerLinkUrl => _isInitialized
       ? _remoteConfig.getString(RemoteConfigKeys.bannerLinkUrl)
       : '';
+
+  /// 이벤트 증거 사진 주소. 비어 있으면 앱에 든 사진을 쓴다.
+  List<String> get eventEvidenceImageUrls => _isInitialized
+      ? eventEvidenceUrlsFrom([
+          _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage1Url),
+          _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage2Url),
+          _remoteConfig.getString(RemoteConfigKeys.eventEvidenceImage3Url),
+        ])
+      : const [];
 }
