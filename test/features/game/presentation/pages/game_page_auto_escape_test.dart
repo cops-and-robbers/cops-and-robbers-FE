@@ -924,7 +924,7 @@ void main() {
     (team: 'ROBBER', locale: 'ja', width: 320.0, scale: 1.5),
   ]) {
     testWidgets(
-      'chat_preview_anchors_beside_button_and_opens_channel_$variant',
+      'chat_preview_sits_above_chat_button_and_opens_channel_$variant',
       (tester) async {
         tester.view.padding = const FakeViewPadding(bottom: 34);
         tester.view.viewPadding = const FakeViewPadding(bottom: 34);
@@ -971,18 +971,18 @@ void main() {
               .value,
           1,
         );
-        // 말풍선 본체가 채팅 버튼 왼쪽, 버튼 세로 중앙 높이에 바닥을 두고
-        // 왼쪽 내 위치 버튼은 침범하지 않는다.
+        // 말풍선 본체가 채팅 버튼 바로 위에 뜨고 가운데 플로팅 버튼을 가리지 않는다.
         final bubble = find.byKey(ChatPreviewCard.bubbleKey);
         final cardRect = tester.getRect(bubble);
         final buttonRect = tester.getRect(chatButton);
-        expect(cardRect.right, lessThan(buttonRect.left));
-        expect(buttonRect.left - cardRect.right, lessThanOrEqualTo(8.5));
+        expect(cardRect.bottom, lessThan(buttonRect.top));
+        expect(buttonRect.top - cardRect.bottom, lessThanOrEqualTo(8.5));
+        expect(cardRect.right, closeTo(buttonRect.right, 0.5));
+        expect(cardRect.left, greaterThanOrEqualTo(0));
         expect(
-          cardRect.left,
-          greaterThan(tester.getRect(find.byType(MyLocationButton)).right),
+          cardRect.overlaps(tester.getRect(find.byType(GameFabMenu))),
+          isFalse,
         );
-        expect(cardRect.bottom, closeTo(buttonRect.center.dy, 0.5));
         expect(cardRect.height, greaterThanOrEqualTo(44));
         expect(
           find.descendant(of: preview, matching: find.text(message.message)),

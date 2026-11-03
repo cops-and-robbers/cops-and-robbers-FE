@@ -2685,13 +2685,26 @@ class _GamePageState extends ConsumerState<GamePage>
               myTeam: widget.team,
               isDarkMode: _isDarkMode,
               visible: _showChat,
-              previewInsets: EdgeInsets.only(
-                // 양쪽 하단 버튼(56)과 버튼 사이 여백을 비우고, 바닥은 채팅
-                // 버튼 세로 중앙(반 칸 위)에 맞춰 화면 가장자리에서 띄운다.
-                left: AppSpacing.horizontal20 + 56.w + AppSpacing.horizontal8,
-                right: AppSpacing.horizontal20 + 56.w + AppSpacing.horizontal8,
-                bottom: actionButtonBottom + 28.w,
-              ),
+              previewInsets: showsFloatingMenu
+                  // 가운데 플로팅 버튼과 겹치지 않게 채팅 버튼 바로 위에 띄운다.
+                  ? EdgeInsets.only(
+                      left: AppSpacing.horizontal20,
+                      right: AppSpacing.horizontal20,
+                      bottom: actionButtonBottom + 56.w + AppSpacing.vertical8,
+                    )
+                  // 양쪽 하단 버튼(56)과 버튼 사이 여백을 비우고, 바닥은 채팅
+                  // 버튼 세로 중앙(반 칸 위)에 맞춰 화면 가장자리에서 띄운다.
+                  : EdgeInsets.only(
+                      left:
+                          AppSpacing.horizontal20 +
+                          56.w +
+                          AppSpacing.horizontal8,
+                      right:
+                          AppSpacing.horizontal20 +
+                          56.w +
+                          AppSpacing.horizontal8,
+                      bottom: actionButtonBottom + 28.w,
+                    ),
               onOpen: _openChat,
             ),
 
