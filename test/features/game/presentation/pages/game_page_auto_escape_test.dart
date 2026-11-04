@@ -12,6 +12,7 @@ import 'package:cops_and_robbers/core/widgets/buttons/svg_icon_button.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/my_location_button.dart';
 import 'package:cops_and_robbers/core/widgets/chat/community_message_input.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/arrest_lock_overlay.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/game_fab_menu.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/google_map_view.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/jail_bars_overlay.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/police_start_countdown.dart';
@@ -208,6 +209,19 @@ class _SessionApi implements SessionRemoteDataSource {
       );
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+Future<void> openFloatingMenu(WidgetTester tester) async {
+  await tester.tap(find.byType(GameFabMenu));
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
+}
+
+Future<void> tapFloatingMenuItem(WidgetTester tester, String label) async {
+  await openFloatingMenu(tester);
+  await tester.tap(find.text(label));
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
 }
 
 void main() {
@@ -910,7 +924,7 @@ void main() {
     (team: 'ROBBER', locale: 'ja', width: 320.0, scale: 1.5),
   ]) {
     testWidgets(
-      'chat_preview_anchors_beside_button_and_opens_channel_$variant',
+      'chat_preview_sits_above_chat_button_and_opens_channel_$variant',
       (tester) async {
         tester.view.padding = const FakeViewPadding(bottom: 34);
         tester.view.viewPadding = const FakeViewPadding(bottom: 34);
@@ -957,18 +971,18 @@ void main() {
               .value,
           1,
         );
-        // 말풍선 본체가 채팅 버튼 왼쪽, 버튼 세로 중앙 높이에 바닥을 두고
-        // 왼쪽 내 위치 버튼은 침범하지 않는다.
+        // 말풍선 본체가 채팅 버튼 바로 위에 뜨고 가운데 플로팅 버튼을 가리지 않는다.
         final bubble = find.byKey(ChatPreviewCard.bubbleKey);
         final cardRect = tester.getRect(bubble);
         final buttonRect = tester.getRect(chatButton);
-        expect(cardRect.right, lessThan(buttonRect.left));
-        expect(buttonRect.left - cardRect.right, lessThanOrEqualTo(8.5));
+        expect(cardRect.bottom, lessThan(buttonRect.top));
+        expect(buttonRect.top - cardRect.bottom, lessThanOrEqualTo(8.5));
+        expect(cardRect.right, closeTo(buttonRect.right, 0.5));
+        expect(cardRect.left, greaterThanOrEqualTo(0));
         expect(
-          cardRect.left,
-          greaterThan(tester.getRect(find.byType(MyLocationButton)).right),
+          cardRect.overlaps(tester.getRect(find.byType(GameFabMenu))),
+          isFalse,
         );
-        expect(cardRect.bottom, closeTo(buttonRect.center.dy, 0.5));
         expect(cardRect.height, greaterThanOrEqualTo(44));
         expect(
           find.descendant(of: preview, matching: find.text(message.message)),
@@ -1359,22 +1373,18 @@ void main() {
         final jail = map.circles.singleWhere((c) => c.circleId.value == 'jail');
         expect(jail.fillColor, AppColors.yellowAlpha20);
         expect(jail.radius, 20);
-        final jailButton = find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
-        );
         final chatButton = find.byWidgetPredicate(
           (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
         );
+        // 내 위치, 플로팅 버튼, 채팅이 같은 높이에 한 줄로 놓인다.
+        final menuCenter = tester.getCenter(find.byType(GameFabMenu));
+        expect(menuCenter.dx, closeTo(size.width / 2, 0.1));
+        expect(menuCenter.dy, closeTo(tester.getCenter(chatButton).dy, 0.5));
         expect(
-          tester.getCenter(jailButton).dx,
-          tester.getCenter(chatButton).dx,
+          menuCenter.dy,
+          closeTo(tester.getCenter(find.byType(MyLocationButton)).dy, 0.5),
         );
-        expect(
-          tester.getBottomLeft(jailButton).dy,
-          lessThan(tester.getTopLeft(chatButton).dy),
-        );
-        await tester.tap(jailButton);
-        await tester.pump();
+        await tapFloatingMenuItem(tester, '수감');
         expect(find.byType(ArrestLockOverlay), findsOneWidget);
         expect(find.widgetWithText(TextButton, '닫기'), findsNothing);
         expect(
@@ -1449,16 +1459,14 @@ void main() {
     final qrButton = find.byWidgetPredicate(
       (w) => w is SvgIconButton && w.assetPath == AppIcons.qrCode,
     );
-    expect(jailButton, findsOneWidget);
-    expect(qrButton, findsNothing);
+    await openFloatingMenu(tester);
+    expect(find.text(l10n.statusJailed), findsOneWidget);
+    expect(find.text(l10n.gameMenuMyQr), findsNothing);
 
     // 참가자 화면의 오른쪽 버튼 줄에서도 QR 대신 수감 버튼이 보인다.
-    await tester.tap(
-      find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath == AppIcons.person,
-      ),
-    );
+    await tester.tap(find.text(l10n.gameMenuParticipants));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(jailButton, findsOneWidget);
     expect(qrButton, findsNothing);
     await tester.tap(
@@ -1469,8 +1477,7 @@ void main() {
     await tester.pump();
 
     // 누르면 기존 수감 안내 → "탈옥하기" → 확인
-    await tester.tap(jailButton);
-    await tester.pump();
+    await tapFloatingMenuItem(tester, l10n.statusJailed);
     expect(find.byType(ArrestLockOverlay), findsOneWidget);
     await tester.tap(find.text(l10n.gameArrestOverlayEscapeCompleteButton));
     await tester.pump();
@@ -1480,9 +1487,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(game.escapes, 1);
 
-    // 풀리면 QR 버튼이 돌아온다.
-    expect(qrButton, findsOneWidget);
-    expect(jailButton, findsNothing);
+    // 풀리면 QR 항목이 돌아온다.
+    await openFloatingMenu(tester);
+    expect(find.text(l10n.gameMenuMyQr), findsOneWidget);
+    expect(find.text(l10n.statusJailed), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -1517,18 +1525,9 @@ void main() {
       ],
     );
     await mount(tester, team: 'POLICE');
-    expect(
-      find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath == AppIcons.qrScan,
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
-      ),
-      findsNothing,
-    );
+    await openFloatingMenu(tester);
+    expect(find.text('체포'), findsOneWidget);
+    expect(find.text('수감'), findsNothing);
   });
 
   testWidgets(
@@ -1594,7 +1593,7 @@ void main() {
         await sendPosition(tester, inside: true);
 
         // 수감 중 재연결 — 체포 전의 구역 이탈 상태가 경고로 되살아나면
-        // 오른쪽 버튼 줄이 숨어 그 자리의 수감 버튼까지 사라진다.
+        // 플로팅 메뉴의 수감 항목까지 사라진다.
         socket.emit(StompConnectionState.disconnected);
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
@@ -1603,11 +1602,13 @@ void main() {
         await tester.pump(const Duration(seconds: 1));
 
         expect(find.byType(JailBarsOverlay), findsOneWidget);
+        // 재연결 안내가 아직 화면을 덮고 있어 메뉴를 열지 않고 항목만 확인한다.
         expect(
-          find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
-          ),
-          findsOneWidget,
+          tester
+              .widget<GameFabMenu>(find.byType(GameFabMenu))
+              .items
+              .map((item) => item.label),
+          contains('수감'),
         );
         // 체포 알림 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
         await tester.pump(const Duration(seconds: 9));
@@ -1623,12 +1624,7 @@ void main() {
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
         await sendPosition(tester, inside: true);
         // 수동 탈옥 확인창을 열어 둔다.
-        await tester.tap(
-          find.byWidgetPredicate(
-            (w) => w is SvgIconButton && w.assetPath.endsWith('/jailed.svg'),
-          ),
-        );
-        await tester.pump();
+        await tapFloatingMenuItem(tester, l10n.statusJailed);
         await tester.tap(find.text(l10n.gameArrestOverlayEscapeCompleteButton));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
@@ -2170,10 +2166,6 @@ void main() {
   );
 
   group('좌표 격자 (#636)', () {
-    Finder gridButton() => find.byWidgetPredicate(
-      (w) => w is SvgIconButton && w.assetPath == AppIcons.grid,
-    );
-
     GoogleMap map(WidgetTester tester) =>
         tester.widget<GoogleMap>(find.byType(GoogleMap));
 
@@ -2181,17 +2173,15 @@ void main() {
         map(tester).markers.where((m) => m.markerId.value.startsWith('grid_'));
 
     testWidgets(
-      'grid_lines_appear_then_disappear_when_player_taps_grid_button_twice',
+      'grid_lines_appear_then_disappear_when_player_taps_grid_item_twice',
       (tester) async {
         await mount(tester);
         expect(map(tester).polylines, isEmpty); // 게임마다 꺼진 상태로 시작
 
-        await tester.tap(gridButton());
-        await tester.pump();
+        await tapFloatingMenuItem(tester, '좌표');
         expect(map(tester).polylines, isNotEmpty);
 
-        await tester.tap(gridButton());
-        await tester.pump();
+        await tapFloatingMenuItem(tester, '좌표');
         expect(map(tester).polylines, isEmpty);
       },
     );
@@ -2200,7 +2190,7 @@ void main() {
       'grid_labels_hide_when_player_zooms_out_to_see_whole_playground',
       (tester) async {
         await mount(tester);
-        await tester.tap(gridButton());
+        await tapFloatingMenuItem(tester, '좌표');
         // 라벨 비트맵은 실제 이미지 인코딩이라 가짜 시계 밖에서 기다린다
         await tester.runAsync(() async {
           for (var i = 0; i < 500 && gridLabels(tester).isEmpty; i++) {

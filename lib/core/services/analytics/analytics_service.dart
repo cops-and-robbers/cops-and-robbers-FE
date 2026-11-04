@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +26,16 @@ class AnalyticsService {
     : _analytics = analytics;
 
   final FirebaseAnalytics? _analytics;
+
+  /// 대기실 소켓 신호와 복귀 확인이 겹치는 시간. 같은 방의 다음 라운드는 gameId가
+  /// 같아 gameId만으로 막을 수 없다. 판은 기권으로 일찍 끝날 수 있지만, 결과를 닫고
+  /// 다시 모여 시작하는 데 이보다 오래 걸린다.
+  static const Duration _gameStartDedupWindow = Duration(seconds: 30);
+
+  final Map<int, DateTime> _gameStartLoggedAt = {};
+
+  /// 라운드가 없는 이벤트 게임은 나갔다가 다시 들어와도 한 번만 센다.
+  final Set<int> _eventGameStartLoggedIds = {};
 
   Future<void> _log(String name, [Map<String, Object>? parameters]) async {
     try {
@@ -57,11 +68,24 @@ class AnalyticsService {
       _log('game_join', {'method': method});
 
   /// 게임 시작 (GAME_START 수신)
+  ///
+  /// 이벤트 게임은 대기실 인원을 알 수 없어 [participantCount]를 생략한다.
   Future<void> logGameStart({
+    required int gameId,
     required String team,
-    required int participantCount,
-  }) =>
-      _log('game_start', {'team': team, 'participant_count': participantCount});
+    int? participantCount,
+    bool isEventGame = false,
+  }) async {
+    if (isEventGame && !_eventGameStartLoggedIds.add(gameId)) return;
+    final now = clock.now();
+    final last = _gameStartLoggedAt[gameId];
+    if (last != null && now.difference(last) < _gameStartDedupWindow) return;
+    _gameStartLoggedAt[gameId] = now;
+    await _log('game_start', {
+      'team': team,
+      'participant_count': ?participantCount,
+    });
+  }
 
   /// 게임 종료 (GAME_OVER 수신)
   Future<void> logGameOver({

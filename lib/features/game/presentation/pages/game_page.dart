@@ -30,6 +30,7 @@ import '../../../../core/services/lifecycle/lifecycle_provider.dart';
 import '../../../../core/services/location/device_location_service.dart';
 import '../../../../core/services/permission/location_permission_messages.dart';
 import '../../../../core/services/permission/location_permission_service.dart';
+import '../../../../core/services/remote_config/remote_config_service.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
@@ -55,16 +56,20 @@ import '../../domain/jail_escape_detector.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
 import '../../domain/ping_chat_policy.dart';
+import '../../domain/game_menu_entries.dart';
 import '../../domain/zone_grid.dart';
 import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
 import '../providers/game_area_provider.dart';
+import '../../domain/event_evidence.dart';
+import '../providers/event_evidence_provider.dart';
 import '../providers/game_event_provider.dart';
 import '../providers/lock_screen_status_controller.dart';
 import '../providers/game_result_provider.dart';
 import '../../../../core/widgets/buttons/my_location_button.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../widgets/arrest_lock_overlay.dart';
+import '../widgets/game_fab_menu.dart';
 import '../widgets/game_over_intro_modal.dart';
 import '../widgets/game_over_result_dialog.dart';
 import '../widgets/qr_display_dialog.dart';
@@ -379,6 +384,17 @@ class _GamePageState extends ConsumerState<GamePage>
     // 복원 실패(저장소 I/O 예외)가 게임 초기화 전체를 막지 않도록 비치명 처리한다.
     // 빈 집합으로 시작 — _persistMyArrests의 영속화 실패 비치명 처리와 동일 철학.
     if (ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false) {
+      // 체포 순간에 받으면 사진이 늦게 뜬다. 입장 때 미리 받고, 기다리지는 않는다 (#657)
+      unawaited(
+        ref
+            .read(eventEvidenceNotifierProvider.notifier)
+            .prepare(
+              _gameId,
+              eventEvidenceUrlsFrom(
+                RemoteConfigService.instance.eventEvidenceImageValues,
+              ),
+            ),
+      );
       try {
         await ref
             .read(gameEventNotifierProvider.notifier)
@@ -1839,6 +1855,7 @@ class _GamePageState extends ConsumerState<GamePage>
       await EventResultBoard.show(
         context: context,
         arrestCount: arrestCount,
+        evidence: ref.read(eventEvidenceNotifierProvider),
         onGoHome: () {
           if (GameOverGuard.shouldSkipDialogCallback(isMounted: mounted)) {
             return;
@@ -2187,6 +2204,7 @@ class _GamePageState extends ConsumerState<GamePage>
         EventArrestSuccessDialog.show(
           context: context,
           evidenceIndex: s.myArrestedRobberIds.length,
+          evidence: ref.read(eventEvidenceNotifierProvider),
           robberNickname:
               s.lastMyArrestNickname ??
               AppLocalizations.of(context).gameRoleRobberLabel,
@@ -2353,6 +2371,9 @@ class _GamePageState extends ConsumerState<GamePage>
         .centroid;
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
     final actionButtonBottom = 38.h + bottomInset;
+    // 지도를 보는 동안만 플로팅 메뉴를 쓴다. 대기·설명 장면에서는 가운데 아래 규칙 줄과
+    // 겹치고, 참가자 목록에서는 지도로 돌아갈 버튼이 필요해 오른쪽 버튼 열을 유지한다.
+    final showsFloatingMenu = !_showParticipants && sceneMode == null;
 
     return PopScope(
       canPop: false,
@@ -2550,19 +2571,12 @@ class _GamePageState extends ConsumerState<GamePage>
                   children: [
                     // 증거보드: 읽기 전용 검거 현황 조회 → 이탈 경고 중에도 항상 노출(가드 밖).
                     // 이벤트 모드 경찰 전용(도둑/일반 게임은 검거 카운트 의미 없음).
-                    if (isEventGame && GameTeam.isPolice(widget.team)) ...[
+                    if (!showsFloatingMenu &&
+                        isEventGame &&
+                        GameTeam.isPolice(widget.team)) ...[
                       SvgIconButton(
-                        assetPath: 'assets/characters/robber/default/home.svg',
-                        onPressed: () => EventResultBoard.show(
-                          context: context,
-                          arrestCount: ref
-                              .read(gameEventNotifierProvider)
-                              .myArrestedRobberIds
-                              .length,
-                          title: l10n.gameEventProgressTitle,
-                          buttonText: l10n.buttonClose,
-                          onGoHome: () => Navigator.of(context).pop(),
-                        ),
+                        assetPath: _evidenceBoardIcon,
+                        onPressed: _showEvidenceBoard,
                         backgroundColor: _isDarkMode ? AppColors.black : null,
                         isDarkMode: _isDarkMode,
                       ),
@@ -2571,7 +2585,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     // 참가자·QR 모두 이탈 중에는 숨김.
                     // 구역 밖에선 체포/QR 액션 자체가 무의미 + 외적으로도 차단 필요.
                     // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
-                    if (!_isZoneExitWarningActive) ...[
+                    if (!showsFloatingMenu && !_isZoneExitWarningActive) ...[
                       SvgIconButton(
                         assetPath: AppIcons.person,
                         onPressed: () =>
@@ -2584,8 +2598,8 @@ class _GamePageState extends ConsumerState<GamePage>
                       ),
                       SizedBox(height: AppSpacing.vertical8),
                       _buildQrButton(isArrestedNow: isArrestedNow),
+                      SizedBox(height: AppSpacing.vertical8),
                     ],
-                    SizedBox(height: AppSpacing.vertical8),
                     _buildChatButton(),
                   ],
                 ),
@@ -2600,40 +2614,39 @@ class _GamePageState extends ConsumerState<GamePage>
               Positioned(
                 left: 20.w,
                 bottom: actionButtonBottom,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Semantics(
-                      label: AppLocalizations.of(context).gameGridToggle,
-                      button: true,
-                      toggled: _showGrid,
-                      child: SvgIconButton(
-                        assetPath: AppIcons.grid,
-                        onPressed: _toggleGrid,
-                        iconColor: switch ((_showGrid, _isDarkMode)) {
-                          (true, true) => AppColors.green,
-                          (true, false) => AppColors.blue,
-                          (false, true) => AppColors.green500,
-                          (false, false) => AppColors.blue500,
-                        },
-                        backgroundColor: _isDarkMode ? AppColors.black : null,
-                        isDarkMode: _isDarkMode,
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.vertical8),
-                    MyLocationButton(
-                      onPressed: _moveToCurrentLocation,
-                      isFocused: _isLocationFocused,
-                      focusedColor: _isDarkMode
-                          ? AppColors.green
-                          : AppColors.blue,
-                      unfocusedColor: _isDarkMode
-                          ? AppColors.green500
-                          : AppColors.blue500,
-                      backgroundColor: _isDarkMode ? AppColors.black : null,
-                      isDarkMode: _isDarkMode,
-                    ),
-                  ],
+                child: MyLocationButton(
+                  onPressed: _moveToCurrentLocation,
+                  isFocused: _isLocationFocused,
+                  focusedColor: _isDarkMode ? AppColors.green : AppColors.blue,
+                  unfocusedColor: _isDarkMode
+                      ? AppColors.green500
+                      : AppColors.blue500,
+                  backgroundColor: _isDarkMode ? AppColors.black : null,
+                  isDarkMode: _isDarkMode,
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+
+            /// index 5c: 가운데 아래 플로팅 메뉴 (지도 모드 한정, if/else로 개수 고정)
+            if (showsFloatingMenu)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: actionButtonBottom,
+                child: Center(
+                  child: GameFabMenu(
+                    isDarkMode: _isDarkMode,
+                    items: [
+                      for (final entry in gameMenuEntries(
+                        isPolice: GameTeam.isPolice(widget.team),
+                        isArrested: isArrestedNow,
+                        isZoneExitActive: _isZoneExitWarningActive,
+                        isEventGame: isEventGame,
+                      ))
+                        _buildMenuItem(entry, l10n),
+                    ],
+                  ),
                 ),
               )
             else
@@ -2688,13 +2701,26 @@ class _GamePageState extends ConsumerState<GamePage>
               myTeam: widget.team,
               isDarkMode: _isDarkMode,
               visible: _showChat,
-              previewInsets: EdgeInsets.only(
-                // 양쪽 하단 버튼(56)과 버튼 사이 여백을 비우고, 바닥은 채팅
-                // 버튼 세로 중앙(반 칸 위)에 맞춰 화면 가장자리에서 띄운다.
-                left: AppSpacing.horizontal20 + 56.w + AppSpacing.horizontal8,
-                right: AppSpacing.horizontal20 + 56.w + AppSpacing.horizontal8,
-                bottom: actionButtonBottom + 28.w,
-              ),
+              previewInsets: showsFloatingMenu
+                  // 가운데 플로팅 버튼과 겹치지 않게 채팅 버튼 바로 위에 띄운다.
+                  ? EdgeInsets.only(
+                      left: AppSpacing.horizontal20,
+                      right: AppSpacing.horizontal20,
+                      bottom: actionButtonBottom + 56.w + AppSpacing.vertical8,
+                    )
+                  // 양쪽 하단 버튼(56)과 버튼 사이 여백을 비우고, 바닥은 채팅
+                  // 버튼 세로 중앙(반 칸 위)에 맞춰 화면 가장자리에서 띄운다.
+                  : EdgeInsets.only(
+                      left:
+                          AppSpacing.horizontal20 +
+                          56.w +
+                          AppSpacing.horizontal8,
+                      right:
+                          AppSpacing.horizontal20 +
+                          56.w +
+                          AppSpacing.horizontal8,
+                      bottom: actionButtonBottom + 28.w,
+                    ),
               onOpen: _openChat,
             ),
 
@@ -2887,6 +2913,78 @@ class _GamePageState extends ConsumerState<GamePage>
         ),
       ),
     );
+  }
+
+  String get _evidenceBoardIcon => characterAssetPath(
+    team: GameTeam.toLowerKey(GameTeam.robber),
+    state: 'home',
+  );
+
+  void _showEvidenceBoard() {
+    final l10n = AppLocalizations.of(context);
+    EventResultBoard.show(
+      evidence: ref.read(eventEvidenceNotifierProvider),
+      context: context,
+      arrestCount: ref
+          .read(gameEventNotifierProvider)
+          .myArrestedRobberIds
+          .length,
+      title: l10n.gameEventProgressTitle,
+      buttonText: l10n.buttonClose,
+      onGoHome: () => Navigator.of(context).pop(),
+    );
+  }
+
+  GameFabMenuItem _buildMenuItem(GameMenuEntry entry, AppLocalizations l10n) {
+    // 메뉴가 열린 사이 구역을 벗어나도 펼쳐진 항목은 그대로라 누르는 시점에 다시 막는다.
+    VoidCallback unlessZoneExit(VoidCallback action) => () {
+      if (!_isZoneExitWarningActive) action();
+    };
+    final accent = _isDarkMode ? AppColors.green : AppColors.blue;
+    return switch (entry) {
+      GameMenuEntry.grid => GameFabMenuItem(
+        label: l10n.gameMenuGrid,
+        icon: AppIcons.grid,
+        toggled: _showGrid,
+        iconColor: _showGrid
+            ? accent
+            : _isDarkMode
+            ? AppColors.green500
+            : AppColors.blue500,
+        onTap: _toggleGrid,
+      ),
+      GameMenuEntry.participants => GameFabMenuItem(
+        label: l10n.gameMenuParticipants,
+        icon: AppIcons.person,
+        iconColor: accent,
+        onTap: unlessZoneExit(() => setState(() => _showParticipants = true)),
+      ),
+      GameMenuEntry.arrest => GameFabMenuItem(
+        label: l10n.gameMenuArrest,
+        icon: AppIcons.qrScan,
+        iconColor: accent,
+        onTap: unlessZoneExit(_openQrScanner),
+      ),
+      GameMenuEntry.myQr => GameFabMenuItem(
+        label: l10n.gameMenuMyQr,
+        icon: AppIcons.qrCode,
+        iconColor: accent,
+        onTap: unlessZoneExit(_showMyQrCode),
+      ),
+      GameMenuEntry.jailed => GameFabMenuItem(
+        label: l10n.statusJailed,
+        icon: characterAssetPath(
+          team: GameTeam.toLowerKey(GameTeam.robber),
+          state: 'jailed',
+        ),
+        onTap: unlessZoneExit(() => setState(() => _showArrestInfo = true)),
+      ),
+      GameMenuEntry.evidenceBoard => GameFabMenuItem(
+        label: l10n.gameMenuEvidence,
+        icon: _evidenceBoardIcon,
+        onTap: _showEvidenceBoard,
+      ),
+    };
   }
 
   /// QR 버튼 자리 (경찰: 스캔, 도둑: QR 표시, 수감 중 도둑: 수감 안내)

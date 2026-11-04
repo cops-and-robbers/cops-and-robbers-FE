@@ -63,6 +63,8 @@ import '../features/report/presentation/pages/report_reason_page.dart';
 import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/buttons/previous_button.dart';
 import '../core/widgets/pages/legal_document_page.dart';
+import '../core/services/remote_config/maintenance_gate.dart';
+import '../core/services/remote_config/remote_config_service.dart';
 import '../core/widgets/pages/maintenance_page.dart';
 import '../core/widgets/pages/force_update_page.dart';
 import '../features/session/presentation/pages/deeplink_join_page.dart';
@@ -120,7 +122,7 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(
 /// - 404 에러 처리: errorBuilder로 잘못된 경로 처리
 final routerProvider = Provider<GoRouter>((ref) {
   debugPrint('🔧 [routerProvider] GoRouter 생성 시작');
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: RoutePaths.splash,
     debugLogDiagnostics: true, // 개발 중 라우팅 로그 확인
@@ -134,6 +136,12 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: _GoRouterRefreshNotifier(ref, authNotifierProvider),
     redirect: (BuildContext context, GoRouterState state) {
       try {
+        // ====================================================================
+        // 점검 화면 - 약관이나 닉네임이 남은 사용자도 그대로 보여 준다
+        //    아래 가드로 되돌리면 MaintenanceGuard와 서로 보내며 멈추지 않는다.
+        // ====================================================================
+        if (state.uri.path == RoutePaths.maintenance) return null;
+
         // ====================================================================
         // 실제 Provider에서 인증 상태 가져오기
         // ====================================================================
@@ -959,6 +967,22 @@ final routerProvider = Provider<GoRouter>((ref) {
     // ====================================================================
     errorBuilder: (context, state) => _ErrorPage(path: state.uri.path),
   );
+
+  // 디버그 빌드는 AppVersionChecker처럼 점검으로 막지 않는다.
+  if (!kDebugMode) {
+    final maintenanceGuard = MaintenanceGuard(
+      router: router,
+      updates: RemoteConfigService.instance.onConfigUpdated,
+      isUnderMaintenance: () => RemoteConfigService.instance.maintenance,
+      onWritingInterrupted: () {
+        final context = rootNavigatorKey.currentContext;
+        if (context != null) showMaintenanceWritingDialog(context);
+      },
+    );
+    ref.onDispose(maintenanceGuard.dispose);
+  }
+
+  return router;
 });
 
 // ============================================================================

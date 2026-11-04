@@ -94,6 +94,12 @@ class AppLocalizationsJa extends AppLocalizations {
       'より良いサービスのためにメンテナンス中です\nしばらくしてからもう一度お試しください！';
 
   @override
+  String get pageMaintenanceWritingTitle => 'メンテナンスが始まりました';
+
+  @override
+  String get pageMaintenanceWritingMessage => 'メンテナンスが終わってから、もう一度お試しください。';
+
+  @override
   String get pageServerErrorTitle => 'サーバーに問題が発生しました';
 
   @override
@@ -1276,9 +1282,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get startRulesHint => 'ルールは右上のⓘからいつでも確認できます';
-
-  @override
-  String get gameGridToggle => '座標グリッド';
 
   @override
   String get unitPerson => '人';
@@ -2625,4 +2628,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => '読み込み中';
+
+  @override
+  String get gameMenuOpen => 'メニューを開く';
+
+  @override
+  String get gameMenuClose => 'メニューを閉じる';
+
+  @override
+  String get gameMenuGrid => '座標';
+
+  @override
+  String get gameMenuParticipants => '参加者';
+
+  @override
+  String get gameMenuArrest => '逮捕';
+
+  @override
+  String get gameMenuMyQr => 'マイQR';
+
+  @override
+  String get gameMenuEvidence => '証拠ボード';
 }

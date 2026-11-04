@@ -34,6 +34,8 @@
   "pageForceUpdateButton": "アップデート",
   "pageMaintenanceTitle": "サーバーメンテナンス中",
   "pageMaintenanceMessage": "より良いサービスのためにメンテナンス中です\nしばらくしてからもう一度お試しください！",
+  "pageMaintenanceWritingTitle": "メンテナンスが始まりました",
+  "pageMaintenanceWritingMessage": "メンテナンスが終わってから、もう一度お試しください。",
   "pageServerErrorTitle": "サーバーに問題が発生しました",
   "pageServerErrorMessage": "サーバーに接続できませんでした\nしばらくしてからもう一度お試しください！",
   "buttonGoogleSignIn": "Googleで続ける",
@@ -458,7 +460,6 @@
   "dispatchRobberLead": "警察が出動しました",
   "dispatchRobberMain": "気をつけて！",
   "startRulesHint": "ルールは右上のⓘからいつでも確認できます",
-  "gameGridToggle": "座標グリッド",
   "unitPerson": "人",
   "unitMinutes": "分",
   "gameSettingNoLocationShareWarning": "泥棒の位置が公開されません！",
@@ -890,5 +891,12 @@
   "buttonSkip": "スキップ",
   "settingsGuideAppIntro": "アプリ紹介をもう一度見る",
   "onboardingStartButton": "始める",
-  "refreshLoadingLabel": "読み込み中"
+  "refreshLoadingLabel": "読み込み中",
+  "gameMenuOpen": "メニューを開く",
+  "gameMenuClose": "メニューを閉じる",
+  "gameMenuGrid": "座標",
+  "gameMenuParticipants": "参加者",
+  "gameMenuArrest": "逮捕",
+  "gameMenuMyQr": "マイQR",
+  "gameMenuEvidence": "証拠ボード"
 }

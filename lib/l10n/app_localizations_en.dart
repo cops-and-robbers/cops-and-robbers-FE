@@ -99,6 +99,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'We are performing maintenance to provide better service\nPlease reconnect in a moment!';
 
   @override
+  String get pageMaintenanceWritingTitle => 'Maintenance has started';
+
+  @override
+  String get pageMaintenanceWritingMessage =>
+      'Please try again after maintenance ends.';
+
+  @override
   String get pageServerErrorTitle => 'Something went wrong on the server';
 
   @override
@@ -1362,9 +1369,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startRulesHint => 'Tap ⓘ at the top right to see the rules again';
-
-  @override
-  String get gameGridToggle => 'Coordinate grid';
 
   @override
   String get unitPerson => 'people';
@@ -2829,4 +2833,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => 'Loading';
+
+  @override
+  String get gameMenuOpen => 'Open menu';
+
+  @override
+  String get gameMenuClose => 'Close menu';
+
+  @override
+  String get gameMenuGrid => 'Grid';
+
+  @override
+  String get gameMenuParticipants => 'Players';
+
+  @override
+  String get gameMenuArrest => 'Arrest';
+
+  @override
+  String get gameMenuMyQr => 'My QR';
+
+  @override
+  String get gameMenuEvidence => 'Evidence';
 }

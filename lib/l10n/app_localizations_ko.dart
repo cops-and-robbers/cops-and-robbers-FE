@@ -93,6 +93,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageMaintenanceMessage => '더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!';
 
   @override
+  String get pageMaintenanceWritingTitle => '점검이 시작됐어요';
+
+  @override
+  String get pageMaintenanceWritingMessage => '점검이 끝나면 다시 시도해 주세요';
+
+  @override
   String get pageServerErrorTitle => '서버에 문제가 생겼어요';
 
   @override
@@ -1275,9 +1281,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get startRulesHint => '규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요';
-
-  @override
-  String get gameGridToggle => '좌표 격자';
 
   @override
   String get unitPerson => '명';
@@ -2625,4 +2628,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get refreshLoadingLabel => '불러오는 중이에요';
+
+  @override
+  String get gameMenuOpen => '메뉴 열기';
+
+  @override
+  String get gameMenuClose => '메뉴 닫기';
+
+  @override
+  String get gameMenuGrid => '좌표';
+
+  @override
+  String get gameMenuParticipants => '참가자';
+
+  @override
+  String get gameMenuArrest => '체포';
+
+  @override
+  String get gameMenuMyQr => '내 QR';
+
+  @override
+  String get gameMenuEvidence => '증거보드';
 }

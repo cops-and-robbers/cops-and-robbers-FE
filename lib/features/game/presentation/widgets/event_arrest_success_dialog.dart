@@ -7,23 +7,29 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
+import '../../domain/event_evidence.dart';
+import 'event_evidence_image.dart';
 
 /// 이벤트 모드 — 운영진 체포 성공 피드백 다이얼로그(증거 공개).
 ///
-/// 체포 순서(=누적 검거 수)로 `assets/events/evidence{N}.png`를 공개한다.
-/// 증거는 evidence1~2를 사용한다. 경찰 화면 전용(라이트 테마).
+/// 체포 순서(=누적 검거 수)에 맞는 증거 사진을 공개한다.
+/// 사진은 정사각형 칸에 맞춰 넣어 비율이 달라도 배치가 그대로다. 경찰 화면 전용(라이트 테마).
 class EventArrestSuccessDialog extends StatelessWidget {
   const EventArrestSuccessDialog({
     required this.evidenceIndex,
     required this.robberNickname,
+    this.evidence = EventEvidence.bundled,
     super.key,
   });
 
-  /// 공개할 증거 인덱스 (1부터 시작, 2 초과 시 2로 clamp).
+  /// 공개할 증거 인덱스 (1부터 시작, 사진 수를 넘으면 마지막 사진).
   final int evidenceIndex;
 
   /// 체포된 운영진 닉네임.
   final String robberNickname;
+
+  /// 이번 판의 증거 사진.
+  final EventEvidence evidence;
 
   /// 다이얼로그 호출 헬퍼.
   ///
@@ -33,6 +39,7 @@ class EventArrestSuccessDialog extends StatelessWidget {
     required BuildContext context,
     required int evidenceIndex,
     required String robberNickname,
+    EventEvidence evidence = EventEvidence.bundled,
   }) {
     return showGeneralDialog<void>(
       context: context,
@@ -43,6 +50,7 @@ class EventArrestSuccessDialog extends StatelessWidget {
       pageBuilder: (_, _, _) => EventArrestSuccessDialog(
         evidenceIndex: evidenceIndex,
         robberNickname: robberNickname,
+        evidence: evidence,
       ),
       transitionBuilder: DialogAnimation.buildTransition,
     );
@@ -51,8 +59,8 @@ class EventArrestSuccessDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // 이전 게임의 초과 검거 기록도 현재 증거 2종 범위로 표시한다.
-    final slot = evidenceIndex.clamp(1, 2);
+    // 사진 수보다 많이 검거하면 마지막 사진을 다시 보여 준다.
+    final slot = evidenceIndex.clamp(1, evidence.count);
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -78,10 +86,7 @@ class EventArrestSuccessDialog extends StatelessWidget {
               key: ValueKey('event_evidence_$slot'),
               width: 160.w,
               height: 160.w,
-              child: Image.asset(
-                'assets/events/evidence$slot.png',
-                fit: BoxFit.contain,
-              ),
+              child: EventEvidenceImage(photo: evidence.photoFor(slot)),
             ),
             SizedBox(height: AppSpacing.vertical12),
             // 체포 성공 메시지: "{nickname} 검거 성공"

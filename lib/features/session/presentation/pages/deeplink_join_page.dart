@@ -120,6 +120,16 @@ class _DeepLinkJoinPageState extends ConsumerState<DeepLinkJoinPage> {
         );
         if (isEventGame || kEventGameDevOverride) {
           // 이벤트 모드 — 로비 스킵, 경찰로 인게임 직행
+          // 대기실 소켓 신호를 받지 않으므로 여기서 게임 시작을 기록한다 (#627)
+          unawaited(
+            ref
+                .read(analyticsServiceProvider)
+                .logGameStart(
+                  gameId: gameId,
+                  team: GameTeam.police,
+                  isEventGame: true,
+                ),
+          );
           context.go(
             '${RoutePaths.gameWithId(gameId.toString())}'
             '?team=${GameTeam.police}&pid=$participantId',

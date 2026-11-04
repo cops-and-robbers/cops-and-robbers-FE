@@ -59,7 +59,25 @@ class SplashPage extends ConsumerStatefulWidget {
   ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
+/// 앱이 켜진 뒤 스플래시가 지나온 단계.
+///
+/// 스플래시는 점검이 끝날 때 다시 열린다. 콜드 스타트 목적지(초대, 모집글, 푸시)는
+/// 프로바이더에 계속 남아 있어서, 구분하지 않으면 이미 쓴 목적지로 또 가거나
+/// 초대를 띄울 쪽을 기다리며 멈춘다.
+class _SplashRun {
+  bool entered = false;
+  bool coldStartReached = false;
+}
+
+final _splashRunProvider = Provider<_SplashRun>((ref) => _SplashRun());
+
 class _SplashPageState extends ConsumerState<SplashPage> {
+  /// 점검이 끝나 다시 열린 스플래시인지
+  late final bool _isReentry;
+
+  /// 앞선 스플래시가 콜드 스타트 목적지를 이미 썼는지
+  late final bool _coldStartAlreadyUsed;
+
   bool _isReconnecting = false;
   // 실제 값은 LoadingMessageService.getMessage()로 채워지므로 nullable 초기화
   // (build() 시 l10n.splashReturningToScene으로 폴백)
@@ -85,6 +103,10 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
+    final run = ref.read(_splashRunProvider);
+    _isReentry = run.entered;
+    _coldStartAlreadyUsed = run.coldStartReached;
+    run.entered = true;
     _navigateToNextScreen();
   }
 
@@ -191,13 +213,23 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // (#558). 링크 없는 일반 실행은 getInitialLink 가 즉시 null 을 반환하므로
       // 이 값이 커도 시작이 느려지지 않는다 — 대기가 실제로 발생하는 건
       // 딥링크 실행에서 프로브가 밀린 경우뿐이고, 그때는 기다리는 게 맞다.
+      ref.read(_splashRunProvider).coldStartReached = true;
       DeeplinkEvent? coldDeeplink;
       var deeplinkProbeTimedOut = false;
       try {
-        coldDeeplink = await ref
-            .read(coldStartDeeplinkProvider.future)
-            .timeout(const Duration(seconds: 4));
+        if (!_coldStartAlreadyUsed) {
+          coldDeeplink = await ref
+              .read(coldStartDeeplinkProvider.future)
+              .timeout(const Duration(seconds: 4));
+        }
         if (coldDeeplink is InviteJoinEvent) {
+          // 점검 때문에 처리되지 못한 초대는 띄워 줄 쪽이 없어 직접 간다.
+          if (_isReentry && mounted) {
+            context.go(
+              RoutePaths.joinByInviteWithCode(coldDeeplink.inviteCode),
+            );
+            return;
+          }
           debugPrint('🔗 SplashPage: 콜드 스타트 딥링크 감지 → 네비게이션 양보');
           return;
         }
@@ -510,6 +542,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   /// 딥링크(초대)와 달리 스플래시가 직접 `go` 한다 — 중간 페이지가 없어
   /// "양보"만 하면 상세 아래 스플래시가 남아 뒤로가기에 갇힌다.
   Future<String?> _coldStartPushDestination() async {
+    if (_coldStartAlreadyUsed) return null;
     try {
       final event = await ref
           .read(coldStartPushNavigationProvider.future)
