@@ -99,6 +99,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'We are performing maintenance to provide better service\nPlease reconnect in a moment!';
 
   @override
+  String get pageMaintenanceWritingTitle => 'Maintenance has started';
+
+  @override
+  String get pageMaintenanceWritingMessage =>
+      'Please try again after maintenance ends.';
+
+  @override
   String get pageServerErrorTitle => 'Something went wrong on the server';
 
   @override

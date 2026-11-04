@@ -93,6 +93,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageMaintenanceMessage => '더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!';
 
   @override
+  String get pageMaintenanceWritingTitle => '점검이 시작됐어요';
+
+  @override
+  String get pageMaintenanceWritingMessage => '점검이 끝나면 다시 시도해 주세요';
+
+  @override
   String get pageServerErrorTitle => '서버에 문제가 생겼어요';
 
   @override

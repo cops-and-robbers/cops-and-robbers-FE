@@ -34,6 +34,8 @@
   "pageForceUpdateButton": "アップデート",
   "pageMaintenanceTitle": "サーバーメンテナンス中",
   "pageMaintenanceMessage": "より良いサービスのためにメンテナンス中です\nしばらくしてからもう一度お試しください！",
+  "pageMaintenanceWritingTitle": "メンテナンスが始まりました",
+  "pageMaintenanceWritingMessage": "メンテナンスが終わってから、もう一度お試しください。",
   "pageServerErrorTitle": "サーバーに問題が発生しました",
   "pageServerErrorMessage": "サーバーに接続できませんでした\nしばらくしてからもう一度お試しください！",
   "buttonGoogleSignIn": "Googleで続ける",

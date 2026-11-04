@@ -34,6 +34,8 @@
   "pageForceUpdateButton": "Update",
   "pageMaintenanceTitle": "Under maintenance",
   "pageMaintenanceMessage": "We are performing maintenance to provide better service\nPlease reconnect in a moment!",
+  "pageMaintenanceWritingTitle": "Maintenance has started",
+  "pageMaintenanceWritingMessage": "Please try again after maintenance ends.",
   "pageServerErrorTitle": "Something went wrong on the server",
   "pageServerErrorMessage": "We couldn't reach the server\nPlease try again in a moment!",
   "buttonGoogleSignIn": "Continue with Google",

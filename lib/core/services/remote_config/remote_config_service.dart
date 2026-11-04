@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -23,15 +25,22 @@ import 'remote_config_keys.dart';
 /// - `banner_link_url` (String): 원격 배너 이동 링크
 /// - `event_evidence_image_1_url` ~ `event_evidence_image_3_url` (String): 이벤트 증거 사진 주소
 class RemoteConfigService {
-  RemoteConfigService._();
+  RemoteConfigService._([this._injectedRemoteConfig]);
+
+  /// 가짜 Remote Config로 만든 인스턴스 (테스트 전용)
+  @visibleForTesting
+  factory RemoteConfigService.forTesting(FirebaseRemoteConfig remoteConfig) =>
+      RemoteConfigService._(remoteConfig);
 
   static final RemoteConfigService _instance = RemoteConfigService._();
 
   /// 싱글톤 인스턴스
   static RemoteConfigService get instance => _instance;
 
+  final FirebaseRemoteConfig? _injectedRemoteConfig;
   late final FirebaseRemoteConfig _remoteConfig;
   bool _isInitialized = false;
+  final StreamController<void> _updates = StreamController<void>.broadcast();
 
   /// Remote Config 초기화 및 서버 값 fetch
   ///
@@ -40,7 +49,7 @@ class RemoteConfigService {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
-    _remoteConfig = FirebaseRemoteConfig.instance;
+    _remoteConfig = _injectedRemoteConfig ?? FirebaseRemoteConfig.instance;
 
     await _remoteConfig.setConfigSettings(
       RemoteConfigSettings(
@@ -63,6 +72,7 @@ class RemoteConfigService {
     }
 
     _isInitialized = true;
+    _listenForUpdates();
 
     // 디버그: Remote Config 값 및 현재 앱 버전 출력
     if (kDebugMode) {
@@ -85,18 +95,30 @@ class RemoteConfigService {
     }
   }
 
-  /// 게시된 Remote Config를 실시간으로 활성화한다.
-  Stream<void> get onConfigUpdated {
-    if (!_isInitialized) return const Stream<void>.empty();
-
-    return _remoteConfig.onConfigUpdated.asyncMap((_) async {
-      try {
-        await _remoteConfig.activate();
-      } catch (e) {
-        debugPrint('⚠️ Remote Config activate failed: $e');
-      }
-    });
+  /// 게시 신호를 앱이 켜져 있는 동안 받아 새 값을 활성화한다.
+  ///
+  /// 화면마다 구독하면 그 화면이 사라진 사이의 게시가 활성화되지 않는다.
+  /// 실시간 신호는 minimumFetchInterval과 상관없이 오고, 연결 재시도와
+  /// 백그라운드 중단은 SDK가 맡는다.
+  void _listenForUpdates() {
+    _remoteConfig.onConfigUpdated
+        .asyncMap((_) async {
+          try {
+            await _remoteConfig.activate();
+          } catch (e) {
+            debugPrint('⚠️ Remote Config activate failed: $e');
+          }
+        })
+        .listen(
+          (_) => _updates.add(null),
+          onError: (Object error) {
+            debugPrint('⚠️ Remote Config 실시간 연결 실패: $error');
+          },
+        );
   }
+
+  /// 게시된 값이 활성화될 때마다 알린다.
+  Stream<void> get onConfigUpdated => _updates.stream;
 
   /// 최소 허용 버전
   String get minimumVersion =>
@@ -110,11 +132,15 @@ class RemoteConfigService {
   bool get forceUpdate => _remoteConfig.getBool(RemoteConfigKeys.forceUpdate);
 
   /// 서버 점검 모드 여부
-  bool get maintenance => _remoteConfig.getBool(RemoteConfigKeys.maintenance);
+  ///
+  /// 초기화 전에는 false. 라우터가 초기화 전부터 이 값을 읽는다.
+  bool get maintenance =>
+      _isInitialized && _remoteConfig.getBool(RemoteConfigKeys.maintenance);
 
   /// 점검 안내 메시지 (시간 등, 빈 문자열이면 기본 메시지 사용)
-  String get maintenanceMessage =>
-      _remoteConfig.getString(RemoteConfigKeys.maintenanceMessage);
+  String get maintenanceMessage => _isInitialized
+      ? _remoteConfig.getString(RemoteConfigKeys.maintenanceMessage)
+      : '';
 
   /// 광고 전역 스위치 (kill switch)
   ///

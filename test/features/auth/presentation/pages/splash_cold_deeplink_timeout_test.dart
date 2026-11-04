@@ -155,6 +155,48 @@ void main() {
     return router;
   }
 
+  group('점검이 끝나 스플래시가 다시 열릴 때', () {
+    testWidgets('이미 쓴 모집글 딥링크로 다시 가지 않는다', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final router = await pumpSplash(
+        tester,
+        coldDeeplink: (ref) async =>
+            const DeeplinkEvent.communityPost(postId: 10),
+      );
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pump();
+      expect(find.text('DETAIL:10'), findsOneWidget);
+
+      router.go(RoutePaths.splash);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pump();
+
+      expect(find.text('HOME'), findsOneWidget);
+    });
+
+    testWidgets('초대로 켠 앱도 스플래시에 갇히지 않는다', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final router = await pumpSplash(
+        tester,
+        coldDeeplink: (ref) async =>
+            const DeeplinkEvent.inviteJoin(inviteCode: 'ABC'),
+      );
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pump();
+      expect(find.text('HOME'), findsNothing, reason: '첫 실행은 초대 화면에 양보');
+
+      router.go(RoutePaths.home);
+      await tester.pump();
+      router.go(RoutePaths.splash);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pump();
+
+      expect(find.text('HOME'), findsOneWidget);
+    });
+  });
+
   testWidgets('타임아웃 후 auth 대기 중 완료된 모집글 딥링크를 회수해 상세로 이동한다', (tester) async {
     SharedPreferences.setMockInitialValues({});
 
