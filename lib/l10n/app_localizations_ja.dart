@@ -94,6 +94,12 @@ class AppLocalizationsJa extends AppLocalizations {
       'より良いサービスのためにメンテナンス中です\nしばらくしてからもう一度お試しください！';
 
   @override
+  String get pageMaintenanceWritingTitle => 'メンテナンスが始まりました';
+
+  @override
+  String get pageMaintenanceWritingMessage => 'メンテナンスが終わってから、もう一度お試しください。';
+
+  @override
   String get pageServerErrorTitle => 'サーバーに問題が発生しました';
 
   @override

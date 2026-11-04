@@ -268,6 +268,18 @@ abstract class AppLocalizations {
   /// **'더 나은 서비스를 위해 점검 중이에요\n잠시 후 다시 접속해 주세요!'**
   String get pageMaintenanceMessage;
 
+  /// No description provided for @pageMaintenanceWritingTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검이 시작됐어요'**
+  String get pageMaintenanceWritingTitle;
+
+  /// No description provided for @pageMaintenanceWritingMessage.
+  ///
+  /// In ko, this message translates to:
+  /// **'점검이 끝나면 다시 시도해 주세요'**
+  String get pageMaintenanceWritingMessage;
+
   /// No description provided for @pageServerErrorTitle.
   ///
   /// In ko, this message translates to:
