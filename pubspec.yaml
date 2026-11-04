@@ -33,6 +33,7 @@ dependencies:
   freezed_annotation: ^2.4.4 # freezed 어노테이션 (불변 데이터 클래스)
   json_annotation: ^4.9.0 # JSON 직렬화 어노테이션
   shared_preferences: ^2.3.4 # 로컬 설정 저장 (테마, 온보딩 등)
+  sensors_plus: ^7.1.1 # 튜토리얼 QR 장면의 폰 움직임 (카메라 권한 없이)
   # 네트워크 & 인증
   dio: ^5.9.0 # HTTP 클라이언트
   retrofit: 4.7.3 # REST API 클라이언트 생성 (4.9.x logError 호환성 이슈로 고정)

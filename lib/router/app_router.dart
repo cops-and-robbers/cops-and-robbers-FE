@@ -24,7 +24,9 @@ import '../features/auth/presentation/providers/auth_provider.dart';
 // Page Imports
 import '../features/auth/presentation/pages/splash_page.dart';
 import '../features/auth/presentation/pages/login_page.dart';
+import '../core/widgets/tutorial/tutorial_script.dart';
 import '../features/auth/presentation/pages/onboarding_page.dart';
+import '../features/session/presentation/pages/game_tutorial_page.dart';
 import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
@@ -771,6 +773,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
         routes: [
+          // 방 입장 튜토리얼. 대기방 하위라 게임 시작·강퇴의 context.go 에 함께 사라진다.
+          GoRoute(
+            path: 'tutorial',
+            name: RoutePaths.gameTutorialName,
+            pageBuilder: (context, state) => buildSmoothFade(
+              key: state.pageKey,
+              // 앱에 모드 값이 생기면 여기에 넘긴다(DEC-0127)
+              child: const GameTutorialPage(mode: TutorialMode.classic),
+            ),
+          ),
           // 게임 설정 페이지
           GoRoute(
             path: 'game-settings',

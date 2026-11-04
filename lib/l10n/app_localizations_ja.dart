@@ -2592,25 +2592,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get onboardingOutdoorTitle => '外で本当に走る鬼ごっこです';
-
-  @override
-  String get onboardingOutdoorBody => '昔ながらのルールそのままです。進行はアプリにおまかせします';
-
-  @override
-  String get onboardingWinTitle => '全員逮捕したら警察、逃げ切れば泥棒の勝ちです';
-
-  @override
-  String get onboardingWinBody => '泥棒を全員逮捕したら警察の勝ち。時間切れまでひとりでも逃げ切れば泥棒の勝ちです';
-
-  @override
-  String get onboardingRefereeTitle => 'アプリが審判をします';
-
-  @override
-  String get onboardingRefereeBody =>
-      'エリアは地図に描いて、泥棒の位置は一定間隔で足跡として公開されます。逮捕はQRスキャンなので、判定はいつも明確です';
-
-  @override
   String get onboardingCommunityTitle => '一緒に遊ぶ人もここで探せます';
 
   @override
@@ -2649,4 +2630,116 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get gameMenuEvidence => '証拠ボード';
+
+  @override
+  String get tutorialZoneTitle => 'この街がプレイグラウンドです';
+
+  @override
+  String get tutorialZoneBody => 'エリアの中を本当に走ります';
+
+  @override
+  String get tutorialMapTitle => 'ゲーム中の地図はこう見えます';
+
+  @override
+  String get tutorialMapBodyClassic => '泥棒の実際の位置が一定時間ごとに表示されます';
+
+  @override
+  String get tutorialMapBodyTag => '逃げる人の実際の位置が一定時間ごとに表示されます';
+
+  @override
+  String get tutorialChaseTitleClassic => '警察は捕まえ、泥棒は逃げます';
+
+  @override
+  String get tutorialChaseBodyClassic => '警察は泥棒を追いかけて実際にタッチします';
+
+  @override
+  String get tutorialChaseTitleTag => '鬼は捕まえ、逃げる人は隠れます';
+
+  @override
+  String get tutorialChaseBodyTag => '鬼が追いかけてタッチすると捕まります';
+
+  @override
+  String get tutorialShowQrTitle => 'タッチされたらQRを見せます';
+
+  @override
+  String get tutorialShowQrBody => '泥棒はメニューのマイQRを押します';
+
+  @override
+  String get tutorialScanTitle => 'QRをスキャンすると逮捕です';
+
+  @override
+  String get tutorialScanBody => '警察が泥棒のQRをスキャンすると逮捕されます';
+
+  @override
+  String get tutorialJailTitle => '捕まると牢屋に行きます';
+
+  @override
+  String get tutorialJailBody => '捕まった泥棒は牢屋へ移動しなければなりません';
+
+  @override
+  String get tutorialRescueTitle => '仲間のタッチで解放されます';
+
+  @override
+  String get tutorialRescueBody => '捕まった泥棒は、他の泥棒にタッチされると脱獄できます';
+
+  @override
+  String get tutorialEscapeTitle => '牢屋を出ると脱獄します';
+
+  @override
+  String get tutorialEscapeBody => '牢屋の外に3秒いると自動で脱獄!\nだめなら脱獄ボタンで脱獄します';
+
+  @override
+  String get tutorialOutTitle => '捕まったらそこで終わりです';
+
+  @override
+  String get tutorialOutBody => '牢屋はありません。全員捕まえると鬼の勝ちです';
+
+  @override
+  String get tutorialShrinkTitle => 'エリアが狭くなることもあります';
+
+  @override
+  String get tutorialShrinkBodyClassic =>
+      'ルームを作るときにホストが選べます\n外にいると警告のあと自動で逮捕されます';
+
+  @override
+  String get tutorialShrinkBodyTag => 'ルームを作るときにホストが選べます\n外にいると警告のあと自動で捕まります';
+
+  @override
+  String get tutorialFinishTitle => 'さあ、始めましょうか?';
+
+  @override
+  String get tutorialCalloutTouch => 'タッチ!';
+
+  @override
+  String get tutorialCalloutArrest => '逮捕!';
+
+  @override
+  String get onboardingRunTitle => '外で本当に走るゲームです';
+
+  @override
+  String get onboardingRunBody => 'この街がプレイグラウンドになります';
+
+  @override
+  String get onboardingPickTitle => '走るエリアは自分で決めます';
+
+  @override
+  String get onboardingPickBody => 'ルームを作るときに地図でエリアを選びます';
+
+  @override
+  String get onboardingFriendsTitle => '招待コードで友だちを呼びます';
+
+  @override
+  String get onboardingFriendsBody => 'コードかQRを共有すると同じルームに入れます';
+
+  @override
+  String get onboardingGuideTitle => '進行はアプリにおまかせ';
+
+  @override
+  String get onboardingGuideBody => '残り時間もエリア外れも、アプリが知らせます';
+
+  @override
+  String get onboardingRecordTitle => '走った記録も残ります';
+
+  @override
+  String get onboardingRecordBody => 'ゲームが終わると移動経路と距離を見られます';
 }

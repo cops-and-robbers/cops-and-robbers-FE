@@ -2647,30 +2647,6 @@
     "description": "이벤트 모드 결과 — 검거한 운영진 수",
     "placeholders": { "count": { "type": "int" } }
   },
-  "onboardingOutdoorTitle": "밖에서 진짜로 뛰는 술래잡기예요",
-  "@onboardingOutdoorTitle": {
-    "description": "온보딩 1/4 — 오프라인 게임이라는 정체"
-  },
-  "onboardingOutdoorBody": "어릴 때 하던 경찰과 도둑 그대로예요. 앱은 옆에서 진행만 봐줘요",
-  "@onboardingOutdoorBody": {
-    "description": "온보딩 1/4 본문"
-  },
-  "onboardingWinTitle": "경찰은 잡고, 도둑은 버텨요",
-  "@onboardingWinTitle": {
-    "description": "온보딩 2/4 — 승패 조건"
-  },
-  "onboardingWinBody": "경찰이 도둑을 모두 잡으면 경찰이 이겨요. 시간이 끝날 때까지 한 명이라도 살아남으면 도둑이 이겨요",
-  "@onboardingWinBody": {
-    "description": "온보딩 2/4 본문"
-  },
-  "onboardingRefereeTitle": "앱이 심판을 봐요",
-  "@onboardingRefereeTitle": {
-    "description": "온보딩 3/4 — 구역·발자국·QR"
-  },
-  "onboardingRefereeBody": "구역은 지도에 그리고, 도둑 위치는 정해진 주기마다 발자국으로 떠요. QR을 찍어야 체포라서 판정이 늘 깔끔해요",
-  "@onboardingRefereeBody": {
-    "description": "온보딩 3/4 본문"
-  },
   "onboardingCommunityTitle": "같이 할 사람도 여기서 구해요",
   "@onboardingCommunityTitle": {
     "description": "온보딩 4/4 — 커뮤니티"
@@ -2722,5 +2698,42 @@
   "gameMenuEvidence": "증거보드",
   "@gameMenuEvidence": {
     "description": "플로팅 메뉴 항목: 이벤트 게임 경찰의 증거보드"
-  }
+  },
+  "tutorialZoneTitle": "우리 동네가 플레이그라운드예요",
+  "tutorialZoneBody": "구역 안에서 진짜로 뛰어요",
+  "tutorialMapTitle": "게임 중 지도는 이렇게 보여요",
+  "tutorialMapBodyClassic": "도둑의 실제 위치가 주기마다 표시돼요",
+  "tutorialMapBodyTag": "도망자의 실제 위치가 주기마다 표시돼요",
+  "tutorialChaseTitleClassic": "경찰은 잡고, 도둑은 도망쳐요",
+  "tutorialChaseBodyClassic": "경찰은 도둑을 쫓아가 실제로 터치해요",
+  "tutorialChaseTitleTag": "술래는 잡고, 도망자는 숨어요",
+  "tutorialChaseBodyTag": "술래가 쫓아가 터치하면 잡혀요",
+  "tutorialShowQrTitle": "터치되면 QR을 보여줘요",
+  "tutorialShowQrBody": "도둑은 메뉴에서 내 QR을 눌러요",
+  "tutorialScanTitle": "QR을 찍으면 체포돼요",
+  "tutorialScanBody": "경찰이 도둑의 QR을 스캔하면 체포돼요",
+  "tutorialJailTitle": "잡히면 감옥으로 가요",
+  "tutorialJailBody": "잡힌 도둑은 감옥으로 이동해야 해요",
+  "tutorialRescueTitle": "동료가 터치하면 풀려나요",
+  "tutorialRescueBody": "잡힌 도둑은 다른 도둑이 터치해야 탈옥할 수 있어요",
+  "tutorialEscapeTitle": "감옥을 나가면 탈옥해요",
+  "tutorialEscapeBody": "3초 동안 감옥 밖에 있으면 자동 탈옥!\n안 되면 탈옥 버튼으로 직접 탈옥해요",
+  "tutorialOutTitle": "잡히면 바로 끝이에요",
+  "tutorialOutBody": "감옥은 없어요. 마지막 한 명까지 잡으면 술래가 이겨요",
+  "tutorialShrinkTitle": "구역이 점점 좁아지기도 해요",
+  "tutorialShrinkBodyClassic": "방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 체포돼요",
+  "tutorialShrinkBodyTag": "방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 잡혀요",
+  "tutorialFinishTitle": "이제 시작하러 가볼까요?",
+  "tutorialCalloutTouch": "터치!",
+  "tutorialCalloutArrest": "체포!",
+  "onboardingRunTitle": "밖에서 진짜로 뛰는 게임이에요",
+  "onboardingRunBody": "우리 동네가 플레이그라운드가 돼요",
+  "onboardingPickTitle": "뛸 구역은 직접 정해요",
+  "onboardingPickBody": "방을 만들 때 지도에서 구역을 골라요",
+  "onboardingFriendsTitle": "초대 코드로 친구를 불러요",
+  "onboardingFriendsBody": "코드나 QR을 공유하면 같은 방에 들어와요",
+  "onboardingGuideTitle": "앱이 게임을 진행해요",
+  "onboardingGuideBody": "남은 시간도, 구역 이탈도 앱이 알려줘요",
+  "onboardingRecordTitle": "달린 기록도 남아요",
+  "onboardingRecordBody": "게임이 끝나면 이동 경로와 거리를 볼 수 있어요"
 }
