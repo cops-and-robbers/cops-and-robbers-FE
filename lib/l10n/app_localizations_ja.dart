@@ -1198,10 +1198,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startRoleLabel => 'あなたの役割';
 
   @override
-  String get startMissionPolice => '泥棒を見つけてQRで全員逮捕しましょう';
+  String get startTitlePolice => '泥棒を見つけて\n全員逮捕せよ!';
 
   @override
-  String get startMissionRobber => '終了まで捕まらずに逃げ切りましょう';
+  String get startTitleRobber => '警察をかわして\n最後まで逃げ切れ!';
+
+  @override
+  String get startTitlePoliceAccent => '全員逮捕せよ!';
+
+  @override
+  String get startTitleRobberAccent => '最後まで逃げ切れ!';
+
+  @override
+  String startRoleSentence(String role) {
+    return 'あなたの役割は$roleです';
+  }
 
   @override
   String get startWaitCountdownLabel => '警察出動まで';

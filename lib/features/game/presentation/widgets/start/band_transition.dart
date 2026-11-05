@@ -8,7 +8,7 @@ import 'start_banners.dart';
 ///
 /// 역할 띠가 오른쪽으로 빠지는 동안 장면은 그 띠 자리로만 비치고, 줄이 다 빠진 뒤 화면 전체로
 /// 펼쳐진다. 출동 때는 반대로 출동 띠 모양으로 접혀 그 자리에서 출동 배너로 이어진다.
-/// 띠 모양은 [StripeBanner]와 같다(300 폭 기준 390 폭, -4.6°, 화면 가운데).
+/// 띠 모양은 [RoleBanner]·[DispatchBanner]의 [StripeBanner]와 같다.
 class BandTransition extends StatefulWidget {
   const BandTransition({
     super.key,
@@ -87,7 +87,12 @@ class _BandTransitionState extends State<BandTransition>
                   bandHeight: DispatchBanner.bandHeight,
                   open: 1 - fold,
                 )
-              : _BandClipper(bandHeight: 154, open: open),
+              : _BandClipper(
+                  bandHeight: RoleBanner.bandHeight,
+                  angleDegrees: RoleBanner.bandAngleDegrees,
+                  offsetY: RoleBanner.bandOffsetY,
+                  open: open,
+                ),
           child: child,
         );
       },
@@ -98,16 +103,23 @@ class _BandTransitionState extends State<BandTransition>
 
 /// [open] 0 = 기울어진 띠, 1 = 화면 전체. 네 꼭짓점을 짝지어 잇는다.
 class _BandClipper extends CustomClipper<Path> {
-  const _BandClipper({required this.bandHeight, required this.open});
+  const _BandClipper({
+    required this.bandHeight,
+    required this.open,
+    this.angleDegrees = -4.6,
+    this.offsetY = 0,
+  });
 
   final double bandHeight;
+  final double angleDegrees;
+  final double offsetY;
   final double open;
 
   @override
   Path getClip(Size size) {
     final s = size.width / 300;
-    final c = size.center(Offset.zero);
-    const angle = -4.6 * math.pi / 180;
+    final c = size.center(Offset.zero) + Offset(0, offsetY * s);
+    final angle = angleDegrees * math.pi / 180;
     Offset band(double x, double y) =>
         c +
         Offset(
@@ -130,5 +142,8 @@ class _BandClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(_BandClipper old) =>
-      old.open != open || old.bandHeight != bandHeight;
+      old.open != open ||
+      old.bandHeight != bandHeight ||
+      old.angleDegrees != angleDegrees ||
+      old.offsetY != offsetY;
 }

@@ -1280,10 +1280,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startRoleLabel => 'Your role';
 
   @override
-  String get startMissionPolice => 'Find the Robbers and arrest them all by QR';
+  String get startTitlePolice => 'Find the Robbers,\narrest them all!';
 
   @override
-  String get startMissionRobber => 'Don\'t get caught until time runs out';
+  String get startTitleRobber => 'Dodge the Cops,\nrun until the end!';
+
+  @override
+  String get startTitlePoliceAccent => 'arrest them all!';
+
+  @override
+  String get startTitleRobberAccent => 'run until the end!';
+
+  @override
+  String startRoleSentence(String role) {
+    return 'Your role is $role';
+  }
 
   @override
   String get startWaitCountdownLabel => 'Cops move out in';

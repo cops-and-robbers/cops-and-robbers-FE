@@ -163,6 +163,9 @@ flutter:
     - family: Pretendard-Black
       fonts:
         - asset: assets/fonts/Pretendard-Black.ttf
+    - family: SCDream-ExtraBold
+      fonts:
+        - asset: assets/fonts/SCDream7.otf
     - family: Moneygraphy
       fonts:
         - asset: assets/fonts/Moneygraphy-Pixel.ttf

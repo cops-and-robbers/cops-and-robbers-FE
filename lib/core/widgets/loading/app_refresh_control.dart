@@ -303,7 +303,7 @@ class _WaveBurstState extends State<_WaveBurst>
     with SingleTickerProviderStateMixin {
   // 가장 진해지는 시점(진행률), 가장 진할 때의 불투명도
   static const double _peakAt = 0.12;
-  static const double _peakOpacity = 0.3;
+  static const double _peakOpacity = 0.18;
 
   bool _passedHalfway = false;
 
