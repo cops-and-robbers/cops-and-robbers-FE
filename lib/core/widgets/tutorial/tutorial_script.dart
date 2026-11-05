@@ -182,12 +182,12 @@ void _showQr(TutorialStage s) {
     'cy': s.rob['y'],
     'oy': .62,
   }, 800);
-  t.after(600, () => t.to(s.q, {'fab': 1, 'item': 1, 'bar': 1}, 300));
+  // 실제 메뉴처럼 + 버튼이 먼저 나오고, 눌리면 어두워지며 항목이 펼쳐지고 X로 돌아간다
+  t.after(500, () => t.to(s.q, {'fab': 1}, 150));
+  t.after(800, () => t.to(s.q, {'item': 1, 'bar': 1, 'fabOpen': 1}, 300));
   t.after(1400, () {
-    s.q['rx'] = 292;
-    s.q['ry'] = 326;
-    s.q['rip'] = .9;
-    t.to(s.q, {'rip': 0}, 350);
+    t.to(s.q, {'myQrPress': 1}, 90);
+    t.after(130, () => t.to(s.q, {'myQrPress': 0}, 170));
   });
   t.after(1650, () {
     t.to(s.q, {'item': 0, 'fab': 0}, 250);
@@ -450,8 +450,8 @@ void _community(TutorialStage s) {
   t.to(s.outed, {'op': 0}, 200);
   t.to(s.view, {'jail': 0}, 200);
   t.to(s.view, {'white': 1}, 250);
-  t.to(s.cam, TutorialCamera.flatValues, 1100);
-  t.after(150, () => t.to(s.view, {'play': 1300}, 1100));
+  // 지도는 그대로 두고 원만 키운다. 커질수록 먼 쪽 선이 지평선에 붙으므로 넉넉히 키운다
+  t.after(150, () => t.to(s.view, {'play': 1700}, 1100));
   t.after(950, () {
     s.art['sc'] = .8;
     t.to(s.art, {'op': 1, 'sc': 1}, 450);

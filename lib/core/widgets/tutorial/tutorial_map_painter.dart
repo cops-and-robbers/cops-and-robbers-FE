@@ -14,31 +14,89 @@ class _MapPalette {
     required this.sky,
     required this.base,
     required this.park,
+    required this.treeShadow,
+    required this.treeTrunk,
+    required this.treeTones,
     required this.road,
     required this.wallA,
     required this.wallB,
-    required this.roof,
+    required this.roofs,
     required this.line,
   });
 
   final Color sky;
   final Color base;
   final Color park;
+  final Color treeShadow;
+  final Color treeTrunk;
+  final List<_TreeTone> treeTones;
   final Color road;
   final Color wallA;
   final Color wallB;
-  final Color roof;
+  final List<Color> roofs;
   final Color line;
+}
+
+class _TreeTone {
+  const _TreeTone({required this.shade, required this.mid, required this.top});
+
+  final Color shade;
+  final Color mid;
+  final Color top;
+}
+
+/// 나무 윗부분의 잎 덩어리 세 개. 값은 나무 반지름 기준이다.
+const _treeLobes = [
+  (dx: -.5, dy: .12, radius: .66),
+  (dx: .5, dy: .18, radius: .62),
+  (dx: 0.0, dy: -.34, radius: .74),
+];
+
+/// 구역 밖을 어둡게 하는 세기.
+const double _outsideDim = .4;
+
+/// 건물과 나무 한 채를 얼마나 어둡게 할지. 한 채씩 통째로 판단해 구역 선에 잘리지 않는다.
+///
+/// 구역이 줄어들면 밝은 건물이 새 경계에 걸쳐 원이 잘려 보이므로 안쪽도 함께 어둡게 한다.
+double tutorialObjectDim(TutorialProps view, double x, double y) {
+  final outside = _outsideDim * view['dim'];
+  // 흰 원이 덮는 장면에서는 원이 지나가도 밝아지지 않게 한다
+  if (view['white'] > 0) return outside;
+  final dx = x - view['px'];
+  final dy = y - view['py'];
+  final radius = view['play'];
+  if (dx * dx + dy * dy > radius * radius) return outside;
+  final shrunk = (TutorialStage.playRadius - radius) / 40;
+  return outside * shrunk.clamp(0.0, 1.0);
 }
 
 const _lightPalette = _MapPalette(
   sky: AppColors.background,
   base: AppColors.black100,
   park: AppColors.green100,
+  treeShadow: AppColors.black200,
+  treeTrunk: AppColors.black500,
+  treeTones: [
+    _TreeTone(
+      shade: AppColors.deepGreen,
+      mid: AppColors.deepGreen900,
+      top: AppColors.green800,
+    ),
+    _TreeTone(
+      shade: AppColors.deepGreen900,
+      mid: AppColors.green800,
+      top: AppColors.green500,
+    ),
+  ],
   road: AppColors.white,
   wallA: AppColors.black200,
   wallB: AppColors.black300,
-  roof: AppColors.white,
+  roofs: [
+    AppColors.white,
+    AppColors.black100,
+    AppColors.blueVer2_50,
+    AppColors.red100,
+  ],
   line: AppColors.black200,
 );
 
@@ -47,10 +105,29 @@ const _darkPalette = _MapPalette(
   sky: AppColors.black,
   base: Color(0xFF1A1A2E),
   park: Color(0xFF1A3320),
+  treeShadow: AppColors.black,
+  treeTrunk: AppColors.black700,
+  treeTones: [
+    _TreeTone(
+      shade: Color(0xFF1F4A2C),
+      mid: Color(0xFF2F6B42),
+      top: Color(0xFF4B9160),
+    ),
+    _TreeTone(
+      shade: Color(0xFF2A5C38),
+      mid: Color(0xFF3D7A4F),
+      top: Color(0xFF5FA874),
+    ),
+  ],
   road: Color(0xFF3A3A5C),
   wallA: Color(0xFF252540),
   wallB: Color(0xFF1A1A2E),
-  roof: Color(0xFF2D2D44),
+  roofs: [
+    Color(0xFF2D2D44),
+    Color(0xFF252540),
+    Color(0xFF3A3A5C),
+    Color(0xFF44445E),
+  ],
   line: Color(0xFF44445E),
 );
 
@@ -120,9 +197,8 @@ class TutorialMapPainter extends CustomPainter {
       }
     }
 
-    _paintBuildings(canvas, frame, palette, fill, stroke);
-
-    // 구역 밖을 어둡게 해서 구역이 먼저 보이게 한다
+    // 구역 밖을 어둡게 해서 구역이 먼저 보이게 한다.
+    // 어둡게 칠하기와 구역 선은 땅에 그린다. 건물과 나무 위에 그리면 잘린 면이 공중에 뜬 판처럼 보인다.
     final zone = _ring(frame, view['px'], view['py'], view['play']);
     if (view['dim'] > 0) {
       final outside = Path()
@@ -131,26 +207,35 @@ class TutorialMapPainter extends CustomPainter {
         ..addPath(zone, Offset.zero);
       canvas.drawPath(
         outside,
-        fill..color = AppColors.black.withValues(alpha: .4 * view['dim']),
+        fill
+          ..color = AppColors.black.withValues(
+            alpha: _outsideDim * view['dim'],
+          ),
       );
     }
 
-    if (view['na'] > 0) {
-      _paintDashedRing(canvas, frame, stroke, view);
-    }
-
-    if (view['white'] > 0) {
-      canvas.drawPath(
-        zone,
-        fill..color = AppColors.white.withValues(alpha: view['white']),
-      );
-    }
-    canvas.drawPath(
+    void paintZoneLine() => canvas.drawPath(
       zone,
       stroke
         ..color = AppColors.blue800
         ..strokeWidth = 3,
     );
+    paintZoneLine();
+
+    _paintTrees(canvas, frame, palette, fill, stroke, view);
+    _paintBuildings(canvas, frame, palette, fill, stroke, view);
+
+    // 마지막 장면은 원 안을 모두 덮어야 하므로 건물과 나무 위에 그린다
+    if (view['white'] > 0) {
+      canvas.drawPath(
+        zone,
+        fill..color = AppColors.white.withValues(alpha: view['white']),
+      );
+      paintZoneLine();
+    }
+    // 구역이 줄어드는 장면은 줄어드는 선이 나무에 가리면 안 된다
+    if (view['play'] < TutorialStage.playRadius) paintZoneLine();
+    if (view['na'] > 0) _paintDashedRing(canvas, frame, stroke, view);
 
     if (view['ra'] > 0 && view['rt'] > 0) {
       _paintRoute(canvas, frame, stroke, view);
@@ -195,16 +280,112 @@ class TutorialMapPainter extends CustomPainter {
     _paintHaste(canvas, frame, stroke, fill);
   }
 
+  Color _dimmed(Color color, double amount) =>
+      Color.lerp(color, AppColors.black, amount)!;
+
+  void _paintTrees(
+    Canvas canvas,
+    CameraFrame frame,
+    _MapPalette palette,
+    Paint fill,
+    Paint stroke,
+    TutorialProps view,
+  ) {
+    final tiltCos = math.cos(frame.tilt * math.pi / 180);
+    for (final tree in map.trees) {
+      final base = frame.project(tree.x, tree.y);
+      if (base.depth < 70 || !_paintBounds.contains(Offset(base.x, base.y))) {
+        continue;
+      }
+      // 낮은 시점에서는 건물처럼 카메라 앞을 막는 나무를 그리지 않는다
+      if (frame.persp < 600 &&
+          base.depth < frame.persp * .9 &&
+          (base.x - _w / 2).abs() < 150) {
+        continue;
+      }
+      final r = tree.radius * frame.scale * math.min(6, base.k);
+      final top = frame.project(tree.x, tree.y, tree.height);
+      // 좌표로 나눠 나무마다 색과 모양이 조금씩 다르게 한다
+      final seed = (tree.x + tree.y * 3).round();
+      final tone = palette.treeTones[seed.abs() % palette.treeTones.length];
+      final dim = tutorialObjectDim(view, tree.x, tree.y);
+      final shade = _dimmed(tone.shade, dim);
+      final mid = _dimmed(tone.mid, dim);
+      final highlight = _dimmed(tone.top, dim);
+      final mirror = seed.isEven ? 1.0 : -1.0;
+
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(base.x + r * .2, base.y + r * .1),
+          width: r * 2.2,
+          height: r * (.5 + 1.7 * tiltCos),
+        ),
+        fill..color = _dimmed(palette.treeShadow, dim),
+      );
+      if (frame.tilt > .5) {
+        canvas.drawLine(
+          Offset(base.x, base.y),
+          Offset(top.x, top.y),
+          stroke
+            ..color = _dimmed(palette.treeTrunk, dim)
+            ..strokeWidth = r * .3,
+        );
+      }
+      // 멀리 있어 작게 보이는 나무는 잎 덩어리를 나누지 않는다
+      if (r < 5) {
+        canvas.drawCircle(Offset(top.x, top.y), r, fill..color = mid);
+        continue;
+      }
+      fill.color = shade;
+      for (final lobe in _treeLobes) {
+        canvas.drawCircle(
+          Offset(top.x + lobe.dx * r * mirror, top.y + (lobe.dy + .16) * r),
+          lobe.radius * r,
+          fill,
+        );
+      }
+      fill.color = mid;
+      for (final lobe in _treeLobes) {
+        canvas.drawCircle(
+          Offset(top.x + lobe.dx * r * mirror, top.y + lobe.dy * r),
+          lobe.radius * r * .92,
+          fill,
+        );
+      }
+      // 잎을 한 층 더 올려 3D에서 키 큰 나무로 보이게 한다. 위에서 보면 겹쳐서 하나로 보인다.
+      final cap = frame.project(tree.x, tree.y, tree.height * 1.34);
+      canvas.drawCircle(
+        Offset(cap.x, cap.y + .12 * r),
+        r * .68,
+        fill..color = shade,
+      );
+      canvas.drawCircle(Offset(cap.x, cap.y), r * .64, fill..color = mid);
+      canvas.drawCircle(
+        Offset(cap.x - .2 * r * mirror, cap.y - .22 * r),
+        r * .3,
+        fill..color = highlight,
+      );
+    }
+  }
+
   void _paintBuildings(
     Canvas canvas,
     CameraFrame frame,
     _MapPalette palette,
     Paint fill,
     Paint stroke,
+    TutorialProps view,
   ) {
     // 먼 건물부터 그린다
     final ordered =
-        <({TutorialBuilding building, double depth, double screenX})>[];
+        <
+          ({
+            TutorialBuilding building,
+            double depth,
+            double screenX,
+            double dim,
+          })
+        >[];
     for (final building in map.buildings) {
       final points = building.points;
       final count = points.length / 2;
@@ -215,7 +396,13 @@ class TutorialMapPainter extends CustomPainter {
         sumY += points[i + 1];
       }
       final center = frame.project(sumX / count, sumY / count);
-      ordered.add((building: building, depth: center.depth, screenX: center.x));
+      ordered.add((
+        building: building,
+        // 같은 자리의 위층이 아래층 뒤에 그려지도록 조금 앞으로 당긴다
+        depth: center.depth - building.base * .01,
+        screenX: center.x,
+        dim: tutorialObjectDim(view, sumX / count, sumY / count),
+      ));
     }
     ordered.sort((a, b) => b.depth.compareTo(a.depth));
 
@@ -241,8 +428,12 @@ class TutorialMapPainter extends CustomPainter {
           final isWide =
               (points[i + 2] - points[i]).abs() >
               (points[i + 3] - points[i + 1]).abs();
-          final a = frame.project(points[i], points[i + 1]);
-          final b = frame.project(points[i + 2], points[i + 3]);
+          final a = frame.project(points[i], points[i + 1], item.building.base);
+          final b = frame.project(
+            points[i + 2],
+            points[i + 3],
+            item.building.base,
+          );
           final c = frame.project(
             points[i + 2],
             points[i + 3],
@@ -260,16 +451,39 @@ class TutorialMapPainter extends CustomPainter {
               ..lineTo(c.x, c.y)
               ..lineTo(d.x, d.y)
               ..close(),
-            fill..color = isWide ? palette.wallA : palette.wallB,
+            fill
+              ..color = _dimmed(
+                isWide ? palette.wallA : palette.wallB,
+                item.dim,
+              ),
           );
+          // 층 줄은 앞쪽 두 벽에만 그린다. 뒤쪽 벽은 어차피 가려진다
+          if (item.building.hasFloors && i >= 4) {
+            stroke
+              ..color = _dimmed(palette.line, item.dim)
+              ..strokeWidth = .7;
+            final top = item.building.height;
+            for (var z = item.building.base + 8; z < top - 3; z += 8) {
+              final from = frame.project(points[i], points[i + 1], z);
+              final to = frame.project(points[i + 2], points[i + 3], z);
+              canvas.drawLine(
+                Offset(from.x, from.y),
+                Offset(to.x, to.y),
+                stroke,
+              );
+            }
+          }
         }
       }
       final roof = _polygon(frame, points, item.building.height);
-      canvas.drawPath(roof, fill..color = palette.roof);
+      canvas.drawPath(
+        roof,
+        fill..color = _dimmed(palette.roofs[item.building.roofTone], item.dim),
+      );
       canvas.drawPath(
         roof,
         stroke
-          ..color = palette.line
+          ..color = _dimmed(palette.line, item.dim)
           ..strokeWidth = .6,
       );
     }

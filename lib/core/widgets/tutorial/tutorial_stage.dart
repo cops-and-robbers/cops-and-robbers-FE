@@ -33,6 +33,10 @@ class TutorialStage extends ChangeNotifier {
   static const double jailRadius = 46;
   static const double playRadius = 250;
 
+  /// 내 QR 항목 원의 중심. 누르는 표시가 이 자리에 정확히 겹쳐야 한다.
+  static const double myQrX = 320;
+  static const double myQrY = 358;
+
   static const double _frameX = 196;
   static const double _frameY = 243;
   static const double _frameReach = 125;
@@ -106,6 +110,8 @@ class TutorialStage extends ChangeNotifier {
     'sec': 1500,
     'qy': 395,
     'fab': 0,
+    'fabOpen': 0,
+    'myQrPress': 0,
     'bar': 0,
     'item': 0,
     'flash': 0,
@@ -235,6 +241,8 @@ class TutorialStage extends ChangeNotifier {
       'a2': 0,
       'a3': 0,
       'fab': 0,
+      'fabOpen': 0,
+      'myQrPress': 0,
       'item': 0,
       'flash': 0,
       'fr': 0,
