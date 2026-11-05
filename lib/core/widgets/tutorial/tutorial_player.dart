@@ -309,34 +309,38 @@ class _TutorialPlayerState extends State<TutorialPlayer>
                     alignment: Alignment.topCenter,
                     children: [...previous, ?current],
                   ),
-                  child: Column(
+                  // 키를 Opacity에 둬서 앞 장면 문구는 제 값 그대로 사라지게 한다
+                  child: Opacity(
                     key: ValueKey(_index),
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        copy.title,
-                        style:
-                            (isDark
-                                    ? AppTextStyles.robberHeading24
-                                    : AppTextStyles.heading_24)
-                                .copyWith(
-                                  color: isDark
-                                      ? AppColors.white
-                                      : AppColors.black,
-                                ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: AppSpacing.vertical12),
-                      Text(
-                        copy.body,
-                        style: AppTextStyles.paragraph_14.copyWith(
-                          color: isDark
-                              ? AppColors.black400
-                              : AppColors.black600,
+                    opacity: _stage.view['copy'].clamp(0.0, 1.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          copy.title,
+                          style:
+                              (isDark
+                                      ? AppTextStyles.robberHeading24
+                                      : AppTextStyles.heading_24)
+                                  .copyWith(
+                                    color: isDark
+                                        ? AppColors.white
+                                        : AppColors.black,
+                                  ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                        SizedBox(height: AppSpacing.vertical12),
+                        Text(
+                          copy.body,
+                          style: AppTextStyles.paragraph_14.copyWith(
+                            color: isDark
+                                ? AppColors.black400
+                                : AppColors.black600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -438,8 +438,11 @@ void _shrink(TutorialStage s, {required bool hasJail}) {
 }
 
 // 구역 원을 그대로 이어 쓴다: 원 안이 희게 차며 화면 밖까지 커지고 그 위로 그림이 올라온다.
+// 문구는 그림이 다 올라온 뒤에 보여 준다.
 void _community(TutorialStage s) {
   final t = s.timeline;
+  s.view['copy'] = 0;
+  t.after(1400, () => t.to(s.view, {'copy': 1}, 250));
   t.to(s.view, {'ra': 0}, 200);
   t.to(s.caught, {'op': 0}, 200);
   t.to(s.dot, {'op': 0}, 200);

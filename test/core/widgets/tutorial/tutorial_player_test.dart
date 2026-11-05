@@ -154,4 +154,25 @@ void main() {
     // 무대가 폭보다 높아지면 화면을 채우려 커지면서 구역 원 양옆이 잘린다
     expect(stage.height, lessThanOrEqualTo(stage.width * 486 / 393 + 1));
   });
+
+  testWidgets('last_scene_copy_is_invisible_when_art_is_still_appearing', (
+    tester,
+  ) async {
+    await _pump(tester, scenes: const [TutorialScene.community]);
+    double copyOpacity() => tester
+        .widget<Opacity>(
+          find
+              .ancestor(
+                of: find.text('장면 ${TutorialScene.community.index}'),
+                matching: find.byType(Opacity),
+              )
+              .first,
+        )
+        .opacity;
+
+    expect(copyOpacity(), 0);
+
+    await _advance(tester, 1800);
+    expect(copyOpacity(), 1);
+  });
 }

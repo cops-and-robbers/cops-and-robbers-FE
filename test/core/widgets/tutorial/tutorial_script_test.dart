@@ -153,4 +153,18 @@ void main() {
 
     expect(stage.needsFrame, isTrue);
   });
+
+  test(
+    'community_copy_waits_for_the_art_when_zone_circle_fills_the_screen',
+    () {
+      final stage = _playUpTo(classic, TutorialScene.community);
+
+      _run(stage, 1400);
+      expect(stage.art['op'], closeTo(1, .01));
+      expect(stage.view['copy'], 0);
+
+      _runUntilIdle(stage);
+      expect(stage.view['copy'], 1);
+    },
+  );
 }

@@ -81,6 +81,7 @@ class TutorialStage extends ChangeNotifier {
     'wa': 0,
     'ra': 0,
     'rt': 0,
+    'copy': 1,
   });
 
   final TutorialProps run = TutorialProps(const {'v': 0, 't': 0, 'sh': 0});
