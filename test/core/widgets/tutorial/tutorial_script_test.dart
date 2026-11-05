@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/widgets/tutorial/tutorial_map_painter.dart';
 import 'package:cops_and_robbers/core/widgets/tutorial/tutorial_script.dart';
 import 'package:cops_and_robbers/core/widgets/tutorial/tutorial_stage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -167,4 +168,54 @@ void main() {
       expect(stage.view['copy'], 1);
     },
   );
+
+  // 원이 커지는 동안 지도가 함께 누우면 건물과 나무가 일그러져 보였다
+  test('map_keeps_its_angle_when_zone_circle_grows_into_the_last_scene', () {
+    final stage = _playUpTo(classic, TutorialScene.community);
+
+    _runUntilIdle(stage);
+
+    expect(stage.cam['tilt'], 58);
+  });
+
+  // 실제 플로팅 메뉴처럼 + 버튼이 눌리면 X로 돌아간다
+  test('menu_button_turns_into_close_when_my_qr_item_opens', () {
+    final stage = _playUpTo(classic, TutorialScene.showQr);
+
+    _run(stage, 640);
+    expect(stage.q['fab'], greaterThan(0));
+    expect(stage.q['fabOpen'], 0);
+
+    _run(stage, 500);
+    expect(stage.q['fabOpen'], greaterThan(0));
+  });
+
+  // 흰 링 대신 내 QR 버튼 자체가 눌린다
+  test('my_qr_item_is_pressed_without_ring_when_thief_opens_qr', () {
+    final stage = _playUpTo(classic, TutorialScene.showQr);
+
+    _run(stage, 1470);
+
+    expect(stage.q['myQrPress'], greaterThan(0));
+    expect(stage.q['rip'], 0);
+  });
+
+  // 구역이 줄면 밝은 건물이 새 경계에 걸쳐 원이 잘려 보였다
+  test('objects_inside_zone_dim_like_outside_when_zone_has_shrunk', () {
+    final stage = _playUpTo(classic, TutorialScene.shrink);
+    _runUntilIdle(stage);
+
+    expect(
+      tutorialObjectDim(stage.view, stage.view['px'], stage.view['py']),
+      tutorialObjectDim(stage.view, 2000, 2000),
+    );
+  });
+
+  test('objects_inside_zone_stay_bright_when_zone_has_full_size', () {
+    final stage = _playUpTo(classic, TutorialScene.zoneIn);
+    _runUntilIdle(stage);
+
+    expect(tutorialObjectDim(stage.view, 0, 0), 0);
+    expect(tutorialObjectDim(stage.view, 2000, 2000), greaterThan(0));
+  });
 }

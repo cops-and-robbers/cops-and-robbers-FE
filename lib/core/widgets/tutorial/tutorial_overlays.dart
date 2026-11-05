@@ -74,19 +74,6 @@ class TutorialOverlays extends StatelessWidget {
                 : null,
           ),
         ),
-        // OpenStreetMap 데이터 사용 조건(ODbL)상 지도가 보이는 동안 표기한다
-        if (stage.art['op'] <= 0)
-          Positioned(
-            right: 8,
-            bottom: 4,
-            child: Text(
-              '© OpenStreetMap contributors',
-              style: AppTextStyles.tag_10.copyWith(
-                color: stage.dark ? AppColors.black400 : AppColors.black600,
-              ),
-            ),
-          ),
-        _fade(q['fab'], _fab()),
         _fade(
           q['bar'],
           Positioned(
@@ -97,6 +84,8 @@ class TutorialOverlays extends StatelessWidget {
             child: ColoredBox(color: DialogAnimation.barrierColor),
           ),
         ),
+        // 실제 메뉴처럼 버튼과 항목은 어두운 배경 위에 있다
+        _fade(q['fab'], _fab(q['fabOpen'])),
         _fade(q['item'], _myQrItem(l10n)),
         _fade(q['hand'], _heldPhone()),
         _fade(q['tg'], _qrTarget()),
@@ -205,41 +194,63 @@ class TutorialOverlays extends StatelessWidget {
     );
   }
 
-  Positioned _fab() => Positioned(
+  // 게임 화면의 플로팅 버튼(GameFabMenu)과 같은 모습이다
+  Positioned _fab(double open) => Positioned(
     left: 168.5,
     top: 410,
     child: Container(
       width: 56,
       height: 56,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.green,
         shape: BoxShape.circle,
+        boxShadow: AppShadows.softThemed(true),
       ),
       child: Transform.rotate(
-        angle: math.pi / 4,
-        child: const Icon(Icons.add, color: AppColors.black, size: 40),
+        angle: open * math.pi / 4,
+        child: const Icon(Icons.add, color: AppColors.black, size: 32),
       ),
     ),
   );
 
   // 실제 플로팅 메뉴처럼 내 QR은 오른쪽에 있다
   Positioned _myQrItem(AppLocalizations l10n) => Positioned(
-    left: 276,
-    top: 326,
+    left: TutorialStage.myQrX - 44,
+    top: TutorialStage.myQrY - 32,
     width: 88,
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 56,
-          height: 56,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.black,
-            shape: BoxShape.circle,
-            boxShadow: AppShadows.softThemed(true),
+        // 눌리면 살짝 작아지고 초록으로 찬다
+        Transform.scale(
+          scale: 1 - .1 * stage.q['myQrPress'],
+          child: Container(
+            width: 64,
+            height: 64,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Color.lerp(
+                AppColors.black,
+                AppColors.green,
+                stage.q['myQrPress'],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: AppShadows.softThemed(true),
+            ),
+            child: SvgPicture.asset(
+              AppIcons.qrCode,
+              width: 32,
+              height: 32,
+              colorFilter: ColorFilter.mode(
+                Color.lerp(
+                  AppColors.green,
+                  AppColors.black,
+                  stage.q['myQrPress'],
+                )!,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
-          child: SvgPicture.asset(AppIcons.qrCode, width: 32, height: 32),
         ),
         const SizedBox(height: 6),
         Text(
