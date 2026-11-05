@@ -113,6 +113,23 @@ void main() {
     await advance(tester, const Duration(milliseconds: 3500));
   });
 
+  // 세로로 늘어난 만큼 윗변이 올라가도, 튀어 오르기 전에는 머리가 보이면 안 된다
+  for (final isPolice in [true, false]) {
+    testWidgets(
+      'character_stays_below_screen_until_pop_when_isPolice_is_$isPolice',
+      (tester) async {
+        await pumpOnPhone(
+          tester,
+          RoleBanner(isPolice: isPolice, onDone: () {}),
+        );
+        await tester.pump(const Duration(milliseconds: 40));
+        final top = tester.getTopLeft(find.byType(SvgPicture)).dy;
+        expect(top, greaterThanOrEqualTo(852));
+        await advance(tester, const Duration(milliseconds: 4500));
+      },
+    );
+  }
+
   // 쫀득한 퇴장: 나가기 전에 살짝 위로 움찔했다가 화면 아래로 완전히 빠진다
   testWidgets(
     'character_rises_briefly_then_drops_off_screen_when_banner_leaves',

@@ -177,8 +177,9 @@ _PopPose _lerpPop(_PopPose a, _PopPose b, double t) => (
 
 /// 쫀득한 등장: 길게 늘어나며 튀어 올라 제자리를 지나치고, 눌리며 내려앉았다가 탱 하고 멈춘다.
 /// y는 보이는 높이 대비 비율(1 = 화면 아래, 음수 = 제자리보다 위).
+/// 시작 y가 1보다 큰 건 세로로 늘어난 만큼 올라간 윗변까지 화면 밖에 두기 위해서다.
 _PopPose _popPose(double t) {
-  const start = (y: 1.0, sx: .92, sy: 1.1);
+  const start = (y: 1.12, sx: .92, sy: 1.1);
   const peak = (y: -.05, sx: .97, sy: 1.04);
   const squash = (y: .012, sx: 1.05, sy: .94);
   const rebound = (y: -.006, sx: .985, sy: 1.015);
