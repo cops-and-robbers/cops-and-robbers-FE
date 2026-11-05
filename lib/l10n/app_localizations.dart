@@ -2297,31 +2297,31 @@ abstract class AppLocalizations {
   /// 경찰 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다
   ///
   /// In ko, this message translates to:
-  /// **'도둑을 찾아\n모두를 체포하라!'**
+  /// **'도둑을 찾아\n모두 체포해요!'**
   String get startTitlePolice;
 
   /// 도둑 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다
   ///
   /// In ko, this message translates to:
-  /// **'경찰을 피해\n끝까지 도망쳐라!'**
+  /// **'경찰을 피해\n끝까지 도망쳐요!'**
   String get startTitleRobber;
 
   /// 경찰 제목에서 강조색으로 칠할 부분. startTitlePolice 안의 글자와 똑같아야 한다
   ///
   /// In ko, this message translates to:
-  /// **'체포하라!'**
+  /// **'체포해요!'**
   String get startTitlePoliceAccent;
 
   /// 도둑 제목에서 강조색으로 칠할 부분. startTitleRobber 안의 글자와 똑같아야 한다
   ///
   /// In ko, this message translates to:
-  /// **'도망쳐라!'**
+  /// **'도망쳐요!'**
   String get startTitleRobberAccent;
 
   /// 역할 배너 설명. role은 팀 이름이며 강조색으로 보인다
   ///
   /// In ko, this message translates to:
-  /// **'당신의 역할은 {role}입니다'**
+  /// **'이번 판은 {role}이에요'**
   String startRoleSentence(String role);
 
   /// 대기·설명 화면 큰 남은 시간 위 라벨 (경찰·도둑 공통)

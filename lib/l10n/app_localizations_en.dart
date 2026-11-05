@@ -1293,7 +1293,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String startRoleSentence(String role) {
-    return 'Your role is $role';
+    return 'You\'re a $role this round';
   }
 
   @override

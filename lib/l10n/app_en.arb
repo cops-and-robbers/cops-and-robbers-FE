@@ -438,7 +438,7 @@
   "startTitleRobber": "Dodge the Cops,\nrun until the end!",
   "startTitlePoliceAccent": "arrest them all!",
   "startTitleRobberAccent": "run until the end!",
-  "startRoleSentence": "Your role is {role}",
+  "startRoleSentence": "You're a {role} this round",
   "startWaitCountdownLabel": "Cops move out in",
   "startGameTimeLeftLabel": "Game time left",
   "startWaitPoliceTitle": "The Robbers are getting away",

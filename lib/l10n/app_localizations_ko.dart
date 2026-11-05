@@ -1197,20 +1197,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRoleLabel => '내 역할';
 
   @override
-  String get startTitlePolice => '도둑을 찾아\n모두를 체포하라!';
+  String get startTitlePolice => '도둑을 찾아\n모두 체포해요!';
 
   @override
-  String get startTitleRobber => '경찰을 피해\n끝까지 도망쳐라!';
+  String get startTitleRobber => '경찰을 피해\n끝까지 도망쳐요!';
 
   @override
-  String get startTitlePoliceAccent => '체포하라!';
+  String get startTitlePoliceAccent => '체포해요!';
 
   @override
-  String get startTitleRobberAccent => '도망쳐라!';
+  String get startTitleRobberAccent => '도망쳐요!';
 
   @override
   String startRoleSentence(String role) {
-    return '당신의 역할은 $role입니다';
+    return '이번 판은 $role이에요';
   }
 
   @override

@@ -48,8 +48,8 @@ void main() {
       await advance(tester, const Duration(milliseconds: 1200));
       expect(find.text('내 역할'), findsOneWidget);
       expect(find.text('도둑을 찾아'), findsOneWidget);
-      expect(find.text('모두를 체포하라!'), findsOneWidget);
-      expect(find.text('당신의 역할은 경찰입니다', findRichText: true), findsOneWidget);
+      expect(find.text('모두 체포해요!'), findsOneWidget);
+      expect(find.text('이번 판은 경찰이에요', findRichText: true), findsOneWidget);
       await advance(tester, const Duration(milliseconds: 3000));
       expect(done, 1);
     },
@@ -143,11 +143,11 @@ void main() {
     await pumpOnPhone(tester, RoleBanner(isPolice: true, onDone: () {}));
     await advance(tester, const Duration(milliseconds: 1200));
     final spans =
-        (tester.widget<Text>(find.text('모두를 체포하라!')).textSpan! as TextSpan)
+        (tester.widget<Text>(find.text('모두 체포해요!')).textSpan! as TextSpan)
             .children!
             .cast<TextSpan>();
     final colored = spans.where((span) => span.style?.color == AppColors.blue);
-    expect(colored.map((span) => span.text), ['체포하라!']);
+    expect(colored.map((span) => span.text), ['체포해요!']);
     await advance(tester, const Duration(milliseconds: 3500));
   });
 
@@ -165,7 +165,7 @@ void main() {
   ) async {
     await pumpOnPhone(tester, RoleBanner(isPolice: false, onDone: () {}));
     await advance(tester, const Duration(milliseconds: 1200));
-    expect(find.text('당신의 역할은 도둑입니다', findRichText: true), findsOneWidget);
+    expect(find.text('이번 판은 도둑이에요', findRichText: true), findsOneWidget);
     await advance(tester, const Duration(milliseconds: 3000));
   });
 
@@ -178,7 +178,10 @@ void main() {
       locale: const Locale('en'),
     );
     await advance(tester, const Duration(milliseconds: 1200));
-    expect(find.text('Your role is Cop', findRichText: true), findsOneWidget);
+    expect(
+      find.text("You're a Cop this round", findRichText: true),
+      findsOneWidget,
+    );
     await advance(tester, const Duration(milliseconds: 3000));
   });
 
