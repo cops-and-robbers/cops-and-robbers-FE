@@ -27,6 +27,8 @@ import '../../../../core/widgets/buttons/flat_icon_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
+import '../../../../core/services/storage/tutorial_prefs.dart';
+import '../../../../core/widgets/tutorial/tutorial_script.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -116,6 +118,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// true일 때는 _showReconnectModal이 막혀 재표시되지 않는다.
   /// ReconnectModal.then()의 재귀 호출이 우리 안내 다이얼로그를 우회하지 못하도록.
   bool _isHandlingNotParticipating = false;
+
+  final TutorialAutoOpen _tutorialAutoOpen = TutorialAutoOpen();
 
   /// 로비 STOMP 최초 연결 성공 여부
   bool _hasLobbyConnectedOnce = false;
@@ -448,6 +452,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         _pendingInviteDialog = false;
         await _showInviteCodeDialog();
       }
+      await _openTutorialOnce();
     } finally {
       _isFetchingParticipants = false;
     }
@@ -1025,6 +1030,32 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _goHomeClearingSession();
   }
 
+  /// 방에 처음 들어왔을 때 튜토리얼을 한 번 띄운다. 초대코드 창이 닫힌 뒤에 부른다.
+  Future<void> _openTutorialOnce() async {
+    if (_isDisposed || !mounted) return;
+    final isEventGame =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    final shouldOpen = await _tutorialAutoOpen.shouldOpen(
+      TutorialMode.classic,
+      isEventGame: isEventGame,
+      isTopRoute: () => mounted && (ModalRoute.of(context)?.isCurrent ?? false),
+    );
+    if (!shouldOpen || _isDisposed || !mounted) return;
+    context.push(RoutePaths.gameTutorialWithId(widget.sessionId));
+  }
+
+  /// 앱바 ⓘ. 일반 게임은 튜토리얼을 다시 보여 주고, 이벤트 게임은 규칙 창을 유지한다.
+  /// 방 정보를 읽기 전에는 이벤트 게임인지 모르므로 규칙 창을 연다.
+  void _onInfoPressed() {
+    final participant = ref.read(gameParticipantNotifierProvider);
+    if (participant == null || participant.isEventGame) {
+      _showGameRulesDialog();
+      return;
+    }
+    _tutorialAutoOpen.markOpened();
+    context.push(RoutePaths.gameTutorialWithId(widget.sessionId));
+  }
+
   /// 게임 규칙 다이얼로그
   void _showGameRulesDialog() {
     final interval = ref
@@ -1290,7 +1321,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
           assetPath: AppIcons.info,
           alignment: Alignment.centerRight,
           iconColor: isDark ? AppColors.black200 : AppColors.black500,
-          onPressed: _showGameRulesDialog,
+          onPressed: _onInfoPressed,
         ),
         FlatIconButton(
           assetPath: AppIcons.setting2,

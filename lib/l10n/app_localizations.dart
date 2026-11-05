@@ -4897,42 +4897,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, other{운영진 {count}명 검거}}'**
   String gameEventResultArrestCount(int count);
 
-  /// 온보딩 1/4 — 오프라인 게임이라는 정체
-  ///
-  /// In ko, this message translates to:
-  /// **'밖에서 진짜로 뛰는 술래잡기예요'**
-  String get onboardingOutdoorTitle;
-
-  /// 온보딩 1/4 본문
-  ///
-  /// In ko, this message translates to:
-  /// **'어릴 때 하던 경찰과 도둑 그대로예요. 앱은 옆에서 진행만 봐줘요'**
-  String get onboardingOutdoorBody;
-
-  /// 온보딩 2/4 — 승패 조건
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰은 잡고, 도둑은 버텨요'**
-  String get onboardingWinTitle;
-
-  /// 온보딩 2/4 본문
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰이 도둑을 모두 잡으면 경찰이 이겨요. 시간이 끝날 때까지 한 명이라도 살아남으면 도둑이 이겨요'**
-  String get onboardingWinBody;
-
-  /// 온보딩 3/4 — 구역·발자국·QR
-  ///
-  /// In ko, this message translates to:
-  /// **'앱이 심판을 봐요'**
-  String get onboardingRefereeTitle;
-
-  /// 온보딩 3/4 본문
-  ///
-  /// In ko, this message translates to:
-  /// **'구역은 지도에 그리고, 도둑 위치는 정해진 주기마다 발자국으로 떠요. QR을 찍어야 체포라서 판정이 늘 깔끔해요'**
-  String get onboardingRefereeBody;
-
   /// 온보딩 4/4 — 커뮤니티
   ///
   /// In ko, this message translates to:
@@ -5010,6 +4974,228 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'증거보드'**
   String get gameMenuEvidence;
+
+  /// No description provided for @tutorialZoneTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'우리 동네가 플레이그라운드예요'**
+  String get tutorialZoneTitle;
+
+  /// No description provided for @tutorialZoneBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 안에서 진짜로 뛰어요'**
+  String get tutorialZoneBody;
+
+  /// No description provided for @tutorialMapTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 중 지도는 이렇게 보여요'**
+  String get tutorialMapTitle;
+
+  /// No description provided for @tutorialMapBodyClassic.
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑의 실제 위치가 주기마다 표시돼요'**
+  String get tutorialMapBodyClassic;
+
+  /// No description provided for @tutorialMapBodyTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자의 실제 위치가 주기마다 표시돼요'**
+  String get tutorialMapBodyTag;
+
+  /// No description provided for @tutorialChaseTitleClassic.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰은 잡고, 도둑은 도망쳐요'**
+  String get tutorialChaseTitleClassic;
+
+  /// No description provided for @tutorialChaseBodyClassic.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰은 도둑을 쫓아가 실제로 터치해요'**
+  String get tutorialChaseBodyClassic;
+
+  /// No description provided for @tutorialChaseTitleTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'술래는 잡고, 도망자는 숨어요'**
+  String get tutorialChaseTitleTag;
+
+  /// No description provided for @tutorialChaseBodyTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'술래가 쫓아가 터치하면 잡혀요'**
+  String get tutorialChaseBodyTag;
+
+  /// No description provided for @tutorialShowQrTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'터치되면 QR을 보여줘요'**
+  String get tutorialShowQrTitle;
+
+  /// No description provided for @tutorialShowQrBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑은 메뉴에서 내 QR을 눌러요'**
+  String get tutorialShowQrBody;
+
+  /// No description provided for @tutorialScanTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'QR을 찍으면 체포돼요'**
+  String get tutorialScanTitle;
+
+  /// No description provided for @tutorialScanBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 도둑의 QR을 스캔하면 체포돼요'**
+  String get tutorialScanBody;
+
+  /// No description provided for @tutorialJailTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'잡히면 감옥으로 가요'**
+  String get tutorialJailTitle;
+
+  /// No description provided for @tutorialJailBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힌 도둑은 감옥으로 이동해야 해요'**
+  String get tutorialJailBody;
+
+  /// No description provided for @tutorialRescueTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'동료가 터치하면 풀려나요'**
+  String get tutorialRescueTitle;
+
+  /// No description provided for @tutorialRescueBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힌 도둑은 다른 도둑이 터치해야 탈옥할 수 있어요'**
+  String get tutorialRescueBody;
+
+  /// No description provided for @tutorialEscapeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥을 나가면 탈옥해요'**
+  String get tutorialEscapeTitle;
+
+  /// No description provided for @tutorialEscapeBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'3초 동안 감옥 밖에 있으면 자동 탈옥!\n안 되면 탈옥 버튼으로 직접 탈옥해요'**
+  String get tutorialEscapeBody;
+
+  /// No description provided for @tutorialOutTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'잡히면 바로 끝이에요'**
+  String get tutorialOutTitle;
+
+  /// No description provided for @tutorialOutBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥은 없어요. 마지막 한 명까지 잡으면 술래가 이겨요'**
+  String get tutorialOutBody;
+
+  /// No description provided for @tutorialShrinkTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 점점 좁아지기도 해요'**
+  String get tutorialShrinkTitle;
+
+  /// No description provided for @tutorialShrinkBodyClassic.
+  ///
+  /// In ko, this message translates to:
+  /// **'방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 체포돼요'**
+  String get tutorialShrinkBodyClassic;
+
+  /// No description provided for @tutorialShrinkBodyTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 잡혀요'**
+  String get tutorialShrinkBodyTag;
+
+  /// No description provided for @tutorialFinishTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'이제 시작하러 가볼까요?'**
+  String get tutorialFinishTitle;
+
+  /// No description provided for @tutorialCalloutTouch.
+  ///
+  /// In ko, this message translates to:
+  /// **'터치!'**
+  String get tutorialCalloutTouch;
+
+  /// No description provided for @tutorialCalloutArrest.
+  ///
+  /// In ko, this message translates to:
+  /// **'체포!'**
+  String get tutorialCalloutArrest;
+
+  /// No description provided for @onboardingRunTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'밖에서 진짜로 뛰는 게임이에요'**
+  String get onboardingRunTitle;
+
+  /// No description provided for @onboardingRunBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'우리 동네가 플레이그라운드가 돼요'**
+  String get onboardingRunBody;
+
+  /// No description provided for @onboardingPickTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'뛸 구역은 직접 정해요'**
+  String get onboardingPickTitle;
+
+  /// No description provided for @onboardingPickBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'방을 만들 때 지도에서 구역을 골라요'**
+  String get onboardingPickBody;
+
+  /// No description provided for @onboardingFriendsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 코드로 친구를 불러요'**
+  String get onboardingFriendsTitle;
+
+  /// No description provided for @onboardingFriendsBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'코드나 QR을 공유하면 같은 방에 들어와요'**
+  String get onboardingFriendsBody;
+
+  /// No description provided for @onboardingGuideTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱이 게임을 진행해요'**
+  String get onboardingGuideTitle;
+
+  /// No description provided for @onboardingGuideBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 시간도, 구역 이탈도 앱이 알려줘요'**
+  String get onboardingGuideBody;
+
+  /// No description provided for @onboardingRecordTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'달린 기록도 남아요'**
+  String get onboardingRecordTitle;
+
+  /// No description provided for @onboardingRecordBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 끝나면 이동 경로와 거리를 볼 수 있어요'**
+  String get onboardingRecordBody;
 }
 
 class _AppLocalizationsDelegate
