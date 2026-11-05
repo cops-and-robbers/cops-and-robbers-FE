@@ -65,6 +65,8 @@
 	<string>Your location is used to share the Robber's location and detect when someone leaves the play area during the game. Location is used until the game ends even when the screen is off or you are using another app. It is shared only with participants in the same game and stops immediately when the game ends.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your location is used to share the Robber's location and detect when someone leaves the play area during the game. Location is used until the game ends even when the screen is off or you are using another app. It is shared only with participants in the same game and stops immediately when the game ends.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>The motion sensor is used to move the QR code as you turn your phone during the tutorial.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>The camera is used to scan an opponent's QR code to make arrests during the game.</string>
 	<key>NSUserNotificationsUsageDescription</key>

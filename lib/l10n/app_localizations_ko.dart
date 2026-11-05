@@ -2591,26 +2591,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get onboardingOutdoorTitle => '밖에서 진짜로 뛰는 술래잡기예요';
-
-  @override
-  String get onboardingOutdoorBody => '어릴 때 하던 경찰과 도둑 그대로예요. 앱은 옆에서 진행만 봐줘요';
-
-  @override
-  String get onboardingWinTitle => '경찰은 잡고, 도둑은 버텨요';
-
-  @override
-  String get onboardingWinBody =>
-      '경찰이 도둑을 모두 잡으면 경찰이 이겨요. 시간이 끝날 때까지 한 명이라도 살아남으면 도둑이 이겨요';
-
-  @override
-  String get onboardingRefereeTitle => '앱이 심판을 봐요';
-
-  @override
-  String get onboardingRefereeBody =>
-      '구역은 지도에 그리고, 도둑 위치는 정해진 주기마다 발자국으로 떠요. QR을 찍어야 체포라서 판정이 늘 깔끔해요';
-
-  @override
   String get onboardingCommunityTitle => '같이 할 사람도 여기서 구해요';
 
   @override
@@ -2649,4 +2629,118 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameMenuEvidence => '증거보드';
+
+  @override
+  String get tutorialZoneTitle => '우리 동네가 플레이그라운드예요';
+
+  @override
+  String get tutorialZoneBody => '구역 안에서 진짜로 뛰어요';
+
+  @override
+  String get tutorialMapTitle => '게임 중 지도는 이렇게 보여요';
+
+  @override
+  String get tutorialMapBodyClassic => '도둑의 실제 위치가 주기마다 표시돼요';
+
+  @override
+  String get tutorialMapBodyTag => '도망자의 실제 위치가 주기마다 표시돼요';
+
+  @override
+  String get tutorialChaseTitleClassic => '경찰은 잡고, 도둑은 도망쳐요';
+
+  @override
+  String get tutorialChaseBodyClassic => '경찰은 도둑을 쫓아가 실제로 터치해요';
+
+  @override
+  String get tutorialChaseTitleTag => '술래는 잡고, 도망자는 숨어요';
+
+  @override
+  String get tutorialChaseBodyTag => '술래가 쫓아가 터치하면 잡혀요';
+
+  @override
+  String get tutorialShowQrTitle => '터치되면 QR을 보여줘요';
+
+  @override
+  String get tutorialShowQrBody => '도둑은 메뉴에서 내 QR을 눌러요';
+
+  @override
+  String get tutorialScanTitle => 'QR을 찍으면 체포돼요';
+
+  @override
+  String get tutorialScanBody => '경찰이 도둑의 QR을 스캔하면 체포돼요';
+
+  @override
+  String get tutorialJailTitle => '잡히면 감옥으로 가요';
+
+  @override
+  String get tutorialJailBody => '잡힌 도둑은 감옥으로 이동해야 해요';
+
+  @override
+  String get tutorialRescueTitle => '동료가 터치하면 풀려나요';
+
+  @override
+  String get tutorialRescueBody => '잡힌 도둑은 다른 도둑이 터치해야 탈옥할 수 있어요';
+
+  @override
+  String get tutorialEscapeTitle => '감옥을 나가면 탈옥해요';
+
+  @override
+  String get tutorialEscapeBody =>
+      '3초 동안 감옥 밖에 있으면 자동 탈옥!\n안 되면 탈옥 버튼으로 직접 탈옥해요';
+
+  @override
+  String get tutorialOutTitle => '잡히면 바로 끝이에요';
+
+  @override
+  String get tutorialOutBody => '감옥은 없어요. 마지막 한 명까지 잡으면 술래가 이겨요';
+
+  @override
+  String get tutorialShrinkTitle => '구역이 점점 좁아지기도 해요';
+
+  @override
+  String get tutorialShrinkBodyClassic =>
+      '방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 체포돼요';
+
+  @override
+  String get tutorialShrinkBodyTag =>
+      '방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 잡혀요';
+
+  @override
+  String get tutorialFinishTitle => '이제 시작하러 가볼까요?';
+
+  @override
+  String get tutorialCalloutTouch => '터치!';
+
+  @override
+  String get tutorialCalloutArrest => '체포!';
+
+  @override
+  String get onboardingRunTitle => '밖에서 진짜로 뛰는 게임이에요';
+
+  @override
+  String get onboardingRunBody => '우리 동네가 플레이그라운드가 돼요';
+
+  @override
+  String get onboardingPickTitle => '뛸 구역은 직접 정해요';
+
+  @override
+  String get onboardingPickBody => '방을 만들 때 지도에서 구역을 골라요';
+
+  @override
+  String get onboardingFriendsTitle => '초대 코드로 친구를 불러요';
+
+  @override
+  String get onboardingFriendsBody => '코드나 QR을 공유하면 같은 방에 들어와요';
+
+  @override
+  String get onboardingGuideTitle => '앱이 게임을 진행해요';
+
+  @override
+  String get onboardingGuideBody => '남은 시간도, 구역 이탈도 앱이 알려줘요';
+
+  @override
+  String get onboardingRecordTitle => '달린 기록도 남아요';
+
+  @override
+  String get onboardingRecordBody => '게임이 끝나면 이동 경로와 거리를 볼 수 있어요';
 }

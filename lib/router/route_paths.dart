@@ -187,6 +187,9 @@ class RoutePaths {
   /// 경로 파라미터: sessionId
   static const String game = '/game/:sessionId';
 
+  /// 방 입장 튜토리얼 (대기방 위에 push)
+  static const String gameTutorial = '/waiting-room/:sessionId/tutorial';
+
   /// 게임 설정 화면 (대기실에서 접근)
   /// 경로 파라미터: sessionId
   static const String gameSettings = '/waiting-room/:sessionId/game-settings';
@@ -249,6 +252,10 @@ class RoutePaths {
   /// ```
   static String gameWithId(String sessionId) => '/game/$sessionId';
 
+  /// 특정 세션 ID로 튜토리얼 경로 생성
+  static String gameTutorialWithId(String sessionId) =>
+      '/waiting-room/$sessionId/tutorial';
+
   /// 특정 세션 ID로 게임 설정 경로 생성
   static String gameSettingsWithId(String sessionId) =>
       '/waiting-room/$sessionId/game-settings';
@@ -291,6 +298,7 @@ class RoutePaths {
   static const String noticesName = 'notices';
   static const String setupPlaygroundFromFlowName = 'setupPlaygroundFromFlow';
   static const String setupPrisonFromFlowName = 'setupPrisonFromFlow';
+  static const String gameTutorialName = 'gameTutorial';
   static const String gameSettingsName = 'gameSettings';
   static const String gameSettingsEditName = 'gameSettingsEdit';
   static const String gameSettingsPlaygroundName = 'gameSettingsPlayground';

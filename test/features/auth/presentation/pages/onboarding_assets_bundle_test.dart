@@ -9,10 +9,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const paths = [
-    'assets/onboarding/onboarding1.svg',
-    'assets/onboarding/onboarding2_1.svg',
-    'assets/onboarding/onboarding2_2.svg',
-    'assets/onboarding/onboarding3.svg',
     'assets/onboarding/onboarding4.svg',
   ];
 

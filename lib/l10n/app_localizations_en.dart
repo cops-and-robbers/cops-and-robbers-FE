@@ -2795,27 +2795,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get onboardingOutdoorTitle => 'A real-world game of tag';
-
-  @override
-  String get onboardingOutdoorBody =>
-      'The same rules you grew up with. The app just runs the game';
-
-  @override
-  String get onboardingWinTitle => 'Catch them all, or hold out';
-
-  @override
-  String get onboardingWinBody =>
-      'Cops win by arresting every Robber. If even one is still free when time runs out, the Robbers take it';
-
-  @override
-  String get onboardingRefereeTitle => 'The app referees';
-
-  @override
-  String get onboardingRefereeBody =>
-      'Draw the zone on the map, and footprints drop on a timer. An arrest counts only when a Cop scans the Robber\'s QR, so every call is clear';
-
-  @override
   String get onboardingCommunityTitle => 'Find people to play with';
 
   @override
@@ -2854,4 +2833,127 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameMenuEvidence => 'Evidence';
+
+  @override
+  String get tutorialZoneTitle => 'Your town is the Playground';
+
+  @override
+  String get tutorialZoneBody => 'Run for real inside the area';
+
+  @override
+  String get tutorialMapTitle => 'This is the map during a game';
+
+  @override
+  String get tutorialMapBodyClassic =>
+      'Robbers\' real locations appear on a timer';
+
+  @override
+  String get tutorialMapBodyTag => 'Hiders\' real locations appear on a timer';
+
+  @override
+  String get tutorialChaseTitleClassic => 'Cops chase, Robbers run';
+
+  @override
+  String get tutorialChaseBodyClassic =>
+      'Cops track Robbers down and tag them for real';
+
+  @override
+  String get tutorialChaseTitleTag => 'Seekers catch, Hiders hide';
+
+  @override
+  String get tutorialChaseBodyTag =>
+      'Hiders are caught when a Seeker tags them';
+
+  @override
+  String get tutorialShowQrTitle => 'Tagged? Show your QR';
+
+  @override
+  String get tutorialShowQrBody => 'Robbers tap My QR in the menu';
+
+  @override
+  String get tutorialScanTitle => 'Scan the QR to arrest';
+
+  @override
+  String get tutorialScanBody =>
+      'Robbers are arrested when a Cop scans their QR';
+
+  @override
+  String get tutorialJailTitle => 'Caught? Off to Jail';
+
+  @override
+  String get tutorialJailBody => 'Caught Robbers must go to the Jail';
+
+  @override
+  String get tutorialRescueTitle => 'A teammate can free you';
+
+  @override
+  String get tutorialRescueBody =>
+      'Caught Robbers need another Robber\'s touch to jailbreak';
+
+  @override
+  String get tutorialEscapeTitle => 'Leave the Jail to jailbreak';
+
+  @override
+  String get tutorialEscapeBody =>
+      'Stay outside for 3 seconds to break out!\nIf that fails, tap the Jailbreak button';
+
+  @override
+  String get tutorialOutTitle => 'Caught means you\'re out';
+
+  @override
+  String get tutorialOutBody => 'No Jail. Seekers win by catching everyone';
+
+  @override
+  String get tutorialShrinkTitle => 'The game area can shrink';
+
+  @override
+  String get tutorialShrinkBodyClassic =>
+      'The Host can choose this when creating a room\nStay outside: a warning, then auto-arrest';
+
+  @override
+  String get tutorialShrinkBodyTag =>
+      'The Host can choose this when creating a room\nStay outside: a warning, then you\'re out';
+
+  @override
+  String get tutorialFinishTitle => 'Ready to get started?';
+
+  @override
+  String get tutorialCalloutTouch => 'Tag!';
+
+  @override
+  String get tutorialCalloutArrest => 'Arrested!';
+
+  @override
+  String get onboardingRunTitle => 'A game you really run';
+
+  @override
+  String get onboardingRunBody => 'Your town becomes the Playground';
+
+  @override
+  String get onboardingPickTitle => 'Pick your own area';
+
+  @override
+  String get onboardingPickBody =>
+      'Choose the game area on the map when creating a room';
+
+  @override
+  String get onboardingFriendsTitle => 'Invite friends with a code';
+
+  @override
+  String get onboardingFriendsBody =>
+      'Share the code or QR so friends join your room';
+
+  @override
+  String get onboardingGuideTitle => 'The app runs the game';
+
+  @override
+  String get onboardingGuideBody =>
+      'The app shows the time left and tells you when you leave the area';
+
+  @override
+  String get onboardingRecordTitle => 'Your run gets recorded';
+
+  @override
+  String get onboardingRecordBody =>
+      'See your route and distance when the game ends';
 }
