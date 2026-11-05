@@ -31,6 +31,12 @@ class StripeBanner extends StatefulWidget {
     this.dimBehind = false,
     this.tapToSkip = false,
     this.filledStart = false,
+    this.angleDegrees = -4.6,
+    this.bandOffsetY = 0,
+    this.backdropColor,
+    this.edgeColor,
+    this.overlay,
+    this.decor,
   });
 
   final Color color;
@@ -56,6 +62,24 @@ class StripeBanner extends StatefulWidget {
   /// 장면이 띠 모양으로 접힌 자리에서 시작한다 — 줄은 빨려 들지 않고 그 자리에서 나타나고
   /// 내용이 곧바로 들어온다(출동 배너)
   final bool filledStart;
+
+  /// 띠 기울기(도). 출동 배너는 기본값, 역할 배너는 시안대로 더 기울인다.
+  final double angleDegrees;
+
+  /// 화면 가운데에서 띠를 옮기는 거리(300 폭 목업 기준, 위가 음수)
+  final double bandOffsetY;
+
+  /// [dimBehind]일 때 덮는 색. 없으면 지도가 비치는 다이얼로그 배리어.
+  final Color? backdropColor;
+
+  /// 띠 아래로 살짝 비치는 두께 색. 띠와 같은 줄무늬로 함께 움직인다. 없으면 그리지 않는다.
+  final Color? edgeColor;
+
+  /// 띠와 함께 나타나고 사라지지만 기울지 않는 층 — 화면 전체 좌표로 그린다
+  final StripeBannerContent? overlay;
+
+  /// 띠 바깥에 스스로 움직이는 장식 층(화면 전체 좌표). 내용과 달리 페이드·밀림을 입히지 않는다.
+  final StripeBannerContent? decor;
 
   /// 마지막 줄(0.30초 시작 + 0.38초)과 내용(0.56초 시작 + 0.32초)이 끝나는 시간
   static const enterDuration = Duration(milliseconds: 900);
@@ -169,25 +193,49 @@ class _StripeBannerState extends State<StripeBanner>
                       child: child,
                     );
                   },
-                  child: ColoredBox(color: DialogAnimation.barrierColor),
+                  child: ColoredBox(
+                    color: widget.backdropColor ?? DialogAnimation.barrierColor,
+                  ),
                 ),
               ),
             Center(
-              child: OverflowBox(
-                maxWidth: bandWidth,
-                child: Transform.rotate(
-                  angle: -4.6 * math.pi / 180,
-                  child: SizedBox(
-                    width: bandWidth,
-                    height: widget.bandHeight * s,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [_stripes(bandWidth), _contentLayer(s)],
+              child: Transform.translate(
+                offset: Offset(0, widget.bandOffsetY * s),
+                child: OverflowBox(
+                  maxWidth: bandWidth,
+                  child: Transform.rotate(
+                    angle: widget.angleDegrees * math.pi / 180,
+                    child: SizedBox(
+                      width: bandWidth,
+                      height: widget.bandHeight * s,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          if (widget.edgeColor case final edge?)
+                            Transform.translate(
+                              offset: Offset(0, 6 * s),
+                              child: _stripes(bandWidth, edge),
+                            ),
+                          _stripes(bandWidth, widget.color),
+                          _contentLayer(s, widget.content),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
+            if (widget.decor case final decor?)
+              Positioned.fill(
+                child: decor(
+                  context,
+                  s,
+                  _reduce ? kAlwaysCompleteAnimation : _enter,
+                  _reduce ? kAlwaysDismissedAnimation : _exit,
+                ),
+              ),
+            if (widget.overlay case final overlay?)
+              Positioned.fill(child: _contentLayer(s, overlay)),
           ],
         );
         if (_reduce) {
@@ -211,7 +259,7 @@ class _StripeBannerState extends State<StripeBanner>
     );
   }
 
-  Widget _stripes(double bandWidth) {
+  Widget _stripes(double bandWidth, Color color) {
     // stretch가 없으면 자식 없는 ColoredBox가 폭 0으로 잡혀 줄이 안 칠해진다
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -254,9 +302,13 @@ class _StripeBannerState extends State<StripeBanner>
                   ),
                 );
               },
-              child: ClipPath(
-                clipper: const _SlantClipper(),
-                child: ColoredBox(color: widget.color),
+              // 기울어진 줄끼리 맞닿으면 안티앨리어싱 틈이 비친다. 살짝 겹쳐 틈을 없앤다.
+              child: Transform.scale(
+                scaleY: 1.04,
+                child: ClipPath(
+                  clipper: const _SlantClipper(),
+                  child: ColoredBox(color: color),
+                ),
               ),
             ),
           ),
@@ -264,7 +316,7 @@ class _StripeBannerState extends State<StripeBanner>
     );
   }
 
-  Widget _contentLayer(double s) {
+  Widget _contentLayer(double s, StripeBannerContent content) {
     final enter = _reduce ? kAlwaysCompleteAnimation : _enter;
     final exit = _reduce ? kAlwaysDismissedAnimation : _exit;
     return AnimatedBuilder(
@@ -288,7 +340,7 @@ class _StripeBannerState extends State<StripeBanner>
           ),
         );
       },
-      child: widget.content(context, s, enter, exit),
+      child: content(context, s, enter, exit),
     );
   }
 

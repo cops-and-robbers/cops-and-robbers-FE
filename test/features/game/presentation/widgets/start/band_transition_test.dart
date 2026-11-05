@@ -36,6 +36,18 @@ const topCorner = Offset(20, 120); // 띠 바깥 — 남은 시간 숫자가 있
 const center = Offset(196, 426);
 
 void main() {
+  // 왼쪽 위 (20, 300)은 시안의 넓은 역할 띠 안쪽이고 예전 좁은 띠에선 바깥이다
+  testWidgets('scene_shows_through_role_band_shape_when_role_banner_leaves', (
+    tester,
+  ) async {
+    var taps = 0;
+    await pumpScene(tester, onTap: () => taps++, revealFromBand: true);
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.tapAt(const Offset(20, 300));
+    expect(taps, 1);
+    await tester.pump(const Duration(milliseconds: 900));
+  });
+
   // 역할 띠가 빠지는 동안엔 띠 자리로만 장면이 비치고, 다 빠진 뒤 화면 전체로 펼쳐진다
   testWidgets(
     'scene_shows_only_band_strip_then_fills_screen_when_role_banner_leaves',

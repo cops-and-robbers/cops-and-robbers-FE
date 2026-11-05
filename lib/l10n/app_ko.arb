@@ -1073,13 +1073,30 @@
   "@startRoleLabel": {
     "description": "게임 시작 역할 배너 — 팀 이름 위 작은 라벨"
   },
-  "startMissionPolice": "도둑을 찾아 QR로 모두 체포하세요",
-  "@startMissionPolice": {
-    "description": "경찰 미션 한 줄 (역할 배너·대기 화면)"
+  "startTitlePolice": "도둑을 찾아\n모두 체포해요!",
+  "@startTitlePolice": {
+    "description": "경찰 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다"
   },
-  "startMissionRobber": "끝날 때까지 잡히지 말고 도망치세요",
-  "@startMissionRobber": {
-    "description": "도둑 미션 한 줄 (역할 배너·설명 화면)"
+  "startTitleRobber": "경찰을 피해\n끝까지 도망쳐요!",
+  "@startTitleRobber": {
+    "description": "도둑 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다"
+  },
+  "startTitlePoliceAccent": "체포해요!",
+  "@startTitlePoliceAccent": {
+    "description": "경찰 제목에서 강조색으로 칠할 부분. startTitlePolice 안의 글자와 똑같아야 한다"
+  },
+  "startTitleRobberAccent": "도망쳐요!",
+  "@startTitleRobberAccent": {
+    "description": "도둑 제목에서 강조색으로 칠할 부분. startTitleRobber 안의 글자와 똑같아야 한다"
+  },
+  "startRoleSentence": "이번 판은 {role}이에요",
+  "@startRoleSentence": {
+    "description": "역할 배너 설명. role은 팀 이름이며 강조색으로 보인다",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
   },
   "startWaitCountdownLabel": "경찰 출동까지",
   "@startWaitCountdownLabel": {

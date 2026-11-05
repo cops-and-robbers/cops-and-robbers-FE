@@ -12,8 +12,10 @@ List<GameMenuEntry> gameMenuEntries({
   required bool isArrested,
   required bool isZoneExitActive,
   required bool isEventGame,
+  bool isMapVisible = true,
 }) => [
-  GameMenuEntry.grid,
+  // 대기·설명 장면은 지도를 덮고 있어 좌표를 켜도 보이지 않는다.
+  if (isMapVisible) GameMenuEntry.grid,
   if (!isZoneExitActive) ...[
     GameMenuEntry.participants,
     if (isArrested)
