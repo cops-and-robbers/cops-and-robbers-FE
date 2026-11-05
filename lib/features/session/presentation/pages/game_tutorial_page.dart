@@ -8,9 +8,9 @@ import '../../../../l10n/app_localizations.dart';
 
 /// 방에 들어왔을 때 보여 주는 게임 규칙 튜토리얼.
 ///
-/// 대기방 위에 push 된다. 게임 시작·강퇴로 대기방이 context.go 하면 함께 사라지고,
-/// 그때는 본 것으로 저장하지 않아 다음 입장 때 다시 뜬다.
-class GameTutorialPage extends StatelessWidget {
+/// 대기방 위에 push 된다. 게임 시작·강퇴로 대기방이 context.go 하면 함께 사라진다.
+/// 열리는 순간 본 것으로 저장한다. 처음 볼 때는 건너뛸 수 없고 다시 볼 때부터 건너뛸 수 있다.
+class GameTutorialPage extends StatefulWidget {
   const GameTutorialPage({
     required this.mode,
     this.tiltStream = deviceTiltStream,
@@ -20,31 +20,41 @@ class GameTutorialPage extends StatelessWidget {
   final TutorialMode mode;
   final Stream<Offset> Function() tiltStream;
 
-  Future<void> _finish(BuildContext context) async {
-    await TutorialPrefs.markSeen(mode);
-    if (context.mounted && context.canPop()) context.pop();
+  @override
+  State<GameTutorialPage> createState() => _GameTutorialPageState();
+}
+
+class _GameTutorialPageState extends State<GameTutorialPage> {
+  bool _canSkip = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _enter();
+  }
+
+  Future<void> _enter() async {
+    final seen = await TutorialPrefs.seen(widget.mode);
+    await TutorialPrefs.markSeen(widget.mode);
+    if (seen && mounted) setState(() => _canSkip = true);
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      // 일부러 나간 사람에게 다시 띄우지 않도록 뒤로 가기도 건너뛰기와 같게 처리한다
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _finish(context);
+    return TutorialPlayer(
+      scenes: tutorialScenes(widget.mode),
+      copyOf: _copy,
+      finishLabel: (l10n) => l10n.buttonConfirm,
+      onFinished: () {
+        if (context.canPop()) context.pop();
       },
-      child: TutorialPlayer(
-        scenes: tutorialScenes(mode),
-        copyOf: (l10n, scene) => _copy(l10n, scene),
-        finishLabel: (l10n) => l10n.buttonConfirm,
-        onFinished: () => _finish(context),
-        tiltStream: tiltStream,
-      ),
+      canSkip: _canSkip,
+      tiltStream: widget.tiltStream,
     );
   }
 
   TutorialCopy _copy(AppLocalizations l10n, TutorialScene scene) {
-    final isTag = mode == TutorialMode.tag;
+    final isTag = widget.mode == TutorialMode.tag;
     return switch (scene) {
       TutorialScene.zoneIn => TutorialCopy(
         l10n.tutorialZoneTitle,

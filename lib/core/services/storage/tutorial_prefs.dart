@@ -4,7 +4,7 @@ import '../../widgets/tutorial/tutorial_script.dart';
 
 /// 방 입장 튜토리얼을 이 기기에서 봤는지 여부. 모드마다 따로 기억한다.
 ///
-/// 게임이 시작돼 끝까지 못 본 경우에는 저장하지 않아, 다음 입장 때 다시 뜬다.
+/// 튜토리얼이 열리는 순간 저장한다. 어떻게 나가든 다음 입장 때 자동으로 뜨지 않는다.
 class TutorialPrefs {
   TutorialPrefs._();
 

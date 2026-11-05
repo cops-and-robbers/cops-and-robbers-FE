@@ -56,6 +56,7 @@ class TutorialPlayer extends StatefulWidget {
     required this.copyOf,
     required this.finishLabel,
     required this.onFinished,
+    this.canSkip = true,
     this.tiltStream = deviceTiltStream,
     super.key,
   });
@@ -67,6 +68,7 @@ class TutorialPlayer extends StatefulWidget {
 
   /// 마지막 장면을 넘기거나 건너뛰었을 때.
   final VoidCallback onFinished;
+  final bool canSkip;
   final Stream<Offset> Function() tiltStream;
 
   @override
@@ -386,21 +388,25 @@ class _TutorialPlayerState extends State<TutorialPlayer>
         ),
         // 건너뛰기는 마지막 장에서도 자리를 지킨다. 사라지면 진행 표시가 밀려 보인다.
         Expanded(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Opacity(
-              opacity: _isLast ? 0 : 1,
-              child: TextButton(
-                onPressed: _isLast ? null : _skip,
-                child: Text(
-                  l10n.buttonSkip,
-                  style: AppTextStyles.paragraph_14.copyWith(
-                    color: isDark ? AppColors.black400 : AppColors.black500,
+          child: widget.canSkip
+              ? Align(
+                  alignment: Alignment.centerRight,
+                  child: Opacity(
+                    opacity: _isLast ? 0 : 1,
+                    child: TextButton(
+                      onPressed: _isLast ? null : _skip,
+                      child: Text(
+                        l10n.buttonSkip,
+                        style: AppTextStyles.paragraph_14.copyWith(
+                          color: isDark
+                              ? AppColors.black400
+                              : AppColors.black500,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     ),

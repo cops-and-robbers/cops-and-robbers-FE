@@ -59,7 +59,7 @@ Future<GoRouter> _openTutorial(WidgetTester tester) async {
   for (var i = 0; i < 20; i++) {
     await tester.pump(const Duration(milliseconds: 32));
   }
-  expect(find.text('건너뛰기'), findsOneWidget);
+  expect(find.byType(GameTutorialPage), findsOneWidget);
   return router;
 }
 
@@ -73,7 +73,7 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   testWidgets(
-    'tutorial_disappears_and_stays_unseen_when_host_starts_game_while_watching',
+    'tutorial_disappears_and_stays_closed_next_entry_when_host_starts_game_while_watching',
     (tester) async {
       final router = await _openTutorial(tester);
 
@@ -81,13 +81,13 @@ void main() {
       await _settle(tester);
 
       expect(find.text('게임'), findsOneWidget);
-      expect(find.text('건너뛰기'), findsNothing);
-      expect(await TutorialPrefs.seen(TutorialMode.classic), isFalse);
+      expect(find.byType(GameTutorialPage), findsNothing);
+      expect(await TutorialPrefs.seen(TutorialMode.classic), isTrue);
     },
   );
 
   testWidgets(
-    'tutorial_disappears_and_stays_unseen_when_player_is_kicked_while_watching',
+    'tutorial_disappears_and_stays_closed_next_entry_when_player_is_kicked_while_watching',
     (tester) async {
       final router = await _openTutorial(tester);
 
@@ -95,33 +95,43 @@ void main() {
       await _settle(tester);
 
       expect(find.text('홈'), findsOneWidget);
-      expect(await TutorialPrefs.seen(TutorialMode.classic), isFalse);
+      expect(await TutorialPrefs.seen(TutorialMode.classic), isTrue);
     },
   );
 
-  testWidgets('tutorial_returns_to_room_and_saves_seen_when_skipped', (
+  testWidgets('tutorial_hides_skip_when_player_watches_it_for_the_first_time', (
     tester,
   ) async {
+    await _openTutorial(tester);
+
+    expect(find.text('건너뛰기'), findsNothing);
+  });
+
+  testWidgets('tutorial_offers_skip_when_player_reopens_it_after_finishing', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({'tutorial_seen_classic': true});
     await _openTutorial(tester);
 
     await tester.tap(find.text('건너뛰기'));
     await _settle(tester);
 
     expect(find.text('대기방'), findsOneWidget);
-    expect(await TutorialPrefs.seen(TutorialMode.classic), isTrue);
+    expect(find.byType(GameTutorialPage), findsNothing);
   });
 
-  testWidgets('tutorial_returns_to_room_and_saves_seen_when_back_is_pressed', (
-    tester,
-  ) async {
-    await _openTutorial(tester);
+  testWidgets(
+    'tutorial_stays_closed_next_entry_when_first_viewing_is_left_by_back',
+    (tester) async {
+      await _openTutorial(tester);
 
-    await tester.binding.handlePopRoute();
-    await _settle(tester);
+      await tester.binding.handlePopRoute();
+      await _settle(tester);
 
-    expect(find.text('대기방'), findsOneWidget);
-    expect(await TutorialPrefs.seen(TutorialMode.classic), isTrue);
-  });
+      expect(find.text('대기방'), findsOneWidget);
+      expect(await TutorialPrefs.seen(TutorialMode.classic), isTrue);
+    },
+  );
 
   testWidgets(
     'tutorial_invites_to_start_when_player_already_in_room_reaches_end',
@@ -138,9 +148,9 @@ void main() {
 
       expect(find.text('이제 시작하러 가볼까요?'), findsOneWidget);
       expect(find.text('같이 할 사람도 여기서 구해요'), findsNothing);
-    // 눌러도 게임이 시작되지 않고 대기방으로 돌아가므로 시작하기라고 쓰지 않는다
-    expect(find.text('확인'), findsOneWidget);
-    expect(find.text('시작하기'), findsNothing);
+      // 눌러도 게임이 시작되지 않고 대기방으로 돌아가므로 시작하기라고 쓰지 않는다
+      expect(find.text('확인'), findsOneWidget);
+      expect(find.text('시작하기'), findsNothing);
     },
   );
 
