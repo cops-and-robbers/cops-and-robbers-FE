@@ -723,16 +723,17 @@ void main() {
     await advance(tester, const Duration(seconds: 5));
     expect(find.byType(ChaseScene), findsOneWidget);
 
-    await tester.tap(
-      find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath == AppIcons.person,
-      ),
-    );
+    // 장면 위에서도 지도와 같은 플로팅 메뉴로 연다
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+    await openFloatingMenu(tester);
+    // 지도가 안 보여 좌표 항목은 없다
+    expect(find.text(l10n.gameMenuGrid), findsNothing);
+    await tester.tap(find.text(l10n.gameMenuParticipants));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(ChaseScene), findsNothing); // Offstage — 목록을 덮지 않는다
     expect(find.byType(ChaseScene, skipOffstage: false), findsOneWidget);
     // 목록 위 앱바에도 나가기 버튼이 없다 — 대기 중엔 나갈 수 없다
-    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
     expect(find.byTooltip(l10n.buttonLeave), findsNothing);
     expect(tester.takeException(), isNull);
     // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
