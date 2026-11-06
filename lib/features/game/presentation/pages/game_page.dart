@@ -787,28 +787,27 @@ class _GamePageState extends ConsumerState<GamePage>
     final gameDuration = participantInfo?.roundTimeMinutes;
     final l10n = AppLocalizations.of(context);
 
-    // 일반 게임은 역할 배너·대기 화면이 시작을 알리므로 "잠시 후 시작"·"게임 시작!"은 채팅에만 남긴다
-    final isEventGame = participantInfo?.isEventGame ?? false;
-    final messages = <(String, bool)>[
-      if (gameDuration != null) (l10n.gameEventStartTime(gameDuration), true),
-      (l10n.gameEventStartReady, isEventGame),
-      (l10n.gameEventStartReportTip, true),
-      (l10n.gameEventStartGo, isEventGame),
+    // 시작 공지 넷은 일반·이벤트 게임 모두 채팅과 공지 배너에 띄운다(DEC-0138, DEC-0096 대체).
+    // 대기 장면에서는 카드 줄 공지 칸에 보인다.
+    final messages = <String>[
+      if (gameDuration != null) l10n.gameEventStartTime(gameDuration),
+      l10n.gameEventStartReady,
+      l10n.gameEventStartReportTip,
+      l10n.gameEventStartGo,
     ];
 
     // 공지 배너는 8.8초(표시 8초 + 사라짐 0.8초) 동안 남는다
-    final lastBanner = messages.lastIndexWhere((m) => m.$2);
     _startBannersEndAt = clock.now().add(
-      Duration(milliseconds: 10000 * lastBanner + 8800),
+      Duration(milliseconds: 10000 * (messages.length - 1) + 8800),
     );
 
     for (var i = 0; i < messages.length; i++) {
-      final (message, showBanner) = messages[i];
+      final message = messages[i];
       void send() {
         ref
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(gameId: _gameId, message: message);
-        if (showBanner) _gameEventNotifier?.setBannerMessage(message);
+        _gameEventNotifier?.setBannerMessage(message);
       }
 
       if (i == 0) {

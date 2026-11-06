@@ -581,6 +581,38 @@ void main() {
     },
   );
 
+  // 일반 게임도 시작 10초 "잠시 후 게임이 시작돼요"·30초 "게임 시작!"을 공지 배너로 띄운다
+  // (DEC-0096을 대체 — 대기 장면에서는 카드 줄 공지 칸에 보인다)
+  testWidgets('normal_game_shows_start_ready_and_go_notices_when_game_starts', (
+    tester,
+  ) async {
+    await withClock(gameClock(tester), () async {
+      setFreshGame(team: 'POLICE', policeWaitMinutes: 5);
+      session.participants = const InGameParticipantsResponse(
+        police: [
+          InGameParticipant(
+            participantId: 5,
+            nickname: '경찰',
+            status: 'POLICE_WAITING',
+          ),
+        ],
+        robbers: [],
+      );
+      await mount(tester, team: 'POLICE');
+      final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+      Finder notice(String text) => find.descendant(
+        of: find.byType(MarqueeAlertBanner),
+        matching: find.text(text),
+      );
+
+      await advance(tester, const Duration(seconds: 11));
+      expect(notice(l10n.gameEventStartReady), findsOneWidget);
+      await advance(tester, const Duration(seconds: 20));
+      expect(notice(l10n.gameEventStartGo), findsOneWidget);
+      await tester.pump(const Duration(seconds: 40));
+    });
+  });
+
   // 남은 시간이 00:00까지 내려간 걸 본 뒤에 출동 배너가 뜬다 — 00:01에서 끊기면 덜 센 것처럼 보인다
   testWidgets('police_wait_shows_zero_before_dispatch_banner_when_wait_ends', (
     tester,
@@ -611,7 +643,7 @@ void main() {
       expect(sawZero, isTrue);
       await advance(tester, const Duration(seconds: 4));
       // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(const Duration(seconds: 40));
     });
   });
 
@@ -646,7 +678,7 @@ void main() {
         await advance(tester, const Duration(seconds: 4));
         expect(tester.takeException(), isNull);
         // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-        await tester.pump(const Duration(seconds: 30));
+        await tester.pump(const Duration(seconds: 40));
       });
     },
   );
@@ -688,7 +720,7 @@ void main() {
         expect(find.byType(DispatchBanner), findsNothing);
         expect(tester.takeException(), isNull);
         // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-        await tester.pump(const Duration(seconds: 30));
+        await tester.pump(const Duration(seconds: 40));
       });
     },
   );
@@ -707,7 +739,7 @@ void main() {
       expect(find.text(l10n.gameLeaveConfirmTitle), findsNothing);
       expect(tester.takeException(), isNull);
       // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-      await tester.pump(const Duration(seconds: 30));
+      await tester.pump(const Duration(seconds: 40));
     },
   );
 
@@ -751,8 +783,8 @@ void main() {
     expect(find.byType(PoliceStartCountdown), findsOneWidget);
     expect(tester.takeException(), isNull);
     // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-    // 설명 화면을 닫으면 ⓘ 안내가 신고 안내(20초) 배너 뒤인 28.8초에 떠 8.8초 남는다.
-    await tester.pump(const Duration(seconds: 40));
+    // 설명 화면을 닫으면 ⓘ 안내가 마지막 시작 공지(30초) 배너 뒤인 38.8초에 떠 8.8초 남는다.
+    await tester.pump(const Duration(seconds: 50));
   });
 
   testWidgets('police_participant_list_shows_over_wait_screen_when_opened', (
@@ -777,7 +809,7 @@ void main() {
     expect(find.byTooltip(l10n.buttonLeave), findsNothing);
     expect(tester.takeException(), isNull);
     // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-    await tester.pump(const Duration(seconds: 30));
+    await tester.pump(const Duration(seconds: 40));
   });
 
   testWidgets('police_wait_screen_steps_aside_for_chat_until_chat_closes', (
@@ -800,7 +832,7 @@ void main() {
     expect(find.byType(ChaseScene), findsOneWidget);
     expect(tester.takeException(), isNull);
     // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-    await tester.pump(const Duration(seconds: 30));
+    await tester.pump(const Duration(seconds: 40));
   });
 
   testWidgets(
@@ -835,7 +867,7 @@ void main() {
         expect(find.byType(DispatchBanner), findsNothing);
         expect(tester.takeException(), isNull);
         // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-        await tester.pump(const Duration(seconds: 30));
+        await tester.pump(const Duration(seconds: 40));
       });
     },
   );
@@ -860,7 +892,7 @@ void main() {
         tester.element(find.byType(GamePage)),
       ).startRulesHint;
       expect(
-        await bannerShows(tester, hint, const Duration(seconds: 40)),
+        await bannerShows(tester, hint, const Duration(seconds: 50)),
         isTrue,
       );
       expect(await GameRulesHintPrefs.seen(), isTrue);
@@ -886,7 +918,7 @@ void main() {
   );
 
   testWidgets(
-    'rules_hint_waits_for_report_tip_banner_when_robber_explainer_closes_first',
+    'rules_hint_waits_for_start_notices_when_robber_explainer_closes_first',
     (tester) async {
       setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
       await mount(tester, size: const Size(393, 852));
@@ -895,7 +927,11 @@ void main() {
       await advance(tester, const Duration(seconds: 21));
       expect(find.text(l10n.gameEventStartReportTip), findsWidgets);
       expect(find.text(l10n.startRulesHint), findsNothing);
-      // 신고 안내 배너가 내려간 뒤(20초 + 8.8초) 덮이지 않고 뜬다
+      // 30초엔 "게임 시작!" 공지가 이어진다(DEC-0138) — 그 배너도 덮지 않고 기다린다
+      await advance(tester, const Duration(seconds: 10));
+      expect(find.text(l10n.gameEventStartGo), findsWidgets);
+      expect(find.text(l10n.startRulesHint), findsNothing);
+      // 마지막 시작 공지가 내려간 뒤(30초 + 8.8초) 뜬다
       await advance(tester, const Duration(seconds: 9));
       expect(find.text(l10n.startRulesHint), findsOneWidget);
       expect(await GameRulesHintPrefs.seen(), isTrue);
@@ -909,7 +945,7 @@ void main() {
     (tester) async {
       setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
       await mount(tester, size: const Size(393, 852));
-      // 설명 화면이 닫히고(23.4초) 안내가 신고 안내 배너를 기다리는 동안 게임 화면이 닫힌다
+      // 설명 화면이 닫히고(23.4초) 안내가 시작 공지 배너를 기다리는 동안 게임 화면이 닫힌다
       await advance(tester, const Duration(seconds: 25));
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 10));
@@ -925,7 +961,7 @@ void main() {
     setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
     await mount(tester, size: const Size(393, 852));
     final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-    // 설명 화면이 닫히고(23.4초) 안내가 신고 안내 배너(28.8초까지)를 기다리는 중
+    // 설명 화면이 닫히고(23.4초) 안내가 시작 공지 배너(38.8초까지)를 기다리는 중
     await advance(tester, const Duration(seconds: 25));
     socket.events.add(
       const GameEventModel(
