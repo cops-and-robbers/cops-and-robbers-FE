@@ -191,4 +191,57 @@ void main() {
     expect(ys[2] - ys[1], moreOrLessEquals(48 + 8));
     expect(button.top - (ys[2] + 48 / 2), moreOrLessEquals(16));
   });
+
+  // 지도 메뉴는 기본 원 64 · 아이콘 32이고, 항목이 늘면 하나당 8씩 줄어 원 48 · 아이콘 24에서 멈춘다
+  for (final (count, circle, icon) in [
+    (3, 64.0, 32.0),
+    (4, 56.0, 28.0),
+    (6, 48.0, 24.0),
+  ]) {
+    testWidgets(
+      'map_menu_items_are_${circle.toInt()}_when_menu_has_${count}_items',
+      (tester) async {
+        tester.view.physicalSize = const Size(393, 852);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ko'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ScreenUtilInit(
+              designSize: const Size(393, 852),
+              builder: (context, _) => Scaffold(
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.centerFloat,
+                floatingActionButton: GameFabMenu(
+                  isDarkMode: false,
+                  items: [
+                    for (var i = 0; i < count; i++)
+                      GameFabMenuItem(label: '항목$i', icon: AppIcons.grid),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.byType(GameFabMenu));
+        await tester.pumpAndSettle();
+
+        final svg = find
+            .byWidgetPredicate(
+              (w) =>
+                  w is SvgPicture &&
+                  w.bytesLoader is SvgAssetLoader &&
+                  (w.bytesLoader as SvgAssetLoader).assetName == AppIcons.grid,
+            )
+            .first;
+        final circleBox = find
+            .ancestor(of: svg, matching: find.byType(Container))
+            .first;
+        expect(tester.getSize(svg).width, moreOrLessEquals(icon));
+        expect(tester.getSize(circleBox).width, moreOrLessEquals(circle));
+      },
+    );
+  }
 }

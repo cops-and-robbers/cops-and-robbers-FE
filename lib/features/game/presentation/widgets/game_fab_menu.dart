@@ -125,7 +125,7 @@ class _OpenMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = 150.w;
-    final circleSize = 64.w;
+    final circleSize = _fanCircle(items.length);
     final count = items.length;
 
     return Stack(
@@ -155,8 +155,8 @@ class _OpenMenu extends StatelessWidget {
               rise:
                   _RoundButton.size / 2 +
                   _stackFirstGap +
-                  _stackCircle / 2 +
-                  (count - 1 - i) * (_stackCircle + _stackGap),
+                  _itemCircle / 2 +
+                  (count - 1 - i) * (_itemCircle + _stackGap),
               curve: CurvedAnimation(
                 parent: animation,
                 curve: Interval(
@@ -208,7 +208,14 @@ class _OpenMenu extends StatelessWidget {
     );
   }
 
-  static double get _stackCircle => 48.w;
+  /// 시안: 장면(위로 쌓기) 항목 원 48 · 아이콘 24
+  static double get _itemCircle => 48.w;
+  static double get _itemIcon => 24.w;
+
+  /// 지도(부채꼴)는 기본 원 64이고 항목이 3개를 넘으면 하나당 8씩 줄어 장면 크기(48)에서 멈춘다.
+  /// 같은 호에 항목이 늘면 원끼리·라벨끼리 붙기 때문이다. 아이콘은 늘 원의 절반.
+  static double _fanCircle(int count) =>
+      (64 - (count - 3).clamp(0, 2) * 8).toDouble().w;
 
   /// 시안: 버튼과 첫 항목 사이 16, 항목끼리 8
   static double get _stackFirstGap => 16.w;
@@ -222,12 +229,12 @@ class _OpenMenu extends StatelessWidget {
     required Animation<double> curve,
   }) {
     final right =
-        MediaQuery.sizeOf(context).width - center.dx - _stackCircle / 2;
+        MediaQuery.sizeOf(context).width - center.dx - _itemCircle / 2;
     return AnimatedBuilder(
       animation: curve,
       builder: (context, child) => Positioned(
         right: right,
-        top: center.dy - rise * curve.value - _stackCircle / 2,
+        top: center.dy - rise * curve.value - _itemCircle / 2,
         child: Opacity(opacity: curve.value.clamp(0.0, 1.0), child: child),
       ),
       child: _tapTarget(
@@ -238,7 +245,7 @@ class _OpenMenu extends StatelessWidget {
           children: [
             _label(item),
             SizedBox(width: AppSpacing.horizontal8),
-            _circle(item, _stackCircle, 24.w),
+            _circle(item, _itemCircle, _itemIcon),
           ],
         ),
       ),
@@ -323,7 +330,7 @@ class _OpenMenu extends StatelessWidget {
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _circle(item, circleSize, 32.w),
+            _circle(item, circleSize, circleSize / 2),
             SizedBox(height: AppSpacing.vertical6),
             _label(item),
           ],
