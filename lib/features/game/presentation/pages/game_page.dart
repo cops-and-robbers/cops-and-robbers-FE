@@ -2974,7 +2974,7 @@ class _GamePageState extends ConsumerState<GamePage>
       ),
       GameMenuEntry.arrest => GameFabMenuItem(
         label: l10n.gameMenuArrest,
-        icon: AppIcons.scan,
+        icon: AppIcons.qrScan,
         iconColor: accent,
         onTap: unlessZoneExit(_openQrScanner),
       ),

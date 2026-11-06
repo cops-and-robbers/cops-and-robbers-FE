@@ -91,7 +91,6 @@ abstract final class AppIcons {
   static const String reply = 'assets/icons/icon_reply.svg';
   static const String saveOff = 'assets/icons/icon_save_off.svg';
   static const String saveOn = 'assets/icons/icon_save_on.svg';
-  static const String scan = 'assets/icons/icon_scan.svg';
   static const String search = 'assets/icons/icon_search.svg';
   static const String sending = 'assets/icons/icon_sending.svg';
   static const String setting2 = 'assets/icons/icon_settiing_2.svg';

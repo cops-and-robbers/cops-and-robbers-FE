@@ -167,7 +167,7 @@ void main() {
               isDarkMode: false,
               stacksUp: true,
               items: [
-                GameFabMenuItem(label: '체포', icon: AppIcons.scan),
+                GameFabMenuItem(label: '체포', icon: AppIcons.qrScan),
                 GameFabMenuItem(label: '참가자', icon: AppIcons.headcount),
                 GameFabMenuItem(label: '채팅', icon: AppIcons.comment),
               ],
