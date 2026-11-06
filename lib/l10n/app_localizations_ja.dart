@@ -1227,10 +1227,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startGameTimeLeftLabel => '残りゲーム時間';
 
   @override
-  String get startWaitPoliceTitle => '泥棒が逃げています';
+  String get startWaitPoliceTitle => '泥棒が逃げています！';
 
   @override
-  String get startWaitRobberTitle => '警察から離れています';
+  String get startWaitRobberTitle => '警察から離れましょう！';
+
+  @override
+  String get startMissionPoliceLabel => '警察チームのミッション';
+
+  @override
+  String get startMissionRobberLabel => '泥棒チームのミッション';
+
+  @override
+  String get startMissionPolice => '泥棒を見つけてQRで全員逮捕しましょう';
+
+  @override
+  String get startMissionRobber => 'ゲームが終わるまで捕まらずに逃げ切りましょう';
 
   @override
   String startRulesCounter(int current, int total) {
@@ -1275,9 +1287,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get startRuleJailbreakReplay => '捕まった泥棒は牢屋に入り、外に出て3秒たつと脱獄します';
-
-  @override
-  String get startTapToMap => 'タップすると地図に戻ります';
 
   @override
   String get dispatchPoliceLead => '時間です';

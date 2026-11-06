@@ -1226,10 +1226,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startGameTimeLeftLabel => '남은 게임 시간';
 
   @override
-  String get startWaitPoliceTitle => '도둑이 도망치는 중이에요';
+  String get startWaitPoliceTitle => '도둑이 도망치는 중이에요!';
 
   @override
-  String get startWaitRobberTitle => '경찰에게서 멀어지는 중이에요';
+  String get startWaitRobberTitle => '경찰에게서 멀어지세요!';
+
+  @override
+  String get startMissionPoliceLabel => '경찰 팀 미션';
+
+  @override
+  String get startMissionRobberLabel => '도둑 팀 미션';
+
+  @override
+  String get startMissionPolice => '도둑을 찾아 QR로 모두 체포하세요';
+
+  @override
+  String get startMissionRobber => '게임이 끝날 때까지 잡히지 말고 도망치세요';
 
   @override
   String startRulesCounter(int current, int total) {
@@ -1274,9 +1286,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get startRuleJailbreakReplay => '잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요';
-
-  @override
-  String get startTapToMap => '탭하면 지도로 돌아가요';
 
   @override
   String get dispatchPoliceLead => '시간이 됐어요';

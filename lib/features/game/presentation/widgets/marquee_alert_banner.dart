@@ -19,6 +19,7 @@ class MarqueeAlertBanner extends StatefulWidget {
     this.displayDuration = const Duration(seconds: 8),
     this.fadeOutDuration = const Duration(milliseconds: 800),
     this.slideInDuration = const Duration(milliseconds: 300),
+    this.horizontalMargin,
     super.key,
   });
 
@@ -27,6 +28,25 @@ class MarqueeAlertBanner extends StatefulWidget {
   final Duration displayDuration;
   final Duration fadeOutDuration;
   final Duration slideInDuration;
+
+  /// 화면 가장자리와 배너 사이 여백. 없으면 20 — 시작 장면은 카드 줄에 맞춰 바꾼다.
+  final double? horizontalMargin;
+
+  /// 배너 한 장의 높이(위아래 여백 12 + 아이콘 20과 글자 한 줄 중 큰 쪽).
+  /// 시작 장면이 공지가 없을 때도 이만큼 자리를 비워 둬 카드가 움직이지 않게 한다.
+  static double heightFor({required bool isDarkMode}) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: ' ',
+        style: _MarqueeAlertBannerState._styleFor(isDarkMode),
+      ),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    final line = painter.height;
+    painter.dispose();
+    return 12.h * 2 + (line > 20.w ? line : 20.w);
+  }
 
   @override
   State<MarqueeAlertBanner> createState() => _MarqueeAlertBannerState();
@@ -46,12 +66,16 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
   // ── 마퀴 (텍스트 우→좌 반복) ──
   late AnimationController _marqueeController;
 
+  double get _margin => widget.horizontalMargin ?? 20.w;
+
   /// 마퀴 1사이클 시간 (초)
   static const int _cycleSeconds = 8;
 
   /// 텍스트 스타일 (라이트: paragraph14Semibold, 다크: robberParagraph)
-  TextStyle get _textStyle =>
-      (widget.isDarkMode
+  TextStyle get _textStyle => _styleFor(widget.isDarkMode);
+
+  static TextStyle _styleFor(bool isDarkMode) =>
+      (isDarkMode
               ? AppTextStyles.robberParagraph
               : AppTextStyles.paragraph14Semibold)
           .copyWith(color: AppColors.white);
@@ -126,10 +150,10 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Padding(
-          padding: AppPadding.horizontal20,
+          padding: EdgeInsets.symmetric(horizontal: _margin),
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.red,
+              color: AppColors.red900,
               borderRadius: AppRadius.large,
             ),
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -144,8 +168,8 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
                 ),
                 SizedBox(width: AppSpacing.horizontal8),
                 Expanded(
-                  child: Builder(
-                    builder: (context) {
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
                       final textHeight = _measureTextSize(
                         widget.message,
                       ).height;
@@ -156,7 +180,7 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
                             maxWidth: double.infinity,
                             maxHeight: textHeight,
                             alignment: Alignment.centerLeft,
-                            child: _buildMarquee(),
+                            child: _buildMarquee(constraints.maxWidth),
                           ),
                         ),
                       );
@@ -171,32 +195,18 @@ class _MarqueeAlertBannerState extends State<MarqueeAlertBanner>
     );
   }
 
-  /// 텍스트가 우측 밖에서 시작 → 좌측 밖으로 나감 → 반복
+  /// 텍스트가 칸 오른쪽 끝에서 시작 → 왼쪽 밖으로 나감 → 반복
   ///
-  /// 부모: Expanded → ClipRect → OverflowBox(maxWidth: infinity)
-  /// OverflowBox가 레이아웃 제약을 해제하여 텍스트 전체 렌더링,
-  /// ClipRect가 컨테이너 밖은 시각적으로 클리핑한다.
-  Widget _buildMarquee() {
-    // 가용 너비 = 화면폭 − (바깥 패딩 좌우 + 컨테이너 패딩 좌우 + 아이콘 폭 + 아이콘·텍스트 간격)
-    // 각 값의 출처는 build()의 동일 위젯 — 해당 패딩/아이콘을 바꾸면 여기도 함께 수정.
-    const outerPaddingTotal = 40.0; // AppPadding.horizontal20 좌우 (20 × 2)
-    const containerPaddingTotal = 32.0; // Container 패딩 horizontal 16 × 2
-    const iconWidth = 20.0; // Loudspeaker 아이콘 폭
-    const gapWidth = 8.0; // AppSpacing.horizontal8 (아이콘·텍스트 간격)
-    final containerWidth =
-        1.sw -
-        outerPaddingTotal.w -
-        containerPaddingTotal.w -
-        iconWidth.w -
-        gapWidth.w;
+  /// [areaWidth]는 Expanded가 실제로 준 글자 칸 너비다 — 시작 장면처럼 바깥 여백이
+  /// 화면 폭과 다를 때도 글자가 칸 끝에서 바로 들어온다.
+  Widget _buildMarquee(double areaWidth) {
     final textWidth = _measureTextWidth(widget.message);
-    final totalDistance = containerWidth + textWidth;
+    final totalDistance = areaWidth + textWidth;
 
     return AnimatedBuilder(
       animation: _marqueeController,
       builder: (context, child) {
-        final offset =
-            containerWidth - (totalDistance * _marqueeController.value);
+        final offset = areaWidth - (totalDistance * _marqueeController.value);
         return Transform.translate(offset: Offset(offset, 0), child: child);
       },
       child: Text(

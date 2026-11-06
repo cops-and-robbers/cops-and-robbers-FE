@@ -1106,13 +1106,29 @@
   "@startGameTimeLeftLabel": {
     "description": "출동 뒤 규칙 다시 보기에서 카운트다운 자리의 남은 게임 시간 위 라벨"
   },
-  "startWaitPoliceTitle": "도둑이 도망치는 중이에요",
+  "startWaitPoliceTitle": "도둑이 도망치는 중이에요!",
   "@startWaitPoliceTitle": {
     "description": "경찰 대기 화면 제목"
   },
-  "startWaitRobberTitle": "경찰에게서 멀어지는 중이에요",
+  "startWaitRobberTitle": "경찰에게서 멀어지세요!",
   "@startWaitRobberTitle": {
     "description": "도둑 설명 화면 제목"
+  },
+  "startMissionPoliceLabel": "경찰 팀 미션",
+  "@startMissionPoliceLabel": {
+    "description": "대기·설명 장면 미션 카드 라벨 (경찰)"
+  },
+  "startMissionRobberLabel": "도둑 팀 미션",
+  "@startMissionRobberLabel": {
+    "description": "대기·설명 장면 미션 카드 라벨 (도둑)"
+  },
+  "startMissionPolice": "도둑을 찾아 QR로 모두 체포하세요",
+  "@startMissionPolice": {
+    "description": "대기·설명 장면 미션 카드 본문 (경찰)"
+  },
+  "startMissionRobber": "게임이 끝날 때까지 잡히지 말고 도망치세요",
+  "@startMissionRobber": {
+    "description": "대기·설명 장면 미션 카드 본문 (도둑)"
   },
   "startRulesCounter": "게임 규칙 {current}/{total}",
   "@startRulesCounter": {
@@ -1174,10 +1190,6 @@
   "startRuleJailbreakReplay": "잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요",
   "@startRuleJailbreakReplay": {
     "description": "규칙 다시 보기 6 — 탈옥(팀 공통 시점)"
-  },
-  "startTapToMap": "탭하면 지도로 돌아가요",
-  "@startTapToMap": {
-    "description": "도둑 설명 화면 아래 안내"
   },
   "dispatchPoliceLead": "시간이 됐어요",
   "@dispatchPoliceLead": {

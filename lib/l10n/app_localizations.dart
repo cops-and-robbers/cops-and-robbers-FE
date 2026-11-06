@@ -2351,14 +2351,38 @@ abstract class AppLocalizations {
   /// 경찰 대기 화면 제목
   ///
   /// In ko, this message translates to:
-  /// **'도둑이 도망치는 중이에요'**
+  /// **'도둑이 도망치는 중이에요!'**
   String get startWaitPoliceTitle;
 
   /// 도둑 설명 화면 제목
   ///
   /// In ko, this message translates to:
-  /// **'경찰에게서 멀어지는 중이에요'**
+  /// **'경찰에게서 멀어지세요!'**
   String get startWaitRobberTitle;
+
+  /// 대기·설명 장면 미션 카드 라벨 (경찰)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 팀 미션'**
+  String get startMissionPoliceLabel;
+
+  /// 대기·설명 장면 미션 카드 라벨 (도둑)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 팀 미션'**
+  String get startMissionRobberLabel;
+
+  /// 대기·설명 장면 미션 카드 본문 (경찰)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑을 찾아 QR로 모두 체포하세요'**
+  String get startMissionPolice;
+
+  /// 대기·설명 장면 미션 카드 본문 (도둑)
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 끝날 때까지 잡히지 말고 도망치세요'**
+  String get startMissionRobber;
 
   /// 경찰 대기·도둑 설명 화면과 규칙 다시 보기의 회전 규칙 번호
   ///
@@ -2431,12 +2455,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요'**
   String get startRuleJailbreakReplay;
-
-  /// 도둑 설명 화면 아래 안내
-  ///
-  /// In ko, this message translates to:
-  /// **'탭하면 지도로 돌아가요'**
-  String get startTapToMap;
 
   /// 출동 배너(경찰) 작은 줄
   ///

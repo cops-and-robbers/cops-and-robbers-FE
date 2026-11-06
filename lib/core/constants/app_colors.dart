@@ -168,7 +168,7 @@ class AppColors {
 
   /// 빨강 900
   /// Red 900
-  static const Color red900 = Color(0xFFE64C4F);
+  static const Color red900 = Color(0xFFF64C4F);
 
   /// 빨강 800
   /// Red 800

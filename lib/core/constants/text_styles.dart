@@ -52,6 +52,15 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  /// 게임 시작 장면 출동 카운트다운 (S-Core Dream 7 ExtraBold 80)
+  /// 숫자 폭이 모두 같은 글꼴이라 초가 바뀌어도 흔들리지 않는다
+  static TextStyle get scoreDreamExtrabold_80 => TextStyle(
+    fontFamily: 'SCDream-ExtraBold',
+    fontSize: 80.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   static TextStyle get semibold_28 => TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 28.sp,
@@ -158,6 +167,14 @@ class AppTextStyles {
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 14.sp,
     height: 1.0, // 100% line height
+    letterSpacing: -0.32,
+  );
+
+  /// 피그마 `paragraph_14px_Semibold` — 줄 높이 1.16 (게임 시작 장면 카드 본문)
+  static TextStyle get paragraph14Semibold116 => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 14.sp,
+    height: 1.16,
     letterSpacing: -0.32,
   );
 

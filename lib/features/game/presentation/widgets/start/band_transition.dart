@@ -80,9 +80,14 @@ class _BandTransitionState extends State<BandTransition>
           curve: Cubic(.7, 0, .25, 1),
         ).transform(_reveal.value);
         final fold = const Cubic(.6, 0, .8, .3).transform(_fold.value);
-        if (open == 1 && fold == 0) return child!;
+        // 다 펼쳐져도 ClipPath 틀은 그대로 두고 자르기만 끈다 — 틀을 빼면 위젯 트리 모양이 바뀌어
+        // 장면이 새로 만들어지고 공지·규칙·남은 시간 막대가 처음부터 다시 돈다
+        final settled = open == 1 && fold == 0;
         return ClipPath(
-          clipper: fold > 0
+          clipBehavior: settled ? Clip.none : Clip.antiAlias,
+          clipper: settled
+              ? null
+              : fold > 0
               ? _BandClipper(
                   bandHeight: DispatchBanner.bandHeight,
                   open: 1 - fold,
