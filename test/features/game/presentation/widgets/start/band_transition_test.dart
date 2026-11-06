@@ -103,4 +103,64 @@ void main() {
     await tester.tapAt(center);
     expect(taps, 1);
   });
+
+  // 띠가 다 펼쳐진 순간에도 장면은 같은 장면이어야 한다 — 새로 만들어지면 공지·규칙·남은 시간 막대가 처음부터 다시 돈다
+  testWidgets('scene_keeps_its_state_when_band_finishes_revealing', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(393 * 3, 852 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    var created = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BandTransition(
+          revealFromBand: true,
+          child: _CountsCreation(onCreate: () => created++),
+        ),
+      ),
+    );
+    await tester.pump(const Duration(milliseconds: 200)); // 펼치는 중
+    await tester.pump(const Duration(seconds: 2)); // 다 펼쳐짐
+    expect(created, 1);
+  });
+
+  // 출동 띠로 접히기 시작해도 같은 장면이 접힌다
+  testWidgets('scene_keeps_its_state_when_band_starts_folding', (tester) async {
+    tester.view.physicalSize = const Size(393 * 3, 852 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    var created = 0;
+    Widget scene({required bool fold}) => MaterialApp(
+      home: BandTransition(
+        fold: fold,
+        child: _CountsCreation(onCreate: () => created++),
+      ),
+    );
+    await tester.pumpWidget(scene(fold: false));
+    await tester.pumpWidget(scene(fold: true));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(created, 1);
+    await tester.pump(const Duration(seconds: 2));
+  });
+}
+
+/// 만들어질 때마다 알린다 — 장면이 다시 만들어지는지 센다
+class _CountsCreation extends StatefulWidget {
+  const _CountsCreation({required this.onCreate});
+  final VoidCallback onCreate;
+
+  @override
+  State<_CountsCreation> createState() => _CountsCreationState();
+}
+
+class _CountsCreationState extends State<_CountsCreation> {
+  @override
+  void initState() {
+    super.initState();
+    widget.onCreate();
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.expand();
 }
