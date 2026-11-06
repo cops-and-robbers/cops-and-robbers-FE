@@ -63,7 +63,8 @@ Future<void> tapScreen(WidgetTester tester) =>
     tester.tapAt(const Offset(187, 120));
 
 void main() {
-  // 결과가 1.4초 전에 와 있으면: 1.4초 흔들림 시작 → 2.7초 첫 공개 → 4.05초부터 탭.
+  // 결과가 1.4초 전에 와 있으면: 1.4초 흔들림 시작 → 2.7초 첫 공개 → 6.1초부터 탭
+  // (전환 0.35초 + 조명 연출 2.05초 + 캐릭터 등장 후 1초).
   testWidgets(
     'closes_after_three_seconds_without_tease_when_server_predates_mvp',
     (tester) async {
@@ -112,14 +113,14 @@ void main() {
     await tapScreen(tester); // 연출 중 — 무시
     await advance(tester, const Duration(milliseconds: 400));
     expect(find.text('그림자'), findsOneWidget);
-    expect(find.text('탭하면 넘어가요'), findsOneWidget); // 투명도 0이어도 트리에 있다
+    expect(find.text('화면을 누르면 다음 결과로 넘어가요'), findsOneWidget); // 투명도 0이어도 트리에 있다
 
-    await advance(tester, const Duration(milliseconds: 1000)); // 4.3초 — 탭 가능
+    await advance(tester, const Duration(milliseconds: 2900)); // 6.2초 — 탭 가능
     await tapScreen(tester);
     await advance(tester, const Duration(milliseconds: 500));
     expect(find.text('번개경찰'), findsOneWidget);
 
-    await advance(tester, const Duration(milliseconds: 1400));
+    await advance(tester, const Duration(milliseconds: 3000)); // 둘째 공개도 3.4초 뒤
     await tapScreen(tester);
     await advance(tester, const Duration(milliseconds: 500));
     expect(find.text('번개경찰'), findsNothing);
@@ -131,7 +132,7 @@ void main() {
     await advance(tester, const Duration(milliseconds: 2900));
 
     await tester.binding.handlePopRoute(); // 연출 중 뒤로가기 — 무시
-    await advance(tester, const Duration(milliseconds: 1400));
+    await advance(tester, const Duration(milliseconds: 3300)); // 6.2초
     expect(find.text('그림자'), findsOneWidget);
 
     await tester.binding.handlePopRoute(); // 연출 끝 — 다음 MVP
@@ -171,7 +172,7 @@ void main() {
       ),
     );
 
-    await advance(tester, const Duration(milliseconds: 4300));
+    await advance(tester, const Duration(milliseconds: 6200));
     expect(find.text('번개경찰'), findsOneWidget);
     await tapScreen(tester);
     await advance(tester, const Duration(milliseconds: 500));
