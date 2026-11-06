@@ -14,6 +14,20 @@ void main() {
     isEventGame: isEventGame,
   );
 
+  // 대기·설명 장면은 지도를 덮고 있어 좌표를 켜도 보이지 않는다
+  test('grid_is_left_out_when_scene_covers_the_map', () {
+    expect(
+      gameMenuEntries(
+        isPolice: true,
+        isArrested: false,
+        isZoneExitActive: false,
+        isEventGame: false,
+        isMapVisible: false,
+      ),
+      [GameMenuEntry.participants, GameMenuEntry.arrest],
+    );
+  });
+
   test('police_gets_arrest_on_the_right_when_chasing_in_a_normal_game', () {
     expect(entries(isPolice: true), [
       GameMenuEntry.grid,

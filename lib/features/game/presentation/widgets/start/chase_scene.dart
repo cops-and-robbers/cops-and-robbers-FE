@@ -30,6 +30,7 @@ class ChaseScene extends StatefulWidget {
     required this.revealMinutes,
     this.roundTimeMinutes,
     this.onClose,
+    this.bottomReserved = 0,
   });
 
   final ChaseSceneMode mode;
@@ -44,6 +45,9 @@ class ChaseScene extends StatefulWidget {
 
   /// 설명 화면(20초·탭)·다시 보기(탭)가 닫힐 때. 경찰 대기 화면은 탭으로 닫히지 않는다.
   final VoidCallback? onClose;
+
+  /// 화면 아래에서 규칙 글이 비워 둘 실제 높이. 위에 뜨는 플로팅 메뉴를 가리지 않게 한다.
+  final double bottomReserved;
 
   /// 규칙 4줄을 한 번씩 다 보여 주는 시간
   static const explainerDuration = Duration(seconds: 20);
@@ -208,9 +212,10 @@ class _ChaseSceneState extends State<ChaseScene> {
                         260 * s,
                         s,
                       ),
-                      bottomClearance: widget.mode == ChaseSceneMode.policeWait
-                          ? 8
-                          : 40,
+                      bottomClearance: math.max(
+                        widget.mode == ChaseSceneMode.policeWait ? 8 : 40,
+                        widget.bottomReserved / s,
+                      ),
                     ),
                     child: _rule(l10n, rules, ruleIndex, s, reduceMotion),
                   ),

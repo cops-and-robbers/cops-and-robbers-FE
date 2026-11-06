@@ -26,6 +26,7 @@ Future<void> pumpScene(
   int roundTimeMinutes = 30,
   Size size = const Size(393, 852),
   Locale locale = const Locale('ko'),
+  double bottomReserved = 0,
 }) async {
   tester.view.physicalSize = size * 3;
   tester.view.devicePixelRatio = 3;
@@ -43,6 +44,7 @@ Future<void> pumpScene(
             isPolice: isPolice,
             scene: StartScene.town,
             gameStartTime: clock.now().subtract(elapsed),
+            bottomReserved: bottomReserved,
             policeWaitMinutes: 5,
             revealMinutes: revealMinutes,
             roundTimeMinutes: roundTimeMinutes,
@@ -176,6 +178,29 @@ void main() {
       await unmount(tester);
     },
   );
+
+  // 플로팅 메뉴(가운데 아래)가 규칙 글을 가리면 안 된다. 136은 393×852 iPhone의 버튼 윗선이다.
+  for (final (isPolice, mode, rule) in [
+    (true, ChaseSceneMode.policeWait, '도둑의 QR을 스캔하면 체포돼요'),
+    (false, ChaseSceneMode.robberExplainer, '경찰이 내 QR을 스캔하면 잡혀요'),
+  ]) {
+    testWidgets(
+      'rule_stays_above_floating_menu_when_${mode.name}_reserves_bottom',
+      (tester) async {
+        await pumpScene(
+          tester,
+          mode: mode,
+          isPolice: isPolice,
+          elapsed: const Duration(seconds: 1),
+          bottomReserved: 136,
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        final bottom = tester.getBottomLeft(find.text(rule)).dy;
+        expect(bottom, lessThanOrEqualTo(852 - 136));
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
+  }
 
   testWidgets('police_wait_stays_open_when_police_taps_screen', (tester) async {
     var closed = 0;

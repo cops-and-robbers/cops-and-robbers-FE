@@ -22,6 +22,9 @@ class AppColors {
   /// Black color
   static const Color black = Color(0xFF080A0C);
 
+  /// 순흑 #000000 — 도둑 역할 배너 띠 (시안 값, [black]은 #080A0C로 다르다)
+  static const Color pureBlack = Color(0xFF000000);
+
   /// 완전 투명
   /// Transparent color
   static const Color transparent = Color(0x00000000);

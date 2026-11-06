@@ -44,6 +44,14 @@ class AppTextStyles {
 
   /// SemiBold28 - 초대 코드 (28px SemiBold)
   /// Line Height: 100%, Letter Spacing: -0.32px
+  /// 역할 배너 제목 전용 (S-Core Dream 7 ExtraBold)
+  static TextStyle get scoreDreamExtrabold_45 => TextStyle(
+    fontFamily: 'SCDream-ExtraBold',
+    fontSize: 45.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   static TextStyle get semibold_28 => TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 28.sp,

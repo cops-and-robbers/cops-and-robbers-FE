@@ -2371,9 +2371,16 @@ class _GamePageState extends ConsumerState<GamePage>
         .centroid;
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
     final actionButtonBottom = 38.h + bottomInset;
-    // 지도를 보는 동안만 플로팅 메뉴를 쓴다. 대기·설명 장면에서는 가운데 아래 규칙 줄과
-    // 겹치고, 참가자 목록에서는 지도로 돌아갈 버튼이 필요해 오른쪽 버튼 열을 유지한다.
-    final showsFloatingMenu = !_showParticipants && sceneMode == null;
+    final menuEntries = gameMenuEntries(
+      isPolice: GameTeam.isPolice(widget.team),
+      isArrested: isArrestedNow,
+      isZoneExitActive: _isZoneExitWarningActive,
+      isEventGame: isEventGame,
+      isMapVisible: sceneMode == null,
+    );
+    // 지도와 대기·설명 장면에서 같은 자리에 둔다. 참가자 목록에서는 지도로 돌아갈 버튼이
+    // 필요해 오른쪽 버튼 열을 유지한다. 장면에서 구역을 벗어나면 펼칠 항목이 없어 숨긴다.
+    final showsFloatingMenu = !_showParticipants && menuEntries.isNotEmpty;
 
     return PopScope(
       canPop: false,
@@ -2491,6 +2498,9 @@ class _GamePageState extends ConsumerState<GamePage>
                         policeWaitMinutes: _introWaitMinutes,
                         revealMinutes: _introRevealMinutes,
                         onClose: intro.robberExplainerClosed,
+                        bottomReserved: showsFloatingMenu
+                            ? actionButtonBottom + 56.w + AppSpacing.vertical8
+                            : 0,
                       ),
                     ),
                   ),
@@ -2567,42 +2577,7 @@ class _GamePageState extends ConsumerState<GamePage>
               Positioned(
                 right: 20.w,
                 bottom: actionButtonBottom,
-                child: Column(
-                  children: [
-                    // 증거보드: 읽기 전용 검거 현황 조회 → 이탈 경고 중에도 항상 노출(가드 밖).
-                    // 이벤트 모드 경찰 전용(도둑/일반 게임은 검거 카운트 의미 없음).
-                    if (!showsFloatingMenu &&
-                        isEventGame &&
-                        GameTeam.isPolice(widget.team)) ...[
-                      SvgIconButton(
-                        assetPath: _evidenceBoardIcon,
-                        onPressed: _showEvidenceBoard,
-                        backgroundColor: _isDarkMode ? AppColors.black : null,
-                        isDarkMode: _isDarkMode,
-                      ),
-                      SizedBox(height: AppSpacing.vertical8),
-                    ],
-                    // 참가자·QR 모두 이탈 중에는 숨김.
-                    // 구역 밖에선 체포/QR 액션 자체가 무의미 + 외적으로도 차단 필요.
-                    // 복귀 경로는 좌측 하단 내 위치 버튼이 담당.
-                    if (!showsFloatingMenu && !_isZoneExitWarningActive) ...[
-                      SvgIconButton(
-                        assetPath: AppIcons.person,
-                        onPressed: () =>
-                            setState(() => _showParticipants = true),
-                        iconColor: _isDarkMode
-                            ? AppColors.green
-                            : AppColors.blue,
-                        backgroundColor: _isDarkMode ? AppColors.black : null,
-                        isDarkMode: _isDarkMode,
-                      ),
-                      SizedBox(height: AppSpacing.vertical8),
-                      _buildQrButton(isArrestedNow: isArrestedNow),
-                      SizedBox(height: AppSpacing.vertical8),
-                    ],
-                    _buildChatButton(),
-                  ],
-                ),
+                child: Column(children: [_buildChatButton()]),
               ),
 
             /// index 5b: 좌측 하단 내 위치 버튼 (지도 모드 한정, if/else로 개수 고정)
@@ -2638,12 +2613,7 @@ class _GamePageState extends ConsumerState<GamePage>
                   child: GameFabMenu(
                     isDarkMode: _isDarkMode,
                     items: [
-                      for (final entry in gameMenuEntries(
-                        isPolice: GameTeam.isPolice(widget.team),
-                        isArrested: isArrestedNow,
-                        isZoneExitActive: _isZoneExitWarningActive,
-                        isEventGame: isEventGame,
-                      ))
+                      for (final entry in menuEntries)
                         _buildMenuItem(entry, l10n),
                     ],
                   ),
