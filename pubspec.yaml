@@ -126,6 +126,7 @@ flutter:
     - assets/loading/
     - assets/backgrounds/
     - assets/backgrounds/start_wait/
+    - assets/backgrounds/mvp/
     - assets/onboarding/
     - assets/profiles/
     - assets/characters/home/
@@ -135,6 +136,8 @@ flutter:
     - assets/characters/robber/result/default/
     - assets/characters/police/start/default/
     - assets/characters/robber/start/default/
+    - assets/characters/police/mvp/default/
+    - assets/characters/robber/mvp/default/
     - .env
   fonts:
     - family: Pretendard-Thin
