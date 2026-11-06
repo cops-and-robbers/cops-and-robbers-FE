@@ -76,6 +76,8 @@ skills-lock.json
 
 # Claude
 docs/superpowers/
+# pro-figma 대조 증거물(시안 출력·렌더·차이 그림) — 재생성되는 산출물
+docs/projectops/figma/
 docs/suh-template/review/
 docs/suh-template/troubleshoot/
 
