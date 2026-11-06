@@ -86,7 +86,10 @@ class _ChaseSceneState extends State<ChaseScene> {
       // 화면에 보이는 규칙은 마지막 틱(_now) 기준이다 — 지금 시각으로 멈추면 그 사이 넘어간 다음 규칙이 펼쳐진다
       _ruleExpandedAt = _now;
     } else {
-      _rulePaused += clock.now().difference(expandedAt);
+      // 화면 시각도 지금으로 당긴다 — 마지막 틱 시각으로 두면 접는 순간 시계가 뒤로 가
+      // 바뀐 직후의 규칙이 이전 규칙으로 잠깐 돌아가고 진행 막대도 뒤로 튄다
+      _now = clock.now();
+      _rulePaused += _now.difference(expandedAt);
       _ruleExpandedAt = null;
     }
   });
@@ -468,23 +471,27 @@ class _ChaseSceneState extends State<ChaseScene> {
     required bool expanded,
     required bool reduceMotion,
   }) {
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: _labelStyle),
+        SizedBox(height: AppSpacing.vertical4),
+        Text(
+          body,
+          style: _bodyStyle,
+          maxLines: expanded ? null : 1,
+          overflow: expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+        ),
+      ],
+    );
+    // 동작 줄이기면 바로 바꾼다 — AnimatedSize는 시간이 0이면 레이아웃 도중 자신을 다시
+    // 더럽혀 오류를 낸다(A RenderAnimatedSize was mutated in its own performLayout)
+    if (reduceMotion) return column;
     return AnimatedSize(
-      duration: reduceMotion ? Duration.zero : ChaseScene.expandDuration,
+      duration: ChaseScene.expandDuration,
       alignment: Alignment.topLeft,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: _labelStyle),
-          SizedBox(height: AppSpacing.vertical4),
-          Text(
-            body,
-            style: _bodyStyle,
-            maxLines: expanded ? null : 1,
-            overflow: expanded ? TextOverflow.visible : TextOverflow.ellipsis,
-          ),
-        ],
-      ),
+      child: column,
     );
   }
 

@@ -855,4 +855,35 @@ void main() {
       await unmount(tester);
     },
   );
+
+  // 규칙이 막 바뀐 직후 펼쳤다가 다음 틱 전에 접어도 이전 규칙으로 되돌아가지 않는다
+  testWidgets('rules_replay_keeps_current_rule_when_folded_between_ticks', (
+    tester,
+  ) async {
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.rulesReplay,
+      isPolice: true,
+      elapsed: const Duration(minutes: 12),
+      disableAnimations: true, // 규칙이 바뀔 때 이전 카드가 남지 않게
+    );
+    await advance(tester, ChaseScene.ruleInterval); // 5.00초 틱에 2/6
+    expect(find.text('게임 규칙 2/6'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 50)); // 5.05초
+    final body = find
+        .descendant(
+          of: ruleCard('2/6'),
+          matching: find.byWidgetPredicate((w) => w is Text && w.maxLines == 1),
+        )
+        .first;
+    await tester.tap(body); // 펼침 — 화면 기준(5.00초) 2/6에 멈춘다
+    await tester.pump(
+      const Duration(milliseconds: 100),
+    ); // 5.15초, 다음 틱(5.25초) 전
+    await tester.tap(find.text('게임 규칙 2/6')); // 접음
+    await tester.pump();
+    expect(find.text('게임 규칙 2/6'), findsOneWidget);
+    expect(find.text('게임 규칙 1/6'), findsNothing);
+    await unmount(tester);
+  });
 }
