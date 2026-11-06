@@ -149,20 +149,4 @@ void main() {
       );
     });
   });
-
-  group('startWaitScene', () {
-    test('every_phone_in_same_game_shows_same_scene_when_game_id_matches', () {
-      expect(startWaitScene(1048), startWaitScene(1048));
-      expect(startWaitScene(1048), StartScene.town); // 1048 % 3 == 1
-    });
-
-    test('three_games_created_in_a_row_show_all_three_scenes', () {
-      expect(
-        {
-          for (final id in [1047, 1048, 1049]) startWaitScene(id),
-        },
-        {StartScene.hills, StartScene.town, StartScene.city},
-      );
-    });
-  });
 }

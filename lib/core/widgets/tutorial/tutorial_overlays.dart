@@ -202,13 +202,19 @@ class TutorialOverlays extends StatelessWidget {
       width: 56,
       height: 56,
       decoration: BoxDecoration(
-        color: AppColors.green,
+        color: AppColors.black,
         shape: BoxShape.circle,
         boxShadow: AppShadows.softThemed(true),
       ),
+      alignment: Alignment.center,
       child: Transform.rotate(
         angle: open * math.pi / 4,
-        child: const Icon(Icons.add, color: AppColors.black, size: 32),
+        child: SvgPicture.asset(
+          AppIcons.plus,
+          width: 24,
+          height: 24,
+          colorFilter: const ColorFilter.mode(AppColors.green, BlendMode.srcIn),
+        ),
       ),
     ),
   );

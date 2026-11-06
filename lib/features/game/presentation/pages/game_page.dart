@@ -537,6 +537,24 @@ class _GamePageState extends ConsumerState<GamePage>
     if (!mounted) return;
     setState(() {});
     if (_intro?.hintDue ?? false) unawaited(_showRulesHintOnce());
+    _restartNoticeWhenSceneOpens();
+  }
+
+  /// 대기·설명 장면이 막 열렸는지 — 열리는 순간 한 번만 공지 시간을 다시 잡는다.
+  bool _sceneWasOpen = false;
+
+  /// 역할 배너 동안 온 공지(시작 직후 "게임 시간은 N분")는 장면 카드 줄에서 처음 보인다.
+  /// 공지 시계(8.8초)를 보낸 시각이 아니라 장면이 열린 시각부터 다시 세어야
+  /// 장면에서 8초를 다 보여 주고 서서히 사라진다 — 그대로 두면 몇 초 만에 끊긴다.
+  void _restartNoticeWhenSceneOpens() {
+    final intro = _intro;
+    final open =
+        intro != null && (intro.showPoliceWait || intro.showRobberExplainer);
+    if (open && !_sceneWasOpen) {
+      final message = ref.read(gameEventNotifierProvider).bannerMessage;
+      if (message != null) _gameEventNotifier?.setBannerMessage(message);
+    }
+    _sceneWasOpen = open;
   }
 
   /// 경찰 출동 — 기기 시계 타이머와 서버 POLICE_MOVE_START 중 먼저 온 쪽(컨트롤러가 한 번만 받는다).
@@ -769,28 +787,27 @@ class _GamePageState extends ConsumerState<GamePage>
     final gameDuration = participantInfo?.roundTimeMinutes;
     final l10n = AppLocalizations.of(context);
 
-    // 일반 게임은 역할 배너·대기 화면이 시작을 알리므로 "잠시 후 시작"·"게임 시작!"은 채팅에만 남긴다
-    final isEventGame = participantInfo?.isEventGame ?? false;
-    final messages = <(String, bool)>[
-      if (gameDuration != null) (l10n.gameEventStartTime(gameDuration), true),
-      (l10n.gameEventStartReady, isEventGame),
-      (l10n.gameEventStartReportTip, true),
-      (l10n.gameEventStartGo, isEventGame),
+    // 시작 공지 넷은 일반·이벤트 게임 모두 채팅과 공지 배너에 띄운다(DEC-0138, DEC-0096 대체).
+    // 대기 장면에서는 카드 줄 공지 칸에 보인다.
+    final messages = <String>[
+      if (gameDuration != null) l10n.gameEventStartTime(gameDuration),
+      l10n.gameEventStartReady,
+      l10n.gameEventStartReportTip,
+      l10n.gameEventStartGo,
     ];
 
     // 공지 배너는 8.8초(표시 8초 + 사라짐 0.8초) 동안 남는다
-    final lastBanner = messages.lastIndexWhere((m) => m.$2);
     _startBannersEndAt = clock.now().add(
-      Duration(milliseconds: 10000 * lastBanner + 8800),
+      Duration(milliseconds: 10000 * (messages.length - 1) + 8800),
     );
 
     for (var i = 0; i < messages.length; i++) {
-      final (message, showBanner) = messages[i];
+      final message = messages[i];
       void send() {
         ref
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(gameId: _gameId, message: message);
-        if (showBanner) _gameEventNotifier?.setBannerMessage(message);
+        _gameEventNotifier?.setBannerMessage(message);
       }
 
       if (i == 0) {
@@ -1414,7 +1431,6 @@ class _GamePageState extends ConsumerState<GamePage>
       pageBuilder: (dialogContext, _, _) => ChaseScene(
         mode: ChaseSceneMode.rulesReplay,
         isPolice: GameTeam.isPolice(widget.team),
-        scene: startWaitScene(_gameId),
         gameStartTime: start,
         policeWaitMinutes: info?.policeWaitMinutes ?? 0,
         revealMinutes: info?.locationRevealIntervalMinutes ?? 5,
@@ -2378,9 +2394,17 @@ class _GamePageState extends ConsumerState<GamePage>
       isEventGame: isEventGame,
       isMapVisible: sceneMode == null,
     );
-    // 지도와 대기·설명 장면에서 같은 자리에 둔다. 참가자 목록에서는 지도로 돌아갈 버튼이
-    // 필요해 오른쪽 버튼 열을 유지한다. 장면에서 구역을 벗어나면 펼칠 항목이 없어 숨긴다.
+    // 지도는 가운데 아래, 대기·설명 장면은 시안대로 오른쪽 아래에서 위로 펼친다.
+    // 참가자 목록에서는 지도로 돌아갈 버튼이 필요해 오른쪽 버튼 열을 유지한다.
     final showsFloatingMenu = !_showParticipants && menuEntries.isNotEmpty;
+    // 장면은 채팅을 메뉴에 넣어 채팅 전용 버튼을 숨기고, 공지는 위가 아니라 카드 줄에 끼운다.
+    // 장면에서 채팅을 열어도 공지를 위로 옮기지 않는다 — 옮기면 새 배너가 앱바로 미끄러져
+    // 내려와 뒤로 버튼을 덮고, 이미 사라진 공지가 다시 뜬다.
+    final sceneShown = sceneMode != null;
+    final showsNotice =
+        !_showParticipants &&
+        bannerMessage != null &&
+        !_isZoneExitWarningActive;
 
     return PopScope(
       canPop: false,
@@ -2475,7 +2499,7 @@ class _GamePageState extends ConsumerState<GamePage>
               const SizedBox.shrink(),
 
             /// index 2b: 경찰 대기 화면·도둑 설명 화면 (if/else로 개수 고정)
-            /// 지도·앱바를 덮고, 공지 배너·오른쪽 버튼·채팅은 위에 뜬다.
+            /// 지도·앱바를 덮는다. 공지는 장면 카드 줄에 끼우고, 채팅은 장면 메뉴에 들어간다.
             /// 참가자 목록(index 1)·채팅을 열면 Offstage로 비켜 준다 — 덮으면 목록이 안 보이고
             /// 채팅을 닫는 앱바 뒤로 버튼(index 2)이 가려진다.
             /// Offstage 동안에도 남은 시간·진동은 계속 돈다(출동은 목록을 보는 중에도 온다).
@@ -2493,14 +2517,18 @@ class _GamePageState extends ConsumerState<GamePage>
                       child: ChaseScene(
                         mode: sceneMode,
                         isPolice: GameTeam.isPolice(widget.team),
-                        scene: startWaitScene(_gameId),
                         gameStartTime: _introStartTime!,
                         policeWaitMinutes: _introWaitMinutes,
                         revealMinutes: _introRevealMinutes,
                         onClose: intro.robberExplainerClosed,
-                        bottomReserved: showsFloatingMenu
-                            ? actionButtonBottom + 56.w + AppSpacing.vertical8
-                            : 0,
+                        notice: showsNotice
+                            ? MarqueeAlertBanner(
+                                message: bannerMessage,
+                                isDarkMode: _isDarkMode,
+                                // 카드 줄이 이미 양옆 여백을 두고 있다
+                                horizontalMargin: 0,
+                              )
+                            : null,
                       ),
                     ),
                   ),
@@ -2532,9 +2560,8 @@ class _GamePageState extends ConsumerState<GamePage>
             /// index 4: 알림 배너 (if/else로 개수 고정, 카운트다운보다 위에 표시)
             /// 구역 이탈 중에는 ZoneExitBanner가 같은 자리를 점유하므로 표시 차단.
             /// (어차피 가려지는 정보를 띄워봐야 손실되므로 표시 자체를 막는다)
-            if (!_showParticipants &&
-                bannerMessage != null &&
-                !_isZoneExitWarningActive)
+            // 역할 배너 동안은 띄우지 않는다 — 가려진 채 먼저 흐르다 장면에서 처음부터 다시 나온다
+            if (showsNotice && !sceneShown && !(intro?.showRoleBanner ?? false))
               SafeArea(
                 bottom: false,
                 child: Column(
@@ -2573,12 +2600,14 @@ class _GamePageState extends ConsumerState<GamePage>
                   ],
                 ),
               )
-            else
+            else if (!sceneShown)
               Positioned(
                 right: 20.w,
                 bottom: actionButtonBottom,
                 child: Column(children: [_buildChatButton()]),
-              ),
+              )
+            else
+              const SizedBox.shrink(),
 
             /// index 5b: 좌측 하단 내 위치 버튼 (지도 모드 한정, if/else로 개수 고정)
             ///
@@ -2603,8 +2632,22 @@ class _GamePageState extends ConsumerState<GamePage>
             else
               const SizedBox.shrink(),
 
-            /// index 5c: 가운데 아래 플로팅 메뉴 (지도 모드 한정, if/else로 개수 고정)
-            if (showsFloatingMenu)
+            /// index 5c: 플로팅 메뉴 — 지도는 가운데 아래, 장면은 오른쪽 아래 (if/else로 개수 고정)
+            if (showsFloatingMenu && sceneMode != null)
+              // 장면 시안 자리 — 오른쪽 16, 홈 인디케이터 위 28
+              Positioned(
+                right: AppSpacing.horizontal16,
+                bottom: AppSpacing.vertical28 + bottomInset,
+                child: GameFabMenu(
+                  isDarkMode: _isDarkMode,
+                  stacksUp: true,
+                  items: [
+                    for (final entry in menuEntries)
+                      _buildMenuItem(entry, l10n),
+                  ],
+                ),
+              )
+            else if (showsFloatingMenu)
               Positioned(
                 left: 0,
                 right: 0,
@@ -2916,17 +2959,14 @@ class _GamePageState extends ConsumerState<GamePage>
         label: l10n.gameMenuGrid,
         icon: AppIcons.grid,
         toggled: _showGrid,
-        iconColor: _showGrid
-            ? accent
-            : _isDarkMode
-            ? AppColors.green500
-            : AppColors.blue500,
+        // 다른 메뉴 아이콘과 같은 팀 색. 켜짐 여부는 지도 위 좌표선과 스크린리더(toggled)로 알 수 있다
+        iconColor: accent,
         onTap: _toggleGrid,
       ),
       GameMenuEntry.participants => GameFabMenuItem(
         label: l10n.gameMenuParticipants,
-        icon: AppIcons.person,
-        iconColor: accent,
+        icon: AppIcons.headcount,
+        iconColorMapper: _HeadcountColors(isDarkMode: _isDarkMode),
         onTap: unlessZoneExit(() => setState(() => _showParticipants = true)),
       ),
       GameMenuEntry.arrest => GameFabMenuItem(
@@ -2953,6 +2993,13 @@ class _GamePageState extends ConsumerState<GamePage>
         label: l10n.gameMenuEvidence,
         icon: _evidenceBoardIcon,
         onTap: _showEvidenceBoard,
+      ),
+      // 장면 메뉴 전용 — 지도는 채팅 전용 버튼을 쓴다(DEC-0124·0133)
+      GameMenuEntry.chat => GameFabMenuItem(
+        label: l10n.gameChatTitle,
+        icon: AppIcons.comment,
+        iconColor: accent,
+        onTap: _openChat,
       ),
     };
   }
@@ -3198,4 +3245,27 @@ class _GamePageState extends ConsumerState<GamePage>
       ),
     );
   }
+}
+
+/// 참가자 메뉴의 두 사람 아이콘 색. 앞사람은 팀 색, 뒷사람은 옅은 팀 색.
+class _HeadcountColors extends ColorMapper {
+  const _HeadcountColors({required this.isDarkMode});
+
+  final bool isDarkMode;
+
+  // icon_headcount.svg 원본 색
+  static const _front = Color(0xFF69B6FF);
+  static const _back = Color(0xFF339DFF);
+
+  @override
+  Color substitute(
+    String? id,
+    String elementName,
+    String attributeName,
+    Color color,
+  ) => switch (color) {
+    _front => isDarkMode ? AppColors.green : AppColors.blue,
+    _back => isDarkMode ? AppColors.green500 : AppColors.blueVer2Basic,
+    _ => color,
+  };
 }

@@ -14,18 +14,43 @@ void main() {
     isEventGame: isEventGame,
   );
 
-  // 대기·설명 장면은 지도를 덮고 있어 좌표를 켜도 보이지 않는다
-  test('grid_is_left_out_when_scene_covers_the_map', () {
-    expect(
-      gameMenuEntries(
-        isPolice: true,
-        isArrested: false,
-        isZoneExitActive: false,
-        isEventGame: false,
-        isMapVisible: false,
-      ),
-      [GameMenuEntry.participants, GameMenuEntry.arrest],
-    );
+  List<GameMenuEntry> sceneEntries({
+    bool isPolice = false,
+    bool isArrested = false,
+    bool isZoneExitActive = false,
+    bool isEventGame = false,
+  }) => gameMenuEntries(
+    isPolice: isPolice,
+    isArrested: isArrested,
+    isZoneExitActive: isZoneExitActive,
+    isEventGame: isEventGame,
+    isMapVisible: false,
+  );
+
+  // 시작 장면 메뉴는 위로 펼쳐진다 — 위에서부터 QR, 참가자, 채팅(DEC-0133). 지도를 덮어 좌표는 뺀다.
+  test('police_wait_scene_stacks_arrest_participants_chat_when_menu_opens', () {
+    expect(sceneEntries(isPolice: true), [
+      GameMenuEntry.arrest,
+      GameMenuEntry.participants,
+      GameMenuEntry.chat,
+    ]);
+  });
+
+  test('robber_explainer_scene_stacks_my_qr_participants_chat_when_menu_opens', () {
+    expect(sceneEntries(), [
+      GameMenuEntry.myQr,
+      GameMenuEntry.participants,
+      GameMenuEntry.chat,
+    ]);
+  });
+
+  // 장면에는 채팅 전용 버튼이 없어, 구역을 벗어나도 채팅은 메뉴에 남는다
+  test('scene_menu_keeps_only_chat_when_robber_runs_out_of_the_zone', () {
+    expect(sceneEntries(isZoneExitActive: true), [GameMenuEntry.chat]);
+  });
+
+  test('map_menu_has_no_chat_because_chat_keeps_its_own_button', () {
+    expect(entries(isPolice: true), isNot(contains(GameMenuEntry.chat)));
   });
 
   test('police_gets_arrest_on_the_right_when_chasing_in_a_normal_game', () {

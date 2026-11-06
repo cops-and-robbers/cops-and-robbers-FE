@@ -52,10 +52,6 @@ String startRoleCharacterAssetPath({required String team}) =>
 String startChaseCharacterAssetPath({required String team}) =>
     'assets/characters/$team/start/default/chase.svg';
 
-/// 대기·설명 장면 배경 PNG(1179×2562). 경찰은 낮, 도둑은 밤 그림.
-/// - [scene] `'hills'` | `'town'` | `'city'`
-String startWaitBackgroundAssetPath({
-  required String scene,
-  required bool isNight,
-}) =>
-    'assets/backgrounds/start_wait/start_wait_${scene}_${isNight ? 'night' : 'day'}.png';
+/// 대기·설명 장면 배경 PNG(393×852). 경찰은 낮, 도둑은 밤 그림.
+String startWaitBackgroundAssetPath({required bool isNight}) =>
+    'assets/backgrounds/start_wait/start_wait_${isNight ? 'night' : 'day'}.png';

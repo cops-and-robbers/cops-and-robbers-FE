@@ -4,14 +4,6 @@
 /// 계산한다 — 앱을 다시 켜도 같은 계산으로 같은 상태가 된다.
 library;
 
-/// 대기·설명 장면 배경. 순서를 바꾸면 같은 게임인데 앱 버전마다 다른 장면이
-/// 나오므로 새 장면은 뒤에만 더한다.
-enum StartScene { hills, town, city }
-
-/// 서버가 준 gameId로 고른다 — 같은 게임의 모든 기기가 같은 장면을 본다.
-StartScene startWaitScene(int gameId) =>
-    StartScene.values[gameId % StartScene.values.length];
-
 enum StartIntroStep { roleBanner, policeWait, robberExplainer }
 
 /// "막 시작했다"로 보는 한계. 시작 시스템 메시지를 건너뛰는 기준

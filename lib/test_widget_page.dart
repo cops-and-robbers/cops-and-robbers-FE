@@ -791,7 +791,6 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 _ => ChaseSceneMode.rulesReplay,
               },
               isPolice: isPolice,
-              scene: startWaitScene(gameId),
               gameStartTime: start,
               policeWaitMinutes: 5,
               revealMinutes: 5,
@@ -963,7 +962,6 @@ class _StartFlowPreviewState extends State<_StartFlowPreview> {
               child: ChaseScene(
                 mode: mode,
                 isPolice: widget.isPolice,
-                scene: startWaitScene(widget.gameId),
                 gameStartTime: _start,
                 policeWaitMinutes: 5,
                 revealMinutes: 5,

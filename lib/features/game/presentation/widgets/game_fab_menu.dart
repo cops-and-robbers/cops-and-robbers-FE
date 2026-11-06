@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -18,6 +19,7 @@ class GameFabMenuItem {
     required this.label,
     required this.icon,
     this.iconColor,
+    this.iconColorMapper,
     this.toggled,
     this.onTap,
   });
@@ -30,6 +32,9 @@ class GameFabMenuItem {
   /// 없으면 SVG 원래 색으로 그린다. 캐릭터 아이콘은 색을 입히지 않는다.
   final Color? iconColor;
 
+  /// 여러 색 아이콘의 원래 색을 하나씩 바꿔 그린다. [iconColor]와 같이 쓰지 않는다.
+  final ColorMapper? iconColorMapper;
+
   /// 좌표처럼 켜고 끄는 항목의 현재 상태. 스크린리더가 읽는다.
   final bool? toggled;
 
@@ -38,10 +43,21 @@ class GameFabMenuItem {
 }
 
 /// 누르면 화면이 어두워지고 항목이 부채꼴로 펼쳐지는 플로팅 버튼 (#656)
+///
+/// [stacksUp]이면 오른쪽 아래 버튼 위로 항목을 한 줄로 쌓는다(시작 장면, #674).
 class GameFabMenu extends StatelessWidget {
-  const GameFabMenu({super.key, required this.items, required this.isDarkMode});
+  const GameFabMenu({
+    super.key,
+    required this.items,
+    required this.isDarkMode,
+    this.stacksUp = false,
+  });
 
+  /// 부채꼴은 왼쪽부터, [stacksUp]은 위에서부터 놓는 순서다.
   final List<GameFabMenuItem> items;
+
+  /// 부채꼴은 가운데 기준이라 화면 가장자리 버튼에서 펼치면 항목이 화면 밖으로 나간다.
+  final bool stacksUp;
 
   /// 도둑(다크) 화면 여부. 경찰은 파랑, 도둑은 초록을 쓴다.
   final bool isDarkMode;
@@ -55,13 +71,18 @@ class GameFabMenu extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: DialogAnimation.barrierColor,
+      // 장면은 순수 검정 20%만 덮는다(흐림은 끊겨 보여 뺐다, #674). 지도는 뛰는 중 핀이
+      // 보여야 해 기존 배리어를 쓴다.
+      barrierColor: stacksUp
+          ? AppColors.pureBlack.withValues(alpha: 0.2)
+          : DialogAnimation.barrierColor,
       transitionDuration: DialogAnimation.duration,
       pageBuilder: (dialogContext, animation, _) => _OpenMenu(
         items: items,
         center: center,
         animation: animation,
         isDarkMode: isDarkMode,
+        stacksUp: stacksUp,
       ),
     );
     selected?.onTap?.call();
@@ -84,12 +105,14 @@ class _OpenMenu extends StatelessWidget {
     required this.center,
     required this.animation,
     required this.isDarkMode,
+    required this.stacksUp,
   });
 
   final List<GameFabMenuItem> items;
   final Offset center;
   final Animation<double> animation;
   final bool isDarkMode;
+  final bool stacksUp;
 
   /// 항목이 놓이는 호. 양 끝이 왼쪽·오른쪽 위를 향한다.
   static const double _startAngle = pi * 1.19;
@@ -97,34 +120,58 @@ class _OpenMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = 150.w;
-    final circleSize = 64.w;
+    // 원(48)이 예전(64)보다 작지만 라벨끼리 여유를 두려고 호를 덜 좁힌다
+    final radius = 132.w;
+    // 펼친 항목이 가운데 버튼(56)보다 작아야 위계가 맞는다 — 장면 메뉴와 같은 48
+    final circleSize = _itemCircle;
     final count = items.length;
 
     return Stack(
       children: [
-        for (var i = 0; i < count; i++)
-          _buildItem(
-            context,
-            item: items[i],
-            target: Offset.fromDirection(
-              count == 1
-                  ? pi * 1.5
-                  : _startAngle + (_endAngle - _startAngle) * i / (count - 1),
-              radius,
-            ),
-            circleSize: circleSize,
-            // 왼쪽 항목부터 차례로 펼쳐진다.
-            curve: CurvedAnimation(
-              parent: animation,
-              curve: Interval(
-                0.15 * i / count,
-                0.85 + 0.15 * i / count,
-                curve: Curves.easeOutBack,
+        if (stacksUp)
+          for (var i = 0; i < count; i++)
+            _buildStackedItem(
+              context,
+              item: items[i],
+              // 버튼에 가까운 아래 항목부터 차례로 올라온다.
+              rise:
+                  _RoundButton.size / 2 +
+                  _stackFirstGap +
+                  _itemCircle / 2 +
+                  (count - 1 - i) * (_itemCircle + _stackGap),
+              curve: CurvedAnimation(
+                parent: animation,
+                curve: Interval(
+                  0.15 * (count - 1 - i) / count,
+                  0.85 + 0.15 * (count - 1 - i) / count,
+                  curve: Curves.easeOutBack,
+                ),
+                reverseCurve: Curves.easeIn,
               ),
-              reverseCurve: Curves.easeIn,
+            )
+        else
+          for (var i = 0; i < count; i++)
+            _buildItem(
+              context,
+              item: items[i],
+              target: Offset.fromDirection(
+                count == 1
+                    ? pi * 1.5
+                    : _startAngle + (_endAngle - _startAngle) * i / (count - 1),
+                radius,
+              ),
+              circleSize: circleSize,
+              // 왼쪽 항목부터 차례로 펼쳐진다.
+              curve: CurvedAnimation(
+                parent: animation,
+                curve: Interval(
+                  0.15 * i / count,
+                  0.85 + 0.15 * i / count,
+                  curve: Curves.easeOutBack,
+                ),
+                reverseCurve: Curves.easeIn,
+              ),
             ),
-          ),
         Positioned(
           left: center.dx - _RoundButton.size / 2,
           top: center.dy - _RoundButton.size / 2,
@@ -141,6 +188,92 @@ class _OpenMenu extends StatelessWidget {
       ],
     );
   }
+
+  /// 시안: 항목 원 48 · 아이콘 24 — 장면(위로 쌓기)과 지도(부채꼴)가 같다
+  static double get _itemCircle => 48.w;
+  static double get _itemIcon => 24.w;
+
+  /// 시안: 버튼과 첫 항목 사이 16, 항목끼리 8
+  static double get _stackFirstGap => 16.w;
+  static double get _stackGap => 8.w;
+
+  /// 위로 쌓는 항목. 원은 버튼과 같은 세로줄에, 라벨은 원 왼쪽에 둔다.
+  Widget _buildStackedItem(
+    BuildContext context, {
+    required GameFabMenuItem item,
+    required double rise,
+    required Animation<double> curve,
+  }) {
+    final right =
+        MediaQuery.sizeOf(context).width - center.dx - _itemCircle / 2;
+    return AnimatedBuilder(
+      animation: curve,
+      builder: (context, child) => Positioned(
+        right: right,
+        top: center.dy - rise * curve.value - _itemCircle / 2,
+        child: Opacity(opacity: curve.value.clamp(0.0, 1.0), child: child),
+      ),
+      child: _tapTarget(
+        context,
+        item,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _label(item),
+            SizedBox(width: AppSpacing.horizontal8),
+            _circle(item, _itemCircle, _itemIcon),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _tapTarget(BuildContext context, GameFabMenuItem item, Widget child) =>
+      Semantics(
+        button: true,
+        toggled: item.toggled,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            VibrationService.instance().buttonTap();
+            Navigator.of(context).pop(item);
+          },
+          child: child,
+        ),
+      );
+
+  Widget _circle(GameFabMenuItem item, double size, double iconSize) =>
+      Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isDarkMode ? AppColors.black : AppColors.white,
+          // 피그마 `shadow`: 두 팀·장면·지도 모두 검정 10%
+          boxShadow: AppShadows.soft,
+        ),
+        child: SvgPicture(
+          SvgAssetLoader(item.icon, colorMapper: item.iconColorMapper),
+          width: iconSize,
+          height: iconSize,
+          colorFilter: item.iconColor == null
+              ? null
+              : ColorFilter.mode(item.iconColor!, BlendMode.srcIn),
+        ),
+      );
+
+  Widget _label(GameFabMenuItem item) => Material(
+    type: MaterialType.transparency,
+    child: Text(
+      item.label,
+      style:
+          (isDarkMode
+                  ? AppTextStyles.robberParagraph
+                  : AppTextStyles.paragraph14Semibold)
+              .copyWith(color: AppColors.white),
+    ),
+  );
 
   Widget _buildItem(
     BuildContext context, {
@@ -168,50 +301,16 @@ class _OpenMenu extends StatelessWidget {
           ),
         );
       },
-      child: Semantics(
-        button: true,
-        toggled: item.toggled,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            VibrationService.instance().buttonTap();
-            Navigator.of(context).pop(item);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: circleSize,
-                height: circleSize,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isDarkMode ? AppColors.black : AppColors.white,
-                  boxShadow: AppShadows.softThemed(isDarkMode),
-                ),
-                child: SvgPicture.asset(
-                  item.icon,
-                  width: 32.w,
-                  height: 32.w,
-                  colorFilter: item.iconColor == null
-                      ? null
-                      : ColorFilter.mode(item.iconColor!, BlendMode.srcIn),
-                ),
-              ),
-              SizedBox(height: AppSpacing.vertical6),
-              Material(
-                type: MaterialType.transparency,
-                child: Text(
-                  item.label,
-                  style:
-                      (isDarkMode
-                              ? AppTextStyles.robberParagraph
-                              : AppTextStyles.paragraph14Semibold)
-                          .copyWith(color: AppColors.white),
-                ),
-              ),
-            ],
-          ),
+      child: _tapTarget(
+        context,
+        item,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _circle(item, circleSize, _itemIcon),
+            SizedBox(height: AppSpacing.vertical6),
+            _label(item),
+          ],
         ),
       ),
     );
@@ -232,6 +331,7 @@ class _RoundButton extends StatelessWidget {
 
   final double angle;
   final bool isDarkMode;
+
   final String semanticLabel;
   final VoidCallback onTap;
 
@@ -246,16 +346,22 @@ class _RoundButton extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: isDarkMode ? AppColors.green : AppColors.blue,
+          // 도둑(다크)은 검정 원에 초록 +, 경찰은 파란 원에 흰 + (#674 시안)
+          color: isDarkMode ? AppColors.black : AppColors.blue,
           shape: BoxShape.circle,
-          boxShadow: AppShadows.softThemed(isDarkMode),
+          boxShadow: AppShadows.soft,
         ),
+        alignment: Alignment.center,
         child: Transform.rotate(
           angle: angle,
-          child: Icon(
-            Icons.add,
-            color: isDarkMode ? AppColors.black : AppColors.white,
-            size: 32.w,
+          child: SvgPicture.asset(
+            AppIcons.plus,
+            width: 24.w,
+            height: 24.w,
+            colorFilter: ColorFilter.mode(
+              isDarkMode ? AppColors.green : AppColors.white,
+              BlendMode.srcIn,
+            ),
           ),
         ),
       ),

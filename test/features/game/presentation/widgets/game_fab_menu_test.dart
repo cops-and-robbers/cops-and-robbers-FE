@@ -3,6 +3,7 @@ import 'package:cops_and_robbers/features/game/presentation/widgets/game_fab_men
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -71,7 +72,16 @@ void main() {
 
     await tester.tap(find.byType(GameFabMenu));
     await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.add).last);
+    await tester.tap(
+      find
+          .byWidgetPredicate(
+            (w) =>
+                w is SvgPicture &&
+                w.bytesLoader is SvgAssetLoader &&
+                (w.bytesLoader as SvgAssetLoader).assetName == AppIcons.plus,
+          )
+          .last,
+    );
     await tester.pumpAndSettle();
 
     expect(arrests, 0);
@@ -92,4 +102,142 @@ void main() {
     expect(find.bySemanticsLabel('메뉴 닫기'), findsOneWidget);
     semantics.dispose();
   });
+
+  // 시작 장면은 오른쪽 아래 버튼에서 위로 쌓인다 — 위에서부터 QR, 참가자, 채팅이고 모두 버튼 위에 있다
+  testWidgets('scene_menu_stacks_items_above_button_in_order_when_opened', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(393, 852);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ko'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ScreenUtilInit(
+          designSize: const Size(393, 852),
+          builder: (context, _) => const Scaffold(
+            floatingActionButton: GameFabMenu(
+              isDarkMode: false,
+              stacksUp: true,
+              items: [
+                GameFabMenuItem(label: '체포', icon: AppIcons.qrScan),
+                GameFabMenuItem(label: '참가자', icon: AppIcons.person),
+                GameFabMenuItem(label: '채팅', icon: AppIcons.comment),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final button = tester.getRect(find.byType(GameFabMenu));
+
+    await tester.tap(find.byType(GameFabMenu));
+    await tester.pumpAndSettle();
+
+    final ys = [
+      for (final label in ['체포', '참가자', '채팅'])
+        tester.getCenter(find.text(label)).dy,
+    ];
+    expect(ys[0], lessThan(ys[1]));
+    expect(ys[1], lessThan(ys[2]));
+    expect(ys[2], lessThan(button.top));
+    // 라벨은 원 왼쪽에 붙어 화면 오른쪽 밖으로 나가지 않는다
+    for (final label in ['체포', '참가자', '채팅']) {
+      expect(tester.getRect(find.text(label)).right, lessThan(button.left));
+    }
+  });
+
+  // 시안 간격: 버튼과 첫 항목 사이 16, 항목(48 원)끼리 8. 라벨은 원 가운데에 맞춰 있다.
+  testWidgets('scene_menu_keeps_design_gaps_when_opened', (tester) async {
+    tester.view.physicalSize = const Size(393, 852);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ko'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ScreenUtilInit(
+          designSize: const Size(393, 852),
+          builder: (context, _) => const Scaffold(
+            floatingActionButton: GameFabMenu(
+              isDarkMode: false,
+              stacksUp: true,
+              items: [
+                GameFabMenuItem(label: '체포', icon: AppIcons.qrScan),
+                GameFabMenuItem(label: '참가자', icon: AppIcons.headcount),
+                GameFabMenuItem(label: '채팅', icon: AppIcons.comment),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final button = tester.getRect(find.byType(GameFabMenu));
+
+    await tester.tap(find.byType(GameFabMenu));
+    await tester.pumpAndSettle();
+
+    final ys = [
+      for (final label in ['체포', '참가자', '채팅'])
+        tester.getCenter(find.text(label)).dy,
+    ];
+    expect(button.size, const Size(56, 56));
+    expect(ys[1] - ys[0], moreOrLessEquals(48 + 8));
+    expect(ys[2] - ys[1], moreOrLessEquals(48 + 8));
+    expect(button.top - (ys[2] + 48 / 2), moreOrLessEquals(16));
+  });
+
+  // 지도 메뉴도 대기 장면 메뉴와 같은 원 48 · 아이콘 24 — 가운데 버튼(56)보다 작고, 항목 수와 상관없다
+  for (final count in [3, 4]) {
+    testWidgets(
+      'map_menu_items_match_scene_size_when_menu_has_${count}_items',
+      (tester) async {
+        tester.view.physicalSize = const Size(393, 852);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('ko'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ScreenUtilInit(
+              designSize: const Size(393, 852),
+              builder: (context, _) => Scaffold(
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.centerFloat,
+                floatingActionButton: GameFabMenu(
+                  isDarkMode: false,
+                  items: [
+                    for (var i = 0; i < count; i++)
+                      GameFabMenuItem(label: '항목$i', icon: AppIcons.grid),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.byType(GameFabMenu));
+        await tester.pumpAndSettle();
+
+        final svg = find
+            .byWidgetPredicate(
+              (w) =>
+                  w is SvgPicture &&
+                  w.bytesLoader is SvgAssetLoader &&
+                  (w.bytesLoader as SvgAssetLoader).assetName == AppIcons.grid,
+            )
+            .first;
+        final circleBox = find
+            .ancestor(of: svg, matching: find.byType(Container))
+            .first;
+        expect(tester.getSize(svg).width, moreOrLessEquals(24));
+        expect(tester.getSize(circleBox).width, moreOrLessEquals(48));
+      },
+    );
+  }
 }
