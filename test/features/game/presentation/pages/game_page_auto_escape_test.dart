@@ -16,6 +16,7 @@ import 'package:cops_and_robbers/features/game/presentation/widgets/game_fab_men
 import 'package:cops_and_robbers/features/game/presentation/widgets/google_map_view.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/jail_bars_overlay.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/police_start_countdown.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/marquee_alert_banner.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene_rules.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/start_banners.dart';
@@ -540,6 +541,45 @@ void main() {
       gameStartTime: DateTime.now().toUtc().toIso8601String(),
     );
   }
+
+  // 시작 공지("게임 시간은 N분")는 역할 배너에 가려진 위쪽에서 먼저 흐르지 않고,
+  // 장면 카드 줄에서 한 번만 처음부터 끝까지(8초) 보여야 한다
+  testWidgets(
+    'start_notice_shows_once_in_scene_for_full_time_when_game_starts',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        setFreshGame(team: 'POLICE', policeWaitMinutes: 5);
+        session.participants = const InGameParticipantsResponse(
+          police: [
+            InGameParticipant(
+              participantId: 5,
+              nickname: '경찰',
+              status: 'POLICE_WAITING',
+            ),
+          ],
+          robbers: [],
+        );
+        await mount(tester, team: 'POLICE');
+        // 역할 배너 중 — 위쪽에 공지 배너가 먼저 떠서는 안 된다
+        expect(find.byType(RoleBanner), findsOneWidget);
+        expect(find.byType(MarqueeAlertBanner), findsNothing);
+
+        await advance(tester, const Duration(seconds: 5)); // 장면이 떠 있다
+        expect(find.byType(ChaseScene), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(ChaseScene),
+            matching: find.byType(MarqueeAlertBanner),
+          ),
+          findsOneWidget,
+        );
+        // 시작 후 10초 — 장면에서 보인 지 6초쯤이라 아직 남아 있어야 한다
+        await advance(tester, const Duration(seconds: 5));
+        expect(find.byType(MarqueeAlertBanner), findsOneWidget);
+        await tester.pump(const Duration(seconds: 40));
+      });
+    },
+  );
 
   // 남은 시간이 00:00까지 내려간 걸 본 뒤에 출동 배너가 뜬다 — 00:01에서 끊기면 덜 센 것처럼 보인다
   testWidgets('police_wait_shows_zero_before_dispatch_banner_when_wait_ends', (

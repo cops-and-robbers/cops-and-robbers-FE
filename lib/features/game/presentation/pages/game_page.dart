@@ -537,6 +537,24 @@ class _GamePageState extends ConsumerState<GamePage>
     if (!mounted) return;
     setState(() {});
     if (_intro?.hintDue ?? false) unawaited(_showRulesHintOnce());
+    _restartNoticeWhenSceneOpens();
+  }
+
+  /// 대기·설명 장면이 막 열렸는지 — 열리는 순간 한 번만 공지 시간을 다시 잡는다.
+  bool _sceneWasOpen = false;
+
+  /// 역할 배너 동안 온 공지(시작 직후 "게임 시간은 N분")는 장면 카드 줄에서 처음 보인다.
+  /// 공지 시계(8.8초)를 보낸 시각이 아니라 장면이 열린 시각부터 다시 세어야
+  /// 장면에서 8초를 다 보여 주고 서서히 사라진다 — 그대로 두면 몇 초 만에 끊긴다.
+  void _restartNoticeWhenSceneOpens() {
+    final intro = _intro;
+    final open =
+        intro != null && (intro.showPoliceWait || intro.showRobberExplainer);
+    if (open && !_sceneWasOpen) {
+      final message = ref.read(gameEventNotifierProvider).bannerMessage;
+      if (message != null) _gameEventNotifier?.setBannerMessage(message);
+    }
+    _sceneWasOpen = open;
   }
 
   /// 경찰 출동 — 기기 시계 타이머와 서버 POLICE_MOVE_START 중 먼저 온 쪽(컨트롤러가 한 번만 받는다).
@@ -2543,7 +2561,8 @@ class _GamePageState extends ConsumerState<GamePage>
             /// index 4: 알림 배너 (if/else로 개수 고정, 카운트다운보다 위에 표시)
             /// 구역 이탈 중에는 ZoneExitBanner가 같은 자리를 점유하므로 표시 차단.
             /// (어차피 가려지는 정보를 띄워봐야 손실되므로 표시 자체를 막는다)
-            if (showsNotice && !sceneShown)
+            // 역할 배너 동안은 띄우지 않는다 — 가려진 채 먼저 흐르다 장면에서 처음부터 다시 나온다
+            if (showsNotice && !sceneShown && !(intro?.showRoleBanner ?? false))
               SafeArea(
                 bottom: false,
                 child: Column(
