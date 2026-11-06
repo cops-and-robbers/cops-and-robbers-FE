@@ -2959,11 +2959,8 @@ class _GamePageState extends ConsumerState<GamePage>
         label: l10n.gameMenuGrid,
         icon: AppIcons.grid,
         toggled: _showGrid,
-        iconColor: _showGrid
-            ? accent
-            : _isDarkMode
-            ? AppColors.green500
-            : AppColors.blue500,
+        // 다른 메뉴 아이콘과 같은 팀 색. 켜짐 여부는 지도 위 좌표선과 스크린리더(toggled)로 알 수 있다
+        iconColor: accent,
         onTap: _toggleGrid,
       ),
       GameMenuEntry.participants => GameFabMenuItem(

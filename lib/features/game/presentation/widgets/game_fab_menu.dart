@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -72,8 +71,8 @@ class GameFabMenu extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      // 장면은 시안대로 순수 검정 20% + 배경 흐림 8 (#674). 지도는 뛰는 중 핀이
-      // 보여야 하고 지도(플랫폼 뷰) 위 흐림은 기기마다 불안정해 기존 배리어를 쓴다.
+      // 장면은 순수 검정 20%만 덮는다(흐림은 끊겨 보여 뺐다, #674). 지도는 뛰는 중 핀이
+      // 보여야 해 기존 배리어를 쓴다.
       barrierColor: stacksUp
           ? AppColors.pureBlack.withValues(alpha: 0.2)
           : DialogAnimation.barrierColor,
@@ -115,8 +114,6 @@ class _OpenMenu extends StatelessWidget {
   final bool isDarkMode;
   final bool stacksUp;
 
-  static const double _blurSigma = 4;
-
   /// 항목이 놓이는 호. 양 끝이 왼쪽·오른쪽 위를 향한다.
   static const double _startAngle = pi * 1.19;
   static const double _endAngle = pi * 1.81;
@@ -131,24 +128,6 @@ class _OpenMenu extends StatelessWidget {
 
     return Stack(
       children: [
-        // 피그마 배경 흐림 8 = sigma 4. 열리는 만큼 흐려지고, 탭은 배리어로 넘긴다.
-        if (stacksUp)
-          Positioned.fill(
-            child: IgnorePointer(
-              // 흐림 세기를 매 프레임 바꾸면 필터를 프레임마다 새로 만들어 끊긴다 —
-              // 세기는 고정하고 투명도만 열리는 만큼 올린다
-              child: FadeTransition(
-                opacity: animation,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: _blurSigma,
-                    sigmaY: _blurSigma,
-                  ),
-                  child: const SizedBox.expand(),
-                ),
-              ),
-            ),
-          ),
         if (stacksUp)
           for (var i = 0; i < count; i++)
             _buildStackedItem(
