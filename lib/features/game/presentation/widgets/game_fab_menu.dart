@@ -135,12 +135,14 @@ class _OpenMenu extends StatelessWidget {
         if (stacksUp)
           Positioned.fill(
             child: IgnorePointer(
-              child: AnimatedBuilder(
-                animation: animation,
-                builder: (context, _) => BackdropFilter(
+              // 흐림 세기를 매 프레임 바꾸면 필터를 프레임마다 새로 만들어 끊긴다 —
+              // 세기는 고정하고 투명도만 열리는 만큼 올린다
+              child: FadeTransition(
+                opacity: animation,
+                child: BackdropFilter(
                   filter: ImageFilter.blur(
-                    sigmaX: _blurSigma * animation.value,
-                    sigmaY: _blurSigma * animation.value,
+                    sigmaX: _blurSigma,
+                    sigmaY: _blurSigma,
                   ),
                   child: const SizedBox.expand(),
                 ),

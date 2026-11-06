@@ -170,6 +170,14 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  /// 피그마 `paragraph_14px_Semibold` — 줄 높이 1.16 (게임 시작 장면 카드 본문)
+  static TextStyle get paragraph14Semibold116 => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 14.sp,
+    height: 1.16,
+    letterSpacing: -0.32,
+  );
+
   // ============================================
   // Small Styles (Medium)
   // ============================================

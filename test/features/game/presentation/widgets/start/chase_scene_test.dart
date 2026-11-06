@@ -1,6 +1,7 @@
 // test/features/game/presentation/widgets/start/chase_scene_test.dart
 import 'package:clock/clock.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/marquee_alert_banner.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene_rules.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/police_car_drive.dart';
@@ -754,4 +755,104 @@ void main() {
     expect(missionTop(), withNotice);
     await unmount(tester);
   });
+
+  // 규칙이 바뀐 직후 다음 틱 전에 눌러도, 화면에 보이던 규칙이 펼쳐진다
+  testWidgets(
+    'rules_replay_expands_shown_rule_when_tapped_right_after_rotation',
+    (tester) async {
+      await pumpScene(
+        tester,
+        mode: ChaseSceneMode.rulesReplay,
+        isPolice: true,
+        elapsed: const Duration(minutes: 12),
+      );
+      final win = find.textContaining('경찰은 모든 도둑을 체포하면');
+      // 틱(250ms)과 어긋난 시각에 펼쳤다 접어 회전 시계가 틱과 엇갈리게 만든다
+      await advance(tester, const Duration(seconds: 1));
+      await tester.pump(const Duration(milliseconds: 100)); // 1.10초
+      await tester.tap(win);
+      await advance(tester, const Duration(seconds: 1));
+      await tester.pump(const Duration(milliseconds: 30)); // 2.13초
+      await tester.tap(win);
+      // 6.00초 틱에 1/6이 보이고, 다음 틱 전인 6.10초에 누른다
+      await advance(tester, const Duration(milliseconds: 3750));
+      await tester.pump(const Duration(milliseconds: 120));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('게임 규칙 1/6'), findsOneWidget);
+      await tester.tap(win);
+      await advance(tester, const Duration(seconds: 2));
+      expect(find.text('게임 규칙 1/6'), findsOneWidget);
+      await unmount(tester);
+    },
+  );
+
+  // 규칙을 펼쳐 읽는 동안에는 20초 자동 닫힘도 멈추고, 접으면 남은 시간만큼 이어서 센다
+  testWidgets('robber_explainer_waits_while_robber_reads_expanded_rule', (
+    tester,
+  ) async {
+    var closed = 0;
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.robberExplainer,
+      isPolice: false,
+      elapsed: const Duration(minutes: 1),
+      onClose: () => closed++,
+    );
+    await advance(tester, ChaseScene.ruleInterval * 3); // 15초, 4/4 탈옥 규칙
+    const jailbreak = '잡히면 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥돼요';
+    await tester.tap(find.text(jailbreak));
+    await advance(tester, const Duration(seconds: 10)); // 펼친 채 25초
+    expect(closed, 0);
+
+    await tester.tap(find.text(jailbreak));
+    await advance(tester, const Duration(seconds: 4));
+    expect(closed, 0);
+    await advance(tester, const Duration(seconds: 2));
+    expect(closed, 1);
+    await unmount(tester);
+  });
+
+  // 키 큰 폰은 배너가 세로 비율로 커진다 — 공지가 없을 때도 실제 배너 높이만큼 비워 둔다
+  testWidgets(
+    'mission_card_stays_in_place_on_tall_phone_when_real_notice_comes',
+    (tester) async {
+      const size = Size(393, 960);
+      double missionTop() => tester
+          .getTopLeft(
+            find
+                .ancestor(
+                  of: find.text('경찰 팀 미션'),
+                  matching: find.byType(Container),
+                )
+                .first,
+          )
+          .dy;
+      await pumpScene(
+        tester,
+        mode: ChaseSceneMode.policeWait,
+        isPolice: true,
+        elapsed: const Duration(minutes: 1),
+        size: size,
+        notice: const MarqueeAlertBanner(
+          message: '도둑 한 명이 체포됐어요',
+          isDarkMode: false,
+          horizontalMargin: 0,
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 400));
+      final withNotice = missionTop();
+      await unmount(tester);
+      await tester.pump(const Duration(seconds: 10));
+
+      await pumpScene(
+        tester,
+        mode: ChaseSceneMode.policeWait,
+        isPolice: true,
+        elapsed: const Duration(minutes: 1),
+        size: size,
+      );
+      expect(missionTop(), moreOrLessEquals(withNotice));
+      await unmount(tester);
+    },
+  );
 }
