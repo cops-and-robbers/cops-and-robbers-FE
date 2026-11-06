@@ -24,6 +24,7 @@ abstract final class AppIcons {
   static const String bellBlock = 'assets/icons/icon_bell_block.svg';
   static const String block = 'assets/icons/icon_block.svg';
   static const String blog = 'assets/icons/blog.svg';
+  static const String bulb = 'assets/icons/icon_bulb.svg';
   static const String camera = 'assets/icons/icon_camera.svg';
   static const String change = 'assets/icons/icon_change.svg';
   static const String chatBellOff = 'assets/icons/icon_chat_bell_off.svg';
@@ -45,6 +46,7 @@ abstract final class AppIcons {
   static const String exclamationMark =
       'assets/icons/icon_exclamation_mark.svg';
   static const String exit = 'assets/icons/icon_exit.svg';
+  static const String flag = 'assets/icons/icon_flag.svg';
   static const String gameConsole = 'assets/icons/icon_game_console.svg';
   static const String gameNotification =
       'assets/icons/icon_game_notification.svg';
@@ -80,6 +82,8 @@ abstract final class AppIcons {
   static const String notification = 'assets/icons/icon_notification.svg';
   static const String person = 'assets/icons/icon_person.svg';
   static const String pin = 'assets/icons/icon_pin.svg';
+  static const String plus = 'assets/icons/icon_plus.svg';
+  static const String policeCar = 'assets/icons/icon_police_car.svg';
   static const String post = 'assets/icons/icon_post.svg';
   static const String previous = 'assets/icons/icon_previous.svg';
   static const String qrCode = 'assets/icons/icon_qr_code.svg';
@@ -87,6 +91,7 @@ abstract final class AppIcons {
   static const String reply = 'assets/icons/icon_reply.svg';
   static const String saveOff = 'assets/icons/icon_save_off.svg';
   static const String saveOn = 'assets/icons/icon_save_on.svg';
+  static const String scan = 'assets/icons/icon_scan.svg';
   static const String search = 'assets/icons/icon_search.svg';
   static const String sending = 'assets/icons/icon_sending.svg';
   static const String setting2 = 'assets/icons/icon_settiing_2.svg';

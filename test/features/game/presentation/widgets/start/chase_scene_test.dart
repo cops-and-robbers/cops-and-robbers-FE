@@ -1,15 +1,12 @@
 // test/features/game/presentation/widgets/start/chase_scene_test.dart
 import 'package:clock/clock.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
-import 'package:cops_and_robbers/features/game/domain/recede.dart';
-import 'package:cops_and_robbers/features/game/domain/start_flow.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene_rules.dart';
-import 'package:cops_and_robbers/features/game/presentation/widgets/start/run_cycle.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/start/police_car_drive.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 // 시스템 경계(진동 플러그인)만 갈아 끼우려고 전이 의존성을 직접 쓴다
 // ignore: depend_on_referenced_packages
@@ -26,7 +23,8 @@ Future<void> pumpScene(
   int roundTimeMinutes = 30,
   Size size = const Size(393, 852),
   Locale locale = const Locale('ko'),
-  double bottomReserved = 0,
+  Widget? notice,
+  bool disableAnimations = false,
 }) async {
   tester.view.physicalSize = size * 3;
   tester.view.devicePixelRatio = 3;
@@ -38,17 +36,23 @@ Future<void> pumpScene(
         locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(
-          body: ChaseScene(
-            mode: mode,
-            isPolice: isPolice,
-            scene: StartScene.town,
-            gameStartTime: clock.now().subtract(elapsed),
-            bottomReserved: bottomReserved,
-            policeWaitMinutes: 5,
-            revealMinutes: revealMinutes,
-            roundTimeMinutes: roundTimeMinutes,
-            onClose: onClose,
+        home: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(disableAnimations: disableAnimations),
+            child: Scaffold(
+              body: ChaseScene(
+                mode: mode,
+                isPolice: isPolice,
+                gameStartTime: clock.now().subtract(elapsed),
+                policeWaitMinutes: 5,
+                revealMinutes: revealMinutes,
+                roundTimeMinutes: roundTimeMinutes,
+                onClose: onClose,
+                notice: notice,
+              ),
+            ),
           ),
         ),
       ),
@@ -96,21 +100,23 @@ Future<void> advance(WidgetTester tester, Duration total) async {
   }
 }
 
-/// 먼 쪽 캐릭터(트리에서 먼저 그려지는 SVG)의 배치
-Positioned farCharacter(WidgetTester tester) => tester.widget<Positioned>(
-  find
-      .ancestor(
-        of: find.byType(SvgPicture).first,
+/// 바닥을 지나는 경찰차의 왼쪽 끝 x
+double carLeft(WidgetTester tester) => tester
+    .getTopLeft(
+      find.descendant(
+        of: find.byType(PoliceCarDrive),
         matching: find.byType(Positioned),
-      )
-      .first,
-);
+      ),
+    )
+    .dx;
 
-void expectPose(Positioned actual, RecedePose pose, double scale) {
-  expect(actual.left, closeTo(pose.left * scale, 1e-6));
-  expect(actual.top, closeTo(pose.top * scale, 1e-6));
-  expect(actual.width, closeTo(pose.width * scale, 1e-6));
-}
+/// "게임 규칙 n/m" 라벨이 든 규칙 카드
+Finder ruleCard(String counter) => find
+    .ancestor(
+      of: find.textContaining(counter),
+      matching: find.byType(Container),
+    )
+    .first;
 
 String backgroundAsset(WidgetTester tester) {
   final image = tester.widget<Image>(find.byType(Image).first).image;
@@ -135,7 +141,7 @@ void main() {
       );
       expect(find.text('03:00'), findsOneWidget);
       expect(find.text('경찰 출동까지'), findsOneWidget);
-      expect(find.text('도둑이 도망치는 중이에요'), findsOneWidget);
+      expect(find.text('도둑이 도망치는 중이에요!'), findsOneWidget);
       await unmount(tester);
     },
   );
@@ -154,7 +160,7 @@ void main() {
     expect(scale(), 1);
     await tester.pump(const Duration(seconds: 3)); // 9초 남음
     await tester.pump(const Duration(milliseconds: 300));
-    expect(scale(), closeTo(72 / 56, 1e-9));
+    expect(scale(), closeTo(1.2, 1e-9));
     await unmount(tester);
   });
 
@@ -179,29 +185,6 @@ void main() {
     },
   );
 
-  // 플로팅 메뉴(가운데 아래)가 규칙 글을 가리면 안 된다. 136은 393×852 iPhone의 버튼 윗선이다.
-  for (final (isPolice, mode, rule) in [
-    (true, ChaseSceneMode.policeWait, '도둑의 QR을 스캔하면 체포돼요'),
-    (false, ChaseSceneMode.robberExplainer, '경찰이 내 QR을 스캔하면 잡혀요'),
-  ]) {
-    testWidgets(
-      'rule_stays_above_floating_menu_when_${mode.name}_reserves_bottom',
-      (tester) async {
-        await pumpScene(
-          tester,
-          mode: mode,
-          isPolice: isPolice,
-          elapsed: const Duration(seconds: 1),
-          bottomReserved: 136,
-        );
-        await tester.pump(const Duration(milliseconds: 500));
-        final bottom = tester.getBottomLeft(find.text(rule)).dy;
-        expect(bottom, lessThanOrEqualTo(852 - 136));
-        await tester.pumpWidget(const SizedBox.shrink());
-      },
-    );
-  }
-
   testWidgets('police_wait_stays_open_when_police_taps_screen', (tester) async {
     var closed = 0;
     await pumpScene(
@@ -211,7 +194,7 @@ void main() {
       elapsed: const Duration(minutes: 1),
       onClose: () => closed++,
     );
-    await tester.tapAt(const Offset(196, 426));
+    await tester.tapAt(const Offset(196, 700)); // 카드 아래 빈 배경
     expect(closed, 0);
     await unmount(tester);
   });
@@ -227,8 +210,8 @@ void main() {
       elapsed: const Duration(seconds: 4),
       onClose: () => closed++,
     );
-    expect(find.text('경찰에게서 멀어지는 중이에요'), findsOneWidget);
-    await tester.tapAt(const Offset(196, 426));
+    expect(find.text('경찰에게서 멀어지세요!'), findsOneWidget);
+    await tester.tapAt(const Offset(196, 700)); // 카드 아래 빈 배경
     expect(closed, 1);
     await unmount(tester);
   });
@@ -263,16 +246,11 @@ void main() {
         elapsed: const Duration(minutes: 12),
       );
       final tops = <double>[];
-      final ruleHeights = <double>{};
       for (var i = 1; i <= 6; i++) {
-        final counter = find.text('게임 규칙 $i/6');
-        tops.add(tester.getTopLeft(counter).dy);
-        final block = find.ancestor(of: counter, matching: find.byType(Column));
-        ruleHeights.add(tester.getSize(block.first).height);
+        tops.add(tester.getTopLeft(find.text('게임 규칙 $i/6')).dy);
         await tester.pump(ChaseScene.ruleInterval);
         await tester.pump(const Duration(milliseconds: 700)); // 바뀌는 애니메이션 끝
       }
-      expect(ruleHeights.length, greaterThan(1)); // 줄 수가 다른 규칙이 섞여 있다
       expect(tops.toSet(), hasLength(1));
       await unmount(tester);
     },
@@ -290,9 +268,8 @@ void main() {
       );
       expect(find.text('03:00'), findsOneWidget);
       expect(find.text('경찰 출동까지'), findsOneWidget);
-      expect(find.text('경찰에게서 멀어지는 중이에요'), findsOneWidget);
+      expect(find.text('경찰에게서 멀어지세요!'), findsOneWidget);
       expect(find.text('게임 규칙 1/6'), findsOneWidget);
-      expect(find.text('탭하면 지도로 돌아가요'), findsOneWidget);
       await unmount(tester);
     },
   );
@@ -311,8 +288,7 @@ void main() {
       expect(find.text('18:00'), findsOneWidget);
       expect(find.text('남은 게임 시간'), findsOneWidget);
       expect(find.text('경찰 출동까지'), findsNothing);
-      expect(find.text('도둑이 도망치는 중이에요'), findsOneWidget);
-      expect(find.text('탭하면 지도로 돌아가요'), findsOneWidget);
+      expect(find.text('도둑이 도망치는 중이에요!'), findsOneWidget);
       await unmount(tester);
     },
   );
@@ -334,7 +310,6 @@ void main() {
           home: ChaseScene(
             mode: ChaseSceneMode.rulesReplay,
             isPolice: false,
-            scene: StartScene.town,
             gameStartTime: clock.now().subtract(const Duration(minutes: 2)),
             policeWaitMinutes: 5,
             revealMinutes: 5,
@@ -352,20 +327,85 @@ void main() {
     await unmount(tester);
   });
 
-  // 정보가 많아 난잡하다는 리뷰 — 미션은 방금 본 역할 배너와 규칙 1번(승리 조건)에 이미 있다
-  testWidgets('police_wait_leaves_mission_to_role_banner_when_shown', (
+  // 새 시안(#674)은 미션을 카드로 다시 보여 준다 — 팀마다 자기 미션만 나온다
+  for (final (isPolice, mode, label, mission) in [
+    (true, ChaseSceneMode.policeWait, '경찰 팀 미션', '도둑을 찾아 QR로 모두 체포하세요'),
+    (
+      false,
+      ChaseSceneMode.robberExplainer,
+      '도둑 팀 미션',
+      '게임이 끝날 때까지 잡히지 말고 도망치세요',
+    ),
+  ]) {
+    testWidgets('${mode.name}_shows_own_team_mission_card_when_opened', (
+      tester,
+    ) async {
+      await pumpScene(
+        tester,
+        mode: mode,
+        isPolice: isPolice,
+        elapsed: const Duration(minutes: 2),
+      );
+      expect(find.text(label), findsOneWidget);
+      expect(find.text(mission), findsOneWidget);
+      await unmount(tester);
+    });
+  }
+
+  // 인게임 공지는 장면에서 위가 아니라 미션 카드 바로 위에 끼운다
+  testWidgets(
+    'notice_sits_between_title_and_mission_card_when_game_sends_one',
+    (tester) async {
+      await pumpScene(
+        tester,
+        mode: ChaseSceneMode.policeWait,
+        isPolice: true,
+        elapsed: const Duration(minutes: 2),
+        notice: const SizedBox(key: Key('notice'), height: 44),
+      );
+      final notice = tester.getRect(find.byKey(const Key('notice')));
+      expect(
+        notice.top,
+        greaterThan(tester.getRect(find.text('도둑이 도망치는 중이에요!')).bottom),
+      );
+      expect(notice.bottom, lessThan(tester.getRect(find.text('경찰 팀 미션')).top));
+      await unmount(tester);
+    },
+  );
+
+  testWidgets('police_car_drives_left_to_right_when_scene_is_open', (
     tester,
   ) async {
     await pumpScene(
       tester,
       mode: ChaseSceneMode.policeWait,
       isPolice: true,
-      elapsed: const Duration(minutes: 2),
+      elapsed: const Duration(minutes: 1),
     );
-    expect(
-      find.textContaining('도둑을 찾아 QR로 모두 체포하세요', findRichText: true),
-      findsNothing,
+    final start = carLeft(tester);
+    expect(start, lessThan(0)); // 왼쪽 화면 밖에서 들어온다
+    await tester.pump(const Duration(seconds: 3));
+    final later = carLeft(tester);
+    expect(later, greaterThan(start));
+    await tester.pump(const Duration(seconds: 3, milliseconds: 900));
+    expect(carLeft(tester), greaterThan(later)); // 오른쪽 끝에 닿기 직전
+    await unmount(tester);
+  });
+
+  testWidgets('police_car_stays_parked_when_reduce_motion_is_on', (
+    tester,
+  ) async {
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.policeWait,
+      isPolice: true,
+      elapsed: const Duration(minutes: 1),
+      disableAnimations: true,
     );
+    final parked = carLeft(tester);
+    await tester.pump(const Duration(seconds: 3));
+    expect(carLeft(tester), parked);
+    expect(parked, closeTo(PoliceCarDrive.restLeft, 1e-6));
     await unmount(tester);
   });
 
@@ -400,7 +440,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 700));
     expect(find.text('게임 규칙 6/6'), findsOneWidget);
     expect(find.text('잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요'), findsOneWidget);
-    await tester.tapAt(const Offset(196, 426));
+    await tester.tapAt(const Offset(196, 700)); // 카드 아래 빈 배경
     expect(closed, 1);
     await unmount(tester);
   });
@@ -458,40 +498,6 @@ void main() {
     );
   }
 
-  testWidgets('police_wait_robber_recedes_along_progress_when_time_passes', (
-    tester,
-  ) async {
-    await pumpScene(
-      tester,
-      mode: ChaseSceneMode.policeWait,
-      isPolice: true,
-      elapsed: const Duration(minutes: 1), // 5분 중 1분
-    );
-    const s = 393 / 300;
-    expectPose(farCharacter(tester), recede(0.2, policeWaitRecede), s);
-    await advance(tester, const Duration(minutes: 1));
-    expectPose(farCharacter(tester), recede(0.4, policeWaitRecede), s);
-    await unmount(tester);
-  });
-
-  testWidgets(
-    'robber_explainer_cat_recedes_with_same_progress_as_police_wait',
-    (tester) async {
-      await pumpScene(
-        tester,
-        mode: ChaseSceneMode.robberExplainer,
-        isPolice: false,
-        elapsed: const Duration(minutes: 1),
-      );
-      expectPose(
-        farCharacter(tester),
-        recede(0.2, robberWaitRecede),
-        393 / 300,
-      );
-      await unmount(tester);
-    },
-  );
-
   testWidgets('police_scene_uses_day_background_and_robber_scene_uses_night', (
     tester,
   ) async {
@@ -503,7 +509,7 @@ void main() {
     );
     expect(
       backgroundAsset(tester),
-      'assets/backgrounds/start_wait/start_wait_town_day.png',
+      'assets/backgrounds/start_wait/start_wait_day.png',
     );
     await unmount(tester);
     await pumpScene(
@@ -514,56 +520,35 @@ void main() {
     );
     expect(
       backgroundAsset(tester),
-      'assets/backgrounds/start_wait/start_wait_town_night.png',
+      'assets/backgrounds/start_wait/start_wait_night.png',
     );
     await unmount(tester);
   });
 
-  // 16:9 폰은 목업(300×652)보다 짧아 아래가 잘린다 — 돌아가는 규칙 네 줄 모두
-  // 앞의 캐릭터를 가리지 않고 화면 안에 있어야 한다
+  // 16:9 폰은 시안(393×852)보다 짧다 — 공지가 있어도 돌아가는 규칙 카드가 화면 안에 다 들어와야 한다
   for (final size in const [Size(375, 667), Size(360, 640)]) {
     for (final (mode, isPolice) in [
       (ChaseSceneMode.policeWait, true),
       (ChaseSceneMode.robberExplainer, false),
     ]) {
-      testWidgets(
-        '${mode.name}_rules_stay_clear_of_near_character_when_phone_is_'
-        '${size.width.toInt()}x${size.height.toInt()}',
-        (tester) async {
-          await pumpScene(
-            tester,
-            mode: mode,
-            isPolice: isPolice,
-            elapsed: const Duration(minutes: 1),
-            size: size,
-          );
-          final near = tester.getRect(find.byType(RunCycle).last);
-          for (var i = 1; i <= 4; i++) {
-            final rule = tester.getRect(
-              find
-                  .ancestor(
-                    of: find.textContaining('$i/4'),
-                    matching: find.byType(Column),
-                  )
-                  .first,
-            );
-            expect(
-              rule.overlaps(near),
-              isFalse,
-              reason: '규칙 $i: $rule / $near',
-            );
-            expect(rule.top, greaterThanOrEqualTo(0), reason: '규칙 $i');
-            expect(
-              rule.bottom,
-              lessThanOrEqualTo(size.height),
-              reason: '규칙 $i',
-            );
-            await tester.pump(ChaseScene.ruleInterval);
-            await tester.pump(const Duration(milliseconds: 400));
-          }
-          await unmount(tester);
-        },
-      );
+      testWidgets('${mode.name}_rule_card_stays_on_screen_when_phone_is_'
+          '${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+        await pumpScene(
+          tester,
+          mode: mode,
+          isPolice: isPolice,
+          elapsed: const Duration(minutes: 1),
+          size: size,
+          notice: const SizedBox(height: 44),
+        );
+        for (var i = 1; i <= 4; i++) {
+          final rule = tester.getRect(ruleCard('$i/4'));
+          expect(rule.bottom, lessThanOrEqualTo(size.height), reason: '규칙 $i');
+          await tester.pump(ChaseScene.ruleInterval);
+          await tester.pump(const Duration(milliseconds: 700));
+        }
+        await unmount(tester);
+      });
     }
   }
 
@@ -600,59 +585,173 @@ void main() {
     },
   );
 
-  // ⓘ 다시 보기 영어 규칙은 두 줄이 4줄까지 길어진다 — 짧은 폰에서도 제목·앞 캐릭터와 겹치지 않아야 한다
+  // ⓘ 다시 보기 영어 규칙은 여러 줄로 길어진다 — 짧은 폰에서도 제목과 겹치지 않고 화면 안에 있어야 한다
   for (final size in const [Size(375, 667), Size(360, 640), Size(360, 740)]) {
     for (final isPolice in [true, false]) {
-      testWidgets(
-        'rulesReplay_english_rules_stay_clear_of_title_and_character_when_'
-        '${isPolice ? 'police' : 'robber'}_phone_is_'
-        '${size.width.toInt()}x${size.height.toInt()}',
-        (tester) async {
-          await pumpScene(
-            tester,
-            mode: ChaseSceneMode.rulesReplay,
-            isPolice: isPolice,
-            elapsed: const Duration(minutes: 12),
-            size: size,
-            locale: const Locale('en'),
+      testWidgets('rulesReplay_english_rules_stay_clear_of_title_when_'
+          '${isPolice ? 'police' : 'robber'}_phone_is_'
+          '${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+        await pumpScene(
+          tester,
+          mode: ChaseSceneMode.rulesReplay,
+          isPolice: isPolice,
+          elapsed: const Duration(minutes: 12),
+          size: size,
+          locale: const Locale('en'),
+        );
+        final l10n = lookupAppLocalizations(const Locale('en'));
+        final title = tester.getRect(
+          find.text(
+            isPolice ? l10n.startWaitPoliceTitle : l10n.startWaitRobberTitle,
+          ),
+        );
+        for (var i = 1; i <= 6; i++) {
+          final rule = tester.getRect(
+            find
+                .ancestor(
+                  of: find.textContaining('$i/6'),
+                  matching: find.byType(Column),
+                )
+                .first,
           );
-          final l10n = lookupAppLocalizations(const Locale('en'));
-          final title = tester.getRect(
-            find.text(
-              isPolice ? l10n.startWaitPoliceTitle : l10n.startWaitRobberTitle,
-            ),
+          expect(
+            rule.overlaps(title),
+            isFalse,
+            reason: '규칙 $i: $rule / 제목 $title',
           );
-          final near = tester.getRect(find.byType(RunCycle).last);
-          for (var i = 1; i <= 6; i++) {
-            final rule = tester.getRect(
-              find
-                  .ancestor(
-                    of: find.textContaining('$i/6'),
-                    matching: find.byType(Column),
-                  )
-                  .first,
-            );
-            expect(
-              rule.overlaps(title),
-              isFalse,
-              reason: '규칙 $i: $rule / 제목 $title',
-            );
-            expect(
-              rule.overlaps(near),
-              isFalse,
-              reason: '규칙 $i: $rule / 캐릭터 $near',
-            );
-            expect(
-              rule.bottom,
-              lessThanOrEqualTo(size.height),
-              reason: '규칙 $i',
-            );
-            await tester.pump(ChaseScene.ruleInterval);
-            await tester.pump(const Duration(milliseconds: 700));
-          }
-          await unmount(tester);
-        },
-      );
+          expect(rule.bottom, lessThanOrEqualTo(size.height), reason: '규칙 $i');
+          await tester.pump(ChaseScene.ruleInterval);
+          await tester.pump(const Duration(milliseconds: 700));
+        }
+        await unmount(tester);
+      });
     }
   }
+
+  // 탈옥 규칙은 두 줄로 길다 — 카드는 한 줄(…)로 미션 카드와 같은 높이였다가, 누르면 펼쳐진다
+  testWidgets(
+    'robber_explainer_long_rule_shows_one_line_until_robber_taps_card',
+    (tester) async {
+      var closed = 0;
+      await pumpScene(
+        tester,
+        mode: ChaseSceneMode.robberExplainer,
+        isPolice: false,
+        elapsed: const Duration(minutes: 1),
+        onClose: () => closed++,
+      );
+      await advance(tester, ChaseScene.ruleInterval * 3); // 4/4 탈옥 규칙
+      await tester.pump(const Duration(milliseconds: 700));
+      const jailbreak = '잡히면 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥돼요';
+      final mission = tester.getRect(
+        find
+            .ancestor(
+              of: find.text('도둑 팀 미션'),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+      expect(tester.getRect(ruleCard('4/4')).height, mission.height);
+
+      await tester.tap(find.text(jailbreak));
+      await tester.pump();
+      await tester.pump(ChaseScene.expandDuration);
+
+      expect(
+        tester.getRect(ruleCard('4/4')).height,
+        greaterThan(mission.height),
+      );
+      expect(closed, 0); // 카드를 누른 건 장면을 닫는 탭이 아니다
+      await unmount(tester);
+    },
+  );
+
+  // 펼친 규칙을 읽는 동안 다음 규칙으로 넘어가지 않고, 다시 누르면 접히고 이어서 돈다
+  testWidgets('rules_replay_waits_on_expanded_rule_until_player_folds_it', (
+    tester,
+  ) async {
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.rulesReplay,
+      isPolice: true,
+      elapsed: const Duration(minutes: 12), // 1/6 승리 조건 — 두 줄로 길다
+    );
+    final win = find.textContaining('경찰은 모든 도둑을 체포하면');
+    await tester.tap(win);
+    await advance(tester, ChaseScene.ruleInterval * 2);
+    expect(find.text('게임 규칙 1/6'), findsOneWidget);
+
+    await tester.tap(win);
+    await advance(tester, ChaseScene.ruleInterval);
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('게임 규칙 2/6'), findsOneWidget);
+    await unmount(tester);
+  });
+
+  // 피그마 9085:24154: 팀 줄 top 118, 팀 → 라벨 48, 라벨 → 숫자 14, 숫자(80) → 안내 14,
+  // 안내 → 공지 44(y376), 카드끼리 18
+  testWidgets('police_wait_keeps_design_vertical_gaps_when_notice_is_shown', (
+    tester,
+  ) async {
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.policeWait,
+      isPolice: true,
+      elapsed: const Duration(minutes: 1),
+      notice: const SizedBox(key: ValueKey('notice'), height: 44),
+    );
+    final team = tester.getRect(find.text('경찰팀'));
+    final label = tester.getRect(find.text('경찰 출동까지'));
+    final digits = tester.getRect(find.text('04:00'));
+    final title = tester.getRect(find.text('도둑이 도망치는 중이에요!'));
+    final notice = tester.getRect(find.byKey(const ValueKey('notice')));
+    final mission = tester.getRect(
+      find
+          .ancestor(of: find.text('경찰 팀 미션'), matching: find.byType(Container))
+          .first,
+    );
+    // 팀 줄은 24(아이콘) 높이에 20 글자가 가운데라 아래로 2 더 있다
+    expect(label.top - (team.bottom + 2), moreOrLessEquals(48));
+    expect(digits.top - label.bottom, moreOrLessEquals(14));
+    expect(title.top - digits.bottom, moreOrLessEquals(14));
+    expect(notice.top - title.bottom, moreOrLessEquals(44));
+    expect(mission.top - notice.bottom, moreOrLessEquals(18));
+    expect(digits.height, moreOrLessEquals(80));
+    expect(notice.top, moreOrLessEquals(376));
+    await unmount(tester);
+  });
+
+  // 공지는 왔다가 8초 뒤 사라진다 — 공지가 없어도 자리를 비워 둬야 카드가 들썩이지 않는다
+  testWidgets('mission_card_stays_in_place_when_notice_comes_and_goes', (
+    tester,
+  ) async {
+    double missionTop() => tester
+        .getTopLeft(
+          find
+              .ancestor(
+                of: find.text('경찰 팀 미션'),
+                matching: find.byType(Container),
+              )
+              .first,
+        )
+        .dy;
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.policeWait,
+      isPolice: true,
+      elapsed: const Duration(minutes: 1),
+      notice: const SizedBox(height: 44),
+    );
+    final withNotice = missionTop();
+    await unmount(tester);
+
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.policeWait,
+      isPolice: true,
+      elapsed: const Duration(minutes: 1),
+    );
+    expect(missionTop(), withNotice);
+    await unmount(tester);
+  });
 }

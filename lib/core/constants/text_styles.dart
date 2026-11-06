@@ -52,6 +52,15 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  /// 게임 시작 장면 출동 카운트다운 (S-Core Dream 7 ExtraBold 80)
+  /// 숫자 폭이 모두 같은 글꼴이라 초가 바뀌어도 흔들리지 않는다
+  static TextStyle get scoreDreamExtrabold_80 => TextStyle(
+    fontFamily: 'SCDream-ExtraBold',
+    fontSize: 80.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   static TextStyle get semibold_28 => TextStyle(
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 28.sp,

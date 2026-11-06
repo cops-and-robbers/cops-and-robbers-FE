@@ -1310,10 +1310,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startGameTimeLeftLabel => 'Game time left';
 
   @override
-  String get startWaitPoliceTitle => 'The Robbers are getting away';
+  String get startWaitPoliceTitle => 'The Robbers are getting away!';
 
   @override
-  String get startWaitRobberTitle => 'You\'re getting away from the Cops';
+  String get startWaitRobberTitle => 'Get away from the Cops!';
+
+  @override
+  String get startMissionPoliceLabel => 'Cop team mission';
+
+  @override
+  String get startMissionRobberLabel => 'Robber team mission';
+
+  @override
+  String get startMissionPolice =>
+      'Find the Robbers and arrest them all with QR';
+
+  @override
+  String get startMissionRobber =>
+      'Stay free and keep running until the game ends';
 
   @override
   String startRulesCounter(int current, int total) {
@@ -1362,9 +1376,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get startRuleJailbreakReplay =>
       'Caught Robbers go to Jail and escape after 3 seconds outside it';
-
-  @override
-  String get startTapToMap => 'Tap to return to the map';
 
   @override
   String get dispatchPoliceLead => 'Time\'s up';

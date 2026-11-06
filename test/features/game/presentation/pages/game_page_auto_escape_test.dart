@@ -748,13 +748,11 @@ void main() {
     await advance(tester, const Duration(seconds: 5));
     final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
 
-    // 기다리는 동안 팀 채팅을 연다 — 채팅을 닫는 앱바 뒤로 버튼이 장면에 가리면 안 된다
-    await tester.tap(
-      find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
-      ),
-    );
-    await tester.pump();
+    // 기다리는 동안 장면 메뉴에서 채팅을 연다(DEC-0133) — 채팅을 닫는 앱바 뒤로 버튼이 장면에 가리면 안 된다
+    await tester.tap(find.byType(GameFabMenu));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.tap(find.text(l10n.gameChatTitle));
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.byType(ChaseScene), findsNothing);
 
     await tester.tap(find.byTooltip(l10n.gameChatBackToMap));
@@ -911,7 +909,7 @@ void main() {
     final scene = tester.widget<ChaseScene>(find.byType(ChaseScene));
     expect(scene.mode, ChaseSceneMode.rulesReplay);
 
-    await tester.tapAt(const Offset(150, 426));
+    await tester.tapAt(const Offset(150, 700)); // 카드 아래 빈 배경 — 카드는 누르면 펼쳐진다
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(ChaseScene), findsNothing);

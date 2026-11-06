@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/app_icons.dart';
 import 'package:cops_and_robbers/core/constants/character_assets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,11 +14,13 @@ void main() {
         startRoleCharacterAssetPath(team: team),
         startChaseCharacterAssetPath(team: team),
       ],
-      for (final scene in ['hills', 'town', 'city'])
-        for (final isNight in [false, true])
-          startWaitBackgroundAssetPath(scene: scene, isNight: isNight),
+      for (final isNight in [false, true])
+        startWaitBackgroundAssetPath(isNight: isNight),
+      AppIcons.flag,
+      AppIcons.bulb,
+      AppIcons.policeCar,
     ];
-    expect(paths, hasLength(10));
+    expect(paths, hasLength(9));
     for (final path in paths) {
       final data = await rootBundle.load(path);
       expect(data.lengthInBytes, greaterThan(0), reason: path);
