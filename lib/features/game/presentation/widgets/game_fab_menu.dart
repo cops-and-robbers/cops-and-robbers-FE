@@ -94,7 +94,6 @@ class GameFabMenu extends StatelessWidget {
     return _RoundButton(
       angle: 0,
       isDarkMode: isDarkMode,
-      stacksUp: stacksUp,
       semanticLabel: AppLocalizations.of(context).gameMenuOpen,
       onTap: () => _open(context),
     );
@@ -124,8 +123,10 @@ class _OpenMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = 150.w;
-    final circleSize = _fanCircle(items.length);
+    // 원(48)이 예전(64)보다 작지만 라벨끼리 여유를 두려고 호를 덜 좁힌다
+    final radius = 132.w;
+    // 펼친 항목이 가운데 버튼(56)보다 작아야 위계가 맞는다 — 장면 메뉴와 같은 48
+    final circleSize = _itemCircle;
     final count = items.length;
 
     return Stack(
@@ -198,7 +199,6 @@ class _OpenMenu extends StatelessWidget {
             builder: (context, _) => _RoundButton(
               angle: animation.value * pi / 4,
               isDarkMode: isDarkMode,
-              stacksUp: stacksUp,
               semanticLabel: AppLocalizations.of(context).gameMenuClose,
               onTap: () => Navigator.of(context).pop(),
             ),
@@ -208,14 +208,9 @@ class _OpenMenu extends StatelessWidget {
     );
   }
 
-  /// 시안: 장면(위로 쌓기) 항목 원 48 · 아이콘 24
+  /// 시안: 항목 원 48 · 아이콘 24 — 장면(위로 쌓기)과 지도(부채꼴)가 같다
   static double get _itemCircle => 48.w;
   static double get _itemIcon => 24.w;
-
-  /// 지도(부채꼴)는 기본 원 64이고 항목이 3개를 넘으면 하나당 8씩 줄어 장면 크기(48)에서 멈춘다.
-  /// 같은 호에 항목이 늘면 원끼리·라벨끼리 붙기 때문이다. 아이콘은 늘 원의 절반.
-  static double _fanCircle(int count) =>
-      (64 - (count - 3).clamp(0, 2) * 8).toDouble().w;
 
   /// 시안: 버튼과 첫 항목 사이 16, 항목끼리 8
   static double get _stackFirstGap => 16.w;
@@ -274,7 +269,8 @@ class _OpenMenu extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: isDarkMode ? AppColors.black : AppColors.white,
-          boxShadow: AppShadows.softThemed(isDarkMode),
+          // 피그마 `shadow`: 두 팀·장면·지도 모두 검정 10%
+          boxShadow: AppShadows.soft,
         ),
         child: SvgPicture(
           SvgAssetLoader(item.icon, colorMapper: item.iconColorMapper),
@@ -330,7 +326,7 @@ class _OpenMenu extends StatelessWidget {
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _circle(item, circleSize, circleSize / 2),
+            _circle(item, circleSize, _itemIcon),
             SizedBox(height: AppSpacing.vertical6),
             _label(item),
           ],
@@ -345,7 +341,6 @@ class _RoundButton extends StatelessWidget {
   const _RoundButton({
     required this.angle,
     required this.isDarkMode,
-    required this.stacksUp,
     required this.semanticLabel,
     required this.onTap,
   });
@@ -356,8 +351,6 @@ class _RoundButton extends StatelessWidget {
   final double angle;
   final bool isDarkMode;
 
-  /// 장면 버튼은 시안대로 도둑도 검정 그림자(지도는 기존 팀 그림자)
-  final bool stacksUp;
   final String semanticLabel;
   final VoidCallback onTap;
 
@@ -375,9 +368,7 @@ class _RoundButton extends StatelessWidget {
           // 도둑(다크)은 검정 원에 초록 +, 경찰은 파란 원에 흰 + (#674 시안)
           color: isDarkMode ? AppColors.black : AppColors.blue,
           shape: BoxShape.circle,
-          boxShadow: stacksUp
-              ? AppShadows.soft
-              : AppShadows.softThemed(isDarkMode),
+          boxShadow: AppShadows.soft,
         ),
         alignment: Alignment.center,
         child: Transform.rotate(

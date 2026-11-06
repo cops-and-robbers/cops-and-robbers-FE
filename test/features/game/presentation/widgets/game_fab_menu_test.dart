@@ -192,14 +192,10 @@ void main() {
     expect(button.top - (ys[2] + 48 / 2), moreOrLessEquals(16));
   });
 
-  // 지도 메뉴는 기본 원 64 · 아이콘 32이고, 항목이 늘면 하나당 8씩 줄어 원 48 · 아이콘 24에서 멈춘다
-  for (final (count, circle, icon) in [
-    (3, 64.0, 32.0),
-    (4, 56.0, 28.0),
-    (6, 48.0, 24.0),
-  ]) {
+  // 지도 메뉴도 대기 장면 메뉴와 같은 원 48 · 아이콘 24 — 가운데 버튼(56)보다 작고, 항목 수와 상관없다
+  for (final count in [3, 4]) {
     testWidgets(
-      'map_menu_items_are_${circle.toInt()}_when_menu_has_${count}_items',
+      'map_menu_items_match_scene_size_when_menu_has_${count}_items',
       (tester) async {
         tester.view.physicalSize = const Size(393, 852);
         tester.view.devicePixelRatio = 1;
@@ -239,8 +235,8 @@ void main() {
         final circleBox = find
             .ancestor(of: svg, matching: find.byType(Container))
             .first;
-        expect(tester.getSize(svg).width, moreOrLessEquals(icon));
-        expect(tester.getSize(circleBox).width, moreOrLessEquals(circle));
+        expect(tester.getSize(svg).width, moreOrLessEquals(24));
+        expect(tester.getSize(circleBox).width, moreOrLessEquals(48));
       },
     );
   }
