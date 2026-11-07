@@ -265,9 +265,9 @@ class _ChaseSceneState extends State<ChaseScene> {
                     ),
                   ),
                 ),
-                // 다시 보기는 저절로 닫히지 않아 남은 시간 막대가 없다
-                // 도둑은 화면을 누르면 닫히고 지도로 간다 — 남은 시간 막대 바로 위에 알려 준다
-                if (widget.mode == ChaseSceneMode.robberExplainer)
+                // 도둑 설명·ⓘ 다시 보기는 화면을 누르면 닫히고 지도로 간다 — 맨 아래에 알려 준다.
+                // 경찰 대기는 출동 전까지 닫을 수 없어 안내가 없다
+                if (widget.mode != ChaseSceneMode.policeWait)
                   Positioned(
                     left: AppSpacing.horizontal16,
                     right: AppSpacing.horizontal16,
@@ -275,11 +275,15 @@ class _ChaseSceneState extends State<ChaseScene> {
                     child: Text(
                       l10n.startExplainerTapHint,
                       textAlign: TextAlign.center,
+                      // 위 "경찰 출동까지" 라벨과 같은 색 — 경찰은 밝은 바탕이다
                       style: AppTextStyles.paragraph_14.copyWith(
-                        color: AppColors.black200,
+                        color: _isPolice
+                            ? AppColors.black500
+                            : AppColors.black200,
                       ),
                     ),
                   ),
+                // 다시 보기는 저절로 닫히지 않아 남은 시간 막대가 없다
                 if (widget.mode == ChaseSceneMode.robberExplainer)
                   Positioned(
                     left: 0,

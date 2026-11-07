@@ -981,6 +981,45 @@ void main() {
     await tester.pump(const Duration(seconds: 10));
   });
 
+  // ⓘ 규칙 다시 보기는 화면 위에 뜨는 다이얼로그다 — 출동 카운팅은 그보다도 위에 떠야 보인다
+  testWidgets(
+    'countdown_covers_rules_replay_when_dispatch_nears_while_it_is_open',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        // ⓘ 위치 안내는 지난 게임에서 이미 봤다 — 안내가 ⓘ를 가리면 누를 수 없다
+        await GameRulesHintPrefs.markSeen();
+        setFreshGame(team: 'ROBBER', policeWaitMinutes: 1);
+        await mount(tester, size: const Size(393, 852));
+        await advance(tester, const Duration(seconds: 5));
+        await tester.pump(const Duration(seconds: 40)); // 설명 화면은 닫히고 지도
+        final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+        await tester.tap(find.byTooltip(l10n.titleGameRules));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        bool replayOpen() => find
+            .byWidgetPredicate(
+              (w) => w is ChaseScene && w.mode == ChaseSceneMode.rulesReplay,
+            )
+            .evaluate()
+            .isNotEmpty;
+        expect(replayOpen(), isTrue);
+
+        for (var i = 0; i < 150 && find.text('5').evaluate().isEmpty; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        expect(find.byType(DispatchCountdown), findsOneWidget);
+        // 카운팅이 맨 위면 빈 곳을 눌러도 아래 ⓘ 화면까지 닿지 않는다
+        await tester.tapAt(const Offset(30, 260));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400)); // 닫힘 애니메이션이 끝날 만큼
+        expect(replayOpen(), isTrue);
+        await advance(tester, const Duration(seconds: 8));
+        expect(find.byType(DispatchCountdown), findsNothing);
+        await tester.pump(const Duration(seconds: 40));
+      });
+    },
+  );
+
   testWidgets('info_button_opens_rules_scene_when_normal_game', (tester) async {
     // 기본 하네스: 1분 전에 시작한 도둑, 대기 없음 → 시작 장면 없이 지도
     await mount(tester, size: const Size(393, 852));

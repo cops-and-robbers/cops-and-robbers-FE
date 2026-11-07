@@ -442,6 +442,18 @@ void main() {
     await unmount(tester);
   });
 
+  // ⓘ 규칙 다시 보기도 누르면 닫혀 지도로 간다 — 경찰·도둑 모두 알려 준다
+  testWidgets('rules_replay_tells_tap_goes_to_map_when_opened', (tester) async {
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.rulesReplay,
+      isPolice: true,
+      elapsed: const Duration(minutes: 12),
+    );
+    expect(find.text('화면을 누르면 지도로 가요'), findsOneWidget);
+    await unmount(tester);
+  });
+
   testWidgets('police_car_drives_left_to_right_when_scene_is_open', (
     tester,
   ) async {
