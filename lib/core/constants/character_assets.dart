@@ -34,10 +34,8 @@ String resultCharacterAssetPath({
 /// MVP 공개 화면 캐릭터 SVG 경로.
 ///
 /// - [team] `'police'` | `'robber'`
-// ponytail: 디자이너 MVP 에셋 전까지 홈 전신 그림을 쓴다. 오면
-// 'assets/characters/$team/mvp/default/mvp.svg'로 바꾸고 pubspec.yaml에 폴더를 등록한다.
 String mvpCharacterAssetPath({required String team}) =>
-    characterAssetPath(team: team, state: 'home');
+    'assets/characters/$team/mvp/default/mvp.svg';
 
 /// 게임 시작 화면(역할 배너·대기 장면·출동 배너) 캐릭터 SVG 경로.
 ///
@@ -55,3 +53,9 @@ String startChaseCharacterAssetPath({required String team}) =>
 /// 대기·설명 장면 배경 PNG(393×852). 경찰은 낮, 도둑은 밤 그림.
 String startWaitBackgroundAssetPath({required bool isNight}) =>
     'assets/backgrounds/start_wait/start_wait_${isNight ? 'night' : 'day'}.png';
+
+/// MVP 공개 화면 캐릭터 뒤 원형 빛 무대 SVG 경로.
+///
+/// - [team] `'police'` | `'robber'`
+String mvpGlowAssetPath({required String team}) =>
+    'assets/backgrounds/mvp/glow_$team.svg';

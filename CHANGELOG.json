@@ -1,11 +1,49 @@
 {
   "metadata": {
-    "lastUpdated": "2026-11-06T16:37:13Z",
-    "currentVersion": "3.2.15",
+    "lastUpdated": "2026-11-07T10:16:51Z",
+    "currentVersion": "3.2.16",
     "projectType": "flutter",
-    "totalReleases": 151
+    "totalReleases": 152
   },
   "releases": [
+    {
+      "version": "3.2.16",
+      "project_type": "flutter",
+      "date": "2026-11-07",
+      "pr_number": 681,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새 기능**\n\n  * MVP 공개 화면 시안 배치와 스포트라이트 연출 적용 #679\n  * MVP 공개 화면 색종이 효과 추가 #679\n  * MVP 공개 화면 제목·팀 문구 추가, 하단 안내를 해요체로 변경 #679\n  * MVP 캐릭터, 빛 무대, 색종이 SVG 에셋 추가 #679\n\n* **버그 수정**\n\n  * MVP 안내 바 투명 색상을 토큰으로 바꾸고, 큰 글씨에서 닉네임과 부제가 겹치지 않게 수정 #679\n\n* **문서**\n\n  * #679 작업 리포트 추가 #679\n  * #679 이슈 문서 추가 #679\n\n* **기타**\n\n  * Merge pull request #680 from cops-and-robbers/20261107_#679_기능개선_게임결과_MVP_화면_개선\n\n> 💡 더 정확한 릴리스 노트를 원한다면 Claude Code에서 `/github` 스킬로 PR 릴리스 노트를 업데이트할 수 있습니다.",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "MVP 공개 화면 시안 배치와 스포트라이트 연출 적용 #679",
+            "MVP 공개 화면 색종이 효과 추가 #679",
+            "MVP 공개 화면 제목·팀 문구 추가, 하단 안내를 해요체로 변경 #679",
+            "MVP 캐릭터, 빛 무대, 색종이 SVG 에셋 추가 #679"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "MVP 안내 바 투명 색상을 토큰으로 바꾸고, 큰 글씨에서 닉네임과 부제가 겹치지 않게 수정 #679"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "#679 작업 리포트 추가 #679",
+            "#679 이슈 문서 추가 #679"
+          ]
+        },
+        "기타": {
+          "title": "기타",
+          "items": [
+            "Merge pull request #680 from cops-and-robbers/20261107_#679_기능개선_게임결과_MVP_화면_개선"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "3.2.15",
       "project_type": "flutter",
