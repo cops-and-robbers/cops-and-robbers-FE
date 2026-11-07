@@ -1662,7 +1662,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelRobberTeamMvp => '泥棒チームMVP';
 
   @override
-  String get mvpRevealTapToContinue => 'タップして次へ';
+  String get mvpRevealTapToContinue => '画面をタップして次の結果を見る';
+
+  @override
+  String get mvpRevealTitle => 'ゲーム結果';
+
+  @override
+  String get mvpRevealPoliceSubtitle => '警察チームで一番の活躍';
+
+  @override
+  String get mvpRevealRobberSubtitle => '泥棒チームで一番の活躍';
 
   @override
   String get statusAlive => '生存';

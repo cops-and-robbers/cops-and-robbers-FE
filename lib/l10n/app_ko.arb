@@ -1690,9 +1690,21 @@
   "@labelRobberTeamMvp": {
     "description": "MVP 공개 화면 — 도둑 팀 MVP 라벨"
   },
-  "mvpRevealTapToContinue": "탭하면 넘어가요",
+  "mvpRevealTapToContinue": "화면을 누르면 다음 결과로 넘어가요",
   "@mvpRevealTapToContinue": {
-    "description": "MVP 공개 화면 하단 — 등장 연출이 끝난 뒤에만 보이는 안내"
+    "description": "MVP 공개 화면 하단 바 — 등장 연출이 끝난 뒤에만 보이는 안내"
+  },
+  "mvpRevealTitle": "게임 결과",
+  "@mvpRevealTitle": {
+    "description": "MVP 공개 화면 상단 제목"
+  },
+  "mvpRevealPoliceSubtitle": "경찰 팀 최고의 활약",
+  "@mvpRevealPoliceSubtitle": {
+    "description": "MVP 공개 화면 — 경찰 MVP 닉네임 아래 문구"
+  },
+  "mvpRevealRobberSubtitle": "도둑 팀 최고의 활약",
+  "@mvpRevealRobberSubtitle": {
+    "description": "MVP 공개 화면 — 도둑 MVP 닉네임 아래 문구"
   },
   "statusAlive": "생존",
   "@statusAlive": {

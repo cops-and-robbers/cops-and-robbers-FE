@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/game_result_reason.dart';
 import '../../../../core/constants/game_team.dart';
@@ -14,7 +15,9 @@ import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/game_result_entity.dart';
+import 'mvp_confetti.dart';
 import 'mvp_reveal_order.dart';
+import 'mvp_spotlight.dart';
 
 /// 게임 종료 알림 + 팀 MVP 공개 모달 (DEC-0093 ⑤, FE #628).
 ///
@@ -46,7 +49,11 @@ class GameOverIntroModal extends StatefulWidget {
   static const teaseHold = Duration(milliseconds: 1300);
 
   static const switchDuration = Duration(milliseconds: 350);
-  static const entranceDuration = Duration(milliseconds: 1000);
+
+  /// MVP 화면 연출 시작부터 탭을 받기까지 — 조명이 훑고(2.05초) 캐릭터가 나온 뒤 1초.
+  static const entranceDuration = Duration(
+    milliseconds: _MvpStage.popAtMs + 1000,
+  );
 
   static Future<void> show({
     required BuildContext context,
@@ -250,20 +257,32 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
                   ),
                 ),
               ),
+              // 하단 안내 바 (시안 9085:21588 · 9085:21641, 화면 아래에서 37).
+              // 시안의 shadow_vague는 바 전체 불투명도 15%에 묻혀(실효 1.5%) 생략한다.
               Positioned(
-                left: 0,
-                right: 0,
-                bottom: AppSpacing.vertical48,
+                left: AppSpacing.horizontal16,
+                right: AppSpacing.horizontal16,
+                bottom: 37.h,
                 child: AnimatedOpacity(
                   opacity: _tapReady ? 1 : 0,
                   duration: const Duration(milliseconds: 200),
-                  child: Text(
-                    l10n.mvpRevealTapToContinue,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.tag_12.copyWith(
+                  child: Container(
+                    height: 47.h,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
                       color: onLightStage
-                          ? AppColors.black500
-                          : AppColors.black300,
+                          ? AppColors.black300Alpha15
+                          : AppColors.whiteAlpha15,
+                      borderRadius: AppRadius.large,
+                    ),
+                    child: Text(
+                      l10n.mvpRevealTapToContinue,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: onLightStage
+                            ? AppColors.black400
+                            : AppColors.black300,
+                      ),
                     ),
                   ),
                 ),
@@ -342,81 +361,217 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
   }
 }
 
-/// 무대형 MVP 화면 — 배경은 보는 사람이 아니라 MVP의 팀을 따른다.
-/// 캐릭터가 탄성 확대로 먼저 나오고, 라벨·닉네임이 뒤따라 떠오른다.
-class _MvpStage extends StatelessWidget {
+/// 무대형 MVP 화면 (시안 도둑 9085:21586 · 경찰 9085:21639, 연출 FE #679).
+///
+/// 배경은 보는 사람이 아니라 MVP의 팀을 따른다. 어두운 빈 무대를 천장 조명이 훑다가
+/// 가운데에 멈추면, 조명이 꺼지며 캐릭터가 납작하게 눌렸다 쭉 늘어나며 튀어나오고
+/// 무대(빛 원·글자)가 켜지며 양옆에서 색종이가 터진다.
+class _MvpStage extends StatefulWidget {
   const _MvpStage({required this.reveal});
 
   final MvpReveal reveal;
 
+  // 연출 시간표(ms) — 앞 화면이 걷히는 동안 이미 어둡다.
+  static const sweepStartMs = 300;
+  static const sweepEndMs = 2000;
+  static const popAtMs = 2050;
+  static const popMs = 750;
+  static const litMs = 250;
+  static const totalMs = popAtMs + popMs;
+
+  @override
+  State<_MvpStage> createState() => _MvpStageState();
+}
+
+class _MvpStageState extends State<_MvpStage>
+    with SingleTickerProviderStateMixin {
+  // 시안 393x852 기준 세로 위치. 두 팀 시안이 몇 px씩 달라(무대 247/253) 가운데 값을 쓴다.
+  static const _titleTop = 118.0;
+  static const _labelTop = 213.0;
+  static const _glowTop = 250.0;
+  static const _glowSize = 330.0;
+  static const _characterTop = 315.0;
+  static const _nicknameTop = 572.0;
+
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: _MvpStage.totalMs),
+  )..forward();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  /// 발끝 기준 쫀득한 등장 — 납작하게 눌렸다(넓고 낮게) 쭉 늘어나고 출렁이며 자리 잡는다.
+  static ({double sx, double sy, double dy}) _squash(double p) {
+    if (p <= 0) return (sx: 0, sy: 0, dy: 0);
+    final grow = 1 - math.pow(1 - (p / 0.22).clamp(0.0, 1.0), 3).toDouble();
+    final wobble = -0.38 * math.exp(-4.2 * p) * math.cos(15 * p);
+    final hopT = (p / 0.45).clamp(0.0, 1.0);
+    final hop = -38 * math.sin(math.pi * hopT) * (1 - hopT);
+    return (sx: grow * (1 - wobble * 0.75), sy: grow * (1 + wobble), dy: hop);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final police = GameTeam.isPolice(reveal.team);
-    final teamColor = police ? AppColors.blue : AppColors.green;
+    final police = GameTeam.isPolice(widget.reveal.team);
+    final team = GameTeam.toLowerKey(widget.reveal.team);
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: GameOverIntroModal.entranceDuration,
-      builder: (_, v, _) {
-        final charT = Curves.elasticOut.transform((v / 0.7).clamp(0.0, 1.0));
-        final textT = Curves.easeOut.transform(
-          ((v - 0.4) / 0.6).clamp(0.0, 1.0),
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (context, _) {
+        final ms = _c.value * _MvpStage.totalMs;
+        final sinceLit = ms - _MvpStage.popAtMs;
+        final lit = (sinceLit / _MvpStage.litMs).clamp(0.0, 1.0);
+        final squash = _squash(sinceLit / _MvpStage.popMs);
+
+        Widget at(double top, Widget child) => Positioned(
+          left: 0,
+          right: 0,
+          top: top.h,
+          child: Center(child: child),
         );
-        return Container(
-          color: police ? AppColors.blueVer2_50 : AppColors.black,
-          padding: AppPadding.horizontal20,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+
+        return ColoredBox(
+          color: police ? AppColors.white : AppColors.black,
+          child: Stack(
+            children: [
+              // 무대(빛 원 → 색종이 → 글자 순) — 조명이 꺼지는 순간 켜진다.
+              at(
+                _glowTop,
                 Opacity(
-                  opacity: textT,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSpacing.horizontal14,
-                      vertical: AppSpacing.vertical6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: teamColor,
-                      borderRadius: AppRadius.pill,
-                    ),
-                    child: Text(
-                      police
-                          ? l10n.labelPoliceTeamMvp
-                          : l10n.labelRobberTeamMvp,
-                      style: AppTextStyles.label_16.copyWith(
-                        color: police ? AppColors.white : AppColors.black,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: AppSpacing.vertical24),
-                Transform.scale(
-                  scale: charT,
+                  opacity: lit,
                   child: SvgPicture.asset(
-                    mvpCharacterAssetPath(
-                      team: GameTeam.toLowerKey(reveal.team),
-                    ),
-                    width: 220.w,
+                    mvpGlowAssetPath(team: team),
+                    width: _glowSize.w,
+                    height: _glowSize.w,
                   ),
                 ),
-                SizedBox(height: AppSpacing.vertical24),
-                Opacity(
-                  opacity: textT,
-                  child: Transform.translate(
-                    offset: Offset(0, (1 - textT) * 16),
-                    child: Text(
-                      reveal.nickname,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.semibold_28.copyWith(
-                        color: police ? AppColors.black : AppColors.white,
+              ),
+              // 색종이는 빛 원 위, 글자·캐릭터 뒤 — 캐릭터가 나오는 순간 터진다.
+              if (sinceLit >= 0) const Positioned.fill(child: MvpConfetti()),
+              Opacity(
+                opacity: lit,
+                child: Stack(
+                  children: [
+                    at(
+                      _titleTop,
+                      Text(
+                        l10n.mvpRevealTitle,
+                        style: AppTextStyles.subHeading_18.copyWith(
+                          color: AppColors.black400,
+                        ),
                       ),
                     ),
+                    at(
+                      _labelTop,
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.horizontal18,
+                          vertical: AppSpacing.vertical6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: police ? AppColors.blue : AppColors.green,
+                          borderRadius: AppRadius.pill,
+                        ),
+                        child: Text(
+                          police
+                              ? l10n.labelPoliceTeamMvp
+                              : l10n.labelRobberTeamMvp,
+                          style: AppTextStyles.subHeading_18.copyWith(
+                            color: police ? AppColors.white : AppColors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 닉네임과 부제는 한 묶음 — 글자 크기를 키워도 겹치지 않는다(시안 간격 12).
+                    at(
+                      _nicknameTop,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(
+                                AppIcons.role(
+                                  isPolice: police,
+                                  isDark: !police,
+                                ),
+                                width: 24.w,
+                                height: 24.w,
+                              ),
+                              SizedBox(width: AppSpacing.horizontal6),
+                              Flexible(
+                                child: Text(
+                                  widget.reveal.nickname,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.heading_24.copyWith(
+                                    color: police
+                                        ? AppColors.black
+                                        : AppColors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: AppSpacing.vertical12),
+                          Text(
+                            police
+                                ? l10n.mvpRevealPoliceSubtitle
+                                : l10n.mvpRevealRobberSubtitle,
+                            style: AppTextStyles.label16Medium.copyWith(
+                              color: police
+                                  ? AppColors.black600
+                                  : AppColors.black300,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              at(
+                _characterTop,
+                Transform(
+                  alignment: Alignment.bottomCenter,
+                  transform: Matrix4.translationValues(
+                    0,
+                    squash.dy.h,
+                    0,
+                  )..multiply(Matrix4.diagonal3Values(squash.sx, squash.sy, 1)),
+                  // 폭은 에셋 원래 크기(도둑 239 · 경찰 217)를 화면 비율로만 늘린다.
+                  child: SvgPicture.asset(
+                    mvpCharacterAssetPath(team: team),
+                    width: (police ? 217 : 239).w,
                   ),
                 ),
-              ],
-            ),
+              ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    painter: MvpSpotlightPainter(
+                      darkness: 1 - lit,
+                      sweep:
+                          ((ms - _MvpStage.sweepStartMs) /
+                                  (_MvpStage.sweepEndMs -
+                                      _MvpStage.sweepStartMs))
+                              .clamp(0.0, 1.0),
+                      beamOn: ((ms - _MvpStage.sweepStartMs) / 150).clamp(
+                        0.0,
+                        1.0,
+                      ),
+                      beamStrength: police ? 0.45 : 1,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },

@@ -3182,11 +3182,29 @@ abstract class AppLocalizations {
   /// **'도둑 팀 MVP'**
   String get labelRobberTeamMvp;
 
-  /// MVP 공개 화면 하단 — 등장 연출이 끝난 뒤에만 보이는 안내
+  /// MVP 공개 화면 하단 바 — 등장 연출이 끝난 뒤에만 보이는 안내
   ///
   /// In ko, this message translates to:
-  /// **'탭하면 넘어가요'**
+  /// **'화면을 누르면 다음 결과로 넘어가요'**
   String get mvpRevealTapToContinue;
+
+  /// MVP 공개 화면 상단 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 결과'**
+  String get mvpRevealTitle;
+
+  /// MVP 공개 화면 — 경찰 MVP 닉네임 아래 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 팀 최고의 활약'**
+  String get mvpRevealPoliceSubtitle;
+
+  /// MVP 공개 화면 — 도둑 MVP 닉네임 아래 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 팀 최고의 활약'**
+  String get mvpRevealRobberSubtitle;
 
   /// 게임 종료 결과 — 종료 시점 상태 값 ALIVE
   ///

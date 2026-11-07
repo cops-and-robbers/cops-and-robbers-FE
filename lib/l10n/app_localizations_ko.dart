@@ -1662,7 +1662,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelRobberTeamMvp => '도둑 팀 MVP';
 
   @override
-  String get mvpRevealTapToContinue => '탭하면 넘어가요';
+  String get mvpRevealTapToContinue => '화면을 누르면 다음 결과로 넘어가요';
+
+  @override
+  String get mvpRevealTitle => '게임 결과';
+
+  @override
+  String get mvpRevealPoliceSubtitle => '경찰 팀 최고의 활약';
+
+  @override
+  String get mvpRevealRobberSubtitle => '도둑 팀 최고의 활약';
 
   @override
   String get statusAlive => '생존';

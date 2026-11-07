@@ -18,6 +18,10 @@ class AppColors {
   /// White color
   static const Color white = Color(0xFFFFFFFF);
 
+  /// 흰색, 15% 투명도 — MVP 공개 화면 하단 안내 바(도둑, 시안 9085:21588)
+  /// White with 15% opacity
+  static const Color whiteAlpha15 = Color(0x26FFFFFF);
+
   /// 검정색
   /// Black color
   static const Color black = Color(0xFF080A0C);
@@ -64,6 +68,10 @@ class AppColors {
   /// 검정 300
   /// Black 300
   static const Color black300 = Color(0xFFB1BCC8);
+
+  /// 검정 300, 15% 투명도 — MVP 공개 화면 하단 안내 바(경찰, 시안 9085:21641)
+  /// Black 300 with 15% opacity
+  static const Color black300Alpha15 = Color(0x26B1BCC8);
 
   /// 검정 200
   /// Black 200
