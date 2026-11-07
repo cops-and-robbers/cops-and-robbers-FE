@@ -449,7 +449,15 @@
   "startMissionRobberLabel": "Robber team mission",
   "startMissionPolice": "Find the Robbers and arrest them all with QR",
   "startMissionRobber": "Stay free and keep running until the game ends",
-  "startRulesCounter": "Game rules {current}/{total}",
+  "startExplainerTapHint": "Tap anywhere to go to the map",
+  "@startExplainerTapHint": {
+    "description": "도둑 설명 화면 맨 아래 — 화면을 누르면 닫히고 지도로 간다는 안내"
+  },
+  "startGuideLabel": "Game guide",
+  "@startGuideLabel": {
+    "description": "대기·설명 장면 게임 안내 카드에 공지가 나올 때의 라벨(공지는 개수를 몰라 번호 없이)"
+  },
+  "startRulesCounter": "Game guide {current}/{total}",
   "startRuleQrArrest": "Scan a Robber's QR to arrest them",
   "startRulePing": "Long-press the map to drop a ping for your team",
   "startRuleRobberReveal": "Robber locations are revealed to the Cops every {minutes} min",
@@ -461,10 +469,10 @@
   "startRuleTeamReveal": "Robber locations are shared with the Cops every {minutes} min",
   "startRuleZone": "Stay inside the game zone. Your screen locks if you leave it",
   "startRuleJailbreakReplay": "Caught Robbers go to Jail and escape after 3 seconds outside it",
-  "dispatchPoliceLead": "Time's up",
-  "dispatchPoliceMain": "Move out!",
-  "dispatchRobberLead": "The Cops are moving",
-  "dispatchRobberMain": "Watch out!",
+  "dispatchCountdownGo": "Let's go!",
+  "@dispatchCountdownGo": {
+    "description": "출동 카운팅 화면 마지막 큰 글자 (5·4·3·2·1 다음)"
+  },
   "startRulesHint": "Tap ⓘ at the top right to see the rules again",
   "unitPerson": "people",
   "unitMinutes": "min",
