@@ -83,9 +83,17 @@ class _ChaseSceneState extends State<ChaseScene> {
   int _guideStart = 0;
   Duration _guideAnchor = Duration.zero;
 
+  /// 펼친 규칙을 읽는 동안 온 공지. 접을 때 안내에 넣는다.
+  final List<String> _heldNotices = [];
+
   /// 새 공지는 안내에 더하고 바로 그 장으로 넘어간다
   void _addNotice(String text) {
     if (_notices.contains(text)) return;
+    // 펼친 채로 넣으면 읽던 규칙이 공지로 바뀐다 — 접을 때까지 둔다
+    if (_ruleExpanded) {
+      if (!_heldNotices.contains(text)) _heldNotices.add(text);
+      return;
+    }
     _notices.add(text);
     _guideStart = _notices.length - 1;
     _guideAnchor = _readClock;
@@ -102,6 +110,8 @@ class _ChaseSceneState extends State<ChaseScene> {
       _now = clock.now();
       _rulePaused += _now.difference(expandedAt);
       _ruleExpandedAt = null;
+      _heldNotices.forEach(_addNotice);
+      _heldNotices.clear();
     }
   });
 

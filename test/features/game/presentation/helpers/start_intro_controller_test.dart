@@ -164,4 +164,26 @@ void main() {
       c.showDispatchCountdown,
     ], everyElement(isFalse));
   });
+
+  // 카운팅 도중 화면을 끄고 늦게 돌아와 카운팅이 잘려도 ⓘ 안내는 이번 게임에 뜬다
+  test('hint_becomes_due_when_countdown_is_cut_by_late_return', () {
+    final c = StartIntroController(
+      steps: const [StartIntroStep.policeWait],
+      hasPoliceWait: true,
+    );
+    c.dispatchCountdownStarted();
+    c.policeReleased(inForeground: false);
+    expect(c.hintDue, isTrue);
+  });
+
+  // 시작 직후 앱을 내렸다가 출동 직전에 돌아오면 멈췄던 역할 배너가 카운팅을 가린다
+  test('role_banner_closes_when_countdown_starts_while_banner_is_shown', () {
+    final c = StartIntroController(
+      steps: const [StartIntroStep.roleBanner, StartIntroStep.policeWait],
+      hasPoliceWait: true,
+    );
+    c.dispatchCountdownStarted();
+    expect(c.showRoleBanner, isFalse);
+    expect(c.showDispatchCountdown, isTrue);
+  });
 }

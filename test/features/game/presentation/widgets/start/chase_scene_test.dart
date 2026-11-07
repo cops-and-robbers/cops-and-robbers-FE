@@ -768,6 +768,36 @@ void main() {
     await unmount(tester);
   });
 
+  // 펼친 규칙을 읽는 중에 공지가 와도 펼친 칸은 그대로, 접으면 그 공지가 보인다
+  testWidgets('expanded_rule_stays_until_folded_when_new_notice_arrives', (
+    tester,
+  ) async {
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.rulesReplay,
+      isPolice: true,
+      elapsed: const Duration(minutes: 12),
+    );
+    final win = find.textContaining('경찰은 모든 도둑을 체포하면');
+    await tester.tap(win);
+    await tester.pump(ChaseScene.expandDuration);
+    await pumpScene(
+      tester,
+      mode: ChaseSceneMode.rulesReplay,
+      isPolice: true,
+      elapsed: const Duration(minutes: 12),
+      notice: '도둑 한 명이 체포됐어요',
+    );
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('게임 안내 1/6'), findsOneWidget);
+    expect(win, findsOneWidget);
+
+    await tester.tap(win); // 접음
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(find.text('도둑 한 명이 체포됐어요'), findsOneWidget);
+    await unmount(tester);
+  });
+
   // 피그마 9164:20378: 팀 줄 top 118, 팀 → 라벨 48, 라벨 → 숫자 14, 숫자(80) → 안내 14,
   // 안내 → 첫 카드 50(y382), 카드끼리 18. 위쪽 공지 줄은 없다
   testWidgets('police_wait_keeps_design_vertical_gaps_without_notice_row', (

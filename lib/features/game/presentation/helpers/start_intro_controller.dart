@@ -71,6 +71,8 @@ class StartIntroController extends ChangeNotifier {
   void dispatchCountdownStarted() {
     if (!hasPoliceWait || _released || _countdownStarted) return;
     _countdownStarted = true;
+    // 백그라운드에서 멈춰 있던 역할 배너가 남아 있으면 카운팅을 가린다 — 출동이 먼저다
+    _showRoleBanner = false;
     _showDispatchCountdown = true;
     notifyListeners();
   }
@@ -83,7 +85,11 @@ class StartIntroController extends ChangeNotifier {
     _released = true;
     _showPoliceWait = false;
     _showRobberExplainer = false;
-    if (!inForeground) _showDispatchCountdown = false;
+    // 잘린 카운팅도 끝난 것으로 본다 — 안 그러면 ⓘ 안내가 이번 게임에 뜨지 않는다
+    if (!inForeground && _showDispatchCountdown) {
+      _showDispatchCountdown = false;
+      _hintDue = true;
+    }
     notifyListeners();
   }
 

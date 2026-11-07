@@ -566,6 +566,9 @@ class _GamePageState extends ConsumerState<GamePage>
     setState(() {
       _showParticipants = false;
       _showChat = false;
+      // 핑 카드도 지도 위 열린 창이다 — 남으면 카운팅 뒤 전체 화면 탭 영역까지 남는다
+      _pingCardOffset = null;
+      _pendingPingLatLng = null;
     });
     // 리스너가 빌드 도중에 불릴 수 있어 다이얼로그는 다음 프레임에 닫는다
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -637,8 +640,10 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 실제로 띄웠을 때만 본 것으로 저장한다 — 띄우기 전에 화면이 닫히면 다음 게임에서 다시 뜬다.
   void _showRulesHint() {
     if (!mounted) return;
-    // 공지 배너가 가려지는 동안(구역 이탈 경고·참가자 목록)은 보이지 않으므로 잠시 뒤 다시 시도한다
-    if (_isZoneExitWarningActive || _showParticipants) {
+    // 공지 배너가 가려지는 동안(구역 이탈 경고·참가자 목록·백그라운드)은 보이지 않으므로 잠시 뒤 다시 시도한다
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    final hidden = lifecycle != null && lifecycle != AppLifecycleState.resumed;
+    if (_isZoneExitWarningActive || _showParticipants || hidden) {
       _rulesHintTimer = Timer(const Duration(seconds: 3), _showRulesHint);
       return;
     }
