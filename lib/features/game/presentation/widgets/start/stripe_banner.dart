@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/widgets/dialogs/dialog_animation.dart';
 
-/// 띠 안 내용. [enter]·[exit]는 0→1 진행 — 캐릭터를 내용과 따로 움직일 때 쓴다.
+/// 띠와 함께 그리는 층([StripeBanner.overlay]·[StripeBanner.decor]). [enter]·[exit]는 0→1 진행 — 캐릭터를 내용과 따로 움직일 때 쓴다.
 typedef StripeBannerContent =
     Widget Function(
       BuildContext context,
@@ -14,7 +14,7 @@ typedef StripeBannerContent =
       Animation<double> exit,
     );
 
-/// 역할 배너(①)·출동 배너(④)가 함께 쓰는 사선 줄무늬 띠.
+/// 역할 배너(①)의 사선 줄무늬 띠. 뒤를 어둡게 덮고, 탭해도 넘어가지 않고 끝까지 보여 준다.
 ///
 /// 사선으로 잘린 줄 7개가 왼쪽에서 빨려 나와 펼쳐지고, 내용이 밀려 들어온다.
 /// 머문 뒤 내용이 먼저 빠지고 줄들이 오른쪽 끝으로 빨려 나간다(들어올 땐 감속,
@@ -26,13 +26,9 @@ class StripeBanner extends StatefulWidget {
     required this.bandHeight,
     required this.hold,
     required this.onDone,
-    required this.content,
+    required this.angleDegrees,
+    required this.bandOffsetY,
     this.onRevealNext,
-    this.dimBehind = false,
-    this.tapToSkip = false,
-    this.filledStart = false,
-    this.angleDegrees = -4.6,
-    this.bandOffsetY = 0,
     this.backdropColor,
     this.edgeColor,
     this.overlay,
@@ -41,35 +37,24 @@ class StripeBanner extends StatefulWidget {
 
   final Color color;
 
-  /// 목업 기준 띠 높이(역할 154, 출동 168). 폭은 390(화면보다 넓게), -4.6° 기울기.
+  /// 목업 기준 띠 높이. 폭은 390(화면보다 넓게).
   final double bandHeight;
 
   /// 다 들어온 뒤 머무는 시간
   final Duration hold;
   final VoidCallback onDone;
-  final StripeBannerContent content;
 
   /// 나가기 시작 [revealNextAfter] 뒤 한 번 — 첫 줄이 빠지기 시작할 때 다음 장면을 띠 자리로
   /// 비추기 시작한다([BandTransition]이 이어서 펼친다)
   final VoidCallback? onRevealNext;
 
-  /// 뒤 지도를 어둡게 덮는다(역할 배너)
-  final bool dimBehind;
-
-  /// 탭하면 바로 나간다. false면 터치를 아래로 통과시킨다(출동 배너 — 지도를 바로 써야 한다).
-  final bool tapToSkip;
-
-  /// 장면이 띠 모양으로 접힌 자리에서 시작한다 — 줄은 빨려 들지 않고 그 자리에서 나타나고
-  /// 내용이 곧바로 들어온다(출동 배너)
-  final bool filledStart;
-
-  /// 띠 기울기(도). 출동 배너는 기본값, 역할 배너는 시안대로 더 기울인다.
+  /// 띠 기울기(도)
   final double angleDegrees;
 
   /// 화면 가운데에서 띠를 옮기는 거리(300 폭 목업 기준, 위가 음수)
   final double bandOffsetY;
 
-  /// [dimBehind]일 때 덮는 색. 없으면 지도가 비치는 다이얼로그 배리어.
+  /// 뒤를 덮는 색. 없으면 지도가 비치는 다이얼로그 배리어.
   final Color? backdropColor;
 
   /// 띠 아래로 살짝 비치는 두께 색. 띠와 같은 줄무늬로 함께 움직인다. 없으면 그리지 않는다.
@@ -87,7 +72,6 @@ class StripeBanner extends StatefulWidget {
   /// 내용 0.2초, 줄은 0.12초 뒤부터 0.04초 시차로 0.34초씩
   static const exitDuration = Duration(milliseconds: 700);
   static const revealNextAfter = Duration(milliseconds: 120);
-  static const _filledEnter = Duration(milliseconds: 470);
   static const _reducedEnter = Duration(milliseconds: 220);
   static const _reducedExit = Duration(milliseconds: 200);
 
@@ -106,7 +90,6 @@ class _StripeBannerState extends State<StripeBanner>
   bool _revealed = false;
   bool _started = false;
   bool _leaving = false;
-  bool _skipRequested = false;
   bool _reduce = false;
 
   @override
@@ -117,29 +100,18 @@ class _StripeBannerState extends State<StripeBanner>
     _reduce = MediaQuery.disableAnimationsOf(context);
     _enter.duration = _reduce
         ? StripeBanner._reducedEnter
-        : widget.filledStart
-        ? StripeBanner._filledEnter
         : StripeBanner.enterDuration;
     _exit.duration = _reduce
         ? StripeBanner._reducedExit
         : StripeBanner.exitDuration;
     _enter.forward().whenComplete(() {
       if (!mounted) return;
-      if (_skipRequested) {
-        _leave();
-      } else {
-        _holdTimer = Timer(widget.hold, _leave);
-      }
+      _holdTimer = Timer(widget.hold, _leave);
     });
   }
 
   void _leave() {
     if (_leaving || !mounted) return;
-    // 들어오는 중 탭은 기억만 해 둔다 — 도중에 끊으면 줄이 한 프레임 튄다. 다 들어온 뒤 머묾 없이 나간다.
-    if (_enter.isAnimating) {
-      _skipRequested = true;
-      return;
-    }
     _leaving = true;
     _holdTimer?.cancel();
     _revealTimer = Timer(StripeBanner.revealNextAfter, _revealNext);
@@ -175,29 +147,28 @@ class _StripeBannerState extends State<StripeBanner>
         final both = Listenable.merge([_enter, _exit]);
         Widget banner = Stack(
           children: [
-            if (widget.dimBehind)
-              Positioned.fill(
-                child: AnimatedBuilder(
-                  animation: both,
-                  builder: (context, child) {
-                    final inT = const Interval(
-                      0,
-                      500 / 900,
-                    ).transform(_enter.value);
-                    final outT = const Interval(
-                      200 / 700,
-                      620 / 700,
-                    ).transform(_exit.value);
-                    return Opacity(
-                      opacity: _reduce ? 1 : inT * (1 - outT),
-                      child: child,
-                    );
-                  },
-                  child: ColoredBox(
-                    color: widget.backdropColor ?? DialogAnimation.barrierColor,
-                  ),
+            Positioned.fill(
+              child: AnimatedBuilder(
+                animation: both,
+                builder: (context, child) {
+                  final inT = const Interval(
+                    0,
+                    500 / 900,
+                  ).transform(_enter.value);
+                  final outT = const Interval(
+                    200 / 700,
+                    620 / 700,
+                  ).transform(_exit.value);
+                  return Opacity(
+                    opacity: _reduce ? 1 : inT * (1 - outT),
+                    child: child,
+                  );
+                },
+                child: ColoredBox(
+                  color: widget.backdropColor ?? DialogAnimation.barrierColor,
                 ),
               ),
+            ),
             Center(
               child: Transform.translate(
                 offset: Offset(0, widget.bandOffsetY * s),
@@ -217,7 +188,6 @@ class _StripeBannerState extends State<StripeBanner>
                               child: _stripes(bandWidth, edge),
                             ),
                           _stripes(bandWidth, widget.color),
-                          _contentLayer(s, widget.content),
                         ],
                       ),
                     ),
@@ -248,13 +218,8 @@ class _StripeBannerState extends State<StripeBanner>
             child: banner,
           );
         }
-        return widget.tapToSkip
-            ? GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: _leave,
-                child: banner,
-              )
-            : IgnorePointer(child: banner);
+        // 탭으로 넘기지 않는다. 뒤 지도·장면도 누르지 못하게 막는다
+        return AbsorbPointer(child: banner);
       },
     );
   }
@@ -270,16 +235,6 @@ class _StripeBannerState extends State<StripeBanner>
               animation: Listenable.merge([_enter, _exit]),
               builder: (context, child) {
                 if (_reduce) return child!;
-                if (widget.filledStart && !_leaving && _exit.value == 0) {
-                  // 접힌 장면 위로 0.15초 동안 줄이 비쳐 오른다
-                  return Opacity(
-                    opacity: const Interval(
-                      0,
-                      150 / 470,
-                    ).transform(_enter.value),
-                    child: child,
-                  );
-                }
                 final pose = _leaving || _exit.value > 0
                     ? _exitPose(
                         Interval(
@@ -323,7 +278,7 @@ class _StripeBannerState extends State<StripeBanner>
       animation: Listenable.merge([enter, exit]),
       builder: (context, child) {
         final inT = Interval(
-          widget.filledStart ? 150 / 470 : 560 / 900,
+          560 / 900,
           1,
           curve: const Cubic(.22, 1, .36, 1),
         ).transform(enter.value);

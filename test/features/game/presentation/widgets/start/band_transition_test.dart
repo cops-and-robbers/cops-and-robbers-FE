@@ -8,7 +8,6 @@ Future<void> pumpScene(
   WidgetTester tester, {
   required VoidCallback onTap,
   bool revealFromBand = false,
-  bool fold = false,
   bool reduceMotion = false,
 }) async {
   tester.view.physicalSize = const Size(393 * 3, 852 * 3);
@@ -22,7 +21,6 @@ Future<void> pumpScene(
       ),
       home: BandTransition(
         revealFromBand: revealFromBand,
-        fold: fold,
         child: GestureDetector(
           onTap: onTap,
           child: const ColoredBox(color: AppColors.white),
@@ -90,20 +88,6 @@ void main() {
     expect(taps, 1);
   });
 
-  // 출동: 장면이 출동 띠 모양으로 접혀 그 자리에서 출동 배너로 이어진다
-  testWidgets('scene_folds_into_band_strip_when_dispatch_comes', (
-    tester,
-  ) async {
-    var taps = 0;
-    await pumpScene(tester, onTap: () => taps++);
-    await pumpScene(tester, onTap: () => taps++, fold: true);
-    await tester.pump(BandTransition.foldDuration);
-    await tester.tapAt(topCorner);
-    expect(taps, 0);
-    await tester.tapAt(center);
-    expect(taps, 1);
-  });
-
   // 띠가 다 펼쳐진 순간에도 장면은 같은 장면이어야 한다 — 새로 만들어지면 공지·규칙·남은 시간 막대가 처음부터 다시 돈다
   testWidgets('scene_keeps_its_state_when_band_finishes_revealing', (
     tester,
@@ -123,25 +107,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200)); // 펼치는 중
     await tester.pump(const Duration(seconds: 2)); // 다 펼쳐짐
     expect(created, 1);
-  });
-
-  // 출동 띠로 접히기 시작해도 같은 장면이 접힌다
-  testWidgets('scene_keeps_its_state_when_band_starts_folding', (tester) async {
-    tester.view.physicalSize = const Size(393 * 3, 852 * 3);
-    tester.view.devicePixelRatio = 3;
-    addTearDown(tester.view.reset);
-    var created = 0;
-    Widget scene({required bool fold}) => MaterialApp(
-      home: BandTransition(
-        fold: fold,
-        child: _CountsCreation(onCreate: () => created++),
-      ),
-    );
-    await tester.pumpWidget(scene(fold: false));
-    await tester.pumpWidget(scene(fold: true));
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(created, 1);
-    await tester.pump(const Duration(seconds: 2));
   });
 }
 

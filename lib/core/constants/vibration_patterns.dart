@@ -63,9 +63,22 @@ abstract final class VibrationPatterns {
   static const int countdownTickDuration = 40;
   static const int countdownTickAmplitude = 120;
 
-  // 출동 — 경찰: 짧게 두 번 / 도둑: 길게 한 번 (팀별로 구분되게)
-  static const List<int> policeDispatchPattern = [0, 90, 90, 90];
-  static const List<int> policeDispatchIntensities = [0, 255, 0, 255];
-  static const int robberDispatchDuration = 600;
-  static const int robberDispatchAmplitude = 255;
+  // 출동 카운팅 5~1초 — 빛줄기가 세지듯 초마다 점점 세진다. 경찰·도둑 같다.
+  // 5·4·3은 한 번씩 세게, 2는 두 번, 1은 세 번 빠르게 (사이렌 소리와 박자를 맞추기 쉽게 초마다 한 묶음)
+  static ({List<int> pattern, List<int> intensities}) dispatchCountdownBeat(
+    int secondsLeft,
+  ) => switch (secondsLeft) {
+    >= 5 => (pattern: const [0, 40], intensities: const [0, 90]),
+    4 => (pattern: const [0, 50], intensities: const [0, 130]),
+    3 => (pattern: const [0, 70], intensities: const [0, 170]),
+    2 => (pattern: const [0, 70, 70, 70], intensities: const [0, 210, 0, 210]),
+    _ => (
+      pattern: const [0, 90, 60, 90, 60, 90],
+      intensities: const [0, 255, 0, 255, 0, 255],
+    ),
+  };
+
+  // 출동! — 길게 "부웅" 뒤 "탁탁". 카운팅과 확실히 다른, 가장 센 진동. 경찰·도둑 같다.
+  static const List<int> dispatchGoPattern = [0, 500, 120, 120, 80, 120];
+  static const List<int> dispatchGoIntensities = [0, 255, 0, 255, 0, 255];
 }

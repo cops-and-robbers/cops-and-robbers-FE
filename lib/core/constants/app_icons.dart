@@ -96,6 +96,7 @@ abstract final class AppIcons {
   static const String setting2 = 'assets/icons/icon_settiing_2.svg';
   static const String shoeprint = 'assets/icons/shoeprint.svg';
   static const String siren = 'assets/icons/icon_siren.svg';
+  static const String sirenCounting = 'assets/icons/icon_siren_counting.svg';
   static const String sort = 'assets/icons/icon_sort.svg';
   static const String speechBubble = 'assets/icons/icon_speech_bubble.svg';
   static const String tiktokBlack = 'assets/icons/tiktok_black.svg';

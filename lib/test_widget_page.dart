@@ -36,6 +36,7 @@ import 'features/game/presentation/helpers/start_intro_controller.dart';
 import 'features/game/presentation/widgets/start/band_transition.dart';
 import 'features/game/presentation/widgets/start/chase_scene.dart';
 import 'features/game/presentation/widgets/start/chase_scene_rules.dart';
+import 'features/game/presentation/widgets/start/dispatch_countdown.dart';
 import 'features/game/presentation/widgets/start/start_banners.dart';
 import 'features/session/presentation/pages/setup_playground_page.dart';
 import 'features/session/presentation/pages/setup_prison_page.dart';
@@ -272,8 +273,8 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 ('전체 흐름 — 도둑 (출동 15초 전 시작)', false, 'flow'),
                 ('역할 배너 — 경찰', true, 'role'),
                 ('역할 배너 — 도둑', false, 'role'),
-                ('출동 배너 — 경찰', true, 'dispatch'),
-                ('출동 배너 — 도둑', false, 'dispatch'),
+                ('출동 카운팅 — 경찰 (5초 전부터)', true, 'dispatch'),
+                ('출동 카운팅 — 도둑 (5초 전부터)', false, 'dispatch'),
                 ('경찰 대기 — 출동 15초 전', true, 'wait'),
                 ('도둑 설명 화면', false, 'explainer'),
                 ('규칙 다시 보기 — 도둑', false, 'replay'),
@@ -783,7 +784,10 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               onDone: close,
             ),
             'role' => RoleBanner(isPolice: isPolice, onDone: close),
-            'dispatch' => DispatchBanner(isPolice: isPolice, onDone: close),
+            'dispatch' => DispatchCountdown(
+              releaseAt: DateTime.now().add(dispatchOverlayLead),
+              onDone: close,
+            ),
             _ => ChaseScene(
               mode: switch (kind) {
                 'wait' => ChaseSceneMode.policeWait,
@@ -885,7 +889,7 @@ class _MockPlayerGameRecord extends PlayerGameRecordNotifier {
   PlayerGameRecord build() => _data;
 }
 
-/// 역할 배너 → 대기·설명 장면 → 00:00 → 출동 배너를 게임 화면(game_page)과 같은 순서·전환으로 잇는다.
+/// 역할 배너 → 대기·설명 장면 → 출동 카운팅을 게임 화면(game_page)과 같은 순서·전환으로 잇는다.
 /// 5분 대기 방의 출동 15초 전에 막 시작한 것처럼 띄운다.
 class _StartFlowPreview extends StatefulWidget {
   const _StartFlowPreview({
@@ -915,31 +919,28 @@ class _StartFlowPreviewState extends State<_StartFlowPreview> {
     ],
     hasPoliceWait: true,
   )..addListener(() => setState(() {}));
-  bool _folding = false;
-  Timer? _timer;
+  late final DateTime _releaseAt = _start.add(const Duration(minutes: 5));
+  Timer? _countdownTimer;
+  Timer? _releaseTimer;
 
   @override
   void initState() {
     super.initState();
-    // 출동 15초 + 00:00 1초
-    _timer = Timer(const Duration(seconds: 16), _release);
-  }
-
-  void _release() {
-    if (!(_intro.showPoliceWait || _intro.showRobberExplainer)) {
-      _intro.policeReleased(inForeground: true);
-      return;
-    }
-    setState(() => _folding = true);
-    _timer = Timer(
-      BandTransition.foldDuration,
+    final now = DateTime.now();
+    _countdownTimer = Timer(
+      _releaseAt.subtract(dispatchOverlayLead).difference(now),
+      _intro.dispatchCountdownStarted,
+    );
+    _releaseTimer = Timer(
+      _releaseAt.difference(now),
       () => _intro.policeReleased(inForeground: true),
     );
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _countdownTimer?.cancel();
+    _releaseTimer?.cancel();
     _intro.dispose();
     super.dispose();
   }
@@ -958,7 +959,6 @@ class _StartFlowPreviewState extends State<_StartFlowPreview> {
             child: BandTransition(
               key: ValueKey(mode),
               revealFromBand: _intro.showRoleBanner,
-              fold: _folding,
               child: ChaseScene(
                 mode: mode,
                 isPolice: widget.isPolice,
@@ -977,11 +977,10 @@ class _StartFlowPreviewState extends State<_StartFlowPreview> {
               onDone: _intro.roleBannerDone,
             ),
           )
-        else if (_intro.showDispatchBanner)
+        else if (_intro.showDispatchCountdown)
           Positioned.fill(
-            child: DispatchBanner(
-              isPolice: widget.isPolice,
-              fromFoldedScene: _folding,
+            child: DispatchCountdown(
+              releaseAt: _releaseAt,
               onDone: widget.onDone,
             ),
           ),

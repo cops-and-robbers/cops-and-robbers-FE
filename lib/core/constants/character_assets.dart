@@ -37,18 +37,13 @@ String resultCharacterAssetPath({
 String mvpCharacterAssetPath({required String team}) =>
     'assets/characters/$team/mvp/default/mvp.svg';
 
-/// 게임 시작 화면(역할 배너·대기 장면·출동 배너) 캐릭터 SVG 경로.
+/// 게임 시작 화면(역할 배너·대기 장면) 캐릭터 SVG 경로.
 ///
 /// 원본(`home.svg`·온보딩 그림)을 복사해 둔 시작 화면 전용 칸이다. 디자이너가
 /// 시작 화면 그림만 바꿀 때 이 폴더의 파일만 갈아 끼우면 된다.
 /// - [team] `'police'` | `'robber'`
 String startRoleCharacterAssetPath({required String team}) =>
     'assets/characters/$team/start/default/role.svg';
-
-/// 쫓고 쫓기는 장면 캐릭터 — 경찰은 고양이, 도둑은 쥐.
-/// - [team] `'police'` | `'robber'`
-String startChaseCharacterAssetPath({required String team}) =>
-    'assets/characters/$team/start/default/chase.svg';
 
 /// 대기·설명 장면 배경 PNG(393×852). 경찰은 낮, 도둑은 밤 그림.
 String startWaitBackgroundAssetPath({required bool isNight}) =>
