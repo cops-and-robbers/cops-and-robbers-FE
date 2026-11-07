@@ -127,6 +127,20 @@ void main() {
     expect(find.text('open'), findsOneWidget);
   });
 
+  // 접근성 글자 크기 2배 — 닉네임 줄이 길어져도 부제가 그 아래에서 시작해야 한다.
+  testWidgets('keeps_subtitle_below_nickname_when_text_is_enlarged', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await openModal(tester, result: Future.value(_bothMvps));
+    await advance(tester, const Duration(milliseconds: 6200));
+
+    final nickname = tester.getRect(find.text('그림자'));
+    final subtitle = tester.getRect(find.text('도둑 팀 최고의 활약'));
+    expect(subtitle.top, greaterThanOrEqualTo(nickname.bottom));
+  });
+
   testWidgets('advances_on_back_button_only_after_entrance', (tester) async {
     await openModal(tester, result: Future.value(_bothMvps));
     await advance(tester, const Duration(milliseconds: 2900));

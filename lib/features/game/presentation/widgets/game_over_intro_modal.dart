@@ -270,9 +270,9 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
                     height: 47.h,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color:
-                          (onLightStage ? AppColors.black300 : AppColors.white)
-                              .withValues(alpha: 0.15),
+                      color: onLightStage
+                          ? AppColors.black300Alpha15
+                          : AppColors.whiteAlpha15,
                       borderRadius: AppRadius.large,
                     ),
                     child: Text(
@@ -392,7 +392,6 @@ class _MvpStageState extends State<_MvpStage>
   static const _glowSize = 330.0;
   static const _characterTop = 315.0;
   static const _nicknameTop = 572.0;
-  static const _subtitleTop = 608.0;
 
   late final AnimationController _c = AnimationController(
     vsync: this,
@@ -488,43 +487,50 @@ class _MvpStageState extends State<_MvpStage>
                         ),
                       ),
                     ),
+                    // 닉네임과 부제는 한 묶음 — 글자 크기를 키워도 겹치지 않는다(시안 간격 12).
                     at(
                       _nicknameTop,
-                      Row(
+                      Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SvgPicture.asset(
-                            AppIcons.role(isPolice: police, isDark: !police),
-                            width: 24.w,
-                            height: 24.w,
-                          ),
-                          SizedBox(width: AppSpacing.horizontal6),
-                          Flexible(
-                            child: Text(
-                              widget.reveal.nickname,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyles.heading_24.copyWith(
-                                color: police
-                                    ? AppColors.black
-                                    : AppColors.white,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(
+                                AppIcons.role(
+                                  isPolice: police,
+                                  isDark: !police,
+                                ),
+                                width: 24.w,
+                                height: 24.w,
                               ),
+                              SizedBox(width: AppSpacing.horizontal6),
+                              Flexible(
+                                child: Text(
+                                  widget.reveal.nickname,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.heading_24.copyWith(
+                                    color: police
+                                        ? AppColors.black
+                                        : AppColors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: AppSpacing.vertical12),
+                          Text(
+                            police
+                                ? l10n.mvpRevealPoliceSubtitle
+                                : l10n.mvpRevealRobberSubtitle,
+                            style: AppTextStyles.label16Medium.copyWith(
+                              color: police
+                                  ? AppColors.black600
+                                  : AppColors.black300,
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    at(
-                      _subtitleTop,
-                      Text(
-                        police
-                            ? l10n.mvpRevealPoliceSubtitle
-                            : l10n.mvpRevealRobberSubtitle,
-                        style: AppTextStyles.label16Medium.copyWith(
-                          color: police
-                              ? AppColors.black600
-                              : AppColors.black300,
-                        ),
                       ),
                     ),
                   ],
