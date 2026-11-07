@@ -32,7 +32,6 @@ Future<void> pumpBanner(
                 bandOffsetY: 0,
                 onDone: onDone,
                 onRevealNext: onRevealNext,
-                content: (_, _, _, _) => const Text('내 역할'),
               ),
             ),
           ],

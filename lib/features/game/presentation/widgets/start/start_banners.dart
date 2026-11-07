@@ -46,7 +46,6 @@ class RoleBanner extends StatelessWidget {
       hold: const Duration(milliseconds: 2350),
       onDone: onDone,
       onRevealNext: onRevealNext,
-      content: (_, _, _, _) => const SizedBox.shrink(),
       // 글과 달리 페이드 없이 그어져야 해서 내용 층과 따로 둔다
       decor: (context, _, enter, exit) => LayoutBuilder(
         builder: (context, constraints) => Stack(

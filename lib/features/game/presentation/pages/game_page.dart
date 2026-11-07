@@ -246,9 +246,6 @@ class _GamePageState extends ConsumerState<GamePage>
   StartIntroController? _intro;
   Timer? _policeReleaseTimer;
   Timer? _dispatchCountdownTimer;
-
-  /// 출동 카운팅을 띄운 뒤인지 — 뜨는 순간 한 번만 지도 위를 정리한다
-  bool _countdownShown = false;
   DateTime? _introStartTime;
   DateTime? _policeReleaseAt;
   int _introWaitMinutes = 0;
@@ -555,9 +552,6 @@ class _GamePageState extends ConsumerState<GamePage>
     setState(() {});
     if (_intro?.hintDue ?? false) unawaited(_showRulesHintOnce());
     _restartNoticeWhenSceneOpens();
-    final countdown = _intro?.showDispatchCountdown ?? false;
-    if (countdown && !_countdownShown) _clearForDispatch();
-    _countdownShown = countdown;
   }
 
   /// 출동이면 경찰·도둑 상관없이 카운팅이 끝난 뒤 인게임(지도)이 나와야 한다 —
@@ -570,7 +564,7 @@ class _GamePageState extends ConsumerState<GamePage>
       _pingCardOffset = null;
       _pendingPingLatLng = null;
     });
-    // 리스너가 빌드 도중에 불릴 수 있어 다이얼로그는 다음 프레임에 닫는다
+    // 방금 건 setState 프레임과 겹치지 않게 다이얼로그는 다음 프레임에 닫는다
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(
@@ -599,10 +593,18 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 출동 5초 전 — 화면이 보일 때만 카운팅을 띄운다. 꺼져 있었으면 돌아올 때 다시 부른다.
   void _startDispatchCountdown() {
-    if (!mounted) return;
+    if (!mounted || !_appVisible) return;
+    final intro = _intro;
+    if (intro == null || intro.showDispatchCountdown) return;
+    intro.dispatchCountdownStarted();
+    // 뜨는 순간 한 번만 지도 위를 정리한다
+    if (intro.showDispatchCountdown) _clearForDispatch();
+  }
+
+  /// 앱이 화면에 보이는지. 테스트처럼 아직 상태를 모르면 보이는 것으로 본다.
+  bool get _appVisible {
     final lifecycle = WidgetsBinding.instance.lifecycleState;
-    if (lifecycle != null && lifecycle != AppLifecycleState.resumed) return;
-    _intro?.dispatchCountdownStarted();
+    return lifecycle == null || lifecycle == AppLifecycleState.resumed;
   }
 
   /// 경찰 출동 — 기기 시계 타이머와 서버 POLICE_MOVE_START 중 먼저 온 쪽(컨트롤러가 한 번만 받는다).
@@ -615,9 +617,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final onTime = clock.now().isBefore(
       releaseAt.add(const Duration(seconds: 2)),
     );
-    final lifecycle = WidgetsBinding.instance.lifecycleState;
-    final visible = lifecycle == null || lifecycle == AppLifecycleState.resumed;
-    _intro?.policeReleased(inForeground: onTime && visible);
+    _intro?.policeReleased(inForeground: onTime && _appVisible);
   }
 
   /// "규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요" — 기기당 한 번, 기존 위쪽 공지 배너로.
@@ -641,9 +641,7 @@ class _GamePageState extends ConsumerState<GamePage>
   void _showRulesHint() {
     if (!mounted) return;
     // 공지 배너가 가려지는 동안(구역 이탈 경고·참가자 목록·백그라운드)은 보이지 않으므로 잠시 뒤 다시 시도한다
-    final lifecycle = WidgetsBinding.instance.lifecycleState;
-    final hidden = lifecycle != null && lifecycle != AppLifecycleState.resumed;
-    if (_isZoneExitWarningActive || _showParticipants || hidden) {
+    if (_isZoneExitWarningActive || _showParticipants || !_appVisible) {
       _rulesHintTimer = Timer(const Duration(seconds: 3), _showRulesHint);
       return;
     }

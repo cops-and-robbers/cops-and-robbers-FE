@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/widgets/dialogs/dialog_animation.dart';
 
-/// 띠 안 내용. [enter]·[exit]는 0→1 진행 — 캐릭터를 내용과 따로 움직일 때 쓴다.
+/// 띠와 함께 그리는 층([StripeBanner.overlay]·[StripeBanner.decor]). [enter]·[exit]는 0→1 진행 — 캐릭터를 내용과 따로 움직일 때 쓴다.
 typedef StripeBannerContent =
     Widget Function(
       BuildContext context,
@@ -26,7 +26,6 @@ class StripeBanner extends StatefulWidget {
     required this.bandHeight,
     required this.hold,
     required this.onDone,
-    required this.content,
     required this.angleDegrees,
     required this.bandOffsetY,
     this.onRevealNext,
@@ -44,7 +43,6 @@ class StripeBanner extends StatefulWidget {
   /// 다 들어온 뒤 머무는 시간
   final Duration hold;
   final VoidCallback onDone;
-  final StripeBannerContent content;
 
   /// 나가기 시작 [revealNextAfter] 뒤 한 번 — 첫 줄이 빠지기 시작할 때 다음 장면을 띠 자리로
   /// 비추기 시작한다([BandTransition]이 이어서 펼친다)
@@ -190,7 +188,6 @@ class _StripeBannerState extends State<StripeBanner>
                               child: _stripes(bandWidth, edge),
                             ),
                           _stripes(bandWidth, widget.color),
-                          _contentLayer(s, widget.content),
                         ],
                       ),
                     ),
