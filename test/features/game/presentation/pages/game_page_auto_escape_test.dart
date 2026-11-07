@@ -19,6 +19,7 @@ import 'package:cops_and_robbers/features/game/presentation/widgets/police_start
 import 'package:cops_and_robbers/features/game/presentation/widgets/marquee_alert_banner.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/chase_scene_rules.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/start/dispatch_countdown.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/start_banners.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart';
@@ -542,44 +543,42 @@ void main() {
     );
   }
 
-  // 시작 공지("게임 시간은 N분")는 역할 배너에 가려진 위쪽에서 먼저 흐르지 않고,
-  // 장면 카드 줄에서 한 번만 처음부터 끝까지(8초) 보여야 한다
-  testWidgets(
-    'start_notice_shows_once_in_scene_for_full_time_when_game_starts',
-    (tester) async {
-      await withClock(gameClock(tester), () async {
-        setFreshGame(team: 'POLICE', policeWaitMinutes: 5);
-        session.participants = const InGameParticipantsResponse(
-          police: [
-            InGameParticipant(
-              participantId: 5,
-              nickname: '경찰',
-              status: 'POLICE_WAITING',
-            ),
-          ],
-          robbers: [],
-        );
-        await mount(tester, team: 'POLICE');
-        // 역할 배너 중 — 위쪽에 공지 배너가 먼저 떠서는 안 된다
-        expect(find.byType(RoleBanner), findsOneWidget);
-        expect(find.byType(MarqueeAlertBanner), findsNothing);
-
-        await advance(tester, const Duration(seconds: 5)); // 장면이 떠 있다
-        expect(find.byType(ChaseScene), findsOneWidget);
-        expect(
-          find.descendant(
-            of: find.byType(ChaseScene),
-            matching: find.byType(MarqueeAlertBanner),
+  // 시작 공지("제한 시간은 N분")는 역할 배너에 가려진 위쪽에서 먼저 흐르지 않고,
+  // 장면이 열리면 게임 안내의 첫 장으로 먼저 보인다. 장면에는 위쪽 공지 줄이 없다
+  testWidgets('start_notice_shows_first_in_scene_guide_card_when_game_starts', (
+    tester,
+  ) async {
+    await withClock(gameClock(tester), () async {
+      setFreshGame(team: 'POLICE', policeWaitMinutes: 5);
+      session.participants = const InGameParticipantsResponse(
+        police: [
+          InGameParticipant(
+            participantId: 5,
+            nickname: '경찰',
+            status: 'POLICE_WAITING',
           ),
-          findsOneWidget,
-        );
-        // 시작 후 10초 — 장면에서 보인 지 6초쯤이라 아직 남아 있어야 한다
-        await advance(tester, const Duration(seconds: 5));
-        expect(find.byType(MarqueeAlertBanner), findsOneWidget);
-        await tester.pump(const Duration(seconds: 40));
-      });
-    },
-  );
+        ],
+        robbers: [],
+      );
+      await mount(tester, team: 'POLICE');
+      // 역할 배너 중 — 위쪽에 공지 배너가 먼저 떠서는 안 된다
+      expect(find.byType(RoleBanner), findsOneWidget);
+      expect(find.byType(MarqueeAlertBanner), findsNothing);
+
+      await advance(tester, const Duration(seconds: 5)); // 장면이 떠 있다
+      expect(find.byType(ChaseScene), findsOneWidget);
+      final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+      expect(
+        find.descendant(
+          of: find.byType(ChaseScene),
+          matching: find.text(l10n.gameEventStartTime(30)),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(MarqueeAlertBanner), findsNothing);
+      await tester.pump(const Duration(seconds: 40));
+    });
+  });
 
   // 일반 게임도 시작 10초 "잠시 후 게임이 시작돼요"·30초 "게임 시작!"을 공지 배너로 띄운다
   // (DEC-0096을 대체 — 대기 장면에서는 카드 줄 공지 칸에 보인다)
@@ -600,8 +599,9 @@ void main() {
       );
       await mount(tester, team: 'POLICE');
       final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+      // 대기 장면이 떠 있어 공지는 게임 안내 카드에 보인다
       Finder notice(String text) => find.descendant(
-        of: find.byType(MarqueeAlertBanner),
+        of: find.byType(ChaseScene),
         matching: find.text(text),
       );
 
@@ -613,43 +613,50 @@ void main() {
     });
   });
 
-  // 남은 시간이 00:00까지 내려간 걸 본 뒤에 출동 배너가 뜬다 — 00:01에서 끊기면 덜 센 것처럼 보인다
-  testWidgets('police_wait_shows_zero_before_dispatch_banner_when_wait_ends', (
-    tester,
-  ) async {
-    await withClock(gameClock(tester), () async {
-      setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
-      session.participants = const InGameParticipantsResponse(
-        police: [
-          InGameParticipant(
-            participantId: 5,
-            nickname: '경찰',
-            status: 'POLICE_WAITING',
-          ),
-        ],
-        robbers: [],
-      );
-      await mount(tester, team: 'POLICE');
-      await advance(tester, const Duration(seconds: 5));
-      await tester.pump(const Duration(seconds: 50));
-
-      var sawZero = false;
-      for (var i = 0; i < 100; i++) {
-        await tester.pump(const Duration(milliseconds: 100));
-        if (find.byType(DispatchBanner).evaluate().isNotEmpty) break;
-        if (find.text('00:00').evaluate().isNotEmpty) sawZero = true;
-      }
-      expect(find.byType(DispatchBanner), findsOneWidget);
-      expect(sawZero, isTrue);
-      await advance(tester, const Duration(seconds: 4));
-      // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
-      await tester.pump(const Duration(seconds: 40));
-    });
-  });
-
-  // 00:00을 1초 보여 준 뒤 대기 화면이 출동 띠 모양으로 접히고, 그 자리에서 출동 배너가 이어진다
+  // 출동 5초 전 대기 화면 위로 카운팅이 뜨고 5부터 센다
   testWidgets(
-    'police_wait_folds_into_band_before_dispatch_banner_when_wait_ends',
+    'police_sees_screen_close_in_then_five_over_wait_screen_when_dispatch_nears',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
+        session.participants = const InGameParticipantsResponse(
+          police: [
+            InGameParticipant(
+              participantId: 5,
+              nickname: '경찰',
+              status: 'POLICE_WAITING',
+            ),
+          ],
+          robbers: [],
+        );
+        await mount(tester, team: 'POLICE');
+        await advance(tester, const Duration(seconds: 5));
+        await tester.pump(const Duration(seconds: 48));
+        expect(find.byType(DispatchCountdown), findsNothing); // 아직 7초 남음
+
+        for (
+          var i = 0;
+          i < 30 && find.byType(DispatchCountdown).evaluate().isEmpty;
+          i++
+        ) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        await tester.pump(const Duration(milliseconds: 100));
+        expect(find.byType(DispatchCountdown), findsOneWidget); // 6초 전부터 덮는다
+        expect(find.text('5'), findsNothing); // 덮는 동안은 숫자 없음
+        await advance(tester, const Duration(seconds: 1));
+        expect(find.text('5'), findsOneWidget);
+        expect(find.byType(ChaseScene), findsOneWidget); // 대기 화면은 아래 그대로
+        await advance(tester, const Duration(seconds: 8));
+        // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+        await tester.pump(const Duration(seconds: 40));
+      });
+    },
+  );
+
+  // 출동 시각에 카운팅 아래 대기 화면이 닫히고, "출동!"·원형 열기가 끝나면 카운팅도 닫혀 지도가 남는다
+  testWidgets(
+    'police_wait_closes_under_countdown_and_map_remains_when_dispatch_ends',
     (tester) async {
       await withClock(gameClock(tester), () async {
         setFreshGame(team: 'POLICE', policeWaitMinutes: 1);
@@ -666,16 +673,14 @@ void main() {
         await mount(tester, team: 'POLICE');
         await advance(tester, const Duration(seconds: 5));
         await tester.pump(const Duration(seconds: 50));
-        for (var i = 0; i < 100 && find.text('00:00').evaluate().isEmpty; i++) {
+        for (var i = 0; i < 100 && find.text('출동!').evaluate().isEmpty; i++) {
           await tester.pump(const Duration(milliseconds: 100));
         }
-        await advance(tester, const Duration(milliseconds: 1100)); // 1초 뒤 접히는 중
-        expect(find.byType(ChaseScene), findsOneWidget);
-        expect(find.byType(DispatchBanner), findsNothing);
-        await advance(tester, const Duration(milliseconds: 500));
+        await tester.pump(const Duration(milliseconds: 100));
+        expect(find.text('출동!'), findsOneWidget);
         expect(find.byType(ChaseScene), findsNothing);
-        expect(find.byType(DispatchBanner), findsOneWidget);
-        await advance(tester, const Duration(seconds: 4));
+        await advance(tester, const Duration(milliseconds: 2400));
+        expect(find.byType(DispatchCountdown), findsNothing);
         expect(tester.takeException(), isNull);
         // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
         await tester.pump(const Duration(seconds: 40));
@@ -684,7 +689,7 @@ void main() {
   );
 
   testWidgets(
-    'police_wait_screen_then_dispatch_banner_replace_popup_when_normal_game_starts',
+    'police_wait_screen_then_dispatch_countdown_replace_popup_when_normal_game_starts',
     (tester) async {
       // 출동 2초 여유 판정이 펌프로 흐르는 시계를 보도록 한다
       await withClock(gameClock(tester), () async {
@@ -713,11 +718,11 @@ void main() {
         expect(find.byType(ChaseScene), findsOneWidget);
 
         await tester.pump(const Duration(seconds: 55)); // 출동 시각(시작 후 60초)을 지나도록
-        await advance(tester, const Duration(seconds: 2));
+        await advance(tester, const Duration(seconds: 1));
         expect(find.byType(ChaseScene), findsNothing);
-        expect(find.byType(DispatchBanner), findsOneWidget);
+        expect(find.byType(DispatchCountdown), findsOneWidget);
         await advance(tester, const Duration(seconds: 4));
-        expect(find.byType(DispatchBanner), findsNothing);
+        expect(find.byType(DispatchCountdown), findsNothing);
         expect(tester.takeException(), isNull);
         // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
         await tester.pump(const Duration(seconds: 40));
@@ -777,7 +782,8 @@ void main() {
     expect(find.byType(ChaseScene), findsOneWidget);
     expect(find.byType(PoliceStartCountdown), findsNothing);
 
-    await tester.tapAt(const Offset(150, 426));
+    // 카드 바깥 빈 곳(경찰 출동까지 숫자 옆)을 누른다 — 카드는 긴 문구를 펼치는 자리다
+    await tester.tapAt(const Offset(30, 260));
     await tester.pump();
     expect(find.byType(ChaseScene), findsNothing);
     expect(find.byType(PoliceStartCountdown), findsOneWidget);
@@ -836,7 +842,7 @@ void main() {
   });
 
   testWidgets(
-    'police_wait_closes_without_dispatch_banner_when_app_returns_after_release',
+    'police_wait_closes_without_countdown_when_app_returns_after_release',
     (tester) async {
       // iOS는 백그라운드 앱을 멈춘다 — 그동안 시계만 흐르고 Dart 타이머는 돌지 않는다
       var suspended = Duration.zero;
@@ -864,7 +870,7 @@ void main() {
         }
         await tester.pump();
         expect(find.byType(ChaseScene), findsNothing);
-        expect(find.byType(DispatchBanner), findsNothing);
+        expect(find.byType(DispatchCountdown), findsNothing);
         expect(tester.takeException(), isNull);
         // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
         await tester.pump(const Duration(seconds: 40));

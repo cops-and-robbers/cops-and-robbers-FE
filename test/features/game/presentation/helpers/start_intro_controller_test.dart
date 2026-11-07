@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
-    'police_goes_from_role_banner_to_wait_screen_to_dispatch_banner_when_waiting_five_minutes',
+    'police_sees_countdown_over_wait_screen_then_hint_when_five_seconds_before_dispatch',
     () {
       final c = StartIntroController(
         steps: const [StartIntroStep.roleBanner, StartIntroStep.policeWait],
@@ -14,12 +14,15 @@ void main() {
       expect(c.showPoliceWait, isFalse); // 역할 배너가 끝난 뒤에
       c.roleBannerDone();
       expect(c.showPoliceWait, isTrue);
+      c.dispatchCountdownStarted(); // 출동 5초 전
+      expect(c.showDispatchCountdown, isTrue);
+      expect(c.showPoliceWait, isTrue); // 대기 화면은 카운팅 아래 그대로
       c.policeReleased(inForeground: true);
       expect(c.showPoliceWait, isFalse);
-      expect(c.showDispatchBanner, isTrue);
+      expect(c.showDispatchCountdown, isTrue); // "출동!"과 원형 열기가 남았다
       expect(c.hintDue, isFalse);
-      c.dispatchBannerDone();
-      expect(c.showDispatchBanner, isFalse);
+      c.dispatchCountdownDone();
+      expect(c.showDispatchCountdown, isFalse);
       expect(c.hintDue, isTrue);
     },
   );
@@ -39,8 +42,8 @@ void main() {
       c.robberExplainerClosed();
       expect(c.showRobberExplainer, isFalse);
       expect(c.hintDue, isTrue);
-      c.policeReleased(inForeground: true);
-      expect(c.showDispatchBanner, isTrue);
+      c.dispatchCountdownStarted(); // 지도를 보던 중 출동 5초 전
+      expect(c.showDispatchCountdown, isTrue);
     },
   );
 
@@ -79,38 +82,32 @@ void main() {
     },
   );
 
-  test(
-    'dispatch_banner_waits_for_role_banner_when_release_arrives_during_it',
-    () {
-      final c = StartIntroController(
-        steps: const [StartIntroStep.roleBanner, StartIntroStep.policeWait],
-        hasPoliceWait: true,
-      );
-      c.policeReleased(inForeground: true);
-      expect(c.showRoleBanner, isTrue);
-      expect(c.showDispatchBanner, isFalse);
-      c.roleBannerDone();
-      expect(c.showPoliceWait, isFalse); // 대기 화면을 건너뛴다
-      expect(c.showDispatchBanner, isTrue);
-    },
-  );
+  test('countdown_never_shows_when_app_returns_after_dispatch_time', () {
+    final c = StartIntroController(
+      steps: const [StartIntroStep.policeWait],
+      hasPoliceWait: true,
+    );
+    expect(c.showPoliceWait, isTrue); // 다시 켠 앱: 역할 배너 없이 바로
+    c.policeReleased(inForeground: false);
+    expect(c.showPoliceWait, isFalse);
+    expect(c.showDispatchCountdown, isFalse);
+    c.dispatchCountdownStarted(); // 지난 출동은 다시 세지 않는다
+    expect(c.showDispatchCountdown, isFalse);
+  });
+
+  // 카운팅을 보던 중 화면을 끄고 출동 시각을 넘겨 돌아왔다
+  test('countdown_closes_when_app_returns_late_from_background', () {
+    final c = StartIntroController(
+      steps: const [StartIntroStep.policeWait],
+      hasPoliceWait: true,
+    );
+    c.dispatchCountdownStarted();
+    c.policeReleased(inForeground: false);
+    expect(c.showDispatchCountdown, isFalse);
+  });
 
   test(
-    'wait_screen_closes_without_banner_when_release_passed_while_app_in_background',
-    () {
-      final c = StartIntroController(
-        steps: const [StartIntroStep.policeWait],
-        hasPoliceWait: true,
-      );
-      expect(c.showPoliceWait, isTrue); // 다시 켠 앱: 역할 배너 없이 바로
-      c.policeReleased(inForeground: false);
-      expect(c.showPoliceWait, isFalse);
-      expect(c.showDispatchBanner, isFalse);
-    },
-  );
-
-  test(
-    'dispatch_banner_shows_once_when_timer_and_server_event_both_arrive',
+    'countdown_keeps_running_when_server_dispatch_arrives_before_device_clock',
     () {
       final c = StartIntroController(
         steps: const [StartIntroStep.policeWait],
@@ -118,38 +115,53 @@ void main() {
       );
       var notifications = 0;
       c.addListener(() => notifications++);
-      c.policeReleased(inForeground: true);
-      c.dispatchBannerDone();
-      c.policeReleased(inForeground: true); // 서버 POLICE_MOVE_START가 뒤늦게 옴
-      expect(c.showDispatchBanner, isFalse);
-      expect(notifications, 2);
+      c.dispatchCountdownStarted();
+      c.policeReleased(inForeground: true); // 서버 POLICE_MOVE_START가 먼저 옴
+      expect(c.showDispatchCountdown, isTrue);
+      c.policeReleased(inForeground: true); // 기기 시계 타이머가 뒤늦게 옴
+      c.dispatchCountdownDone();
+      expect(c.showDispatchCountdown, isFalse);
+      expect(notifications, 3);
     },
   );
 
-  test('hint_is_due_after_role_banner_when_room_has_no_police_wait', () {
+  test('countdown_starts_once_when_five_second_mark_is_hit_twice', () {
+    final c = StartIntroController(
+      steps: const [StartIntroStep.policeWait],
+      hasPoliceWait: true,
+    );
+    var notifications = 0;
+    c.addListener(() => notifications++);
+    c.dispatchCountdownStarted(); // 타이머
+    c.dispatchCountdownStarted(); // 앱이 다시 보이면서 한 번 더
+    expect(notifications, 1);
+  });
+
+  test('countdown_does_not_start_when_room_has_no_police_wait', () {
     final c = StartIntroController(
       steps: const [StartIntroStep.roleBanner],
       hasPoliceWait: false,
     );
     c.roleBannerDone();
     expect(c.hintDue, isTrue);
-    c.policeReleased(inForeground: true); // 대기 없는 방엔 출동 배너도 없다
-    expect(c.showDispatchBanner, isFalse);
+    c.dispatchCountdownStarted();
+    expect(c.showDispatchCountdown, isFalse);
   });
 
-  test('everything_closes_when_game_ends_during_police_wait', () {
+  test('countdown_closes_when_game_ends_during_countdown', () {
     final c = StartIntroController(
       steps: const [StartIntroStep.roleBanner, StartIntroStep.policeWait],
       hasPoliceWait: true,
     );
     c.roleBannerDone();
+    c.dispatchCountdownStarted();
     c.gameOver();
     c.policeReleased(inForeground: true);
     expect([
       c.showRoleBanner,
       c.showPoliceWait,
       c.showRobberExplainer,
-      c.showDispatchBanner,
+      c.showDispatchCountdown,
     ], everyElement(isFalse));
   });
 }

@@ -719,7 +719,7 @@ void main() {
     });
   });
 
-  group('GameEventNotifier start banners (일반 게임은 역할·출동 배너가 대신 알림)', () {
+  group('GameEventNotifier start banners (일반 게임은 역할 배너·출동 카운팅이 대신 알림)', () {
     // START 처리가 백그라운드 인프라를 켜며 WidgetsBinding을 쓴다.
     TestWidgetsFlutterBinding.ensureInitialized();
     setUp(() => SharedPreferences.setMockInitialValues({}));

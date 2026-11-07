@@ -8,11 +8,7 @@ Future<void> pumpBanner(
   WidgetTester tester, {
   required VoidCallback onDone,
   VoidCallback? onRevealNext,
-  bool tapToSkip = true,
-  bool dimBehind = true,
   bool reduceMotion = false,
-  VoidCallback? onMapTap,
-  bool filledStart = false,
 }) async {
   tester.view.physicalSize = const Size(393 * 3, 852 * 3);
   tester.view.devicePixelRatio = 3;
@@ -26,22 +22,16 @@ Future<void> pumpBanner(
       home: Scaffold(
         body: Stack(
           children: [
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: onMapTap,
-                child: const ColoredBox(color: AppColors.black100),
-              ),
-            ),
+            const Positioned.fill(child: ColoredBox(color: AppColors.black100)),
             Positioned.fill(
               child: StripeBanner(
                 color: AppColors.blue,
                 bandHeight: 154,
                 hold: const Duration(milliseconds: 2350),
-                dimBehind: dimBehind,
-                tapToSkip: tapToSkip,
+                angleDegrees: -4.6,
+                bandOffsetY: 0,
                 onDone: onDone,
                 onRevealNext: onRevealNext,
-                filledStart: filledStart,
                 content: (_, _, _, _) => const Text('내 역할'),
               ),
             ),
@@ -93,57 +83,33 @@ void main() {
     expect(done, 1);
   });
 
-  testWidgets('role_banner_leaves_within_a_second_when_player_taps', (
+  // 역할 배너는 탭해도 넘어가지 않는다 — 내 역할을 끝까지 보여 준다(0.9 + 2.35 + 0.7 = 3.95초)
+  testWidgets('role_banner_stays_full_time_when_player_taps_while_it_holds', (
     tester,
   ) async {
     var done = 0;
     await pumpBanner(tester, onDone: () => done++);
     await advance(tester, const Duration(milliseconds: 1500));
     await tester.tapAt(const Offset(196, 426));
-    await advance(tester, const Duration(milliseconds: 800));
+    await advance(tester, const Duration(milliseconds: 2000)); // 3.5초
+    expect(done, 0);
+    await advance(tester, const Duration(milliseconds: 700)); // 4.2초
     expect(done, 1);
   });
 
-  // 들어오는 중 탭: 줄이 튀지 않도록 다 들어온 뒤(0.9초) 바로 나간다
-  testWidgets(
-    'role_banner_leaves_right_after_entering_when_player_taps_early',
-    (tester) async {
-      var done = 0, next = 0;
-      await pumpBanner(
-        tester,
-        onDone: () => done++,
-        onRevealNext: () => next++,
-      );
-      await advance(tester, const Duration(milliseconds: 300));
-      await tester.tapAt(const Offset(196, 426));
-      await advance(tester, const Duration(milliseconds: 550)); // 0.85초
-      expect(next, 0); // 수정 전엔 탭 즉시 나가 0.75초에 떴다
-      await advance(tester, const Duration(milliseconds: 400)); // 1.25초
-      expect(done, 0); // 수정 전엔 1.0초에 끝났다
-      await advance(
-        tester,
-        const Duration(milliseconds: 450),
-      ); // 1.7초: 0.9+0.7+여유
-      expect(done, 1);
-      expect(next, 1);
-    },
-  );
-
-  testWidgets('dispatch_banner_lets_map_tap_through_when_shown', (
+  testWidgets('role_banner_stays_full_time_when_player_taps_while_it_enters', (
     tester,
   ) async {
-    var mapTaps = 0;
-    await pumpBanner(
-      tester,
-      onDone: () {},
-      tapToSkip: false,
-      dimBehind: false,
-      onMapTap: () => mapTaps++,
-    );
-    await advance(tester, const Duration(milliseconds: 1500));
-    await tester.tapAt(const Offset(196, 426)); // 띠 한가운데
-    expect(mapTaps, 1);
-    await advance(tester, const Duration(milliseconds: 2600));
+    var done = 0, next = 0;
+    await pumpBanner(tester, onDone: () => done++, onRevealNext: () => next++);
+    await advance(tester, const Duration(milliseconds: 300));
+    await tester.tapAt(const Offset(196, 426));
+    await advance(tester, const Duration(milliseconds: 2900)); // 3.2초
+    expect(next, 0); // 다음 장면은 3.37초에 비친다
+    expect(done, 0);
+    await advance(tester, const Duration(milliseconds: 1000)); // 4.2초
+    expect(next, 1);
+    expect(done, 1);
   });
 
   // 움직임 줄이기: 0.22초 페이드 인 + 머묾 2.35 + 0.2초 페이드 아웃 = 2.77초
@@ -180,31 +146,6 @@ void main() {
           closeTo(390 * 393 / 300, 0.01),
         );
       }
-    },
-  );
-
-  // 장면이 출동 띠 모양으로 접힌 자리: 줄이 빨려 들지 않고 그 자리에서 보이며 글이 곧바로 들어온다
-  testWidgets(
-    'words_appear_within_half_second_when_banner_starts_from_folded_scene',
-    (tester) async {
-      var done = 0;
-      await pumpBanner(
-        tester,
-        onDone: () => done++,
-        dimBehind: false,
-        tapToSkip: false,
-        filledStart: true,
-      );
-      await advance(tester, const Duration(milliseconds: 500));
-      final words = tester.widget<Opacity>(
-        find
-            .ancestor(of: find.text('내 역할'), matching: find.byType(Opacity))
-            .first,
-      );
-      expect(words.opacity, greaterThan(0.9));
-      // 들어오기 0.47 + 머묾 2.35 + 나가기 0.7
-      await advance(tester, const Duration(milliseconds: 3100));
-      expect(done, 1);
     },
   );
 }

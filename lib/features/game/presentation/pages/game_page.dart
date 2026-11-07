@@ -92,6 +92,7 @@ import '../../domain/start_flow.dart';
 import '../helpers/start_intro_controller.dart';
 import '../widgets/start/band_transition.dart';
 import '../widgets/start/chase_scene.dart';
+import '../widgets/start/dispatch_countdown.dart';
 import '../widgets/start/chase_scene_rules.dart';
 import '../widgets/start/start_banners.dart';
 import 'package:cops_and_robbers/core/constants/game_config.dart';
@@ -241,17 +242,16 @@ class _GamePageState extends ConsumerState<GamePage>
   int _gameStateSyncGeneration = 0;
   Timer? _gameStateSyncRetryTimer;
 
-  /// 게임 시작 흐름(역할 배너·경찰 대기·도둑 설명·출동 배너). 이벤트 게임·더미 모드는 null.
+  /// 게임 시작 흐름(역할 배너·경찰 대기·도둑 설명·출동 카운팅). 이벤트 게임·더미 모드는 null.
   StartIntroController? _intro;
   Timer? _policeReleaseTimer;
+  Timer? _dispatchCountdownTimer;
   DateTime? _introStartTime;
   DateTime? _policeReleaseAt;
   int _introWaitMinutes = 0;
   int _introRevealMinutes = 5;
   bool _rulesHintRequested = false;
 
-  /// 출동 때 장면이 출동 띠 모양으로 접히는 중 — 다 접히면 출동 배너가 그 자리에서 이어진다
-  bool _sceneFolding = false;
   Timer? _rulesHintTimer;
 
   /// 시작 시스템 메시지의 마지막 공지 배너가 내려가는 시각. 보내지 않았으면 null.
@@ -309,6 +309,10 @@ class _GamePageState extends ConsumerState<GamePage>
       final releaseAt = _policeReleaseAt;
       if (releaseAt != null && !clock.now().isBefore(releaseAt)) {
         _onPoliceReleased();
+      } else if (releaseAt != null &&
+          !clock.now().isBefore(releaseAt.subtract(dispatchOverlayLead))) {
+        // 카운팅 구간에 돌아왔다 — 남은 숫자부터 센다
+        _startDispatchCountdown();
       }
     }
   }
@@ -467,6 +471,7 @@ class _GamePageState extends ConsumerState<GamePage>
     WidgetsBinding.instance.removeObserver(this);
     _gameStateSyncRetryTimer?.cancel();
     _policeReleaseTimer?.cancel();
+    _dispatchCountdownTimer?.cancel();
     _rulesHintTimer?.cancel();
     _intro
       ?..removeListener(_onIntroChanged)
@@ -527,6 +532,15 @@ class _GamePageState extends ConsumerState<GamePage>
     _intro = intro;
     if (now.isBefore(releaseAt)) {
       _policeReleaseTimer = Timer(releaseAt.difference(now), _onPoliceReleased);
+      final countdownAt = releaseAt.subtract(dispatchOverlayLead);
+      if (now.isBefore(countdownAt)) {
+        _dispatchCountdownTimer = Timer(
+          countdownAt.difference(now),
+          _startDispatchCountdown,
+        );
+      } else {
+        _startDispatchCountdown(); // 카운팅 도중에 들어왔다
+      }
     } else {
       intro.policeReleased(inForeground: false);
     }
@@ -557,47 +571,27 @@ class _GamePageState extends ConsumerState<GamePage>
     _sceneWasOpen = open;
   }
 
+  /// 출동 5초 전 — 화면이 보일 때만 카운팅을 띄운다. 꺼져 있었으면 돌아올 때 다시 부른다.
+  void _startDispatchCountdown() {
+    if (!mounted) return;
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    if (lifecycle != null && lifecycle != AppLifecycleState.resumed) return;
+    _intro?.dispatchCountdownStarted();
+  }
+
   /// 경찰 출동 — 기기 시계 타이머와 서버 POLICE_MOVE_START 중 먼저 온 쪽(컨트롤러가 한 번만 받는다).
+  /// 카운팅이 떠 있으면 그 아래 장면만 닫고, 카운팅은 자기 시계대로 "출동!"까지 간다.
   void _onPoliceReleased() {
     final releaseAt = _policeReleaseAt;
-    if (!mounted || releaseAt == null || _sceneFolding) return;
+    if (!mounted || releaseAt == null) return;
     _policeReleaseTimer?.cancel();
-    // 00:00을 1초 보여 준 뒤 넘어간다 — 0이 되자마자 닫으면 00:01에서 끊겨 보인다.
-    // 서버 신호가 기기 시계보다 조금 먼저 와도 같고, 시계가 2초 넘게 어긋나면 기다리지 않는다
-    final now = clock.now();
-    final dispatchAt = releaseAt.add(const Duration(seconds: 1));
-    if (now.isBefore(dispatchAt) &&
-        !now.isBefore(releaseAt.subtract(const Duration(seconds: 2)))) {
-      _policeReleaseTimer = Timer(
-        dispatchAt.difference(now),
-        _onPoliceReleased,
-      );
-      return;
-    }
-    // 백그라운드에 있다 돌아와 늦게 처리되는 출동은 배너 없이 장면만 닫는다
+    // 백그라운드에 있다 돌아와 늦게 처리되는 출동은 카운팅 없이 장면만 닫는다
     final onTime = clock.now().isBefore(
       releaseAt.add(const Duration(seconds: 2)),
     );
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     final visible = lifecycle == null || lifecycle == AppLifecycleState.resumed;
-    final intro = _intro;
-    final sceneShown =
-        intro != null &&
-        (intro.showPoliceWait || intro.showRobberExplainer) &&
-        !_showParticipants &&
-        !_showChat;
-    // 보이는 장면은 출동 띠 모양으로 접은 뒤 출동 배너로 넘긴다
-    if (onTime &&
-        visible &&
-        sceneShown &&
-        !MediaQuery.disableAnimationsOf(context)) {
-      setState(() => _sceneFolding = true);
-      _policeReleaseTimer = Timer(BandTransition.foldDuration, () {
-        if (mounted) intro.policeReleased(inForeground: true);
-      });
-      return;
-    }
-    intro?.policeReleased(inForeground: onTime && visible);
+    _intro?.policeReleased(inForeground: onTime && visible);
   }
 
   /// "규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요" — 기기당 한 번, 기존 위쪽 공지 배너로.
@@ -2499,7 +2493,7 @@ class _GamePageState extends ConsumerState<GamePage>
               const SizedBox.shrink(),
 
             /// index 2b: 경찰 대기 화면·도둑 설명 화면 (if/else로 개수 고정)
-            /// 지도·앱바를 덮는다. 공지는 장면 카드 줄에 끼우고, 채팅은 장면 메뉴에 들어간다.
+            /// 지도·앱바를 덮는다. 공지는 장면의 게임 안내 카드에 끼우고, 채팅은 장면 메뉴에 들어간다.
             /// 참가자 목록(index 1)·채팅을 열면 Offstage로 비켜 준다 — 덮으면 목록이 안 보이고
             /// 채팅을 닫는 앱바 뒤로 버튼(index 2)이 가려진다.
             /// Offstage 동안에도 남은 시간·진동은 계속 돈다(출동은 목록을 보는 중에도 온다).
@@ -2513,7 +2507,6 @@ class _GamePageState extends ConsumerState<GamePage>
                       key: ValueKey(sceneMode),
                       // 역할 띠가 빠지는 자리에서 펼쳐진다. 다시 켠 앱은 바로 화면 전체
                       revealFromBand: intro!.showRoleBanner,
-                      fold: _sceneFolding,
                       child: ChaseScene(
                         mode: sceneMode,
                         isPolice: GameTeam.isPolice(widget.team),
@@ -2521,14 +2514,8 @@ class _GamePageState extends ConsumerState<GamePage>
                         policeWaitMinutes: _introWaitMinutes,
                         revealMinutes: _introRevealMinutes,
                         onClose: intro.robberExplainerClosed,
-                        notice: showsNotice
-                            ? MarqueeAlertBanner(
-                                message: bannerMessage,
-                                isDarkMode: _isDarkMode,
-                                // 카드 줄이 이미 양옆 여백을 두고 있다
-                                horizontalMargin: 0,
-                              )
-                            : null,
+                        // 공지는 장면의 "게임 안내" 카드에 끼워 보여 준다(위쪽 공지 줄 없음)
+                        notice: showsNotice ? bannerMessage : null,
                       ),
                     ),
                   ),
@@ -2825,7 +2812,8 @@ class _GamePageState extends ConsumerState<GamePage>
             else
               const SizedBox.shrink(),
 
-            /// index 11: 역할 배너·출동 배너 (가장 위, if/else로 개수 고정)
+            /// index 11: 역할 배너·출동 카운팅 (가장 위, if/else로 개수 고정)
+            /// 카운팅은 장면·지도·목록·채팅을 모두 덮는다 — 출동은 무엇을 보던 중이든 온다.
             if (intro != null && intro.showRoleBanner)
               Positioned.fill(
                 child: RoleBanner(
@@ -2835,13 +2823,14 @@ class _GamePageState extends ConsumerState<GamePage>
                   onDone: intro.roleBannerDone,
                 ),
               )
-            else if (intro != null && intro.showDispatchBanner)
+            else if (intro != null &&
+                intro.showDispatchCountdown &&
+                _policeReleaseAt != null)
               Positioned.fill(
-                child: DispatchBanner(
-                  key: const ValueKey('dispatchBanner'),
-                  isPolice: GameTeam.isPolice(widget.team),
-                  fromFoldedScene: _sceneFolding,
-                  onDone: intro.dispatchBannerDone,
+                child: DispatchCountdown(
+                  key: const ValueKey('dispatchCountdown'),
+                  releaseAt: _policeReleaseAt!,
+                  onDone: intro.dispatchCountdownDone,
                 ),
               )
             else

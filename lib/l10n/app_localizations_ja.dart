@@ -1245,8 +1245,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startMissionRobber => 'ゲームが終わるまで捕まらずに逃げ切りましょう';
 
   @override
+  String get startExplainerTapHint => '画面をタップすると地図に移動します';
+
+  @override
+  String get startGuideLabel => 'ゲーム案内';
+
+  @override
   String startRulesCounter(int current, int total) {
-    return 'ゲームルール $current/$total';
+    return 'ゲーム案内 $current/$total';
   }
 
   @override
@@ -1289,16 +1295,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startRuleJailbreakReplay => '捕まった泥棒は牢屋に入り、外に出て3秒たつと脱獄します';
 
   @override
-  String get dispatchPoliceLead => '時間です';
-
-  @override
-  String get dispatchPoliceMain => '出動！';
-
-  @override
-  String get dispatchRobberLead => '警察が出動しました';
-
-  @override
-  String get dispatchRobberMain => '気をつけて！';
+  String get dispatchCountdownGo => 'いくぞ！';
 
   @override
   String get startRulesHint => 'ルールは右上のⓘからいつでも確認できます';

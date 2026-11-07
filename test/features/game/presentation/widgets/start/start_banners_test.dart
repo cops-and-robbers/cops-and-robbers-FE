@@ -201,20 +201,4 @@ void main() {
     );
     await advance(tester, const Duration(milliseconds: 3000));
   });
-
-  testWidgets('robber_dispatch_banner_warns_robber_when_police_moves_out', (
-    tester,
-  ) async {
-    var done = 0;
-    await pumpOnPhone(
-      tester,
-      DispatchBanner(isPolice: false, onDone: () => done++),
-    );
-    await advance(tester, const Duration(milliseconds: 1200));
-    expect(find.text('경찰이 출동했어요'), findsOneWidget);
-    expect(find.text('조심!'), findsOneWidget);
-    // 들어오기 0.9 + 머묾 1.7 + 나가기 0.7 = 3.3초 (프레임 간격 여유 포함 3.7초까지)
-    await advance(tester, const Duration(milliseconds: 2500));
-    expect(done, 1);
-  });
 }

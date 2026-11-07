@@ -14,7 +14,6 @@ import '../../../../../core/services/vibration_service.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/start_flow.dart';
 import 'chase_scene_rules.dart';
-import '../marquee_alert_banner.dart';
 import 'police_car_drive.dart';
 
 /// 경찰 대기(②)·도둑 설명(③)·규칙 다시 보기(⑤)가 함께 쓰는 장면.
@@ -47,8 +46,9 @@ class ChaseScene extends StatefulWidget {
   /// 설명 화면(20초·탭)·다시 보기(탭)가 닫힐 때. 경찰 대기 화면은 탭으로 닫히지 않는다.
   final VoidCallback? onClose;
 
-  /// 미션 카드 위에 끼우는 인게임 공지 배너. 지도에서 위에 뜨는 것과 같은 공지다.
-  final Widget? notice;
+  /// 지금 살아 있는 인게임 공지 문구. 지도에서 위에 뜨는 것과 같은 공지를
+  /// 장면에서는 "게임 안내"의 한 장으로 규칙 앞에 넣어 함께 돌린다.
+  final String? notice;
 
   /// 규칙 4줄을 한 번씩 다 보여 주는 시간
   static const explainerDuration = Duration(seconds: 20);
@@ -79,6 +79,21 @@ class _ChaseSceneState extends State<ChaseScene> {
   bool _missionExpanded = false;
 
   bool get _ruleExpanded => _ruleExpandedAt != null;
+
+  /// 게임 안내에 넣은 공지(온 순서). 규칙보다 앞에 두고 함께 돌린다.
+  final List<String> _notices = [];
+
+  /// 회전의 기준 — [_guideAnchor](읽기 시계)에 [_guideStart]번째 장을 보여 주기 시작했다
+  int _guideStart = 0;
+  Duration _guideAnchor = Duration.zero;
+
+  /// 새 공지는 안내에 더하고 바로 그 장으로 넘어간다
+  void _addNotice(String text) {
+    if (_notices.contains(text)) return;
+    _notices.add(text);
+    _guideStart = _notices.length - 1;
+    _guideAnchor = _readClock;
+  }
 
   void _toggleRule() => setState(() {
     final expandedAt = _ruleExpandedAt;
@@ -114,8 +129,18 @@ class _ChaseSceneState extends State<ChaseScene> {
   @override
   void initState() {
     super.initState();
+    // 장면이 열릴 때 살아 있는 공지가 있으면 그것부터 보여 준다
+    if (widget.notice case final notice?) _addNotice(notice);
     // 규칙 회전·막대가 부드럽게 보이도록 1초보다 잘게 갱신한다
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) => _tick());
+  }
+
+  @override
+  void didUpdateWidget(ChaseScene oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 보는 중에 새 공지가 오면 안내에 더하고 바로 보여 준다
+    final notice = widget.notice;
+    if (notice != null && notice != oldWidget.notice) _addNotice(notice);
   }
 
   /// 규칙 회전과 도둑 설명 자동 닫힘이 함께 쓰는 시계. 규칙을 펼쳐 읽는 동안은 멈춘다.
@@ -135,9 +160,10 @@ class _ChaseSceneState extends State<ChaseScene> {
     // 화면을 끈 채면 울리지 않는다 — Android는 멈춘 앱의 타이머도 돌아 주머니 속에서 진동한다
     final lifecycle = WidgetsBinding.instance.lifecycleState;
     final visible = lifecycle == null || lifecycle == AppLifecycleState.resumed;
+    // 마지막 5초는 위에 뜨는 출동 카운팅이 울린다 — 같은 초에 두 번 울리지 않게
     if (visible &&
         widget.mode == ChaseSceneMode.policeWait &&
-        sec > 0 &&
+        sec > dispatchCountdownLead.inSeconds &&
         sec <= 10 &&
         sec != _lastTickSecond) {
       _lastTickSecond = sec;
@@ -160,10 +186,13 @@ class _ChaseSceneState extends State<ChaseScene> {
       isPolice: _isPolice,
       revealMinutes: widget.revealMinutes,
     );
-    // 펼친 동안은 그 규칙에 머문다 — 읽던 문구가 넘어가 버리지 않게
+    // 게임 안내 = 공지(먼저) + 규칙. 펼친 동안은 그 장에 머문다 — 읽던 문구가 넘어가 버리지 않게
+    final guide = [..._notices, ...rules];
     final ruleIndex =
-        (_readClock.inMilliseconds ~/ ChaseScene.ruleInterval.inMilliseconds) %
-        rules.length;
+        (_guideStart +
+            (_readClock - _guideAnchor).inMilliseconds ~/
+                ChaseScene.ruleInterval.inMilliseconds) %
+        guide.length;
     final sec = _remainingSeconds;
     // 다시 보기도 시작 화면과 똑같이 보여 주되, 출동 뒤엔 셀 대기 시간이 없어 남은 게임 시간을 센다
     final showsGameTime = widget.mode == ChaseSceneMode.rulesReplay && sec == 0;
@@ -219,13 +248,14 @@ class _ChaseSceneState extends State<ChaseScene> {
                           finalCount,
                           reduceMotion,
                         ),
-                        SizedBox(height: AppSpacing.vertical44),
+                        // 피그마 9164:20378: 안내 → 첫 카드 50(위쪽 공지 줄 없음)
+                        SizedBox(height: AppSpacing.vertical50),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16 * s),
                           child: _cards(
                             context,
                             l10n,
-                            rules,
+                            guide,
                             ruleIndex,
                             s,
                             reduceMotion,
@@ -236,6 +266,20 @@ class _ChaseSceneState extends State<ChaseScene> {
                   ),
                 ),
                 // 다시 보기는 저절로 닫히지 않아 남은 시간 막대가 없다
+                // 도둑은 화면을 누르면 닫히고 지도로 간다 — 남은 시간 막대 바로 위에 알려 준다
+                if (widget.mode == ChaseSceneMode.robberExplainer)
+                  Positioned(
+                    left: AppSpacing.horizontal16,
+                    right: AppSpacing.horizontal16,
+                    bottom: 14 * s,
+                    child: Text(
+                      l10n.startExplainerTapHint,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: AppColors.black200,
+                      ),
+                    ),
+                  ),
                 if (widget.mode == ChaseSceneMode.robberExplainer)
                   Positioned(
                     left: 0,
@@ -353,7 +397,7 @@ class _ChaseSceneState extends State<ChaseScene> {
   Widget _cards(
     BuildContext context,
     AppLocalizations l10n,
-    List<String> rules,
+    List<String> guide,
     int ruleIndex,
     double s,
     bool reduceMotion,
@@ -368,18 +412,10 @@ class _ChaseSceneState extends State<ChaseScene> {
     final mission = _isPolice
         ? l10n.startMissionPolice
         : l10n.startMissionRobber;
-    final rule = rules[ruleIndex];
+    final rule = guide[ruleIndex];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // 공지는 왔다가 사라진다 — 없어도 자리(시안 높이 44)를 비워 둬야 아래 카드가 들썩이지 않는다
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MarqueeAlertBanner.heightFor(isDarkMode: !_isPolice),
-          ),
-          child: widget.notice,
-        ),
-        gap,
         _card(
           s,
           icon: _missionFlag(s),
@@ -407,16 +443,23 @@ class _ChaseSceneState extends State<ChaseScene> {
             duration: reduceMotion
                 ? Duration.zero
                 : const Duration(milliseconds: 600),
-            // 줄 수가 달라도 "게임 규칙 n/m" 라벨이 한자리에 있게 왼쪽 위를 기준으로 바뀐다
+            // 줄 수가 달라도 "게임 안내 n/m" 라벨이 한자리에 있게 왼쪽 위를 기준으로 바뀐다
             layoutBuilder: (current, previous) => Stack(
               alignment: Alignment.topLeft,
               children: [...previous, ?current],
             ),
             child: KeyedSubtree(
-              key: ValueKey(ruleIndex),
+              key: ValueKey('$ruleIndex:$rule'),
               child: _labeled(
                 s,
-                _counter(l10n, ruleIndex, rules.length),
+                // 공지는 서버 이벤트라 몇 개 올지 몰라 번호 없이, 규칙만 n/규칙 수로 센다
+                ruleIndex < _notices.length
+                    ? l10n.startGuideLabel
+                    : _counter(
+                        l10n,
+                        ruleIndex - _notices.length,
+                        guide.length - _notices.length,
+                      ),
                 rule,
                 expanded: _ruleExpanded,
                 reduceMotion: reduceMotion,
@@ -441,7 +484,8 @@ class _ChaseSceneState extends State<ChaseScene> {
         vertical: AppSpacing.vertical18,
       ),
       decoration: BoxDecoration(
-        color: _isPolice ? AppColors.blueVer2_50 : AppColors.black,
+        // 피그마 9164:20378: 도둑 카드는 black900
+        color: _isPolice ? AppColors.blueVer2_50 : AppColors.black900,
         borderRadius: AppRadius.large,
         boxShadow: AppShadows.vague,
       ),

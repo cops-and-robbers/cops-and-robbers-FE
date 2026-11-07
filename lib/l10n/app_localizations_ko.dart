@@ -1244,8 +1244,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startMissionRobber => '게임이 끝날 때까지 잡히지 말고 도망치세요';
 
   @override
+  String get startExplainerTapHint => '화면을 누르면 지도로 가요';
+
+  @override
+  String get startGuideLabel => '게임 안내';
+
+  @override
   String startRulesCounter(int current, int total) {
-    return '게임 규칙 $current/$total';
+    return '게임 안내 $current/$total';
   }
 
   @override
@@ -1288,16 +1294,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRuleJailbreakReplay => '잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요';
 
   @override
-  String get dispatchPoliceLead => '시간이 됐어요';
-
-  @override
-  String get dispatchPoliceMain => '출동!';
-
-  @override
-  String get dispatchRobberLead => '경찰이 출동했어요';
-
-  @override
-  String get dispatchRobberMain => '조심!';
+  String get dispatchCountdownGo => '출동!';
 
   @override
   String get startRulesHint => '규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요';

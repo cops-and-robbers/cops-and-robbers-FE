@@ -449,7 +449,15 @@
   "startMissionRobberLabel": "泥棒チームのミッション",
   "startMissionPolice": "泥棒を見つけてQRで全員逮捕しましょう",
   "startMissionRobber": "ゲームが終わるまで捕まらずに逃げ切りましょう",
-  "startRulesCounter": "ゲームルール {current}/{total}",
+  "startExplainerTapHint": "画面をタップすると地図に移動します",
+  "@startExplainerTapHint": {
+    "description": "도둑 설명 화면 맨 아래 — 화면을 누르면 닫히고 지도로 간다는 안내"
+  },
+  "startGuideLabel": "ゲーム案内",
+  "@startGuideLabel": {
+    "description": "대기·설명 장면 게임 안내 카드에 공지가 나올 때의 라벨(공지는 개수를 몰라 번호 없이)"
+  },
+  "startRulesCounter": "ゲーム案内 {current}/{total}",
   "startRuleQrArrest": "泥棒のQRをスキャンすると逮捕できます",
   "startRulePing": "地図を長押しするとピンで味方に知らせられます",
   "startRuleRobberReveal": "泥棒の位置は{minutes}分ごとに警察に公開されます",
@@ -461,10 +469,10 @@
   "startRuleTeamReveal": "泥棒チームの位置は{minutes}分ごとに警察チームに共有されます",
   "startRuleZone": "指定されたゲームエリアから出てはいけません。エリア外に出ると画面がロックされます",
   "startRuleJailbreakReplay": "捕まった泥棒は牢屋に入り、外に出て3秒たつと脱獄します",
-  "dispatchPoliceLead": "時間です",
-  "dispatchPoliceMain": "出動！",
-  "dispatchRobberLead": "警察が出動しました",
-  "dispatchRobberMain": "気をつけて！",
+  "dispatchCountdownGo": "いくぞ！",
+  "@dispatchCountdownGo": {
+    "description": "출동 카운팅 화면 마지막 큰 글자 (5·4·3·2·1 다음)"
+  },
   "startRulesHint": "ルールは右上のⓘからいつでも確認できます",
   "unitPerson": "人",
   "unitMinutes": "分",

@@ -753,7 +753,7 @@ class GameEventNotifier extends _$GameEventNotifier {
     });
   }
 
-  /// 일반 게임은 시작·출동을 역할 배너·출동 배너(game_page)가 알리므로 위쪽 공지
+  /// 일반 게임은 시작·출동을 역할 배너·출동 카운팅(game_page)이 알리므로 위쪽 공지
   /// 배너를 띄우지 않는다. 이벤트 게임은 예전처럼 공지 배너로 알린다.
   bool get _announcesStartInTopBanner =>
       ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
