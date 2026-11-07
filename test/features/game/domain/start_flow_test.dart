@@ -149,4 +149,69 @@ void main() {
       );
     });
   });
+
+  // 14:00에 시작한 5분 대기 방 — 경찰은 14:05:00에 출동한다
+  group('dispatchCountdownFrame', () {
+    final release = DateTime(2026, 10, 16, 14, 5);
+    DispatchCountdownFrame at(Duration offset) =>
+        dispatchCountdownFrame(releaseAt: release, now: release.add(offset));
+
+    // 들어올 때: 지도·대기 화면이 보이는 구멍이 가장자리에서 사이렌 쪽으로 닫힌다(1초)
+    test('screen_starts_closing_in_when_six_seconds_before_dispatch', () {
+      expect(at(const Duration(seconds: -6)).cover, 0);
+    });
+
+    test(
+      'screen_is_half_covered_when_five_and_half_seconds_before_dispatch',
+      () {
+        expect(
+          at(const Duration(milliseconds: -5500)).cover,
+          closeTo(0.5, 1e-9),
+        );
+      },
+    );
+
+    test('shows_five_without_effect_when_five_seconds_before_dispatch', () {
+      final f = at(const Duration(seconds: -5));
+      expect(f.seconds, 5);
+      expect(f.cover, 1); // 숫자는 다 덮인 검은 화면에서 시작
+      expect(f.intensity, 0);
+      expect(f.iris, 0);
+      expect(f.done, isFalse);
+    });
+
+    test('screen_is_ready_one_second_before_counting_when_overlay_starts', () {
+      expect(
+        dispatchOverlayLead,
+        dispatchCountdownLead + dispatchCoverDuration,
+      );
+    });
+
+    test('starts_effect_faintly_when_four_seconds_turn', () {
+      final f = at(const Duration(milliseconds: -3900));
+      expect(f.seconds, 4);
+      expect(f.intensity, greaterThan(0));
+      expect(f.intensity, lessThan(0.01));
+    });
+
+    test('shows_three_when_app_opened_three_seconds_before_dispatch', () {
+      expect(at(const Duration(milliseconds: -2500)).seconds, 3);
+    });
+
+    test('effect_is_strongest_when_dispatch_arrives', () {
+      final f = at(Duration.zero);
+      expect(f.seconds, isNull); // 숫자 대신 "출동!"
+      expect(f.intensity, 1);
+      expect(f.iris, 0);
+    });
+
+    test('circle_is_half_open_when_half_second_into_iris', () {
+      expect(at(const Duration(milliseconds: 1700)).iris, closeTo(0.5, 1e-9));
+    });
+
+    test('finishes_when_go_and_iris_are_over', () {
+      expect(at(const Duration(milliseconds: 2199)).done, isFalse);
+      expect(at(const Duration(milliseconds: 2200)).done, isTrue);
+    });
+  });
 }

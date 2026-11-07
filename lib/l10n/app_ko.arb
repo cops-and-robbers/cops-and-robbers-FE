@@ -1130,7 +1130,15 @@
   "@startMissionRobber": {
     "description": "대기·설명 장면 미션 카드 본문 (도둑)"
   },
-  "startRulesCounter": "게임 규칙 {current}/{total}",
+  "startExplainerTapHint": "화면을 누르면 지도로 가요",
+  "@startExplainerTapHint": {
+    "description": "도둑 설명 화면 맨 아래 — 화면을 누르면 닫히고 지도로 간다는 안내"
+  },
+  "startGuideLabel": "게임 안내",
+  "@startGuideLabel": {
+    "description": "대기·설명 장면 게임 안내 카드에 공지가 나올 때의 라벨(공지는 개수를 몰라 번호 없이)"
+  },
+  "startRulesCounter": "게임 안내 {current}/{total}",
   "@startRulesCounter": {
     "description": "경찰 대기·도둑 설명 화면과 규칙 다시 보기의 회전 규칙 번호",
     "placeholders": {
@@ -1191,21 +1199,9 @@
   "@startRuleJailbreakReplay": {
     "description": "규칙 다시 보기 6 — 탈옥(팀 공통 시점)"
   },
-  "dispatchPoliceLead": "시간이 됐어요",
-  "@dispatchPoliceLead": {
-    "description": "출동 배너(경찰) 작은 줄"
-  },
-  "dispatchPoliceMain": "출동!",
-  "@dispatchPoliceMain": {
-    "description": "출동 배너(경찰) 큰 줄"
-  },
-  "dispatchRobberLead": "경찰이 출동했어요",
-  "@dispatchRobberLead": {
-    "description": "출동 배너(도둑) 작은 줄"
-  },
-  "dispatchRobberMain": "조심!",
-  "@dispatchRobberMain": {
-    "description": "출동 배너(도둑) 큰 줄"
+  "dispatchCountdownGo": "출동!",
+  "@dispatchCountdownGo": {
+    "description": "출동 카운팅 화면 마지막 큰 글자 (5·4·3·2·1 다음)"
   },
   "startRulesHint": "규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요",
   "@startRulesHint": {

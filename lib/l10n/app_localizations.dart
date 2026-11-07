@@ -2384,10 +2384,22 @@ abstract class AppLocalizations {
   /// **'게임이 끝날 때까지 잡히지 말고 도망치세요'**
   String get startMissionRobber;
 
+  /// 도둑 설명 화면 맨 아래 — 화면을 누르면 닫히고 지도로 간다는 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'화면을 누르면 지도로 가요'**
+  String get startExplainerTapHint;
+
+  /// 대기·설명 장면 게임 안내 카드에 공지가 나올 때의 라벨(공지는 개수를 몰라 번호 없이)
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 안내'**
+  String get startGuideLabel;
+
   /// 경찰 대기·도둑 설명 화면과 규칙 다시 보기의 회전 규칙 번호
   ///
   /// In ko, this message translates to:
-  /// **'게임 규칙 {current}/{total}'**
+  /// **'게임 안내 {current}/{total}'**
   String startRulesCounter(int current, int total);
 
   /// 규칙 — 경찰 QR 체포
@@ -2456,29 +2468,11 @@ abstract class AppLocalizations {
   /// **'잡힌 도둑은 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥해요'**
   String get startRuleJailbreakReplay;
 
-  /// 출동 배너(경찰) 작은 줄
-  ///
-  /// In ko, this message translates to:
-  /// **'시간이 됐어요'**
-  String get dispatchPoliceLead;
-
-  /// 출동 배너(경찰) 큰 줄
+  /// 출동 카운팅 화면 마지막 큰 글자 (5·4·3·2·1 다음)
   ///
   /// In ko, this message translates to:
   /// **'출동!'**
-  String get dispatchPoliceMain;
-
-  /// 출동 배너(도둑) 작은 줄
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰이 출동했어요'**
-  String get dispatchRobberLead;
-
-  /// 출동 배너(도둑) 큰 줄
-  ///
-  /// In ko, this message translates to:
-  /// **'조심!'**
-  String get dispatchRobberMain;
+  String get dispatchCountdownGo;
 
   /// ⓘ 위치 1회 안내 — 위쪽 공지 배너
   ///

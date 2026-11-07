@@ -159,14 +159,15 @@ class VibrationService {
     VibrationPatterns.countdownTickAmplitude,
   );
 
-  /// 출동 진동 — 경찰은 짧게 두 번, 도둑은 길게 한 번
-  void policeDispatch({required bool isPolice}) => isPolice
-      ? _vibratePattern(
-          VibrationPatterns.policeDispatchPattern,
-          VibrationPatterns.policeDispatchIntensities,
-        )
-      : _vibrateSingle(
-          VibrationPatterns.robberDispatchDuration,
-          VibrationPatterns.robberDispatchAmplitude,
-        );
+  /// 출동 카운팅 한 박자 — [secondsLeft]가 작을수록 세다(5 → 1)
+  void dispatchCountdownBeat(int secondsLeft) {
+    final beat = VibrationPatterns.dispatchCountdownBeat(secondsLeft);
+    _vibratePattern(beat.pattern, beat.intensities);
+  }
+
+  /// 출동! — 카운팅과 다른, 가장 센 진동
+  void dispatchGo() => _vibratePattern(
+    VibrationPatterns.dispatchGoPattern,
+    VibrationPatterns.dispatchGoIntensities,
+  );
 }

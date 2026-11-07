@@ -1330,8 +1330,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Stay free and keep running until the game ends';
 
   @override
+  String get startExplainerTapHint => 'Tap anywhere to go to the map';
+
+  @override
+  String get startGuideLabel => 'Game guide';
+
+  @override
   String startRulesCounter(int current, int total) {
-    return 'Game rules $current/$total';
+    return 'Game guide $current/$total';
   }
 
   @override
@@ -1378,16 +1384,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Caught Robbers go to Jail and escape after 3 seconds outside it';
 
   @override
-  String get dispatchPoliceLead => 'Time\'s up';
-
-  @override
-  String get dispatchPoliceMain => 'Move out!';
-
-  @override
-  String get dispatchRobberLead => 'The Cops are moving';
-
-  @override
-  String get dispatchRobberMain => 'Watch out!';
+  String get dispatchCountdownGo => 'Let\'s go!';
 
   @override
   String get startRulesHint => 'Tap ⓘ at the top right to see the rules again';
