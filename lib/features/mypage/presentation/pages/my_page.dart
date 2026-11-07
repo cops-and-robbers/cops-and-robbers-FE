@@ -130,7 +130,7 @@ class _MyPageState extends ConsumerState<MyPage> {
             _buildSwitchMenuItem(
               text: l10n.settingsAppGameNotification,
               subtitle: l10n.settingsAppGameNotificationDescription,
-              leadingAsset: AppIcons.gameNotification,
+              leadingAsset: AppIcons.gameConsole,
               value: gamePushState.valueOrNull ?? false,
               onToggle: _onGamePushToggle,
             ),

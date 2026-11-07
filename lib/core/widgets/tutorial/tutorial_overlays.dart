@@ -33,7 +33,7 @@ const tutorialSvgAssets = [
   AppIcons.zoneExit,
   'assets/profiles/1.svg',
   'assets/profiles/2.svg',
-  'assets/onboarding/onboarding4.svg',
+  'assets/onboarding/onboarding_flag.svg',
 ];
 
 /// 지도 위 인물과 앱 화면 표시. 라이트·다크 전환과 상관없이 맨 위에 그린다.

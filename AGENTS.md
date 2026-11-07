@@ -50,7 +50,7 @@ i18n은 `lib/l10n/app_*.arb` 수정 후 `flutter gen-l10n`을 실행한다.
 
 작업 범위와 관련된 문서만 읽는다.
 
-- 작업 문서는 `docs/issues/`, `docs/pr/`, `docs/report/`, `docs/release-note/`에 저장한다.
+- 작업 문서는 `docs/projectops/issue/`, `docs/pr/`, `docs/projectops/report/`, `docs/release-note/`에 저장한다.
 - Superpowers 산출물은 `docs/superpowers/` 아래 `specs/`, `plans/`, `brainstorm/`, `sdd/`로 통일한다. 플러그인 기본 경로보다 이 규칙을 우선하며, 시각화 서버에도 이 경로를 전달한다.
 
 - .claude/rules/Agents.md — 테스트 작성 룰
