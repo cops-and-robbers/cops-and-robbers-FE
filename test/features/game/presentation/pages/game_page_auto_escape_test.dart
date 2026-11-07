@@ -11,6 +11,7 @@ import 'package:cops_and_robbers/features/chat/presentation/providers/chat_notif
 import 'package:cops_and_robbers/core/widgets/buttons/svg_icon_button.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/my_location_button.dart';
 import 'package:cops_and_robbers/core/widgets/chat/community_message_input.dart';
+import 'package:cops_and_robbers/features/game/presentation/widgets/participant_overlay.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/arrest_lock_overlay.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_fab_menu.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/google_map_view.dart';
@@ -1198,6 +1199,34 @@ void main() {
     );
   }
 
+  // 참가자 목록 앱바 왼쪽은 나가기가 아니라 뒤로가기 — 잘못 눌러 게임을 나가지 않게
+  testWidgets('participant_list_back_button_returns_to_map_when_tapped', (
+    tester,
+  ) async {
+    final start = DateTime.now().subtract(const Duration(seconds: 64));
+    container.read(gameParticipantNotifierProvider.notifier)
+      ..setGameStartTime(start.toUtc().toIso8601String())
+      ..updateSettings(policeWaitMinutes: 1, locationRevealIntervalMinutes: 3);
+    await mount(tester, size: const Size(393, 852));
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+
+    await tapFloatingMenuItem(tester, l10n.gameMenuParticipants);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(ParticipantOverlay), findsOneWidget);
+    expect(find.byTooltip(l10n.buttonLeave), findsNothing);
+
+    await tester.tap(
+      find.descendant(
+        of: find.byType(AppTopBar),
+        matching: find.byType(PreviousButton),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(ParticipantOverlay), findsNothing);
+    expect(find.byTooltip(l10n.buttonLeave), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('chat_app_bar_restores_game_controls_when_returning_to_map', (
     tester,
   ) async {
@@ -1610,8 +1639,9 @@ void main() {
     expect(jailButton, findsOneWidget);
     expect(qrButton, findsNothing);
     await tester.tap(
-      find.byWidgetPredicate(
-        (w) => w is SvgIconButton && w.assetPath == AppIcons.map,
+      find.descendant(
+        of: find.byType(AppTopBar),
+        matching: find.byType(PreviousButton),
       ),
     );
     await tester.pump();

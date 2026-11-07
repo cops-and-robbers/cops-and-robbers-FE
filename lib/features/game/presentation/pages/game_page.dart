@@ -2598,16 +2598,8 @@ class _GamePageState extends ConsumerState<GamePage>
                 right: 20.w,
                 bottom: actionButtonBottom,
                 child: Column(
+                  // 지도로 돌아가기는 앱바 뒤로가기가 맡는다
                   children: [
-                    SvgIconButton(
-                      assetPath: AppIcons.map,
-                      onPressed: () =>
-                          setState(() => _showParticipants = false),
-                      iconColor: _isDarkMode ? AppColors.green : AppColors.blue,
-                      backgroundColor: _isDarkMode ? AppColors.black : null,
-                      isDarkMode: _isDarkMode,
-                    ),
-                    SizedBox(height: AppSpacing.vertical8),
                     _buildQrButton(isArrestedNow: isArrestedNow),
                     SizedBox(height: AppSpacing.vertical8),
                     _buildChatButton(),
@@ -3170,15 +3162,21 @@ class _GamePageState extends ConsumerState<GamePage>
 
     return AppTopBar(
       isDarkMode: _isDarkMode,
-      leading: _showChat
+      // 채팅·참가자 목록 위에선 뒤로가기로 지도에 돌아간다 — 나가기를 두면 잘못 눌러 게임을 나간다
+      leading: _showChat || _showParticipants
           ? Tooltip(
               message: l10n.gameChatBackToMap,
               child: PreviousButton(
                 onPressed: () {
-                  ref
-                      .read(chatNotifierProvider.notifier)
-                      .updateSheetExpanded(false);
-                  setState(() => _showChat = false);
+                  if (_showChat) {
+                    ref
+                        .read(chatNotifierProvider.notifier)
+                        .updateSheetExpanded(false);
+                  }
+                  setState(() {
+                    _showChat = false;
+                    _showParticipants = false;
+                  });
                 },
                 color: _isDarkMode ? AppColors.black200 : AppColors.black800,
               ),
