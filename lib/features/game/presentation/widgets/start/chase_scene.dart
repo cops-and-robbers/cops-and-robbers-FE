@@ -43,15 +43,12 @@ class ChaseScene extends StatefulWidget {
   /// 게임 제한 시간. 출동 뒤 다시 보기는 카운트다운 자리에 남은 게임 시간을 보여 준다.
   final int? roundTimeMinutes;
 
-  /// 설명 화면(20초·탭)·다시 보기(탭)가 닫힐 때. 경찰 대기 화면은 탭으로 닫히지 않는다.
+  /// 설명 화면·다시 보기를 탭해 닫을 때. 저절로 닫히지 않고, 경찰 대기 화면은 탭으로도 닫히지 않는다.
   final VoidCallback? onClose;
 
   /// 지금 살아 있는 인게임 공지 문구. 지도에서 위에 뜨는 것과 같은 공지를
   /// 장면에서는 "게임 안내"의 한 장으로 규칙 앞에 넣어 함께 돌린다.
   final String? notice;
-
-  /// 규칙 4줄을 한 번씩 다 보여 주는 시간
-  static const explainerDuration = Duration(seconds: 20);
 
   /// 3초는 읽기도 전에 넘어가 산만했다
   static const ruleInterval = Duration(seconds: 5);
@@ -70,7 +67,6 @@ class _ChaseSceneState extends State<ChaseScene> {
   late final DateTime _openedAt = clock.now();
   late DateTime _now = _openedAt;
   Timer? _ticker;
-  bool _autoClosed = false;
   int _lastTickSecond = -1;
 
   /// 펼친 규칙을 읽는 동안 멈춘 시간. 규칙 회전 시계에서 뺀다.
@@ -143,19 +139,13 @@ class _ChaseSceneState extends State<ChaseScene> {
     if (notice != null && notice != oldWidget.notice) _addNotice(notice);
   }
 
-  /// 규칙 회전과 도둑 설명 자동 닫힘이 함께 쓰는 시계. 규칙을 펼쳐 읽는 동안은 멈춘다.
+  /// 규칙 회전 시계. 규칙을 펼쳐 읽는 동안은 멈춘다.
   Duration get _readClock =>
       (_ruleExpandedAt ?? _now).difference(_openedAt) - _rulePaused;
 
   void _tick() {
     if (!mounted) return;
     setState(() => _now = clock.now());
-    if (widget.mode == ChaseSceneMode.robberExplainer &&
-        !_autoClosed &&
-        _readClock >= ChaseScene.explainerDuration) {
-      _autoClosed = true;
-      widget.onClose?.call();
-    }
     final sec = _remainingSeconds;
     // 화면을 끈 채면 울리지 않는다 — Android는 멈춘 앱의 타이머도 돌아 주머니 속에서 진동한다
     final lifecycle = WidgetsBinding.instance.lifecycleState;
@@ -280,27 +270,6 @@ class _ChaseSceneState extends State<ChaseScene> {
                         color: _isPolice
                             ? AppColors.black500
                             : AppColors.black200,
-                      ),
-                    ),
-                  ),
-                // 다시 보기는 저절로 닫히지 않아 남은 시간 막대가 없다
-                if (widget.mode == ChaseSceneMode.robberExplainer)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    height: 3,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: FractionallySizedBox(
-                        widthFactor:
-                            (1 -
-                                    _readClock.inMilliseconds /
-                                        ChaseScene
-                                            .explainerDuration
-                                            .inMilliseconds)
-                                .clamp(0.0, 1.0),
-                        child: ColoredBox(color: _team),
                       ),
                     ),
                   ),

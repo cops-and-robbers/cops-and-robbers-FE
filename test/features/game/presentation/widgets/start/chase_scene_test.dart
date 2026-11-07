@@ -219,7 +219,8 @@ void main() {
   });
 
   // 규칙 4줄 × 5초
-  testWidgets('robber_explainer_closes_by_itself_when_twenty_seconds_pass', (
+  // 도둑 설명 화면은 저절로 닫히지 않는다 — 도둑이 누르거나 경찰이 출동할 때까지 남는다
+  testWidgets('robber_explainer_stays_open_when_twenty_seconds_pass', (
     tester,
   ) async {
     var closed = 0;
@@ -230,10 +231,9 @@ void main() {
       elapsed: const Duration(seconds: 4),
       onClose: () => closed++,
     );
-    await tester.pump(const Duration(seconds: 19, milliseconds: 900));
+    await advance(tester, const Duration(seconds: 40));
     expect(closed, 0);
-    await tester.pump(const Duration(milliseconds: 200));
-    expect(closed, 1);
+    expect(find.text('도둑 팀 미션'), findsOneWidget);
     await unmount(tester);
   });
 
@@ -863,32 +863,6 @@ void main() {
       await unmount(tester);
     },
   );
-
-  // 규칙을 펼쳐 읽는 동안에는 20초 자동 닫힘도 멈추고, 접으면 남은 시간만큼 이어서 센다
-  testWidgets('robber_explainer_waits_while_robber_reads_expanded_rule', (
-    tester,
-  ) async {
-    var closed = 0;
-    await pumpScene(
-      tester,
-      mode: ChaseSceneMode.robberExplainer,
-      isPolice: false,
-      elapsed: const Duration(minutes: 1),
-      onClose: () => closed++,
-    );
-    await advance(tester, ChaseScene.ruleInterval * 3); // 15초, 4/4 탈옥 규칙
-    const jailbreak = '잡히면 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥돼요';
-    await tester.tap(find.text(jailbreak));
-    await advance(tester, const Duration(seconds: 10)); // 펼친 채 25초
-    expect(closed, 0);
-
-    await tester.tap(find.text(jailbreak));
-    await advance(tester, const Duration(seconds: 4));
-    expect(closed, 0);
-    await advance(tester, const Duration(seconds: 2));
-    expect(closed, 1);
-    await unmount(tester);
-  });
 
   // 키 큰 폰에서도 공지가 와도 미션 카드 자리가 그대로다
   testWidgets(

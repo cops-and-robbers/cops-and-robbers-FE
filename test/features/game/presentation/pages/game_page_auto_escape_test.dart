@@ -929,8 +929,10 @@ void main() {
       setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
       await mount(tester, size: const Size(393, 852));
       final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-      // 설명 화면은 3.37초에 떠 20초 뒤 스스로 닫히고, 20초엔 신고 안내가 공지 배너에 뜬다
-      await advance(tester, const Duration(seconds: 21));
+      // 설명 화면은 저절로 닫히지 않는다 — 도둑이 5초쯤 눌러 닫는다. 20초엔 신고 안내가 공지 배너에 뜬다
+      await advance(tester, const Duration(seconds: 5));
+      await tester.tapAt(const Offset(30, 260));
+      await advance(tester, const Duration(seconds: 16));
       expect(find.text(l10n.gameEventStartReportTip), findsWidgets);
       expect(find.text(l10n.startRulesHint), findsNothing);
       // 30초엔 "게임 시작!" 공지가 이어진다(DEC-0138) — 그 배너도 덮지 않고 기다린다
@@ -951,8 +953,10 @@ void main() {
     (tester) async {
       setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
       await mount(tester, size: const Size(393, 852));
-      // 설명 화면이 닫히고(23.4초) 안내가 시작 공지 배너를 기다리는 동안 게임 화면이 닫힌다
-      await advance(tester, const Duration(seconds: 25));
+      // 도둑이 설명 화면을 닫고 안내가 시작 공지 배너를 기다리는 동안 게임 화면이 닫힌다
+      await advance(tester, const Duration(seconds: 5));
+      await tester.tapAt(const Offset(30, 260));
+      await advance(tester, const Duration(seconds: 20));
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 10));
       // 못 본 안내는 다음 게임에서 다시 뜰 수 있어야 한다
@@ -967,8 +971,10 @@ void main() {
     setFreshGame(team: 'ROBBER', policeWaitMinutes: 5);
     await mount(tester, size: const Size(393, 852));
     final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-    // 설명 화면이 닫히고(23.4초) 안내가 시작 공지 배너(38.8초까지)를 기다리는 중
-    await advance(tester, const Duration(seconds: 25));
+    // 도둑이 설명 화면을 닫고 안내가 시작 공지 배너(38.8초까지)를 기다리는 중
+    await advance(tester, const Duration(seconds: 5));
+    await tester.tapAt(const Offset(30, 260));
+    await advance(tester, const Duration(seconds: 20));
     socket.events.add(
       const GameEventModel(
         type: GameEventType.gameOver,
@@ -991,7 +997,8 @@ void main() {
         setFreshGame(team: 'ROBBER', policeWaitMinutes: 1);
         await mount(tester, size: const Size(393, 852));
         await advance(tester, const Duration(seconds: 5));
-        await tester.pump(const Duration(seconds: 40)); // 설명 화면은 닫히고 지도
+        await tester.tapAt(const Offset(30, 260)); // 도둑이 설명 화면을 닫는다
+        await tester.pump(const Duration(seconds: 40)); // 지도
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
         await tester.tap(find.byTooltip(l10n.titleGameRules));
         await tester.pump();

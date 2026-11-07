@@ -633,7 +633,7 @@ class _GamePageState extends ConsumerState<GamePage>
   /// "규칙은 오른쪽 위 ⓘ에서 다시 볼 수 있어요" — 기기당 한 번, 기존 위쪽 공지 배너로.
   ///
   /// 시작 시스템 메시지(20초 신고 안내)가 아직 공지 배너에 남아 있으면 내려간 뒤에 띄운다.
-  /// 도둑 설명 화면은 약 23.4초에 닫혀 그대로 띄우면 20초 안내(8.8초간)에 덮인다.
+  /// 도둑이 설명 화면을 일찍 닫으면 그대로 띄울 때 시작 공지 배너에 덮인다.
   Future<void> _showRulesHintOnce() async {
     if (_rulesHintRequested) return;
     _rulesHintRequested = true;
