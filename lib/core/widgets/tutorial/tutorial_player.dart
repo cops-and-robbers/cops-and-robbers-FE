@@ -287,7 +287,7 @@ class _TutorialPlayerState extends State<TutorialPlayer>
                     child: Transform.scale(
                       scale: _stage.art['sc'],
                       child: SvgPicture.asset(
-                        'assets/onboarding/onboarding4.svg',
+                        'assets/onboarding/onboarding_flag.svg',
                         width: 255,
                       ),
                     ),

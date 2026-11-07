@@ -9,7 +9,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const paths = [
-    'assets/onboarding/onboarding4.svg',
+    'assets/onboarding/onboarding_flag.svg',
   ];
 
   for (final path in paths) {

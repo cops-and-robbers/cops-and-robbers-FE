@@ -19,11 +19,9 @@
 /// 정리에서 지우지 않는다 (사용자 판단 2026-09-01). 배선할 때 상수를 추가한다.
 abstract final class AppIcons {
   static const String apple = 'assets/icons/icon_apple.svg';
-  static const String arrow = 'assets/icons/icon_arrow.svg';
   static const String bell = 'assets/icons/icon_bell.svg';
   static const String bellBlock = 'assets/icons/icon_bell_block.svg';
   static const String block = 'assets/icons/icon_block.svg';
-  static const String blog = 'assets/icons/blog.svg';
   static const String bulb = 'assets/icons/icon_bulb.svg';
   static const String camera = 'assets/icons/icon_camera.svg';
   static const String change = 'assets/icons/icon_change.svg';
@@ -41,35 +39,27 @@ abstract final class AppIcons {
   static const String date = 'assets/icons/icon_date.svg';
   static const String defaultLight = 'assets/icons/icon_default_light.svg';
   static const String delete = 'assets/icons/icon_delete.svg';
-  static const String discord = 'assets/icons/discord.svg';
   static const String down = 'assets/icons/icon_down.svg';
   static const String exclamationMark =
       'assets/icons/icon_exclamation_mark.svg';
-  static const String exit = 'assets/icons/icon_exit.svg';
   static const String flag = 'assets/icons/icon_flag.svg';
   static const String gameConsole = 'assets/icons/icon_game_console.svg';
-  static const String gameNotification =
-      'assets/icons/icon_game_notification.svg';
   static const String gameOut = 'assets/icons/icon_gameout.svg';
-  static const String github = 'assets/icons/github.svg';
   static const String google = 'assets/icons/icon_google.svg';
   static const String hamburger = 'assets/icons/icon_hamburger.svg';
   static const String headcount = 'assets/icons/icon_headcount.svg';
   static const String homeActive = 'assets/icons/icon_home_active.svg';
   static const String homeInactive = 'assets/icons/icon_home_inactive.svg';
   static const String info = 'assets/icons/icon_info.svg';
-  static const String instagram = 'assets/icons/instagram.svg';
   static const String instagramBlack = 'assets/icons/instagram_black.svg';
   static const String joiningGame = 'assets/icons/icon_joining_game.svg';
   static const String language = 'assets/icons/icon_language.svg';
   static const String likeOff = 'assets/icons/icon_like_off.svg';
   static const String likeOn = 'assets/icons/icon_like_on.svg';
-  static const String linkedin = 'assets/icons/linkedin.svg';
   static const String location = 'assets/icons/icon_location.svg';
   static const String locationPin = 'assets/icons/icon_location_pin.svg';
   static const String loudspeaker = 'assets/icons/Loudspeaker.svg';
   static const String mageLocationFill = 'assets/icons/mage_location-fill.svg';
-  static const String map = 'assets/icons/icon_map.svg';
   static const String grid = 'assets/icons/icon_grid.svg';
   static const String meatballs = 'assets/icons/icon_meatballs.svg';
   static const String mypageActive = 'assets/icons/icon_mypage_active.svg';
@@ -103,10 +93,8 @@ abstract final class AppIcons {
   static const String trash = 'assets/icons/icon_trash.svg';
   static const String upload = 'assets/icons/icon_upload.svg';
   static const String warningLight = 'assets/icons/icon_warning_light.svg';
-  static const String website = 'assets/icons/website.svg';
   static const String write = 'assets/icons/icon_write.svg';
   static const String wrongMark = 'assets/icons/icon_wrong mark.svg';
-  static const String youtube = 'assets/icons/youtube.svg';
   static const String youtubeBlack = 'assets/icons/youtube_black.svg';
   static const String zoneExit = 'assets/icons/icon_zone_exit.svg';
 
