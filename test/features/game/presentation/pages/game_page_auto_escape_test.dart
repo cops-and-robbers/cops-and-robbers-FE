@@ -987,9 +987,9 @@ void main() {
     await tester.pump(const Duration(seconds: 10));
   });
 
-  // ⓘ 규칙 다시 보기는 화면 위에 뜨는 다이얼로그다 — 출동 카운팅은 그보다도 위에 떠야 보인다
+  // 출동이면 경찰·도둑 상관없이 인게임(지도)으로 간다 — ⓘ 규칙 다시 보기를 열어 둬도 카운팅이 닫는다
   testWidgets(
-    'countdown_covers_rules_replay_when_dispatch_nears_while_it_is_open',
+    'rules_replay_closes_and_map_remains_when_countdown_runs_while_it_is_open',
     (tester) async {
       await withClock(gameClock(tester), () async {
         // ⓘ 위치 안내는 지난 게임에서 이미 봤다 — 안내가 ⓘ를 가리면 누를 수 없다
@@ -1003,29 +1003,42 @@ void main() {
         await tester.tap(find.byTooltip(l10n.titleGameRules));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
-        bool replayOpen() => find
-            .byWidgetPredicate(
-              (w) => w is ChaseScene && w.mode == ChaseSceneMode.rulesReplay,
-            )
-            .evaluate()
-            .isNotEmpty;
-        expect(replayOpen(), isTrue);
+        expect(find.byType(ChaseScene), findsOneWidget); // ⓘ 화면
 
-        for (var i = 0; i < 150 && find.text('5').evaluate().isEmpty; i++) {
+        for (
+          var i = 0;
+          i < 150 && find.byType(DispatchCountdown).evaluate().isEmpty;
+          i++
+        ) {
           await tester.pump(const Duration(milliseconds: 100));
         }
+        await advance(tester, const Duration(milliseconds: 500)); // 닫힘 애니메이션
         expect(find.byType(DispatchCountdown), findsOneWidget);
-        // 카운팅이 맨 위면 빈 곳을 눌러도 아래 ⓘ 화면까지 닿지 않는다
-        await tester.tapAt(const Offset(30, 260));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 400)); // 닫힘 애니메이션이 끝날 만큼
-        expect(replayOpen(), isTrue);
-        await advance(tester, const Duration(seconds: 8));
+        expect(find.byType(ChaseScene), findsNothing); // 카운팅이 ⓘ를 닫았다
+        await advance(tester, const Duration(seconds: 9));
         expect(find.byType(DispatchCountdown), findsNothing);
+        expect(find.byType(ChaseScene), findsNothing); // 끝나면 지도
         await tester.pump(const Duration(seconds: 40));
       });
     },
   );
+
+  // 도둑이 설명 화면을 열어 둔 채 출동하면 카운팅이 끝난 뒤 지도다(설명 화면이 다시 뜨지 않는다)
+  testWidgets('robber_explainer_ends_in_map_when_countdown_finishes', (
+    tester,
+  ) async {
+    await withClock(gameClock(tester), () async {
+      setFreshGame(team: 'ROBBER', policeWaitMinutes: 1);
+      await mount(tester, size: const Size(393, 852));
+      await advance(tester, const Duration(seconds: 5));
+      expect(find.byType(ChaseScene), findsOneWidget); // 설명 화면을 열어 둔다
+      await tester.pump(const Duration(seconds: 50));
+      await advance(tester, const Duration(seconds: 10)); // 출동 + "출동!" + 원형 열기
+      expect(find.byType(DispatchCountdown), findsNothing);
+      expect(find.byType(ChaseScene), findsNothing);
+      await tester.pump(const Duration(seconds: 40));
+    });
+  });
 
   testWidgets('info_button_opens_rules_scene_when_normal_game', (tester) async {
     // 기본 하네스: 1분 전에 시작한 도둑, 대기 없음 → 시작 장면 없이 지도

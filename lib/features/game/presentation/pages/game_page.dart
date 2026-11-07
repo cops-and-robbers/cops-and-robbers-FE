@@ -247,9 +247,8 @@ class _GamePageState extends ConsumerState<GamePage>
   Timer? _policeReleaseTimer;
   Timer? _dispatchCountdownTimer;
 
-  /// 출동 카운팅은 앱 맨 위 층(루트 오버레이)에 띄운다 — ⓘ 규칙 다시 보기 같은 다이얼로그가
-  /// 게임 화면 위에 열려 있어도 그보다 위에 보여야 한다
-  OverlayEntry? _countdownEntry;
+  /// 출동 카운팅을 띄운 뒤인지 — 뜨는 순간 한 번만 지도 위를 정리한다
+  bool _countdownShown = false;
   DateTime? _introStartTime;
   DateTime? _policeReleaseAt;
   int _introWaitMinutes = 0;
@@ -476,10 +475,6 @@ class _GamePageState extends ConsumerState<GamePage>
     _gameStateSyncRetryTimer?.cancel();
     _policeReleaseTimer?.cancel();
     _dispatchCountdownTimer?.cancel();
-    _countdownEntry
-      ?..remove()
-      ..dispose();
-    _countdownEntry = null;
     _rulesHintTimer?.cancel();
     _intro
       ?..removeListener(_onIntroChanged)
@@ -560,34 +555,26 @@ class _GamePageState extends ConsumerState<GamePage>
     setState(() {});
     if (_intro?.hintDue ?? false) unawaited(_showRulesHintOnce());
     _restartNoticeWhenSceneOpens();
-    // 빌드 도중에 불릴 수 있어 오버레이는 다음 프레임에 붙이고 뗀다
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _syncCountdownOverlay(),
-    );
+    final countdown = _intro?.showDispatchCountdown ?? false;
+    if (countdown && !_countdownShown) _clearForDispatch();
+    _countdownShown = countdown;
   }
 
-  void _syncCountdownOverlay() {
-    if (!mounted) return;
-    final intro = _intro;
-    final releaseAt = _policeReleaseAt;
-    final show =
-        intro != null && intro.showDispatchCountdown && releaseAt != null;
-    if (show && _countdownEntry == null) {
-      final entry = OverlayEntry(
-        builder: (_) => DispatchCountdown(
-          key: const ValueKey('dispatchCountdown'),
-          releaseAt: releaseAt,
-          onDone: intro.dispatchCountdownDone,
-        ),
-      );
-      _countdownEntry = entry;
-      Overlay.of(context, rootOverlay: true).insert(entry);
-    } else if (!show && _countdownEntry != null) {
-      _countdownEntry
-        ?..remove()
-        ..dispose();
-      _countdownEntry = null;
-    }
+  /// 출동이면 경찰·도둑 상관없이 카운팅이 끝난 뒤 인게임(지도)이 나와야 한다 —
+  /// 게임 화면 위에 열린 다이얼로그(ⓘ 규칙 다시 보기·나가기 확인 등)를 닫고 목록·채팅도 접는다
+  void _clearForDispatch() {
+    setState(() {
+      _showParticipants = false;
+      _showChat = false;
+    });
+    // 리스너가 빌드 도중에 불릴 수 있어 다이얼로그는 다음 프레임에 닫는다
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).popUntil((route) => route is! PopupRoute);
+    });
   }
 
   /// 대기·설명 장면이 막 열렸는지 — 열리는 순간 한 번만 공지 시간을 다시 잡는다.
@@ -2849,8 +2836,8 @@ class _GamePageState extends ConsumerState<GamePage>
             else
               const SizedBox.shrink(),
 
-            /// index 11: 역할 배너 (가장 위, if/else로 개수 고정)
-            /// 출동 카운팅은 여기가 아니라 루트 오버레이에 띄운다([_syncCountdownOverlay]).
+            /// index 11: 역할 배너·출동 카운팅 (가장 위, if/else로 개수 고정)
+            /// 카운팅은 장면·지도를 모두 덮는다. 뜰 때 위에 열린 다이얼로그는 닫는다([_clearForDispatch]).
             if (intro != null && intro.showRoleBanner)
               Positioned.fill(
                 child: RoleBanner(
@@ -2858,6 +2845,16 @@ class _GamePageState extends ConsumerState<GamePage>
                   isPolice: GameTeam.isPolice(widget.team),
                   onRevealNext: intro.roleBannerLeaving,
                   onDone: intro.roleBannerDone,
+                ),
+              )
+            else if (intro != null &&
+                intro.showDispatchCountdown &&
+                _policeReleaseAt != null)
+              Positioned.fill(
+                child: DispatchCountdown(
+                  key: const ValueKey('dispatchCountdown'),
+                  releaseAt: _policeReleaseAt!,
+                  onDone: intro.dispatchCountdownDone,
                 ),
               )
             else
