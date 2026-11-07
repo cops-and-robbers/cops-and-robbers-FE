@@ -1144,10 +1144,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonStartGame => '게임 시작';
 
   @override
-  String get buttonCancelReady => '준비 취소';
+  String get addSlotChangeRole => '역할 바꾸기';
 
   @override
-  String get buttonReady => '준비';
+  String get dialogStartGameTitle => '게임을 시작할까요?';
+
+  @override
+  String dialogStartGamePoliceCount(int count) {
+    return '경찰 $count명';
+  }
+
+  @override
+  String dialogStartGameRobberCount(int count) {
+    return '도둑 $count명';
+  }
 
   @override
   String get pageZonePreviewTitle => '게임 구역';
@@ -1363,7 +1373,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String teamSectionCurrentCount(int count) {
-    return '현재 $count명';
+    return '현재 인원 $count명';
   }
 
   @override
@@ -2409,13 +2419,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요';
 
   @override
-  String get errorCodeNotAllReady => '모든 참가자가 준비 상태여야 게임을 시작할 수 있어요';
-
-  @override
   String get errorCodeNotRobberTeam => '도둑 팀만 위치를 전송할 수 있어요';
-
-  @override
-  String get errorCodeHostCannotUnready => '방장은 항상 준비 상태여야 해요';
 
   @override
   String get errorCodeParticipantGameMismatch => '경찰과 도둑이 서로 다른 게임에 참여하고 있어요';

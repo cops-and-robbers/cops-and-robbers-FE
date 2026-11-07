@@ -1145,10 +1145,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get buttonStartGame => 'ゲーム開始';
 
   @override
-  String get buttonCancelReady => '準備取消';
+  String get addSlotChangeRole => 'チーム変更';
 
   @override
-  String get buttonReady => '準備';
+  String get dialogStartGameTitle => 'ゲームを開始しますか？';
+
+  @override
+  String dialogStartGamePoliceCount(int count) {
+    return '警察$count人';
+  }
+
+  @override
+  String dialogStartGameRobberCount(int count) {
+    return '泥棒$count人';
+  }
 
   @override
   String get pageZonePreviewTitle => 'ゲームエリア';
@@ -2410,13 +2420,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'ゲームを開始するには、警察と泥棒チームにそれぞれ1名以上の参加者が必要です';
 
   @override
-  String get errorCodeNotAllReady => 'すべての参加者が準備完了状態でないとゲームを開始できません';
-
-  @override
   String get errorCodeNotRobberTeam => '泥棒チームのみ位置を送信できます';
-
-  @override
-  String get errorCodeHostCannotUnready => 'ホストは常に準備完了状態でなければなりません';
 
   @override
   String get errorCodeParticipantGameMismatch => '警察と泥棒が異なるゲームに参加しています';

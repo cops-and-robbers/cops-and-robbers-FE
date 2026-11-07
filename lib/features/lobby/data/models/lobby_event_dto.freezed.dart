@@ -450,7 +450,6 @@ mixin _$LobbyParticipantInfo {
   int get participantId => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
   String get team => throw _privateConstructorUsedError;
-  bool get isReady => throw _privateConstructorUsedError;
 
   /// Serializes this LobbyParticipantInfo to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -469,7 +468,7 @@ abstract class $LobbyParticipantInfoCopyWith<$Res> {
     $Res Function(LobbyParticipantInfo) then,
   ) = _$LobbyParticipantInfoCopyWithImpl<$Res, LobbyParticipantInfo>;
   @useResult
-  $Res call({int participantId, String nickname, String team, bool isReady});
+  $Res call({int participantId, String nickname, String team});
 }
 
 /// @nodoc
@@ -493,7 +492,6 @@ class _$LobbyParticipantInfoCopyWithImpl<
     Object? participantId = null,
     Object? nickname = null,
     Object? team = null,
-    Object? isReady = null,
   }) {
     return _then(
       _value.copyWith(
@@ -509,10 +507,6 @@ class _$LobbyParticipantInfoCopyWithImpl<
                 ? _value.team
                 : team // ignore: cast_nullable_to_non_nullable
                       as String,
-            isReady: null == isReady
-                ? _value.isReady
-                : isReady // ignore: cast_nullable_to_non_nullable
-                      as bool,
           )
           as $Val,
     );
@@ -528,7 +522,7 @@ abstract class _$$LobbyParticipantInfoImplCopyWith<$Res>
   ) = __$$LobbyParticipantInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int participantId, String nickname, String team, bool isReady});
+  $Res call({int participantId, String nickname, String team});
 }
 
 /// @nodoc
@@ -548,7 +542,6 @@ class __$$LobbyParticipantInfoImplCopyWithImpl<$Res>
     Object? participantId = null,
     Object? nickname = null,
     Object? team = null,
-    Object? isReady = null,
   }) {
     return _then(
       _$LobbyParticipantInfoImpl(
@@ -564,10 +557,6 @@ class __$$LobbyParticipantInfoImplCopyWithImpl<$Res>
             ? _value.team
             : team // ignore: cast_nullable_to_non_nullable
                   as String,
-        isReady: null == isReady
-            ? _value.isReady
-            : isReady // ignore: cast_nullable_to_non_nullable
-                  as bool,
       ),
     );
   }
@@ -580,7 +569,6 @@ class _$LobbyParticipantInfoImpl implements _LobbyParticipantInfo {
     required this.participantId,
     required this.nickname,
     required this.team,
-    required this.isReady,
   });
 
   factory _$LobbyParticipantInfoImpl.fromJson(Map<String, dynamic> json) =>
@@ -592,12 +580,10 @@ class _$LobbyParticipantInfoImpl implements _LobbyParticipantInfo {
   final String nickname;
   @override
   final String team;
-  @override
-  final bool isReady;
 
   @override
   String toString() {
-    return 'LobbyParticipantInfo(participantId: $participantId, nickname: $nickname, team: $team, isReady: $isReady)';
+    return 'LobbyParticipantInfo(participantId: $participantId, nickname: $nickname, team: $team)';
   }
 
   @override
@@ -609,14 +595,12 @@ class _$LobbyParticipantInfoImpl implements _LobbyParticipantInfo {
                 other.participantId == participantId) &&
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
-            (identical(other.team, team) || other.team == team) &&
-            (identical(other.isReady, isReady) || other.isReady == isReady));
+            (identical(other.team, team) || other.team == team));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, participantId, nickname, team, isReady);
+  int get hashCode => Object.hash(runtimeType, participantId, nickname, team);
 
   /// Create a copy of LobbyParticipantInfo
   /// with the given fields replaced by the non-null parameter values.
@@ -641,7 +625,6 @@ abstract class _LobbyParticipantInfo implements LobbyParticipantInfo {
     required final int participantId,
     required final String nickname,
     required final String team,
-    required final bool isReady,
   }) = _$LobbyParticipantInfoImpl;
 
   factory _LobbyParticipantInfo.fromJson(Map<String, dynamic> json) =
@@ -653,8 +636,6 @@ abstract class _LobbyParticipantInfo implements LobbyParticipantInfo {
   String get nickname;
   @override
   String get team;
-  @override
-  bool get isReady;
 
   /// Create a copy of LobbyParticipantInfo
   /// with the given fields replaced by the non-null parameter values.

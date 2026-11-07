@@ -9,6 +9,7 @@ import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/participant_status.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 
 /// 참가자 카드 위젯
@@ -19,9 +20,9 @@ import '../../../lobby/data/models/lobby_event_dto.dart';
 /// SVG 매핑 규칙:
 /// - 게임방 도둑 수감([gameStatus] == `"JAILED"`) → `jailed.svg`
 /// - 게임방 그 외 (ALIVE / POLICE_WAITING) → `ready.svg`
-/// - 대기방 ([gameStatus] == null) → `isReady` 기반 `ready.svg` / `not_ready.svg`
+/// - 대기방 ([gameStatus] == null) → `ready.svg`
 ///
-/// 레디/비레디의 시각 구분은 SVG 파일 자체가 담당 (Opacity 미사용).
+/// 대기방에는 준비 상태가 없어(#661) 모두 같은 모습으로 보인다.
 class ParticipantCard extends StatelessWidget {
   const ParticipantCard({
     required this.participant,
@@ -116,29 +117,16 @@ class ParticipantCard extends StatelessWidget {
 
   /// 팀과 상태에 맞는 캐릭터 SVG 경로.
   ///
-  /// 게임 시작 후에는 백엔드가 `isReady` 를 리셋(혹은 무의미해짐)하므로
-  /// 게임방 컨텍스트(gameStatus != null)에서는 `isReady` 를 보지 않는다.
-  /// JAILED 도둑만 수감 에셋, 나머지(ALIVE/POLICE_WAITING)는 활성으로 표시.
-  ///
-  /// 대기방에서는 방장이 레디 버튼이 없으므로 항상 레디로 취급한다.
+  /// JAILED 도둑만 수감 에셋이고, 나머지는 대기방과 게임방 모두 활성 모습이다.
   String _resolveCharacterAssetPath() {
     final team = GameTeam.toLowerKey(participant.team);
-
-    // 게임방 컨텍스트
-    if (gameStatus != null) {
-      if (gameStatus == ParticipantStatus.jailed && GameTeam.isRobber(team)) {
-        return characterAssetPath(
-          team: GameTeam.toLowerKey(GameTeam.robber),
-          state: 'jailed',
-        );
-      }
-      return characterAssetPath(team: team, state: 'ready');
+    if (gameStatus == ParticipantStatus.jailed && GameTeam.isRobber(team)) {
+      return characterAssetPath(
+        team: GameTeam.toLowerKey(GameTeam.robber),
+        state: 'jailed',
+      );
     }
-
-    // 대기방 컨텍스트 — isReady 기반 분기
-    final isReady = isHost || participant.isReady;
-    final state = isReady ? 'ready' : 'not_ready';
-    return characterAssetPath(team: team, state: state);
+    return characterAssetPath(team: team, state: 'ready');
   }
 }
 
@@ -156,6 +144,7 @@ class AddSlotCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final labelColor = isDarkMode ? AppColors.black600 : AppColors.black400;
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -169,16 +158,28 @@ class AddSlotCard extends StatelessWidget {
                 color: isDarkMode ? AppColors.black800 : AppColors.black100,
                 borderRadius: BorderRadius.circular(8.r),
               ),
-              child: Center(
-                child: SvgPicture.asset(
-                  AppIcons.change,
-                  width: 24.w,
-                  height: 24.w,
-                  colorFilter: ColorFilter.mode(
-                    isDarkMode ? AppColors.black600 : AppColors.black400,
-                    BlendMode.srcIn,
+              // 아이콘만으로는 팀을 옮기는 칸인지 몰라 라벨을 붙인다(#661 피그마 9085:24787)
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    AppIcons.change,
+                    width: 24.w,
+                    height: 24.w,
+                    colorFilter: ColorFilter.mode(labelColor, BlendMode.srcIn),
                   ),
-                ),
+                  SizedBox(height: 5.h),
+                  // 칸 높이가 고정이라 큰 글씨 설정에서도 한 줄로 두고 넘치면 줄인다
+                  Text(
+                    AppLocalizations.of(context).addSlotChangeRole,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.tag10Semibold.copyWith(
+                      color: labelColor,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

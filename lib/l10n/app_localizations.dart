@@ -2192,17 +2192,29 @@ abstract class AppLocalizations {
   /// **'게임 시작'**
   String get buttonStartGame;
 
-  /// 대기실 — 준비 취소 버튼
+  /// 대기실 — 다른 팀 칸 맨 앞 + 칸 라벨. 누르면 그 팀으로 옮긴다 (#661)
   ///
   /// In ko, this message translates to:
-  /// **'준비 취소'**
-  String get buttonCancelReady;
+  /// **'역할 바꾸기'**
+  String get addSlotChangeRole;
 
-  /// 대기실 — 준비 버튼
+  /// 대기실 — 방장이 게임 시작을 누르면 뜨는 확인창 제목 (#661)
   ///
   /// In ko, this message translates to:
-  /// **'준비'**
-  String get buttonReady;
+  /// **'게임을 시작할까요?'**
+  String get dialogStartGameTitle;
+
+  /// 대기실 — 시작 확인창 경찰 캐릭터 아래 인원 (#661)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 {count}명'**
+  String dialogStartGamePoliceCount(int count);
+
+  /// 대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 {count}명'**
+  String dialogStartGameRobberCount(int count);
 
   /// 구역 미리보기 페이지 타이틀
   ///
@@ -2603,7 +2615,7 @@ abstract class AppLocalizations {
   /// 팀 섹션 — 현재 인원수 표기
   ///
   /// In ko, this message translates to:
-  /// **'현재 {count}명'**
+  /// **'현재 인원 {count}명'**
   String teamSectionCurrentCount(int count);
 
   /// 대기실 구역 카드 섹션 타이틀
@@ -4573,23 +4585,11 @@ abstract class AppLocalizations {
   /// **'게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요'**
   String get errorCodeInvalidTeamComposition;
 
-  /// No description provided for @errorCodeNotAllReady.
-  ///
-  /// In ko, this message translates to:
-  /// **'모든 참가자가 준비 상태여야 게임을 시작할 수 있어요'**
-  String get errorCodeNotAllReady;
-
   /// No description provided for @errorCodeNotRobberTeam.
   ///
   /// In ko, this message translates to:
   /// **'도둑 팀만 위치를 전송할 수 있어요'**
   String get errorCodeNotRobberTeam;
-
-  /// No description provided for @errorCodeHostCannotUnready.
-  ///
-  /// In ko, this message translates to:
-  /// **'방장은 항상 준비 상태여야 해요'**
-  String get errorCodeHostCannotUnready;
 
   /// No description provided for @errorCodeParticipantGameMismatch.
   ///

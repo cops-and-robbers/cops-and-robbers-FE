@@ -13,7 +13,7 @@ part 'lobby_info_response.g.dart';
 /// {
 ///   "myParticipantId": 1,
 ///   "hostParticipantId": 1,
-///   "participants": [{ "participantId": 1, "nickname": "...", "team": "POLICE", "isReady": false }]
+///   "participants": [{ "participantId": 1, "nickname": "...", "team": "POLICE" }]
 /// }
 /// ```
 ///

@@ -225,6 +225,15 @@ class AppTextStyles {
     letterSpacing: -0.32,
   );
 
+  /// Tag SemiBold - 대기실 + 칸 "역할 바꾸기" 라벨 (10px SemiBold, 피그마 tag_10px_semi)
+  /// Line Height: 100%, Letter Spacing: -0.32px
+  static TextStyle get tag10Semibold => TextStyle(
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 10.sp,
+    height: 1.0,
+    letterSpacing: -0.32,
+  );
+
   /// Tag Bold - 강조 태그 (10px Bold)
   /// Line Height: 100%, Letter Spacing: -0.32px
   static TextStyle get tag10Bold => TextStyle(
