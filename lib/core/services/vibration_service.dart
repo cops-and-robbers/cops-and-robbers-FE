@@ -147,6 +147,17 @@ class VibrationService {
     VibrationPatterns.zoneExitIntensities,
   );
 
+  /// 구역 축소 진동 (#668)
+  void zoneShrink({required bool isFinal}) => isFinal
+      ? _vibratePattern(
+          VibrationPatterns.zoneShrinkFinalPattern,
+          VibrationPatterns.zoneShrinkFinalIntensities,
+        )
+      : _vibratePattern(
+          VibrationPatterns.zoneShrinkPattern,
+          VibrationPatterns.zoneShrinkIntensities,
+        );
+
   /// 게임 종료 진동
   void gameEnd() => _vibratePattern(
     VibrationPatterns.gameEndPattern,

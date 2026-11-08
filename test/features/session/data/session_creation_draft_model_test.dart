@@ -27,4 +27,17 @@ void main() {
     final restored = SessionCreationDraftModel.fromJson(const {});
     expect(restored.areaType, GameAreaType.circle);
   });
+
+  test('draft_keeps_shrink_on_when_host_leaves_and_comes_back', () {
+    // 확인 화면에서 구역 축소를 켜 두고 앱을 나갔다 돌아와도 켜져 있어야 한다 (#668)
+    const draft = SessionCreationDraftModel(shrinkEnabled: true);
+    expect(
+      SessionCreationDraftModel.fromJson(draft.toJson()).shrinkEnabled,
+      isTrue,
+    );
+  });
+
+  test('legacy_draft_without_shrink_field_starts_with_shrink_off', () {
+    expect(SessionCreationDraftModel.fromJson(const {}).shrinkEnabled, isFalse);
+  });
 }

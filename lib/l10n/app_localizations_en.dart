@@ -1817,6 +1817,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lockScreenLocationReveal => 'Location reveal';
 
   @override
+  String get lockScreenShrink => 'Area shrink';
+
+  @override
+  String lockScreenShrinkAt(String time) {
+    return 'Area shrink at $time';
+  }
+
+  @override
   String get lockScreenGameOver => 'Game over';
 
   @override
@@ -2619,6 +2627,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeNotJailed => 'You can only escape from jail';
+
+  @override
+  String get errorCodeShrinkRequiresCircleArea =>
+      'Shrinking area only works with circle areas';
+
+  @override
+  String get errorCodeInvalidShrinkFinalRadius =>
+      'The shrinking radius doesn\'t fit. Please check the area again';
+
+  @override
+  String get errorCodeForceArrestNotAllowedInEventGame =>
+      'Not available in event games';
+
+  @override
+  String get shrinkAutoOffSnackbar =>
+      'The area got smaller, so shrinking area is off';
+
+  @override
+  String get shrinkTitle => 'Shrinking area';
+
+  @override
+  String get shrinkDescOff => 'The area shrinks over time';
+
+  @override
+  String shrinkDescOn(String start, String end) {
+    return 'Shrinks $start → $end';
+  }
+
+  @override
+  String get shrinkLockTooSmall => 'The area is too small';
+
+  @override
+  String get shrinkLockNotCircle => 'Circle areas only';
+
+  @override
+  String get shrinkPinHint =>
+      'Shrinking area isn\'t available for areas drawn with pins';
+
+  @override
+  String gameShrinkNotice(int stage) {
+    return 'The area got smaller ($stage/4)';
+  }
+
+  @override
+  String gameRevealShrinkCountdown(String reveal, String shrink) {
+    return 'Reveal $reveal | Shrink $shrink';
+  }
+
+  @override
+  String get gameShrinkFinalNotice =>
+      'This is the final area. It won\'t shrink anymore';
+
+  @override
+  String get pingOutsideShrunkZone => 'You can\'t ping outside the shrunk area';
+
+  @override
+  String zoneWarnStatus(int count, int max, String formatted) {
+    return 'Warning $count/$max · next in $formatted';
+  }
+
+  @override
+  String gameEventForcedArrestNotice(String robberNickname) {
+    return '[$robberNickname] was caught for staying outside the game area too long!';
+  }
 
   @override
   String get errorCodePoliceWaitingTime =>

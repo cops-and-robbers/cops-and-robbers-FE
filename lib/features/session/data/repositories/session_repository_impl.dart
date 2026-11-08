@@ -28,6 +28,9 @@ class SessionRepositoryImpl implements SessionRepository {
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,
     required int maxParticipants,
+
+    /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
+    int? shrinkFinalRadiusInMeters,
   }) async {
     final areaRequest = area.toRequestModel();
 
@@ -39,6 +42,7 @@ class SessionRepositoryImpl implements SessionRepository {
           locationRevealIntervalMinutes: locationRevealIntervalMinutes,
           policeWaitMinutes: policeWaitMinutes,
           maxParticipants: maxParticipants,
+          shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
         ),
       );
 

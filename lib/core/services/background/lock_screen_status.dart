@@ -22,6 +22,9 @@ class LockScreenStatus {
     required this.isRobberTeam,
     required this.teamLabel,
     required this.localeCode,
+    this.nextShrinkAt,
+    this.shrinkText,
+    this.shrinkLabel,
   });
 
   /// 게임 시작 시각 — iOS 진행 막대(시작~종료)를 OS가 채운다.
@@ -38,6 +41,15 @@ class LockScreenStatus {
   final String title;
   final String? robbersText;
   final String? revealText;
+
+  /// 구역 축소를 켠 게임의 다음 축소 시각 (#668). 없으면 축소 줄을 숨긴다(꺼짐·최종 구역).
+  final DateTime? nextShrinkAt;
+
+  /// Android 본문용 "10:15 구역 축소"
+  final String? shrinkText;
+
+  /// iOS 카드·아일랜드의 카운트다운 앞 라벨
+  final String? shrinkLabel;
   final String remainingTimeLabel;
   final String remainingRobbersLabel;
   final String locationRevealLabel;
@@ -69,6 +81,9 @@ class LockScreenStatus {
     'isRobberTeam': isRobberTeam,
     'teamLabel': teamLabel,
     'localeCode': localeCode,
+    'nextShrinkAtMs': nextShrinkAt?.millisecondsSinceEpoch,
+    'shrinkText': shrinkText,
+    'shrinkLabel': shrinkLabel,
   };
 
   @override

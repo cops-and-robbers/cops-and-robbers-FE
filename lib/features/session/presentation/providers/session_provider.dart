@@ -82,6 +82,9 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,
     required int maxParticipants,
+
+    /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
+    int? shrinkFinalRadiusInMeters,
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -93,6 +96,7 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
             locationRevealIntervalMinutes: locationRevealIntervalMinutes,
             policeWaitMinutes: policeWaitMinutes,
             maxParticipants: maxParticipants,
+            shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
           );
     });
   }

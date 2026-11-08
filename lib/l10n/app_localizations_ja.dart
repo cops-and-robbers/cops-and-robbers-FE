@@ -1705,6 +1705,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lockScreenLocationReveal => '位置公開';
 
   @override
+  String get lockScreenShrink => 'エリア縮小';
+
+  @override
+  String lockScreenShrinkAt(String time) {
+    return '$time エリア縮小';
+  }
+
+  @override
   String get lockScreenGameOver => 'ゲーム終了';
 
   @override
@@ -2433,6 +2441,64 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeNotJailed => '収監中のみ脱獄できます';
+
+  @override
+  String get errorCodeShrinkRequiresCircleArea => 'エリア縮小は円形エリアでのみ使えます';
+
+  @override
+  String get errorCodeInvalidShrinkFinalRadius => '縮小半径が合いません。エリアをもう一度確認してください';
+
+  @override
+  String get errorCodeForceArrestNotAllowedInEventGame => 'イベントゲームでは使えません';
+
+  @override
+  String get shrinkAutoOffSnackbar => 'エリアが小さくなったため、エリア縮小をオフにしました';
+
+  @override
+  String get shrinkTitle => 'エリア縮小';
+
+  @override
+  String get shrinkDescOff => 'エリアが少しずつ狭まります';
+
+  @override
+  String shrinkDescOn(String start, String end) {
+    return '$start → $endまで縮小';
+  }
+
+  @override
+  String get shrinkLockTooSmall => 'エリアが小さくて使えません';
+
+  @override
+  String get shrinkLockNotCircle => '円形エリアのみ使えます';
+
+  @override
+  String get shrinkPinHint => 'ピンで描いたエリアではエリア縮小を使えません';
+
+  @override
+  String gameShrinkNotice(int stage) {
+    return 'エリアが狭くなりました ($stage/4)';
+  }
+
+  @override
+  String gameRevealShrinkCountdown(String reveal, String shrink) {
+    return '位置公開 $reveal | 縮小 $shrink';
+  }
+
+  @override
+  String get gameShrinkFinalNotice => '最後のエリアです。これ以上狭くなりません';
+
+  @override
+  String get pingOutsideShrunkZone => '狭くなったエリアの外にはピンを置けません';
+
+  @override
+  String zoneWarnStatus(int count, int max, String formatted) {
+    return '警告 $count/$max · 次の警告まで $formatted';
+  }
+
+  @override
+  String gameEventForcedArrestNotice(String robberNickname) {
+    return '[$robberNickname]さんはエリアの外に長くいたため捕まりました!';
+  }
 
   @override
   String get errorCodePoliceWaitingTime => '警察は待機時間中、泥棒を逮捕できません';

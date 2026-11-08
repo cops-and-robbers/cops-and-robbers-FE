@@ -3,6 +3,7 @@ import 'package:cops_and_robbers/core/widgets/indicators/step_indicator.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/session_creation_flow_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
 // ignore: depend_on_referenced_packages
@@ -171,4 +172,45 @@ void main() {
     expect(find.byType(SessionCreationFlowPage), findsNothing);
     expect(find.text('start'), findsOneWidget);
   });
+
+  // 구역 축소 카드는 확인 화면 맨 위, 처음엔 꺼져 있다 (#668 시안)
+  testWidgets('confirm_shows_shrink_card_above_zone_card_turned_off', (
+    tester,
+  ) async {
+    await _finishBothMaps(tester);
+
+    final shrink = find.text('구역 축소');
+    expect(shrink, findsOneWidget);
+    expect(find.text('구역이 점점 줄어들어요'), findsOneWidget);
+    expect(
+      tester.getTopLeft(shrink).dy,
+      lessThan(tester.getTopLeft(find.text('플레이그라운드')).dy),
+    );
+  });
+
+  testWidgets('turning_shrink_on_shows_how_far_it_shrinks', (tester) async {
+    await _finishBothMaps(tester);
+
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('→'), findsOneWidget);
+    expect(find.text('구역이 점점 줄어들어요'), findsNothing);
+  });
+
+  // 핀으로 그린 뒤에야 잠긴 걸 알면 다시 그려야 하니 고르는 순간 알려 준다 (#668)
+  testWidgets('choosing_pins_warns_that_shrinking_is_unavailable', (
+    tester,
+  ) async {
+    await pumpCreationFlow(tester);
+    await tester.tap(find.text('start'));
+    await tester.pumpAndSettle();
+    expect(find.text('핀으로 그리면 구역 축소를 쓸 수 없어요'), findsNothing);
+
+    await tester.tap(find.text('핀으로 설정'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('핀으로 그리면 구역 축소를 쓸 수 없어요'), findsOneWidget);
+  });
 }
+

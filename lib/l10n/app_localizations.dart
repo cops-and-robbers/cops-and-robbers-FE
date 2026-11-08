@@ -3248,6 +3248,18 @@ abstract class AppLocalizations {
   /// **'위치 공개'**
   String get lockScreenLocationReveal;
 
+  /// No description provided for @lockScreenShrink.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소'**
+  String get lockScreenShrink;
+
+  /// 잠금 화면 — 다음 구역 축소 시각 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 구역 축소'**
+  String lockScreenShrinkAt(String time);
+
   /// 잠금 화면 게임 현황 — 종료 시각이 지난 뒤(앱이 종료 신호를 못 보낸 경우) 표시 (iOS Live Activity)
   ///
   /// In ko, this message translates to:
@@ -4614,6 +4626,102 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'수감된 상태에서만 탈옥할 수 있어요'**
   String get errorCodeNotJailed;
+
+  /// No description provided for @errorCodeShrinkRequiresCircleArea.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소는 원형 구역에서만 쓸 수 있어요'**
+  String get errorCodeShrinkRequiresCircleArea;
+
+  /// No description provided for @errorCodeInvalidShrinkFinalRadius.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소 반경이 맞지 않아요. 구역을 다시 확인해 주세요'**
+  String get errorCodeInvalidShrinkFinalRadius;
+
+  /// No description provided for @errorCodeForceArrestNotAllowedInEventGame.
+  ///
+  /// In ko, this message translates to:
+  /// **'이벤트 게임에서는 쓸 수 없어요'**
+  String get errorCodeForceArrestNotAllowedInEventGame;
+
+  /// No description provided for @shrinkAutoOffSnackbar.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 작아져서 구역 축소를 껐어요'**
+  String get shrinkAutoOffSnackbar;
+
+  /// No description provided for @shrinkTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소'**
+  String get shrinkTitle;
+
+  /// No description provided for @shrinkDescOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 점점 줄어들어요'**
+  String get shrinkDescOff;
+
+  /// 구역 축소 켬 — 시작 반경에서 최종 반경까지 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'{start} → {end}까지 줄어요'**
+  String shrinkDescOn(String start, String end);
+
+  /// No description provided for @shrinkLockTooSmall.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 작아서 쓸 수 없어요'**
+  String get shrinkLockTooSmall;
+
+  /// No description provided for @shrinkLockNotCircle.
+  ///
+  /// In ko, this message translates to:
+  /// **'원형 구역에서만 쓸 수 있어요'**
+  String get shrinkLockNotCircle;
+
+  /// No description provided for @shrinkPinHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀으로 그리면 구역 축소를 쓸 수 없어요'**
+  String get shrinkPinHint;
+
+  /// 구역 축소 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 줄었어요 ({stage}/4)'**
+  String gameShrinkNotice(int stage);
+
+  /// 앱바 — 다음 도둑 위치 공개와 다음 구역 축소까지 남은 시간 한 줄 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공개 {reveal} | 구역 축소 {shrink}'**
+  String gameRevealShrinkCountdown(String reveal, String shrink);
+
+  /// No description provided for @gameShrinkFinalNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 구역이에요. 더 줄어들지 않아요'**
+  String get gameShrinkFinalNotice;
+
+  /// No description provided for @pingOutsideShrunkZone.
+  ///
+  /// In ko, this message translates to:
+  /// **'줄어든 구역 밖에는 핑을 찍을 수 없어요'**
+  String get pingOutsideShrunkZone;
+
+  /// 구역 밖 경고 횟수와 다음 경고까지 남은 시간 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'경고 {count}/{max} · 다음 경고까지 {formatted}'**
+  String zoneWarnStatus(int count, int max, String formatted);
+
+  /// 구역 밖 강제 체포 공지 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'[{robberNickname}]님이 구역 밖에 오래 있어서 잡혔어요!'**
+  String gameEventForcedArrestNotice(String robberNickname);
 
   /// No description provided for @errorCodePoliceWaitingTime.
   ///

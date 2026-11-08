@@ -55,6 +55,15 @@ import '../../domain/location_send_policy.dart';
 import '../../domain/jail_escape_detector.dart';
 import '../../domain/qr_payload.dart';
 import '../../domain/zone_exit_detector.dart';
+import '../../domain/shrink_schedule.dart';
+import '../../../session/data/models/game_settings_response.dart';
+import '../helpers/shrink_controller.dart';
+import '../../domain/shrink_animation_policy.dart';
+import '../widgets/shrink_pulse_rings.dart';
+import '../../domain/zone_warning_flow.dart';
+import '../../data/datasources/zone_warning_local_datasource.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/services/fcm/local_notifications_service.dart';
 import '../../domain/ping_chat_policy.dart';
 import '../../domain/game_menu_entries.dart';
 import '../../domain/zone_grid.dart';
@@ -218,6 +227,38 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 구역 밖 체류 중 반복 진동 Timer (5초 주기)
   Timer? _zoneExitVibrationTimer;
 
+  /// 구역 축소 (#668). 축소를 쓰지 않거나 시작 시각을 모르면 null — 원래 구역으로 판정한다.
+  ShrinkState Function(DateTime now)? _shrinkAt;
+  ShrinkController? _shrinkController;
+  DateTime? _shrinkStart;
+
+  /// 구역 밖 경고 누적 (#668). 축소 켠 일반 게임의 도둑만 — 그 밖에는 null.
+  ZoneWarningFlow? _warningFlow;
+
+  /// 위치가 안 와도 1초마다 경고 시간을 이어 센다 — iOS는 가만히 있으면 위치를 거의 안 준다
+  Timer? _zoneWarningTicker;
+  ZoneWarningLocalDataSource? _warningStore;
+
+  /// 체포 QR(스캐너·내 QR)이 열려 있는지 — 열려 있으면 축소 연출로 화면을 덮지 않는다 (#668)
+  bool _isQrOpen = false;
+
+  /// 지도에 마지막으로 그린 지금 원 — 축소 순간 여기서부터 줄어들게 그린다
+  CircleShape? _drawnShrinkCircle;
+  Timer? _shrinkTweenTimer;
+
+  /// [_setUpShrink] 세대 번호 — 겹쳐 돌면 마지막 호출만 남긴다
+  int _shrinkGen = 0;
+
+  /// 설정 조회 실패·시작 시각 없음일 때 [_setUpShrink] 재시도 (DEC-0149)
+  Timer? _shrinkRetryTimer;
+
+  /// 마지막으로 받은 내 위치 (축소로 밀려났는지 판단)
+  Position? _lastZonePosition;
+
+  /// 밀려난 사람 위치에 빨간 링을 띄울 화면 좌표. 띄울 때마다 키를 바꿔 다시 재생한다.
+  Offset? _shrinkPulseAt;
+  Key _shrinkPulseKey = UniqueKey();
+
   /// 재연결 모달 표시 중 여부 (중복 표시 방지)
   bool _isReconnectModalShown = false;
 
@@ -305,6 +346,8 @@ class _GamePageState extends ConsumerState<GamePage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _checkLocationPermissionOnResume();
+      // 일시정지 동안 지나간 축소는 연출 없이 지금 차수로 다시 그린다 (DEC-0149)
+      _shrinkController?.recompute(animate: false);
       // 백그라운드에서 멈춰 있던 동안 출동 시각이 지났으면 타이머를 기다리지 않고 바로 닫는다
       final releaseAt = _policeReleaseAt;
       if (releaseAt != null && !clock.now().isBefore(releaseAt)) {
@@ -478,6 +521,10 @@ class _GamePageState extends ConsumerState<GamePage>
       ..dispose();
     _locationSubscription?.cancel();
     _zoneExitVibrationTimer?.cancel();
+    _shrinkController?.dispose();
+    _shrinkTweenTimer?.cancel();
+    _shrinkRetryTimer?.cancel();
+    _zoneWarningTicker?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
@@ -1117,6 +1164,7 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 매 위치 업데이트마다 호출되어 구역 안/밖 전환을 감지한다.
   /// 구역 밖이면 경계까지의 거리를 setState로 갱신하여 배너에 실시간 반영한다.
   void _checkZoneExit(Position pos) {
+    _trackZoneWarning(pos);
     // 게임 종료 또는 체포 상태에서는 불필요
     if (_gameOverDialogShown) return;
     final gameState = ref.read(gameEventNotifierProvider);
@@ -1126,9 +1174,9 @@ class _GamePageState extends ConsumerState<GamePage>
     if (area == null) return;
 
     // 원형/폴리곤 무관하게 shape.contains로 판정 (분기는 AreaShape 내부에 은닉)
-    final isOutside = !area.playground.contains(
-      GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
-    );
+    final isOutside = !_judgedPlayground(
+      area,
+    ).contains(GeoPoint(latitude: pos.latitude, longitude: pos.longitude));
     _zoneExitDetector.update(isOutside: isOutside);
   }
 
@@ -1345,6 +1393,19 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 맵 롱프레스 → 화면 좌표 변환 후 선택 카드 표시
   Future<void> _onMapLongPress(LatLng latLng) async {
+    // 서버는 원래 구역 기준이라 줄어든 구역 밖 핑을 말없이 버린다 — 앱이 먼저 막는다 (#668)
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+    if (_shrinkAt != null &&
+        area != null &&
+        !_judgedPlayground(area).contains(
+          GeoPoint(latitude: latLng.latitude, longitude: latLng.longitude),
+        )) {
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(context).pingOutsideShrunkZone,
+      );
+      return;
+    }
     // 롱프레스 인식 즉시 1회 — offset/mounted 분기와 무관하게 발생(= "인식 시")
     VibrationService.instance().longPress();
     final dpr = MediaQuery.of(context).devicePixelRatio;
@@ -1463,9 +1524,10 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 구역 경계 Circle 오버레이 (원형 구역만 해당)
   ///
   /// 폴리곤 구역은 [_buildAreaBorderPolygons]가 담당한다.
-  Set<Circle> _buildAreaCircles(GameAreaEntity area) {
+  Set<Circle> _buildAreaCircles(GameAreaEntity area, {CircleShape? current}) {
     final circles = <Circle>{};
-    final playground = area.playground;
+    // 축소 중이면 지금 차수의 원을 그린다 (#668)
+    final playground = current ?? area.playground;
     if (playground is CircleShape) {
       circles.add(
         Circle(
@@ -1556,6 +1618,392 @@ class _GamePageState extends ConsumerState<GamePage>
     });
   }
 
+  /// 구역 경계·외부 딤·축소 표시를 한 번에 다시 그린다.
+  /// [circle]을 주면 그 원을 지금 원으로 그린다(줄어드는 중간 원). 다음 경계 점선은 다 줄어든 뒤에 보인다.
+  void _drawArea(GameAreaEntity area, {CircleShape? circle}) {
+    final shrink = _shrinkController?.current;
+    final current = circle ?? shrink?.current;
+    _drawnShrinkCircle = current;
+    final map = _googleMapKey.currentState;
+    map?.updateAreaCircles(_buildAreaCircles(area, current: current));
+    map?.updateAreaPolygons({
+      ..._buildAreaBorderPolygons(area),
+      ..._buildOutsideOverlay(area),
+      ..._buildShrinkLostArea(area, shrink, current: current),
+    });
+    map?.updateBoundaryPolylines(
+      circle == null ? _buildNextBoundary(shrink) : const {},
+    );
+  }
+
+  /// 축소로 잃은 땅 = 원래 원 − 지금 원. 원래 구역 밖은 기존 검정 딤이 그대로 덮는다 (#668)
+  Set<Polygon> _buildShrinkLostArea(
+    GameAreaEntity area,
+    ShrinkState? shrink, {
+    CircleShape? current,
+  }) {
+    final start = area.playground;
+    final now = current ?? shrink?.current;
+    if (now == null || start is! CircleShape) return {};
+    if (now.radiusInMeters >= start.radiusInMeters) return {};
+    return {
+      Polygon(
+        polygonId: const PolygonId('shrink_lost'),
+        points: _approximateCircle(
+          LatLng(start.center.latitude, start.center.longitude),
+          start.radiusInMeters,
+        ),
+        holes: [
+          _approximateCircle(
+            LatLng(now.center.latitude, now.center.longitude),
+            now.radiusInMeters,
+          ).reversed.toList(),
+        ],
+        fillColor: AppColors.redAlpha30,
+        strokeWidth: 0,
+        consumeTapEvents: false,
+      ),
+    };
+  }
+
+  /// 다음 축소 경계 점선. 최종 구역이면 없다.
+  Set<Polyline> _buildNextBoundary(ShrinkState? shrink) {
+    final next = shrink?.next;
+    if (next == null) return {};
+    final points = _approximateCircle(
+      LatLng(next.center.latitude, next.center.longitude),
+      next.radiusInMeters,
+    );
+    return {
+      Polyline(
+        polylineId: const PolylineId('shrink_next'),
+        points: [...points, points.first],
+        // 지금 경계(blue800 실선)와 색부터 갈라야 묻히지 않는다 — blue500·두께 2·6/6은 실기기에서
+        // 잘 안 보였다 (#668 시안 16-B)
+        color: _isDarkMode ? AppColors.white : AppColors.black700,
+        width: 3,
+        patterns: [PatternItem.dash(12), PatternItem.gap(8)],
+        consumeTapEvents: false,
+      ),
+    };
+  }
+
+  /// 축소 시계를 만든다. 축소값은 참가자 상태가 아니라 게임 정보 조회값을 쓴다 —
+  /// 대기방을 거쳐 들어오면 [_initSettingsFromApiIfNeeded]가 조회를 건너뛰기 때문이다.
+  Future<void> _setUpShrink(GameAreaEntity area) async {
+    if (widget.isDummy) return;
+    // 구역 로드·시작 시각 수신이 겹쳐 두 번 돌면 마지막 호출만 남긴다 — 컨트롤러가 둘이면
+    // 알림이 두 번 나가고 카메라 연출이 겹쳐 이동 제한이 풀린다
+    final gen = ++_shrinkGen;
+    _shrinkRetryTimer?.cancel();
+    final GameSettingsResponse settings;
+    try {
+      // 대기방이 살려 둔 캐시는 끊긴 동안 놓친 설정 변경을 모른다 — 매번 새로 받는다
+      settings = await ref.refresh(fetchGameSettingsProvider(_gameId).future);
+    } catch (e) {
+      debugPrint('[GamePage] ⚠️ 구역 축소 설정 조회 실패: $e');
+      // 한 번 실패로 그 판 내내 이 폰만 축소가 꺼지지 않게 다시 조회한다
+      if (mounted && gen == _shrinkGen) _scheduleShrinkRetry(area);
+      return;
+    }
+    if (!mounted || gen != _shrinkGen) return;
+    // 참가자 상태는 조회 뒤에 읽고, 앱을 다시 켜 아직 비어 있으면 조회값으로 채운다
+    final info = ref.read(gameParticipantNotifierProvider);
+    final inputs = resolveShrinkInputs(
+      eventStart: ref.read(gameEventNotifierProvider).gameStartTime,
+      participantStart: info?.gameStartTime,
+      participantRound: info?.roundTimeMinutes,
+      participantWait: info?.policeWaitMinutes,
+      infoStart: settings.gameStartTime,
+      infoRound: settings.roundDurationMinutes,
+      infoWait: settings.policeWaitMinutes,
+    );
+    final at = shrinkClockFor(
+      area: area,
+      finalRadius: settings.shrinkFinalRadiusInMeters,
+      start: inputs.start,
+      roundDurationMinutes: inputs.round,
+      policeWaitMinutes: inputs.wait,
+    );
+    final flow = await _loadZoneWarning(
+      enabled: at != null,
+      start: inputs.start,
+    );
+    if (!mounted || gen != _shrinkGen) return;
+    _shrinkController?.dispose();
+    _shrinkController = null;
+    setState(() {
+      _shrinkAt = at;
+      _shrinkStart = inputs.start;
+      _warningFlow = flow;
+    });
+    _zoneWarningTicker?.cancel();
+    _zoneWarningTicker = flow == null
+        ? null
+        : Timer.periodic(const Duration(seconds: 1), (_) => _tickZoneWarning());
+    // 잠금 화면 현황이 네트워크 없이 축소 여부를 알게 남긴다
+    ref
+        .read(gameParticipantNotifierProvider.notifier)
+        .setShrinkEnabled(at != null);
+    if (at == null) {
+      _drawArea(area);
+      // 축소는 켜졌는데 시작 시각을 아직 못 받았다 — 원래 구역으로 판정하며 다시 조회한다 (DEC-0149)
+      if (settings.shrinkFinalRadiusInMeters != null && inputs.start == null) {
+        _scheduleShrinkRetry(area);
+      }
+      return;
+    }
+    // 대입한 뒤에 start한다 — `..start()`는 대입보다 먼저 돌아, 첫 그리기에서 _drawArea가
+    // 컨트롤러를 못 보고 다음 경계 점선 없이 그렸다(실기기에서 1차 축소 전 점선이 안 보임)
+    final controller = ShrinkController(
+      stateAt: at,
+      onChange: (state, {required animate}) {
+        if (!mounted) return;
+        if (!animate) {
+          _drawArea(area);
+          // 재진입·복귀로 놓친 축소에 밀려났을 수 있다 — 가만히 서 있으면 위치가 거의 안 와서
+          // 다음 위치까지 배너·경고가 시작되지 않는다
+          if (_lastZonePosition case final pos?) _checkZoneExit(pos);
+          return;
+        }
+        _announceShrink(state);
+        unawaited(_playShrinkMoment(area, state));
+      },
+    );
+    _shrinkController = controller;
+    controller.start();
+  }
+
+  void _scheduleShrinkRetry(GameAreaEntity area) {
+    _shrinkRetryTimer?.cancel();
+    _shrinkRetryTimer = Timer(
+      const Duration(seconds: 5),
+      () => unawaited(_setUpShrink(area)),
+    );
+  }
+
+  /// 경고 누적을 준비한다. 같은 라운드면 앱을 다시 켜도 이어서 센다 (게임 id + 시작 시각 2초).
+  /// 같은 라운드를 다시 준비하는 거면(시작 시각을 늦게 받은 경우) 지금 세던 흐름을 그대로 쓴다.
+  Future<ZoneWarningFlow?> _loadZoneWarning({
+    required bool enabled,
+    required DateTime? start,
+  }) async {
+    final isEvent =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    if (!enabled || isEvent || !GameTeam.isRobber(widget.team)) return null;
+    final current = _warningFlow;
+    final prevStart = _shrinkStart;
+    if (current != null &&
+        prevStart != null &&
+        start != null &&
+        start.difference(prevStart).abs() <= const Duration(seconds: 2)) {
+      return current;
+    }
+    final store =
+        _warningStore ??
+        ZoneWarningLocalDataSource(await SharedPreferences.getInstance());
+    _warningStore = store;
+    final restored = await store.load(gameId: _gameId, startedAt: start);
+    return ZoneWarningFlow(restoredSeconds: restored);
+  }
+
+  /// 위치마다 구역 밖 경고를 센다. 3번이면 강제 체포를 한 번 부른다 (#668).
+  void _trackZoneWarning(Position pos) {
+    _lastZonePosition = pos;
+    final flow = _warningFlow;
+    if (flow == null) return;
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+    final eligible = _zoneWarningEligible(area);
+    // "플레이그라운드를 벗어났어요" 배너(_checkZoneExit)와 같은 판정 — 배너가 떠 있는데 숫자가
+    // 멈춰 있으면 이상하다(실기기). GPS 오차로 경계에서 잠깐 쌓이는 시간은 60초·3분 누적에 비해 작다.
+    final counts =
+        eligible &&
+        area != null &&
+        !_judgedPlayground(
+          area,
+        ).contains(GeoPoint(latitude: pos.latitude, longitude: pos.longitude));
+    final now = clock.now();
+    _afterZoneWarningStep(
+      flow,
+      flow.onPosition(eligible: eligible, countsAsOutside: counts, at: now),
+      now,
+    );
+  }
+
+  /// 수감·종료 동안은 세지 않는다 — 탈옥 직후 수감 시간이 한꺼번에 더해지지 않게
+  bool _zoneWarningEligible(GameAreaEntity? area) {
+    final gameState = ref.read(gameEventNotifierProvider);
+    return area != null &&
+        !_gameOverDialogShown &&
+        !gameState.isGameOver &&
+        !gameState.arrestedParticipantIds.contains(widget.participantId);
+  }
+
+  /// 1초 틱 — 마지막 위치의 안/밖 그대로 이어 센다
+  void _tickZoneWarning() {
+    final flow = _warningFlow;
+    if (!mounted || flow == null) return;
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+    final now = clock.now();
+    _afterZoneWarningStep(
+      flow,
+      flow.onTick(eligible: _zoneWarningEligible(area), at: now),
+      now,
+    );
+  }
+
+  /// 누적을 저장하고, 3번째 경고면 강제 체포를 부른다
+  void _afterZoneWarningStep(
+    ZoneWarningFlow flow,
+    bool shouldArrest,
+    DateTime now,
+  ) {
+    final start = _shrinkStart;
+    if (start != null && flow.shouldSave(now)) {
+      flow.markSaved(now);
+      unawaited(
+        _warningStore?.save(
+          gameId: _gameId,
+          startedAt: start,
+          outsideSeconds: flow.outsideSeconds,
+        ),
+      );
+    }
+    if (shouldArrest) unawaited(_requestForceArrest(flow));
+  }
+
+  Future<void> _requestForceArrest(ZoneWarningFlow flow) async {
+    final result = await ref
+        .read(gameEventNotifierProvider.notifier)
+        .forceArrest(_gameId);
+    flow.onForceArrestResult(result);
+    if (result == ForceArrestResult.retry) return;
+    unawaited(_warningStore?.clear());
+    // 응답만 잃었거나 이미 끝난 경우 — 서버 상태로 맞춘다
+    if (result == ForceArrestResult.terminal && mounted) {
+      unawaited(_syncGameStateOnReconnect());
+    }
+  }
+
+  /// 앱바 경고 줄. 구역 밖 배너가 떠 있는 동안만.
+  ({int count, Duration untilNext})? _zoneWarningAt(DateTime now) {
+    final flow = _warningFlow;
+    if (flow == null || !_isZoneExitWarningActive) return null;
+    return (count: flow.warnings, untilNext: flow.untilNextWarningAt(now));
+  }
+
+  /// 축소 순간 연출 — 모든 차수가 같은 기울기 연출. 하던 일을 끊는 상황이면 원만 바꾼다.
+  Future<void> _playShrinkMoment(GameAreaEntity area, ShrinkState state) async {
+    final isFinal = state.stage >= 4;
+    void shrinkNow() {
+      if (!mounted) return;
+      _tweenShrink(area, from: _drawnShrinkCircle, to: state.current);
+      VibrationService.instance().zoneShrink(isFinal: isFinal);
+      unawaited(_pulseIfPushedOut(state));
+      // 가만히 서 있으면 GPS 틱이 드물다 — 밀려났으면 배너·경고를 바로 시작한다
+      if (_lastZonePosition case final pos?) _checkZoneExit(pos);
+    }
+
+    final animation = shrinkAnimationFor(
+      stage: state.stage,
+      appVisible: _appVisible,
+      qrOpen: _isQrOpen,
+      chatOpen: _showChat,
+      participantsOpen: _showParticipants,
+    );
+    final map = _googleMapKey.currentState;
+    if (animation == ShrinkAnimation.none || map == null) {
+      shrinkNow();
+      return;
+    }
+    // 시작 구역 전체가 보이게 넓혀서 줄어드는 폭이 한눈에 들어오게 한다
+    final start = area.playground as CircleShape;
+    await map.playShrinkCamera(
+      center: LatLng(
+        state.current.center.latitude,
+        state.current.center.longitude,
+      ),
+      fitRadiusMeters: start.radiusInMeters,
+      onShrink: shrinkNow,
+    );
+  }
+
+  /// 원이 한 번에 바뀌지 않고 [_shrinkTweenDuration] 동안 줄어들게 그린다
+  void _tweenShrink(
+    GameAreaEntity area, {
+    required CircleShape? from,
+    required CircleShape to,
+  }) {
+    _shrinkTweenTimer?.cancel();
+    if (from == null) {
+      _drawArea(area);
+      return;
+    }
+    final startedAt = clock.now();
+    _shrinkTweenTimer = Timer.periodic(const Duration(milliseconds: 40), (t) {
+      if (!mounted) return t.cancel();
+      final p =
+          clock.now().difference(startedAt).inMilliseconds /
+          _shrinkTweenDuration.inMilliseconds;
+      if (p >= 1) {
+        t.cancel();
+        _drawArea(area);
+        return;
+      }
+      // 처음엔 빠르게, 끝에선 천천히 (easeOutCubic)
+      final eased = 1 - math.pow(1 - p, 3).toDouble();
+      _drawArea(area, circle: lerpCircle(from, to, eased));
+    });
+  }
+
+  static const _shrinkTweenDuration = Duration(milliseconds: 900);
+
+  /// 새 경계 밖에 놓였으면 내 위치에 빨간 링 두 번
+  Future<void> _pulseIfPushedOut(ShrinkState state) async {
+    final pos = _lastZonePosition;
+    if (pos == null) return;
+    final latLng = LatLng(pos.latitude, pos.longitude);
+    if (state.current.contains(
+      GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
+    )) {
+      return;
+    }
+    final offset = await _googleMapKey.currentState?.latLngToScreenOffset(
+      latLng,
+      MediaQuery.of(context).devicePixelRatio,
+    );
+    if (!mounted || offset == null) return;
+    setState(() {
+      _shrinkPulseAt = offset;
+      _shrinkPulseKey = UniqueKey();
+    });
+  }
+
+  /// 축소 순간: 시스템 채팅 + 공지 배너, 백그라운드면 로컬 알림 (DEC-0148)
+  void _announceShrink(ShrinkState state) {
+    final l10n = AppLocalizations.of(context);
+    final message = state.stage >= 4
+        ? l10n.gameShrinkFinalNotice
+        : l10n.gameShrinkNotice(state.stage);
+    ref
+        .read(chatNotifierProvider.notifier)
+        .addSystemMessage(gameId: _gameId, message: message);
+    ref.read(gameEventNotifierProvider.notifier).setBannerMessage(message);
+    if (!_appVisible) {
+      unawaited(
+        LocalNotificationsService.instance().showNotification(
+          l10n.shrinkTitle,
+          message,
+          null,
+        ),
+      );
+    }
+  }
+
+  /// 판정에 쓸 지금의 플레이그라운드. 타이머보다 위치 콜백이 먼저 와도 맞도록 그 자리에서 계산한다.
+  AreaShape _judgedPlayground(GameAreaEntity area) =>
+      _shrinkAt?.call(clock.now()).current ?? area.playground;
+
   /// 플레이그라운드 외부 영역 반투명 오버레이 폴리곤 생성
   Set<Polygon> _buildOutsideOverlay(GameAreaEntity area) {
     final c = area.playground.centroid;
@@ -1608,6 +2056,11 @@ class _GamePageState extends ConsumerState<GamePage>
     // 종료 시점에 구역 밖이었다면 진동 타이머·시각 신호가 살아있을 수 있다.
     // 결과 다이얼로그 위에 펄스/배너가 깜빡이고 진동이 폭주하지 않도록 정리한다.
     _clearZoneExitWarning();
+    _shrinkGen++;
+    _shrinkController?.dispose();
+    _shrinkTweenTimer?.cancel();
+    _shrinkRetryTimer?.cancel();
+    _zoneWarningTicker?.cancel();
 
     // 위치 스트림 종료 전에 누적 경로/거리의 종료 시각을 확정한다.
     if (!widget.isDummy) _recordNotifier.markEnd(DateTime.now());
@@ -2208,21 +2661,26 @@ class _GamePageState extends ConsumerState<GamePage>
           s.arrestEventCount,
           s.lastArrestNickname,
           s.lastArrestPoliceNickname,
+          s.lastArrestForced,
         ),
       ),
       (prev, next) {
-        final (count, robberNick, policeNick) = next;
+        final (count, robberNick, policeNick, forced) = next;
         if (count > _lastHandledArrestCount) {
           _lastHandledArrestCount = count;
           final l10n = AppLocalizations.of(context);
+          final robber = robberNick ?? l10n.gameRoleRobberLabel;
           ref
               .read(chatNotifierProvider.notifier)
               .addSystemMessage(
                 gameId: _gameId,
-                message: l10n.gameEventArrestNotice(
-                  policeNick ?? l10n.gameRoleCopLabel,
-                  robberNick ?? l10n.gameRoleRobberLabel,
-                ),
+                // 구역 밖 강제 체포는 잡은 경찰이 없다 (#668)
+                message: forced
+                    ? l10n.gameEventForcedArrestNotice(robber)
+                    : l10n.gameEventArrestNotice(
+                        policeNick ?? l10n.gameRoleCopLabel,
+                        robber,
+                      ),
               );
         }
       },
@@ -2373,14 +2831,22 @@ class _GamePageState extends ConsumerState<GamePage>
             northeast: LatLng(box.northEast.latitude, box.northEast.longitude),
           ),
         );
-        _googleMapKey.currentState?.updateAreaCircles(_buildAreaCircles(area));
         _zoneGrid = ZoneGrid.forArea(area.playground);
         if (_showGrid) _googleMapKey.currentState?.updateGrid(_zoneGrid);
-        _googleMapKey.currentState?.updateAreaPolygons({
-          ..._buildAreaBorderPolygons(area),
-          ..._buildOutsideOverlay(area),
-        });
+        _drawArea(area);
+        unawaited(_setUpShrink(area));
       });
+    });
+
+    // 시작 시각을 늦게 받았거나 방장이 다시 시작하면 축소 시계를 새 시작 시각으로 다시 만든다
+    ref.listen(gameEventNotifierProvider.select((s) => s.gameStartTime), (
+      prev,
+      next,
+    ) {
+      final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
+      if (next != null && next != _shrinkStart && area != null) {
+        unawaited(_setUpShrink(area));
+      }
     });
 
     // 핑 provider 생존 유지(autoDispose) — 2.5초 타이머 도중 dispose 방지
@@ -2822,6 +3288,16 @@ class _GamePageState extends ConsumerState<GamePage>
               ),
             ),
 
+            /// 구역 축소로 밀려난 내 위치의 빨간 링 (#668). 터치 차단 없음.
+            if (_shrinkPulseAt case final at?)
+              Positioned(
+                left: at.dx - 54,
+                top: at.dy - 54,
+                child: ShrinkPulseRings(key: _shrinkPulseKey),
+              )
+            else
+              const SizedBox.shrink(),
+
             /// index 10: 구역 이탈 비네트 (가장 위, 터치 차단 없음)
             /// 화면 가장자리에 부드러운 빨강 그라데이션을 깔아 이탈 상태를 알린다.
             /// 중앙은 투명하게 유지되어 지도·플레이그라운드 원·내 위치를 가리지 않음.
@@ -3059,15 +3535,21 @@ class _GamePageState extends ConsumerState<GamePage>
     }
 
     // 스캐너는 파싱만 담당. 만료 여부는 호출측에서 검증하여 사용자에게 원인을 명확히 안내한다.
-    final payload = await Navigator.push<QrPayload>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => QrScannerPage<QrPayload>(
-          title: AppLocalizations.of(context).qrScannerWantedRobberTitle,
-          onParse: QrPayload.tryParse,
+    _isQrOpen = true;
+    final QrPayload? payload;
+    try {
+      payload = await Navigator.push<QrPayload>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QrScannerPage<QrPayload>(
+            title: AppLocalizations.of(context).qrScannerWantedRobberTitle,
+            onParse: QrPayload.tryParse,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      _isQrOpen = false;
+    }
     if (payload == null || !mounted) return;
 
     // 만료된 QR (스크린샷 저장 후 재사용 시나리오 등) 차단
@@ -3133,8 +3615,16 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 도둑: 자신의 QR 코드 표시
-  void _showMyQrCode() {
-    QrDisplayDialog.show(context: context, participantId: widget.participantId);
+  Future<void> _showMyQrCode() async {
+    _isQrOpen = true;
+    try {
+      await QrDisplayDialog.show(
+        context: context,
+        participantId: widget.participantId,
+      );
+    } finally {
+      _isQrOpen = false;
+    }
   }
 
   /// 상단 앱바 (흰색 배경, 높이 64px)
@@ -3195,6 +3685,10 @@ class _GamePageState extends ConsumerState<GamePage>
         totalDuration: totalDuration,
         policeWaitMinutes: participantInfo?.policeWaitMinutes,
         locationRevealIntervalMinutes: interval,
+        nextShrinkAt: _shrinkAt == null
+            ? null
+            : (now) => _shrinkAt!(now).nextAt,
+        zoneWarningAt: _warningFlow == null ? null : _zoneWarningAt,
         isDarkMode: _isDarkMode,
       ),
       actions: [

@@ -189,4 +189,27 @@ void main() {
       );
     });
   });
+
+  group('구역 축소 (#668)', () {
+    test('returns_circle_only_message_when_saving_shrink_on_pin_area', () {
+      expect(
+        l10n.errorByCode('SHRINK_REQUIRES_CIRCLE_AREA'),
+        l10n.errorCodeShrinkRequiresCircleArea,
+      );
+    });
+
+    test('returns_radius_mismatch_message_when_final_radius_is_invalid', () {
+      expect(
+        l10n.errorByCode('INVALID_SHRINK_FINAL_RADIUS'),
+        l10n.errorCodeInvalidShrinkFinalRadius,
+      );
+    });
+
+    test('returns_event_game_message_when_force_arrest_is_rejected', () {
+      expect(
+        l10n.errorByCode('FORCE_ARREST_NOT_ALLOWED_IN_EVENT_GAME'),
+        l10n.errorCodeForceArrestNotAllowedInEventGame,
+      );
+    });
+  });
 }

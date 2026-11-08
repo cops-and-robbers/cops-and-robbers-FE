@@ -16,6 +16,8 @@ _$GameSettingsResponseImpl _$$GameSettingsResponseImplFromJson(
   maxParticipants: (json['maxParticipants'] as num).toInt(),
   gameStartTime: json['gameStartTime'] as String?,
   isEventGame: json['isEventGame'] as bool? ?? false,
+  shrinkFinalRadiusInMeters: (json['shrinkFinalRadiusInMeters'] as num?)
+      ?.toInt(),
 );
 
 Map<String, dynamic> _$$GameSettingsResponseImplToJson(
@@ -27,4 +29,5 @@ Map<String, dynamic> _$$GameSettingsResponseImplToJson(
   'maxParticipants': instance.maxParticipants,
   'gameStartTime': instance.gameStartTime,
   'isEventGame': instance.isEventGame,
+  'shrinkFinalRadiusInMeters': instance.shrinkFinalRadiusInMeters,
 };

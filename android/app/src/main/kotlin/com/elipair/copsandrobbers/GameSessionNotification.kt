@@ -84,6 +84,8 @@ object GameSessionNotification {
         val text = listOfNotNull(
             status?.get("robbersText") as? String,
             status?.get("revealText") as? String,
+            // 구역 축소를 켠 게임의 다음 축소 시각 (#668)
+            status?.get("shrinkText") as? String,
         ).joinToString(" · ")
         builder.setContentText(
             text.ifEmpty { context.getString(R.string.fgs_notification_text) },

@@ -32,6 +32,10 @@ abstract final class GameEventMessageKey {
   // args: [String policeNickname, String robberNickname]
   static const arrestNotice = 'gameEventArrestNotice';
 
+  // ── ARREST 이벤트 (police: null — 구역 밖 강제 체포, #668) ──
+  // args: [String robberNickname]
+  static const forcedArrestNotice = 'gameEventForcedArrestNotice';
+
   // ── ESCAPE 이벤트 ──
   static const escapeNotice = 'gameEventEscapeNotice';
 
@@ -56,6 +60,8 @@ String resolveGameEventMessage(
       return l10n.gameEventPoliceMove;
     case GameEventMessageKey.locationReveal:
       return l10n.gameEventLocationReveal;
+    case GameEventMessageKey.forcedArrestNotice:
+      return l10n.gameEventForcedArrestNotice(args![0] as String);
     case GameEventMessageKey.arrestNotice:
       // 호출부에서 [String, String] 보장 (game_event_provider._handleArrest)
       return l10n.gameEventArrestNotice(args![0] as String, args[1] as String);
