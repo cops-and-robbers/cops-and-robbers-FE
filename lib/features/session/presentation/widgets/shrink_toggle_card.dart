@@ -95,12 +95,12 @@ class ShrinkToggleCard extends StatelessWidget {
               value: on,
               onChanged: canEdit && !locked ? onChanged : null,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              // 팀과 상관없이 라이트 시안과 같은 색(마이페이지 토글과 동일, 사용자 결정 2026-11-08).
-              // 비활성이어도 머티리얼 회색이 아니라 이 토큰으로 그린다
+              // 팀 테마 표(ui-design-system 2.4): 켜짐 경찰 파랑 / 도둑 green, 꺼짐 black200 / black800.
+              // 비활성이어도 머티리얼 회색이 아니라 이 토큰으로 그린다. 손잡이는 팀 무관 흰색(사용자 결정)
               trackColor: WidgetStateProperty.resolveWith(
                 (states) => states.contains(WidgetState.selected)
-                    ? AppColors.blueVer2Basic
-                    : AppColors.black200,
+                    ? (isDarkMode ? AppColors.green : AppColors.blueVer2Basic)
+                    : (isDarkMode ? AppColors.black800 : AppColors.black200),
               ),
               thumbColor: const WidgetStatePropertyAll(AppColors.white),
               trackOutlineColor: const WidgetStatePropertyAll(

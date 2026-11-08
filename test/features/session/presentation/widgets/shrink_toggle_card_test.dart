@@ -112,13 +112,13 @@ void main() {
   Color? trackOf(WidgetTester tester, Set<WidgetState> states) =>
       tester.widget<Switch>(find.byType(Switch)).trackColor?.resolve(states);
 
-  // 도둑 다크 화면도 라이트 시안과 같은 토글 색 (사용자 결정 2026-11-08)
-  testWidgets('robber_dark_screen_uses_same_toggle_colors_as_light', (
+  // 팀 테마 표(ui-design-system 2.4): 도둑 주요 액션 green, 트랙 black800 (손잡이는 흰색 유지)
+  testWidgets('robber_dark_screen_uses_green_when_on_and_black800_when_off', (
     tester,
   ) async {
     await _pump(tester, enabled: true, onChanged: (_) {}, isDarkMode: true);
-    expect(trackOf(tester, {WidgetState.selected}), AppColors.blueVer2Basic);
-    expect(trackOf(tester, {}), AppColors.black200);
+    expect(trackOf(tester, {WidgetState.selected}), AppColors.green);
+    expect(trackOf(tester, {}), AppColors.black800);
   });
 
   testWidgets('police_light_screen_uses_blue_when_on_and_black200_when_off', (
@@ -135,7 +135,7 @@ void main() {
     await _pump(tester, enabled: true, isDarkMode: true);
     expect(
       trackOf(tester, {WidgetState.selected, WidgetState.disabled}),
-      AppColors.blueVer2Basic,
+      AppColors.green,
     );
   });
 
