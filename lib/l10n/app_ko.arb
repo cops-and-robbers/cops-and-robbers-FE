@@ -878,7 +878,7 @@
   "@sessionCreationStepBasicHint": {
     "description": "방 생성 — 기본 정보 단계 보조 설명"
   },
-  "sessionCreationStepReviewHint": "방 생성 전 마지막으로 설정을 확인할까요?",
+  "sessionCreationStepReviewHint": "추천값으로 채워 뒀어요. 바꿀 항목만 눌러요",
   "@sessionCreationStepReviewHint": {
     "description": "방 생성 — 리뷰 단계 보조 설명"
   },
@@ -1226,10 +1226,6 @@
   "gameSettingPoliceStartSuffix": "뒤",
   "@gameSettingPoliceStartSuffix": {
     "description": "게임 설정 — 경찰 출동 시간 suffix"
-  },
-  "buttonCompleteSetup": "완료하기",
-  "@buttonCompleteSetup": {
-    "description": "방 생성 — 기본 정보 마지막 항목 완료 버튼"
   },
   "warnMaxReached": "최대 {max}까지 설정할 수 있어요",
   "@warnMaxReached": {

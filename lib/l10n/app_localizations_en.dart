@@ -1132,7 +1132,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionCreationStepReviewHint =>
-      'Shall we check the settings one last time before creating the room?';
+      'Filled in with recommended values. Tap only what you want to change';
 
   @override
   String get buttonNext => 'Next';
@@ -1404,9 +1404,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameSettingPoliceStartSuffix => 'later';
-
-  @override
-  String get buttonCompleteSetup => 'Done';
 
   @override
   String warnMaxReached(String max) {

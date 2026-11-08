@@ -1061,7 +1061,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionCreationStepBasicHint => '게임을 진행할 때, 꼭 필요한 정보들이에요';
 
   @override
-  String get sessionCreationStepReviewHint => '방 생성 전 마지막으로 설정을 확인할까요?';
+  String get sessionCreationStepReviewHint => '추천값으로 채워 뒀어요. 바꿀 항목만 눌러요';
 
   @override
   String get buttonNext => '다음';
@@ -1313,9 +1313,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameSettingPoliceStartSuffix => '뒤';
-
-  @override
-  String get buttonCompleteSetup => '완료하기';
 
   @override
   String warnMaxReached(String max) {

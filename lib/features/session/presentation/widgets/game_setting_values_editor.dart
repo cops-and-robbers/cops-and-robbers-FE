@@ -53,6 +53,12 @@ class GameSettingValues {
   }) : _values = [participants, roundDuration, locationShare, policeWait],
        _touched = List.filled(GameSettingField.values.length, touched);
 
+  /// 방 생성 확인 화면에 처음 채워 두는 추천값
+  static const int recommendedParticipants = 10;
+  static const int recommendedRoundDuration = 30;
+  static const int recommendedLocationShare = 5;
+  static const int recommendedPoliceWait = 5;
+
   final List<int> _values;
 
   /// 항목별로 사용자의 입력이 한 번이라도 닿았는지 (제안값 연한 표시용)

@@ -2039,7 +2039,7 @@ abstract class AppLocalizations {
   /// 방 생성 — 리뷰 단계 보조 설명
   ///
   /// In ko, this message translates to:
-  /// **'방 생성 전 마지막으로 설정을 확인할까요?'**
+  /// **'추천값으로 채워 뒀어요. 바꿀 항목만 눌러요'**
   String get sessionCreationStepReviewHint;
 
   /// 공통 — 다음 단계 버튼
@@ -2509,12 +2509,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'뒤'**
   String get gameSettingPoliceStartSuffix;
-
-  /// 방 생성 — 기본 정보 마지막 항목 완료 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'완료하기'**
-  String get buttonCompleteSetup;
 
   /// 방 생성 — 상한을 넘는 입력을 막았을 때 안내 (max 는 단위 포함, 예: 50명)
   ///

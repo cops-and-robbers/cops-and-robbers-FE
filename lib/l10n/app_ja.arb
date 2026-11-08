@@ -391,7 +391,7 @@
   "sessionCreationStepReviewTitle": "最終設定を確認します",
   "sessionCreationStepParticipantsHint": "最低2人からゲームの進行が可能です",
   "sessionCreationStepBasicHint": "ゲームを進行する際、必ず必要な情報です",
-  "sessionCreationStepReviewHint": "待機室を作る前に最後に設定を確認しましょうか",
+  "sessionCreationStepReviewHint": "おすすめの値を入れました。変えたい項目だけタップしてください",
   "buttonNext": "次へ",
   "errorZoneNotConfigured": "エリア情報を先に設定してください",
   "setupPlaygroundDescription": "ゲームを行うエリア全体の大きさを設定します",
@@ -479,7 +479,6 @@
   "gameSettingNoLocationShareWarning": "泥棒の位置が公開されません！",
   "gameSettingPoliceStartPrefix": "泥棒スタートから",
   "gameSettingPoliceStartSuffix": "後",
-  "buttonCompleteSetup": "完了する",
   "warnMaxReached": "最大{max}まで設定できます",
   "@warnMaxReached": {
     "placeholders": {

@@ -440,43 +440,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                       ),
                       isForward: true,
                     ),
-                    routes: [
-                      // 플레이그라운드 설정 (모달 페이지)
-                      GoRoute(
-                        path: 'playground',
-                        name: RoutePaths.setupPlaygroundFromFlowName,
-                        // go_router는 parentNavigatorKey를 자식에 상속하지 않으므로
-                        // 각 라우트에 명시적으로 지정해야 한다
-                        parentNavigatorKey: rootNavigatorKey,
-                        pageBuilder: (context, state) => buildDirectionalSlide(
-                          key: state.pageKey,
-                          child: SetupPlaygroundPage(
-                            editInitialShape:
-                                (state.extra as PlaygroundSetupArgs?)
-                                    ?.initialShape,
-                            initialCenter:
-                                (state.extra as PlaygroundSetupArgs?)
-                                    ?.initialCenter,
-                            showStepIndicator: true,
-                          ),
-                          isForward: true,
-                        ),
-                      ),
-                      // 감옥 설정 (모달 페이지)
-                      GoRoute(
-                        path: 'prison',
-                        name: RoutePaths.setupPrisonFromFlowName,
-                        parentNavigatorKey: rootNavigatorKey,
-                        pageBuilder: (context, state) => buildDirectionalSlide(
-                          key: state.pageKey,
-                          child: SetupPrisonPage(
-                            editArgs: state.extra as PrisonEditArgs?,
-                            showStepIndicator: true,
-                          ),
-                          isForward: true,
-                        ),
-                      ),
-                    ],
+                    // 플레이그라운드·감옥 지도는 흐름 페이지 안에서 그린다 (#658)
                   ),
                 ],
               ),
