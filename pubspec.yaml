@@ -75,7 +75,10 @@ dependencies:
   vibration: ^3.1.8 # 커스텀 진동 패턴 및 강도 제어
   # 기기 정보
   package_info_plus: ^9.0.0 # 앱 정보 수집 (버전 등)
-  device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
+  device_info_plus: ^10.1.2 # 기기 정보 수집 (기기 이름·OS 버전, iOS IDFV)
+  # Android 기기 ID(ANDROID_ID). device_info_plus 의 id 는 OS 빌드 번호라 쓰면 안 된다 (#687)
+  # 0.6.0 부터 Flutter 3.47 이상 필요 — 지금 SDK(3.38)에 맞춰 0.5.x 에 둔다
+  android_id: ^0.5.2+1
   app_settings: ^7.0.0
   # QR 코드 (체포 시스템)
   qr_flutter: ^4.1.0 # QR 코드 생성 (도둑 QR 표시)
