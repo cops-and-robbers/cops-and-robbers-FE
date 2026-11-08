@@ -391,7 +391,7 @@
   "sessionCreationStepReviewTitle": "Verify final settings",
   "sessionCreationStepParticipantsHint": "A minimum of 2 players is required to play the game",
   "sessionCreationStepBasicHint": "This information is essential for running the game",
-  "sessionCreationStepReviewHint": "Shall we check the settings one last time before creating the room?",
+  "sessionCreationStepReviewHint": "Filled in with recommended values. Tap only what you want to change",
   "buttonNext": "Next",
   "errorZoneNotConfigured": "Please set up game area information first",
   "setupPlaygroundDescription": "Set up the size of the total game area where the game will take place",
@@ -479,7 +479,6 @@
   "gameSettingNoLocationShareWarning": "The Robbers' locations will not be shared!",
   "gameSettingPoliceStartPrefix": "After Robbers start,",
   "gameSettingPoliceStartSuffix": "later",
-  "buttonCompleteSetup": "Done",
   "warnMaxReached": "You can set up to {max}",
   "@warnMaxReached": {
     "placeholders": {

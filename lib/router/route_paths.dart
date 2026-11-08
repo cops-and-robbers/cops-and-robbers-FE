@@ -296,8 +296,6 @@ class RoutePaths {
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
   static const String noticesName = 'notices';
-  static const String setupPlaygroundFromFlowName = 'setupPlaygroundFromFlow';
-  static const String setupPrisonFromFlowName = 'setupPrisonFromFlow';
   static const String gameTutorialName = 'gameTutorial';
   static const String gameSettingsName = 'gameSettings';
   static const String gameSettingsEditName = 'gameSettingsEdit';

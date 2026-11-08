@@ -1062,7 +1062,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sessionCreationStepBasicHint => 'ゲームを進行する際、必ず必要な情報です';
 
   @override
-  String get sessionCreationStepReviewHint => '待機室を作る前に最後に設定を確認しましょうか';
+  String get sessionCreationStepReviewHint => 'おすすめの値を入れました。変えたい項目だけタップしてください';
 
   @override
   String get buttonNext => '次へ';
@@ -1314,9 +1314,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get gameSettingPoliceStartSuffix => '後';
-
-  @override
-  String get buttonCompleteSetup => '完了する';
 
   @override
   String warnMaxReached(String max) {
