@@ -878,7 +878,7 @@
   "@sessionCreationStepBasicHint": {
     "description": "방 생성 — 기본 정보 단계 보조 설명"
   },
-  "sessionCreationStepReviewHint": "방 생성 전 마지막으로 설정을 확인할까요?",
+  "sessionCreationStepReviewHint": "추천값으로 채워 뒀어요. 바꿀 항목만 눌러요",
   "@sessionCreationStepReviewHint": {
     "description": "방 생성 — 리뷰 단계 보조 설명"
   },
@@ -992,13 +992,31 @@
   "@buttonStartGame": {
     "description": "공통 — 게임 시작 버튼"
   },
-  "buttonCancelReady": "준비 취소",
-  "@buttonCancelReady": {
-    "description": "대기실 — 준비 취소 버튼"
+  "addSlotChangeRole": "역할 바꾸기",
+  "@addSlotChangeRole": {
+    "description": "대기실 — 다른 팀 칸 맨 앞 + 칸 라벨. 누르면 그 팀으로 옮긴다 (#661)"
   },
-  "buttonReady": "준비",
-  "@buttonReady": {
-    "description": "대기실 — 준비 버튼"
+  "dialogStartGameTitle": "게임을 시작할까요?",
+  "@dialogStartGameTitle": {
+    "description": "대기실 — 방장이 게임 시작을 누르면 뜨는 확인창 제목 (#661)"
+  },
+  "dialogStartGamePoliceCount": "경찰 {count}명",
+  "@dialogStartGamePoliceCount": {
+    "description": "대기실 — 시작 확인창 경찰 캐릭터 아래 인원 (#661)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dialogStartGameRobberCount": "도둑 {count}명",
+  "@dialogStartGameRobberCount": {
+    "description": "대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "pageZonePreviewTitle": "게임 구역",
   "@pageZonePreviewTitle": {
@@ -1227,10 +1245,6 @@
   "@gameSettingPoliceStartSuffix": {
     "description": "게임 설정 — 경찰 출동 시간 suffix"
   },
-  "buttonCompleteSetup": "완료하기",
-  "@buttonCompleteSetup": {
-    "description": "방 생성 — 기본 정보 마지막 항목 완료 버튼"
-  },
   "warnMaxReached": "최대 {max}까지 설정할 수 있어요",
   "@warnMaxReached": {
     "description": "방 생성 — 상한을 넘는 입력을 막았을 때 안내 (max 는 단위 포함, 예: 50명)",
@@ -1288,7 +1302,7 @@
   "@fieldPoliceDispatchTime": {
     "description": "게임 설정 — 경찰 출동 시간 라벨"
   },
-  "teamSectionCurrentCount": "현재 {count}명",
+  "teamSectionCurrentCount": "현재 인원 {count}명",
   "@teamSectionCurrentCount": {
     "description": "팀 섹션 — 현재 인원수 표기",
     "placeholders": {
@@ -1745,6 +1759,14 @@
     }
   },
   "lockScreenLocationReveal": "위치 공개",
+  "lockScreenShrink": "구역 축소",
+  "lockScreenShrinkAt": "{time} 구역 축소",
+  "@lockScreenShrinkAt": {
+    "description": "잠금 화면 — 다음 구역 축소 시각 (#668)",
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
   "@lockScreenLocationReveal": {
     "description": "잠금 화면 게임 현황 — 다음 위치 공개 카운트다운 라벨 (iOS Live Activity)"
   },
@@ -2525,15 +2547,63 @@
   "errorCodeLobbyActionNotAllowed": "게임이 시작된 이후에는 로비 상태를 변경할 수 없어요",
   "errorCodeNotHost": "방장만 할 수 있어요",
   "errorCodeInvalidTeamComposition": "게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요",
-  "errorCodeNotAllReady": "모든 참가자가 준비 상태여야 게임을 시작할 수 있어요",
   "errorCodeNotRobberTeam": "도둑 팀만 위치를 전송할 수 있어요",
-  "errorCodeHostCannotUnready": "방장은 항상 준비 상태여야 해요",
   "errorCodeParticipantGameMismatch": "경찰과 도둑이 서로 다른 게임에 참여하고 있어요",
   "errorCodeOnlyPoliceCanArrest": "경찰 팀만 도둑을 체포할 수 있어요",
   "errorCodeOnlyRobberCanBeArrested": "도둑 팀만 체포될 수 있어요",
   "errorCodeOnlyRobberCanEscape": "도둑 팀만 탈옥할 수 있어요",
   "errorCodeAlreadyArrested": "이미 수감된 도둑이에요",
   "errorCodeNotJailed": "수감된 상태에서만 탈옥할 수 있어요",
+  "errorCodeShrinkRequiresCircleArea": "구역 축소는 원형 구역에서만 쓸 수 있어요",
+  "errorCodeInvalidShrinkFinalRadius": "구역 축소 반경이 맞지 않아요. 구역을 다시 확인해 주세요",
+  "errorCodeForceArrestNotAllowedInEventGame": "이벤트 게임에서는 쓸 수 없어요",
+  "shrinkAutoOffSnackbar": "구역이 작아져서 구역 축소를 껐어요",
+  "shrinkTitle": "구역 축소",
+  "shrinkDescOff": "구역이 점점 줄어들어요",
+  "shrinkDescOn": "{start} → {end}까지 줄어요",
+  "@shrinkDescOn": {
+    "description": "구역 축소 켬 — 시작 반경에서 최종 반경까지 (#668)",
+    "placeholders": {
+      "start": {"type": "String"},
+      "end": {"type": "String"}
+    }
+  },
+  "shrinkLockTooSmall": "구역이 작아서 쓸 수 없어요",
+  "shrinkLockNotCircle": "원형 구역에서만 쓸 수 있어요",
+  "shrinkPinHint": "핀으로 그리면 구역 축소를 쓸 수 없어요",
+  "gameShrinkNotice": "구역이 줄었어요 ({stage}/4)",
+  "gameRevealShrinkCountdown": "위치 공개 {reveal} | 구역 축소 {shrink}",
+  "@gameRevealShrinkCountdown": {
+    "description": "앱바 — 다음 도둑 위치 공개와 다음 구역 축소까지 남은 시간 한 줄 (#668)",
+    "placeholders": {
+      "reveal": {"type": "String"},
+      "shrink": {"type": "String"}
+    }
+  },
+  "@gameShrinkNotice": {
+    "description": "구역 축소 (#668)",
+    "placeholders": {
+      "stage": {"type": "int"}
+    }
+  },
+  "gameShrinkFinalNotice": "마지막 구역이에요. 더 줄어들지 않아요",
+  "pingOutsideShrunkZone": "줄어든 구역 밖에는 핑을 찍을 수 없어요",
+  "zoneWarnStatus": "경고 {count}/{max} · 다음 경고까지 {formatted}",
+  "@zoneWarnStatus": {
+    "description": "구역 밖 경고 횟수와 다음 경고까지 남은 시간 (#668)",
+    "placeholders": {
+      "count": {"type": "int"},
+      "max": {"type": "int"},
+      "formatted": {"type": "String"}
+    }
+  },
+  "gameEventForcedArrestNotice": "[{robberNickname}]님이 구역 밖에 오래 있어서 잡혔어요!",
+  "@gameEventForcedArrestNotice": {
+    "description": "구역 밖 강제 체포 공지 (#668)",
+    "placeholders": {
+      "robberNickname": {"type": "String"}
+    }
+  },
   "errorCodePoliceWaitingTime": "경찰은 대기 시간 동안 도둑을 체포할 수 없어요",
   "errorCodeCannotKickYourself": "방장은 자기 자신을 강퇴할 수 없어요",
   "errorCodeNoticeNotFound": "해당 공지사항을 찾을 수 없어요",

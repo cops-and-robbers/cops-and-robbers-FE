@@ -4,12 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// 테스트용 참가자 생성 헬퍼
 LobbyParticipantInfo _p(int id, {String team = 'POLICE'}) =>
-    LobbyParticipantInfo(
-      participantId: id,
-      nickname: 'user$id',
-      team: team,
-      isReady: false,
-    );
+    LobbyParticipantInfo(participantId: id, nickname: 'user$id', team: team);
 
 /// participantId만 순서대로 뽑아 비교용으로 반환
 List<int> _ids(List<LobbyParticipantInfo> list) =>

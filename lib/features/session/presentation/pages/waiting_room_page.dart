@@ -48,11 +48,12 @@ import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../providers/waiting_room_participants_provider.dart';
 import '../widgets/game_rules_content.dart';
+import '../widgets/start_game_team_preview.dart';
 import '../widgets/team_section.dart';
 
 /// 대기실 화면
 ///
-/// 게임 시작 전 참가자들이 팀을 선택하고 준비 완료를 표시합니다.
+/// 게임 시작 전 참가자들이 팀을 고르고, 방장이 게임을 시작합니다.
 class WaitingRoomPage extends ConsumerStatefulWidget {
   const WaitingRoomPage({
     required this.sessionId,
@@ -82,10 +83,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// 팀 섹션 펼침 상태
   bool _isPoliceExpanded = true;
   bool _isRobberExpanded = true;
-
-  /// 준비 상태
-  bool _isReady = false;
-  bool _isUpdatingReady = false;
 
   /// 참가자 초기화 중복 실행 방지
   bool _isFetchingParticipants = false;
@@ -706,8 +703,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
         // initFromLobby() 호출 후에는 participantId != null이므로 자동 스킵됨.
         final pInfo = ref.read(gameParticipantNotifierProvider);
         if (pInfo?.isHost == true && pInfo?.participantId == null) {
-          if (event.type == LobbyEventType.teamUpdate ||
-              event.type == LobbyEventType.readyUpdate) {
+          if (event.type == LobbyEventType.teamUpdate) {
             final participant = _extractEventParticipant(event.data);
             final eventPid = participant['participantId'] as int?;
             if (eventPid != null) {
@@ -764,10 +760,6 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             ref
                 .read(waitingRoomParticipantsProvider.notifier)
                 .setHost(newHostId);
-            // 내가 방장이 되면 레디 상태 해제 — 레디 중에는 팀 변경 UI가 숨겨지기 때문
-            if (iAmNewHost && _isReady) {
-              setState(() => _isReady = false);
-            }
           }
         }
 
@@ -921,37 +913,39 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     }
   }
 
-  /// 준비 상태 토글
-  Future<void> _toggleReady() async {
-    // 더미 모드: 로컬에서 즉시 토글
-    if (_isDummyMode) {
-      ref
-          .read(waitingRoomParticipantsProvider.notifier)
-          .toggleDummyReady(_dummyMyId);
-      setState(() => _isReady = !_isReady);
-      return;
-    }
-
-    final gameId = int.tryParse(widget.sessionId);
-    if (gameId == null) return;
-
-    setState(() => _isUpdatingReady = true);
-
-    final newReadyState = !_isReady;
-    try {
-      await ref.read(
-        updateReadyProvider(gameId, isReady: newReadyState).future,
-      );
-      if (!mounted) return;
-      setState(() => _isReady = newReadyState);
-    } on DioException catch (e) {
-      if (!mounted) return;
-      await _handleApiErrorOrNotParticipating(e);
-    } finally {
-      if (mounted) {
-        setState(() => _isUpdatingReady = false);
-      }
-    }
+  /// 방장이 시작 버튼을 누르면 한 번 더 묻는다.
+  ///
+  /// 준비 단계가 없어져(#661) 방장 손가락 하나로 모두가 게임 화면으로 넘어가므로, 실수로
+  /// 시작하지 않게 확인창을 둔다. 두 팀 캐릭터와 인원을 보여 줘 마지막으로 훑어볼 거리를 주고,
+  /// 확인하면 기다림 없이 바로 시작한다.
+  Future<void> _confirmStartGame() async {
+    final isDark = ref.read(roleThemeProvider);
+    final l10n = AppLocalizations.of(context);
+    var confirmed = false;
+    await AppDialog.show<void>(
+      context: context,
+      isDarkMode: isDark,
+      title: l10n.dialogStartGameTitle,
+      // 확인창이 떠 있는 동안 누가 들어오거나 나가도 인원이 맞게 보이도록 상태를 계속 구독한다.
+      // 시작 가부는 서버가 다시 판단하므로, 그 사이 팀이 비면 기존 팀 구성 오류 안내가 뜬다.
+      customContent: Consumer(
+        builder: (context, ref, _) {
+          final participantsState = ref.watch(waitingRoomParticipantsProvider);
+          return StartGameTeamPreview(
+            policeCount: participantsState.byTeam(GameTeam.police).length,
+            robberCount: participantsState.byTeam(GameTeam.robber).length,
+            isDarkMode: isDark,
+          );
+        },
+      ),
+      cancelText: l10n.buttonClose,
+      confirmText: l10n.buttonStartGame,
+      onConfirm: () => confirmed = true,
+    );
+    // 확인창이 떠 있는 사이 방장이 넘어갔으면 시작 요청을 보내지 않는다(서버도 NOT_HOST 로 막는다)
+    if (!confirmed || !mounted) return;
+    if (ref.read(gameParticipantNotifierProvider)?.isHost != true) return;
+    await _startGame();
   }
 
   /// 게임 시작 (방장 전용)
@@ -1200,9 +1194,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
                             currentUserTeam: participantInfo?.team,
-                            onAddSlotTap: !_isReady
-                                ? () => _changeTeam(GameTeam.police)
-                                : null,
+                            onAddSlotTap: () => _changeTeam(GameTeam.police),
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {
@@ -1235,9 +1227,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
                             currentUserTeam: participantInfo?.team,
-                            onAddSlotTap: !_isReady
-                                ? () => _changeTeam(GameTeam.robber)
-                                : null,
+                            onAddSlotTap: () => _changeTeam(GameTeam.robber),
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
                                 ? (member) {
@@ -1254,7 +1244,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                     ),
             ),
 
-            // 하단 버튼 (준비 / 게임 시작)
+            // 하단 자리 (방장은 게임 시작 버튼, 참가자는 빈자리)
             SafeArea(
               top: false,
               child: Padding(
@@ -1337,24 +1327,17 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   Widget _buildBottomButton(bool isHost, bool isDark) {
     final l10n = AppLocalizations.of(context);
     if (isHost) {
-      final participantsState = ref.watch(waitingRoomParticipantsProvider);
-      final hostPid = participantsState.hostParticipantId;
-      // 방장 제외 참가자 중 전원 레디 여부 확인
-      final nonHostParticipants = participantsState.participants
-          .where((p) => p.participantId != hostPid)
-          .toList();
-      // 이벤트방은 운영진(도둑)만 있고 경찰은 코드로 중간 참여하므로,
-      // 레디/인원 조건 없이 방장이 바로 시작 가능. 실제 시작 가부는 백엔드가 판단.
       final isEvent =
           ref.watch(gameParticipantNotifierProvider)?.isEventGame ?? false;
-      final allReady =
-          isEvent ||
-          (nonHostParticipants.isNotEmpty &&
-              nonHostParticipants.every((p) => p.isReady));
+      // 서버와 같은 시작 조건(경찰·도둑 각 1명 이상)이 아니면 꺼 둔다. 혼자일 때와
+      // 모두 한 팀일 때가 여기에 걸린다. 실제 시작 가부는 서버가 다시 판단한다.
+      final canStart = ref
+          .watch(waitingRoomParticipantsProvider)
+          .canStart(isEventGame: isEvent);
 
       return AppButton(
         text: l10n.buttonStartGame,
-        onPressed: allReady ? _startGame : null,
+        onPressed: canStart ? _confirmStartGame : null,
         backgroundColor: isDark ? AppColors.green : AppColors.blue,
         foregroundColor: isDark ? AppColors.black : AppColors.white,
         disabledBackgroundColor: isDark
@@ -1365,24 +1348,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       );
     }
 
-    if (_isReady) {
-      return AppButton(
-        text: l10n.buttonCancelReady,
-        onPressed: _isUpdatingReady ? null : _toggleReady,
-        backgroundColor: isDark ? AppColors.black800 : AppColors.blue100,
-        foregroundColor: isDark ? AppColors.green : AppColors.blue,
-        textStyle: isDark ? AppTextStyles.robberLabel : null,
-        isLoading: _isUpdatingReady,
-      );
-    }
-
-    return AppButton(
-      text: l10n.buttonReady,
-      onPressed: _isUpdatingReady ? null : _toggleReady,
-      backgroundColor: isDark ? AppColors.green : AppColors.blue,
-      foregroundColor: isDark ? AppColors.black : AppColors.white,
-      textStyle: isDark ? AppTextStyles.robberLabel : null,
-      isLoading: _isUpdatingReady,
-    );
+    // 참가자 화면은 준비 버튼 자리를 비운다(#661 피그마 9085:24787). 높이는 버튼과 같게 잡아
+    // 방장이 바뀌어 버튼이 생기고 사라져도 목록이 들썩이지 않게 한다.
+    return SizedBox(height: 56.h);
   }
 }

@@ -16,6 +16,7 @@ LockScreenStatus buildLockScreenStatus({
   required bool isEventGame,
   required bool isRobberTeam,
   required AppLocalizations l10n,
+  DateTime? nextShrinkAt,
 }) {
   final nextReveal = nextRevealAt(
     start: start,
@@ -49,5 +50,12 @@ LockScreenStatus buildLockScreenStatus({
     isRobberTeam: isRobberTeam,
     teamLabel: isRobberTeam ? l10n.gameRoleRobberLabel : l10n.gameRoleCopLabel,
     localeCode: l10n.localeName,
+    nextShrinkAt: nextShrinkAt,
+    shrinkText: nextShrinkAt == null
+        ? null
+        : l10n.lockScreenShrinkAt(
+            DateFormat.Hm(l10n.localeName).format(nextShrinkAt.toLocal()),
+          ),
+    shrinkLabel: nextShrinkAt == null ? null : l10n.lockScreenShrink,
   );
 }

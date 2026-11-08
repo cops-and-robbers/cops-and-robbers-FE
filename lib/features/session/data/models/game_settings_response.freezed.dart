@@ -42,6 +42,9 @@ mixin _$GameSettingsResponse {
   /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false) — 콜드 재진입 복원용
   bool get isEventGame => throw _privateConstructorUsedError;
 
+  /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
+  int? get shrinkFinalRadiusInMeters => throw _privateConstructorUsedError;
+
   /// Serializes this GameSettingsResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -66,6 +69,7 @@ abstract class $GameSettingsResponseCopyWith<$Res> {
     int maxParticipants,
     String? gameStartTime,
     bool isEventGame,
+    int? shrinkFinalRadiusInMeters,
   });
 }
 
@@ -93,6 +97,7 @@ class _$GameSettingsResponseCopyWithImpl<
     Object? maxParticipants = null,
     Object? gameStartTime = freezed,
     Object? isEventGame = null,
+    Object? shrinkFinalRadiusInMeters = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -120,6 +125,10 @@ class _$GameSettingsResponseCopyWithImpl<
                 ? _value.isEventGame
                 : isEventGame // ignore: cast_nullable_to_non_nullable
                       as bool,
+            shrinkFinalRadiusInMeters: freezed == shrinkFinalRadiusInMeters
+                ? _value.shrinkFinalRadiusInMeters
+                : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -142,6 +151,7 @@ abstract class _$$GameSettingsResponseImplCopyWith<$Res>
     int maxParticipants,
     String? gameStartTime,
     bool isEventGame,
+    int? shrinkFinalRadiusInMeters,
   });
 }
 
@@ -165,6 +175,7 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
     Object? maxParticipants = null,
     Object? gameStartTime = freezed,
     Object? isEventGame = null,
+    Object? shrinkFinalRadiusInMeters = freezed,
   }) {
     return _then(
       _$GameSettingsResponseImpl(
@@ -192,6 +203,10 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
             ? _value.isEventGame
             : isEventGame // ignore: cast_nullable_to_non_nullable
                   as bool,
+        shrinkFinalRadiusInMeters: freezed == shrinkFinalRadiusInMeters
+            ? _value.shrinkFinalRadiusInMeters
+            : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -207,6 +222,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     required this.maxParticipants,
     this.gameStartTime,
     this.isEventGame = false,
+    this.shrinkFinalRadiusInMeters,
   });
 
   factory _$GameSettingsResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -240,9 +256,13 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
   @JsonKey()
   final bool isEventGame;
 
+  /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
+  @override
+  final int? shrinkFinalRadiusInMeters;
+
   @override
   String toString() {
-    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, gameStartTime: $gameStartTime, isEventGame: $isEventGame)';
+    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, gameStartTime: $gameStartTime, isEventGame: $isEventGame, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters)';
   }
 
   @override
@@ -265,7 +285,12 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
             (identical(other.gameStartTime, gameStartTime) ||
                 other.gameStartTime == gameStartTime) &&
             (identical(other.isEventGame, isEventGame) ||
-                other.isEventGame == isEventGame));
+                other.isEventGame == isEventGame) &&
+            (identical(
+                  other.shrinkFinalRadiusInMeters,
+                  shrinkFinalRadiusInMeters,
+                ) ||
+                other.shrinkFinalRadiusInMeters == shrinkFinalRadiusInMeters));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -278,6 +303,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     maxParticipants,
     gameStartTime,
     isEventGame,
+    shrinkFinalRadiusInMeters,
   );
 
   /// Create a copy of GameSettingsResponse
@@ -306,6 +332,7 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
     required final int maxParticipants,
     final String? gameStartTime,
     final bool isEventGame,
+    final int? shrinkFinalRadiusInMeters,
   }) = _$GameSettingsResponseImpl;
 
   factory _GameSettingsResponse.fromJson(Map<String, dynamic> json) =
@@ -337,6 +364,10 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
   /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false) — 콜드 재진입 복원용
   @override
   bool get isEventGame;
+
+  /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
+  @override
+  int? get shrinkFinalRadiusInMeters;
 
   /// Create a copy of GameSettingsResponse
   /// with the given fields replaced by the non-null parameter values.

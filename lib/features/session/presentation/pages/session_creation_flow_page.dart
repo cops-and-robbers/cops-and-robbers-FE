@@ -21,6 +21,8 @@ import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../game/domain/shrink_schedule.dart';
+import '../widgets/shrink_toggle_card.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
@@ -42,25 +44,48 @@ import '../widgets/basic_settings_form.dart';
 import '../widgets/game_setting_values_editor.dart';
 import '../widgets/setting_list_card.dart';
 import '../widgets/zone_list_card.dart';
+import 'setup_playground_page.dart';
 import 'setup_prison_page.dart';
 
-/// 방 생성 흐름의 단계
+/// 방 생성 흐름의 단계. 상단 바(뒤로·단계 표시)는 흐름이 하나만 그리고
+/// 본문만 단계에 따라 바뀐다(#658 전환 B안).
 enum _CreationPhase {
-  /// 지도에서 구역을 그리는 중 (플레이그라운드·감옥 페이지가 위에 떠 있다)
-  zone,
+  /// 플레이그라운드 지도 (1/3)
+  playground,
 
-  /// 기본 정보 입력 (한 항목씩 묻고 쌓기)
-  basic,
+  /// 감옥 지도 (2/3)
+  jail,
 
-  /// 최종 확인 (행을 탭하면 해당 화면으로 되돌아가 수정)
+  /// 최종 확인 (3/3, 행을 탭하면 해당 화면으로 되돌아가 수정)
   confirm,
+
+  /// 최종 확인에서 설정 한 항목을 고치는 중 (3/3)
+  edit,
+}
+
+/// 본문이 바뀔 때의 움직임
+enum _Motion {
+  /// 처음 그릴 때 — 움직이지 않는다 (페이지 자체가 밀려 들어온다)
+  none,
+
+  /// 다음 단계 — 새 본문이 오른쪽에서 들어온다
+  forward,
+
+  /// 이전 단계 — 새 본문이 왼쪽에서 들어온다
+  back,
+
+  /// 항목 고치기 열기 — 키패드와 함께 아래에서 올라온다
+  up,
+
+  /// 항목 고치기 닫기 — 아래로 내려간다
+  down,
 }
 
 /// 세션 생성 플로우 페이지
 ///
-/// 생성을 누르면 바로 플레이그라운드 지도로 들어가고, 감옥 지도와 기본 정보
-/// 입력을 거쳐 최종 확인에서 방을 만든다. 최종 확인의 각 행을 탭하면 해당
-/// 화면으로 이동해 고칠 수 있다.
+/// 생성을 누르면 바로 플레이그라운드 지도로 들어가고, 감옥 지도를 마치면
+/// 추천값이 채워진 최종 확인으로 간다(#658 B안). 설정은 묻지 않고, 바꿀
+/// 항목만 확인 화면에서 탭해 고친다.
 ///
 /// 임시 저장(SessionDraftStorageService)은 숫자 값을 조용히 복원하고, 구역은
 /// 지도를 열 때 이전 도형이 그려진 채로 연다.
@@ -87,17 +112,19 @@ class _SessionCreationFlowPageState
     extends ConsumerState<SessionCreationFlowPage> {
   late final SessionDraftStorageService _storageService;
 
-  _CreationPhase _phase = _CreationPhase.zone;
+  _CreationPhase _phase = _CreationPhase.playground;
+  _Motion _motion = _Motion.none;
 
-  /// 최종 확인에서 항목 하나를 고치러 기본 정보로 들어왔을 때의 대상
+  /// 플레이그라운드에서 뒤로 나가면 최종 확인으로 돌아가는지
+  /// (확인 화면의 플레이그라운드 행을 눌러 들어온 경우). 아니면 흐름을 끝낸다.
+  bool _playgroundExitsToConfirm = false;
+
+  /// 감옥에서 뒤로 나가면 최종 확인으로 돌아가는지
+  /// (확인 화면의 감옥 행을 눌러 들어온 경우). 아니면 플레이그라운드로 간다.
+  bool _jailExitsToConfirm = false;
+
+  /// 최종 확인에서 고치러 들어간 항목
   GameSettingField? _editTarget;
-
-  /// 최종 확인에서 뒤로 와서 네 항목이 펼쳐진 채 시작하는지
-  bool _revealAllOnBasic = false;
-
-  /// 기본 정보 폼 상태 접근용. 폼을 새로 시작할 때마다 새 키로 갈아 상태를 재생성한다.
-  GlobalKey<BasicSettingsFormState> _formKey =
-      GlobalKey<BasicSettingsFormState>();
 
   bool _isLoading = false;
 
@@ -115,10 +142,13 @@ class _SessionCreationFlowPageState
   List<LatLng>? _prisonPinPoints;
 
   // 설정 값
-  int _maxParticipants = 10;
-  int _roundDurationMinutes = 30;
-  int _locationShareMinutes = 5;
-  int _policeWaitMinutes = 5;
+  int _maxParticipants = GameSettingValues.recommendedParticipants;
+  int _roundDurationMinutes = GameSettingValues.recommendedRoundDuration;
+  int _locationShareMinutes = GameSettingValues.recommendedLocationShare;
+  int _policeWaitMinutes = GameSettingValues.recommendedPoliceWait;
+
+  /// 구역 축소 (#668). 기본 꺼짐.
+  bool _shrinkEnabled = false;
 
   // ============================================
   // Lifecycle
@@ -128,12 +158,8 @@ class _SessionCreationFlowPageState
   void initState() {
     super.initState();
     _storageService = SessionDraftStorageService();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _loadDraftData();
-      if (!mounted) return;
-      // 생성 진입 즉시 구역 설정(지도)으로 들어간다
-      await _runZoneSetup(returnToConfirm: false);
-    });
+    // 생성 진입 즉시 플레이그라운드 지도를 그린다
+    unawaited(_loadDraftData());
   }
 
   // ============================================
@@ -156,10 +182,18 @@ class _SessionCreationFlowPageState
         _playgroundRadiusMeters = draft.playgroundRadiusInMeters;
         _prisonCenter = draft.jailCenter;
         _prisonRadiusMeters = draft.jailRadiusInMeters;
-        _maxParticipants = draft.maxParticipants ?? 10;
-        _roundDurationMinutes = draft.roundDurationMinutes ?? 30;
-        _locationShareMinutes = draft.locationShareMinutes ?? 5;
-        _policeWaitMinutes = (draft.policeWaitMinutes ?? 5).clamp(1, 10);
+        _maxParticipants =
+            draft.maxParticipants ?? GameSettingValues.recommendedParticipants;
+        _roundDurationMinutes =
+            draft.roundDurationMinutes ??
+            GameSettingValues.recommendedRoundDuration;
+        _locationShareMinutes =
+            draft.locationShareMinutes ??
+            GameSettingValues.recommendedLocationShare;
+        _policeWaitMinutes =
+            (draft.policeWaitMinutes ?? GameSettingValues.recommendedPoliceWait)
+                .clamp(1, 10);
+        _shrinkEnabled = draft.shrinkEnabled;
       });
     }
   }
@@ -178,6 +212,7 @@ class _SessionCreationFlowPageState
       roundDurationMinutes: _roundDurationMinutes,
       locationShareMinutes: _locationShareMinutes,
       policeWaitMinutes: _policeWaitMinutes,
+      shrinkEnabled: _shrinkEnabled,
     );
     await _storageService.saveDraft(draft);
   }
@@ -186,123 +221,99 @@ class _SessionCreationFlowPageState
   // Zone Setup Navigation
   // ============================================
 
-  /// 플레이그라운드 → 감옥 순서로 지도를 연다.
-  ///
-  /// 감옥에서 뒤로 가면 플레이그라운드로 되돌아가고, 플레이그라운드에서 뒤로
-  /// 가면 흐름을 끝낸다([returnToConfirm] 이면 최종 확인으로 복귀).
-  /// 이전에 그린 도형은 초기값으로 넘겨 지도에 그려진 채로 열린다.
-  Future<void> _runZoneSetup({required bool returnToConfirm}) async {
-    while (true) {
-      if (!mounted) return;
-      final playground = await context.pushNamed<AreaShape>(
-        RoutePaths.setupPlaygroundFromFlowName,
-        extra: (
-          initialShape: _playgroundShape,
-          initialCenter: widget.initialCenter,
-        ),
-      );
-      if (!mounted) return;
-      if (playground == null) {
-        if (returnToConfirm) {
-          setState(() => _phase = _CreationPhase.confirm);
-        } else {
-          context.pop();
-        }
-        return;
-      }
-      _onPlaygroundResult(playground);
-      await _saveDraft();
-      if (!mounted) return;
+  void _show(_CreationPhase phase, _Motion motion) => setState(() {
+    _phase = phase;
+    _motion = motion;
+  });
 
-      final prison = await context.pushNamed<AreaShape>(
-        RoutePaths.setupPrisonFromFlowName,
-        extra: PrisonEditArgs(playground: playground),
-      );
-      if (!mounted) return;
-      if (prison == null) continue; // 감옥에서 뒤로 → 플레이그라운드부터 다시
-      _onPrisonResult(prison);
-      await _saveDraft();
-      break;
-    }
-    if (!mounted) return;
-    setState(() {
-      _formKey = GlobalKey<BasicSettingsFormState>();
-      _revealAllOnBasic = false;
-      _phase = returnToConfirm ? _CreationPhase.confirm : _CreationPhase.basic;
-    });
+  /// 플레이그라운드 완료 → 감옥 (이전에 그린 도형은 지도에 그려진 채로 열린다)
+  void _onPlaygroundDone(AreaShape shape) {
+    _onPlaygroundResult(shape);
+    unawaited(_saveDraft());
+    _jailExitsToConfirm = false;
+    _show(_CreationPhase.jail, _Motion.forward);
   }
 
-  /// 최종 확인에서 감옥만 고치러 들어간다
-  Future<void> _editPrisonOnly() async {
-    final playground = _playgroundShape;
-    if (playground == null) return;
-    final prison = await context.pushNamed<AreaShape>(
-      RoutePaths.setupPrisonFromFlowName,
-      extra: PrisonEditArgs(playground: playground, initialJail: _prisonShape),
-    );
-    if (!mounted || prison == null) return;
-    _onPrisonResult(prison);
-    await _saveDraft();
-    if (mounted) setState(() {});
+  void _onPlaygroundExit() {
+    if (_playgroundExitsToConfirm) {
+      _show(_CreationPhase.confirm, _Motion.forward);
+    } else {
+      context.pop();
+    }
   }
 
-  /// 기본 정보 첫 항목에서 뒤로 → 감옥 지도로 되돌아간다
-  Future<void> _reenterZoneFromBasic() async {
-    final playground = _playgroundShape;
-    if (playground == null) {
-      await _runZoneSetup(returnToConfirm: false);
-      return;
-    }
-    final prison = await context.pushNamed<AreaShape>(
-      RoutePaths.setupPrisonFromFlowName,
-      extra: PrisonEditArgs(playground: playground, initialJail: _prisonShape),
+  void _onJailDone(AreaShape shape) {
+    _onPrisonResult(shape);
+    _turnShrinkOffIfLocked();
+    unawaited(_saveDraft());
+    _show(_CreationPhase.confirm, _Motion.forward);
+  }
+
+  /// 구역을 고쳐 축소 조건이 깨지면 끄고 알린다. 다시 가능해져도 켜는 건 방장 몫이다 (#668).
+  void _turnShrinkOffIfLocked() {
+    final area = _buildAreaEntity();
+    if (!_shrinkEnabled || area == null) return;
+    if (shrinkLockFor(area) == ShrinkLock.none) return;
+    _shrinkEnabled = false;
+    AppSnackbar.show(
+      context,
+      message: AppLocalizations.of(context).shrinkAutoOffSnackbar,
     );
-    if (!mounted) return;
-    if (prison == null) {
-      // 감옥에서 또 뒤로 → 플레이그라운드부터
-      await _runZoneSetup(returnToConfirm: false);
-      return;
+  }
+
+  /// 이 구역에서 켰을 때의 최종 반경. 잠겼으면 null.
+  int? _shrinkFinalRadius(GameAreaEntity area) {
+    if (shrinkLockFor(area) != ShrinkLock.none) return null;
+    final playground = area.playground as CircleShape;
+    final jail = area.jail;
+    return computeShrinkFinalRadius(
+      startRadius: playground.radiusInMeters.round(),
+      jailRadius: jail is CircleShape ? jail.radiusInMeters.round() : 0,
+    );
+  }
+
+  void _onJailExit() {
+    if (_jailExitsToConfirm) {
+      _show(_CreationPhase.confirm, _Motion.forward);
+    } else {
+      _show(_CreationPhase.playground, _Motion.back);
     }
-    _onPrisonResult(prison);
-    await _saveDraft();
-    if (mounted) {
-      setState(() {
-        _formKey = GlobalKey<BasicSettingsFormState>();
-        _revealAllOnBasic = false;
-        _phase = _CreationPhase.basic;
-      });
-    }
+  }
+
+  /// 최종 확인의 플레이그라운드 행 — 다시 그린 뒤 감옥을 거쳐 확인으로 돌아온다
+  void _editPlaygroundFromConfirm() {
+    _playgroundExitsToConfirm = true;
+    _show(_CreationPhase.playground, _Motion.back);
+  }
+
+  /// 최종 확인의 감옥 행 — 감옥만 고치고 돌아온다
+  void _editJailFromConfirm() {
+    _jailExitsToConfirm = true;
+    _show(_CreationPhase.jail, _Motion.back);
   }
 
   // ============================================
   // Back Handling
   // ============================================
 
+  /// 시스템 뒤로와 상단 바 뒤로
+  ///
+  /// 지도 단계는 지도 페이지가 자기 PopScope로 받는다(핀 이탈 확인 포함).
+  /// 같은 라우트의 PopScope는 모두 호출되므로 여기서는 건너뛴다.
   void _handleBack() {
     switch (_phase) {
-      case _CreationPhase.zone:
-        // 지도가 떠 있는 동안 이 페이지가 직접 받을 일은 없지만, 혹시 받으면 홈으로
-        context.pop();
-      case _CreationPhase.basic:
-        if (_formKey.currentState?.handleBack() ?? false) return;
-        if (_editTarget != null) {
-          // 고치러 들어온 경우 → 반영하지 않고 최종 확인으로
-          setState(() {
-            _editTarget = null;
-            _phase = _CreationPhase.confirm;
-          });
-          return;
-        }
-        unawaited(_reenterZoneFromBasic());
+      case _CreationPhase.playground:
+      case _CreationPhase.jail:
+        return;
+      case _CreationPhase.edit:
+        // 확인을 누르지 않고 나가면 고친 값은 버린다
+        _editTarget = null;
+        _show(_CreationPhase.confirm, _Motion.down);
       case _CreationPhase.confirm:
-        // 전 항목이 펼쳐진 기본 정보로 되돌아간다. 항목 수정 모드가 아니라
-        // 생성 흐름의 뒤로가기 규칙을 따라 계속 되짚을 수 있는 상태다.
-        setState(() {
-          _editTarget = null;
-          _revealAllOnBasic = true;
-          _formKey = GlobalKey<BasicSettingsFormState>();
-          _phase = _CreationPhase.basic;
-        });
+        // 뒤로 계속 누르면 감옥 → 플레이그라운드 → 흐름 종료로 되짚는다
+        _playgroundExitsToConfirm = false;
+        _jailExitsToConfirm = false;
+        _show(_CreationPhase.jail, _Motion.back);
     }
   }
 
@@ -333,6 +344,9 @@ class _SessionCreationFlowPageState
             locationRevealIntervalMinutes: _locationShareMinutes,
             policeWaitMinutes: _policeWaitMinutes,
             maxParticipants: _maxParticipants,
+            shrinkFinalRadiusInMeters: _shrinkEnabled
+                ? _shrinkFinalRadius(area)
+                : null,
           );
     } finally {
       // 성공/실패 무관하게 로딩 종료 보장 (최소 표시 시간은 핸들이 처리)
@@ -662,29 +676,15 @@ class _SessionCreationFlowPageState
   }
 
   void _onBasicSubmit(GameSettingValues values) {
-    setState(() {
-      _applyValues(values);
-      _editTarget = null;
-      _phase = _CreationPhase.confirm;
-    });
-    unawaited(_saveDraft());
-  }
-
-  void _onBasicValuesChanged(GameSettingValues values) {
-    // 항목 하나를 고치는 모드에서는 확인을 눌러야 반영된다.
-    // 여기서도 반영하면 뒤로 가기(취소)가 취소가 아니게 된다.
-    if (_editTarget != null) return;
     _applyValues(values);
+    _editTarget = null;
+    _show(_CreationPhase.confirm, _Motion.down);
     unawaited(_saveDraft());
   }
 
   void _onSettingRowTap(GameSettingField field) {
-    setState(() {
-      _editTarget = field;
-      _revealAllOnBasic = false;
-      _formKey = GlobalKey<BasicSettingsFormState>();
-      _phase = _CreationPhase.basic;
-    });
+    _editTarget = field;
+    _show(_CreationPhase.edit, _Motion.up);
   }
 
   // ============================================
@@ -706,32 +706,95 @@ class _SessionCreationFlowPageState
       },
       child: Scaffold(
         backgroundColor: AppColors.white,
+        // 상단 바는 단계가 바뀌어도 제자리에 하나만 있고, 단계 표시만 다음 칸이 차오른다
         appBar: AppTopBar(
           titleWidget: StepIndicator(
             totalSteps: 3,
             currentStep: switch (_phase) {
-              _CreationPhase.zone => 0,
-              _CreationPhase.basic => 1,
-              _CreationPhase.confirm => 2,
+              _CreationPhase.playground => 0,
+              _CreationPhase.jail => 1,
+              _CreationPhase.confirm || _CreationPhase.edit => 2,
             },
             activeColor: AppColors.blue,
           ),
           centerTitle: false,
           titleSpacing: 0,
-          onBack: _handleBack,
+          // 지도 단계의 PopScope까지 거치도록 라우트 뒤로 가기로 보낸다
+          onBack: () => Navigator.of(context).maybePop(),
           actions: [SizedBox(width: AppSpacing.horizontal20)],
         ),
-        body: SafeArea(
-          // 기본 정보 단계는 키패드가 하단 인셋까지 배경으로 채우므로
-          // 하단 세이프 에어리어를 풀어 흰 띠가 생기지 않게 한다 (#539)
-          bottom: _phase != _CreationPhase.basic,
-          child: switch (_phase) {
-            _CreationPhase.zone => const SizedBox.shrink(),
-            _CreationPhase.basic => _buildBasicPhase(l10n),
-            _CreationPhase.confirm => _buildConfirmPhase(l10n),
-          },
+        body: ClipRect(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            layoutBuilder: _layoutBodies,
+            // 매 빌드 새 함수를 넘겨야 나가는 본문의 움직임도 이번 방향으로 다시 만든다.
+            // 메서드를 그대로 넘기면 같은 함수로 보고, 들어올 때 만든 움직임을 거꾸로
+            // 재생해 처음 감옥 → 확인에서 감옥이 오른쪽으로 빠졌다.
+            transitionBuilder: (child, animation) =>
+                _transitionBody(child, animation),
+            child: KeyedSubtree(key: ValueKey(_phase), child: _buildBody(l10n)),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildBody(AppLocalizations l10n) {
+    final playground = _playgroundShape;
+    return switch (_phase) {
+      _CreationPhase.playground => SetupPlaygroundPage(
+        editInitialShape: playground,
+        initialCenter: widget.initialCenter,
+        onDone: _onPlaygroundDone,
+        onExit: _onPlaygroundExit,
+      ),
+      // 감옥은 플레이그라운드를 마친 뒤에만 오므로 playground가 있다
+      _CreationPhase.jail => SetupPrisonPage(
+        editArgs: PrisonEditArgs(
+          playground: playground!,
+          initialJail: _prisonShape,
+        ),
+        onDone: _onJailDone,
+        onExit: _onJailExit,
+      ),
+      _CreationPhase.confirm => SafeArea(child: _buildConfirmPhase(l10n)),
+      // 키패드가 하단 인셋까지 배경으로 채우므로 하단 세이프 에어리어를 푼다 (#539)
+      _CreationPhase.edit => SafeArea(
+        bottom: false,
+        child: _buildEditPhase(l10n, _editTarget!),
+      ),
+    };
+  }
+
+  /// 닫히는 고치기 화면은 확인 화면 위에서 내려가야 하므로 맨 위에 둔다
+  Widget _layoutBodies(Widget? current, List<Widget> previous) => Stack(
+    fit: StackFit.expand,
+    children: _motion == _Motion.down
+        ? [?current, ...previous]
+        : [...previous, ?current],
+  );
+
+  /// 들어오는 본문과 나가는 본문의 움직임 (#658 전환 B안)
+  ///
+  /// 나가는 본문은 컨트롤러가 1→0으로 거꾸로 돌므로, Tween(begin: 나간 자리,
+  /// end: 제자리)로 두면 제자리에서 나간 자리로 움직인다.
+  Widget _transitionBody(Widget child, Animation<double> animation) {
+    final isIncoming = child.key == ValueKey(_phase);
+    final (Offset inFrom, Offset outTo) = switch (_motion) {
+      _Motion.none => (Offset.zero, Offset.zero),
+      _Motion.forward => (const Offset(1, 0), const Offset(-0.3, 0)),
+      _Motion.back => (const Offset(-1, 0), const Offset(0.3, 0)),
+      _Motion.up => (const Offset(0, 1), Offset.zero),
+      _Motion.down => (Offset.zero, const Offset(0, 1)),
+    };
+    final tween = Tween(
+      begin: isIncoming ? inFrom : outTo,
+      end: Offset.zero,
+    ).chain(CurveTween(curve: Curves.easeInOut));
+    // 확인·고치기 본문은 바탕이 없어, 덮지 않으면 나가는 지도가 비쳐 지나간다
+    return SlideTransition(
+      position: animation.drive(tween),
+      child: ColoredBox(color: AppColors.white, child: child),
     );
   }
 
@@ -760,7 +823,9 @@ class _SessionCreationFlowPageState
     );
   }
 
-  Widget _buildBasicPhase(AppLocalizations l10n) {
+  // 고치는 화면은 확인 화면에 들어갈 때마다 빠졌다가 새로 만들어지므로
+  // 폼 상태가 이전 수정에서 이어지지 않는다
+  Widget _buildEditPhase(AppLocalizations l10n, GameSettingField target) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -771,18 +836,32 @@ class _SessionCreationFlowPageState
         ),
         Expanded(
           child: BasicSettingsForm(
-            key: _formKey,
             initialParticipants: _maxParticipants,
             initialRoundDuration: _roundDurationMinutes,
             initialLocationShare: _locationShareMinutes,
             initialPoliceWait: _policeWaitMinutes,
-            editTarget: _editTarget,
-            revealAll: _revealAllOnBasic,
+            editTarget: target,
             onSubmit: _onBasicSubmit,
-            onValuesChanged: _onBasicValuesChanged,
           ),
         ),
       ],
+    );
+  }
+
+  /// 확인 화면 맨 위 구역 축소 카드 (#668 시안 위치)
+  Widget _buildShrinkCard(GameAreaEntity area) {
+    final playground = area.playground;
+    return ShrinkToggleCard(
+      enabled: _shrinkEnabled,
+      lock: shrinkLockFor(area),
+      startRadius: playground is CircleShape
+          ? playground.radiusInMeters.round()
+          : 0,
+      finalRadius: _shrinkFinalRadius(area),
+      onChanged: (value) {
+        setState(() => _shrinkEnabled = value);
+        unawaited(_saveDraft());
+      },
     );
   }
 
@@ -804,11 +883,12 @@ class _SessionCreationFlowPageState
                 ? Center(child: Text(l10n.errorZoneNotConfigured))
                 : Column(
                     children: [
+                      _buildShrinkCard(area),
+                      SizedBox(height: AppSpacing.vertical8),
                       ZoneListCard(
                         area: area,
-                        onTapPlayground: () =>
-                            unawaited(_runZoneSetup(returnToConfirm: true)),
-                        onTapJail: () => unawaited(_editPrisonOnly()),
+                        onTapPlayground: _editPlaygroundFromConfirm,
+                        onTapJail: _editJailFromConfirm,
                       ),
                       SizedBox(height: AppSpacing.vertical8),
                       SettingListCard(

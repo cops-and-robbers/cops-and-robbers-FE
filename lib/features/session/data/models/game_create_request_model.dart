@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../game/data/models/game_area_model.dart';
 import '../../../game/domain/entities/area_shape.dart';
+import 'game_settings_response.dart';
 
 part 'game_create_request_model.freezed.dart';
 part 'game_create_request_model.g.dart';
@@ -134,6 +135,11 @@ class GameSettingsRequestModel with _$GameSettingsRequestModel {
 
     /// 최대 참여 인원 (2~50명)
     required int maxParticipants,
+
+    /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
+    ///
+    /// `PUT /settings`는 값을 통째로 덮어쓰므로 null이어도 키를 빼지 않는다.
+    int? shrinkFinalRadiusInMeters,
   }) = _GameSettingsRequestModel;
 
   factory GameSettingsRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -186,3 +192,32 @@ CoordinatesRequestModel _toCoordinates(GeoPoint point) =>
       latitude: point.latitude,
       longitude: point.longitude,
     );
+
+/// 지금 설정을 그대로 두고 축소값만 바꿔 `PUT /settings`로 보낼 때 (#668).
+///
+/// `PUT /settings`는 통째로 덮어쓰므로 다른 값은 조회한 그대로 실어야 한다.
+extension GameSettingsResponseRequest on GameSettingsResponse {
+  GameSettingsRequestModel toRequest({
+    required int? shrinkFinalRadiusInMeters,
+  }) => GameSettingsRequestModel(
+    roundDurationMinutes: roundDurationMinutes,
+    locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+    policeWaitMinutes: policeWaitMinutes,
+    maxParticipants: maxParticipants,
+    shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
+  );
+
+  /// 대기방 설정 수정 — 네 항목만 바꾸고 켜 둔 구역 축소는 그대로 싣는다.
+  GameSettingsRequestModel toEditRequest({
+    required int maxParticipants,
+    required int roundDurationMinutes,
+    required int locationRevealIntervalMinutes,
+    required int policeWaitMinutes,
+  }) => GameSettingsRequestModel(
+    roundDurationMinutes: roundDurationMinutes,
+    locationRevealIntervalMinutes: locationRevealIntervalMinutes,
+    policeWaitMinutes: policeWaitMinutes,
+    maxParticipants: maxParticipants,
+    shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
+  );
+}

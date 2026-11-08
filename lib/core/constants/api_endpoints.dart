@@ -82,9 +82,6 @@ class ApiEndpoints {
   /// 로비 팀 변경
   static String changeTeam(int gameId) => '/api/games/$gameId/lobby/team';
 
-  /// 로비 준비 상태 변경
-  static String updateReady(int gameId) => '/api/games/$gameId/lobby/ready';
-
   /// 게임 시작 (방장만 가능)
   static String startGame(int gameId) => '/api/games/$gameId/lobby/start';
 
@@ -110,6 +107,10 @@ class ApiEndpoints {
 
   /// 도둑 체포 (경찰만)
   static String arrestRobber(int gameId) => '/api/games/$gameId/system/arrest';
+
+  /// 구역 밖에 오래 머문 도둑이 스스로 체포된다 (#668)
+  static String forceArrest(int gameId) =>
+      '/api/games/$gameId/system/force-arrest';
 
   /// 도둑 탈옥 (수감된 도둑만)
   static String escapeFromPrison(int gameId) =>

@@ -41,9 +41,6 @@ abstract class LobbyEventType {
   /// 팀 변경
   static const String teamUpdate = 'TEAM_UPDATE';
 
-  /// 준비 상태 변경
-  static const String readyUpdate = 'READY_UPDATE';
-
   /// 방장 변경
   static const String hostChanged = 'HOST_CHANGED';
 
@@ -85,17 +82,18 @@ class GameStartData with _$GameStartData {
 /// {
 ///   "participantId": 202,
 ///   "nickname": "뉴비도둑",
-///   "team": "ROBBER",
-///   "isReady": false
+///   "team": "ROBBER"
 /// }
 /// ```
+///
+/// 준비 상태가 없어져(#661, BE #230) 서버가 아직 내려 주는 `isReady` 는 읽지 않는다.
+/// 서버가 다음 단계에서 이 필드를 지워도 파싱이 깨지지 않게 하려는 것이다.
 @freezed
 class LobbyParticipantInfo with _$LobbyParticipantInfo {
   const factory LobbyParticipantInfo({
     required int participantId,
     required String nickname,
     required String team,
-    required bool isReady,
   }) = _LobbyParticipantInfo;
 
   factory LobbyParticipantInfo.fromJson(Map<String, dynamic> json) =>

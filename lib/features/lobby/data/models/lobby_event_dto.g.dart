@@ -42,7 +42,6 @@ _$LobbyParticipantInfoImpl _$$LobbyParticipantInfoImplFromJson(
   participantId: (json['participantId'] as num).toInt(),
   nickname: json['nickname'] as String,
   team: json['team'] as String,
-  isReady: json['isReady'] as bool,
 );
 
 Map<String, dynamic> _$$LobbyParticipantInfoImplToJson(
@@ -51,5 +50,4 @@ Map<String, dynamic> _$$LobbyParticipantInfoImplToJson(
   'participantId': instance.participantId,
   'nickname': instance.nickname,
   'team': instance.team,
-  'isReady': instance.isReady,
 };

@@ -5,7 +5,7 @@
 name: cops_and_robbers
 description: "Cops and Robbers - A location-based multiplayer game"
 publish_to: "none"
-version: 3.2.17+391
+version: 4.0.1+399
 # --------------------------------------------
 # Dart SDK 버전 제약
 # --------------------------------------------
@@ -75,7 +75,10 @@ dependencies:
   vibration: ^3.1.8 # 커스텀 진동 패턴 및 강도 제어
   # 기기 정보
   package_info_plus: ^9.0.0 # 앱 정보 수집 (버전 등)
-  device_info_plus: ^10.1.2 # 기기 정보 수집 (FCM 기기 식별용)
+  device_info_plus: ^10.1.2 # 기기 정보 수집 (기기 이름·OS 버전, iOS IDFV)
+  # Android 기기 ID(ANDROID_ID). device_info_plus 의 id 는 OS 빌드 번호라 쓰면 안 된다 (#687)
+  # 0.6.0 부터 Flutter 3.47 이상 필요 — 지금 SDK(3.38)에 맞춰 0.5.x 에 둔다
+  android_id: ^0.5.2+1
   app_settings: ^7.0.0
   # QR 코드 (체포 시스템)
   qr_flutter: ^4.1.0 # QR 코드 생성 (도둑 QR 표시)
@@ -86,6 +89,7 @@ dependencies:
   # 광고
   google_mobile_ads: ^7.0.0 # AdMob 전면 광고 (게임 종료 시점)
   custom_refresh_indicator: ^4.0.2
+  audioplayers: ^6.7.1
   # 로케일 기반 동적 앱 아이콘은 third-party 없이 자체 네이티브 채널(cops_and_robbers/app_icon)로 구현.
   #   iOS: AppDelegate에서 UIApplication.setAlternateIconName / Android: MainActivity activity-alias 토글
   #   (flutter_dynamic_icon=AGP8·v1 embedding 비호환, flutter_dynamic_icon_plus=iOS SwiftTryCatch 원본 삭제로 모두 제거)
@@ -129,6 +133,7 @@ flutter:
     - assets/backgrounds/mvp/
     - assets/onboarding/
     - assets/profiles/
+    - assets/sounds/
     - assets/characters/home/
     - assets/characters/police/default/
     - assets/characters/robber/default/
@@ -140,15 +145,6 @@ flutter:
     - assets/characters/robber/mvp/default/
     - .env
   fonts:
-    - family: Pretendard-Thin
-      fonts:
-        - asset: assets/fonts/Pretendard-Thin.ttf
-    - family: Pretendard-ExtraLight
-      fonts:
-        - asset: assets/fonts/Pretendard-ExtraLight.ttf
-    - family: Pretendard-Light
-      fonts:
-        - asset: assets/fonts/Pretendard-Light.ttf
     - family: Pretendard-Regular
       fonts:
         - asset: assets/fonts/Pretendard-Regular.ttf
@@ -161,12 +157,6 @@ flutter:
     - family: Pretendard-Bold
       fonts:
         - asset: assets/fonts/Pretendard-Bold.ttf
-    - family: Pretendard-ExtraBold
-      fonts:
-        - asset: assets/fonts/Pretendard-ExtraBold.ttf
-    - family: Pretendard-Black
-      fonts:
-        - asset: assets/fonts/Pretendard-Black.ttf
     - family: SCDream-ExtraBold
       fonts:
         - asset: assets/fonts/SCDream7.otf

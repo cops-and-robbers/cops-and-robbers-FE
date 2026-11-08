@@ -1061,7 +1061,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionCreationStepBasicHint => '게임을 진행할 때, 꼭 필요한 정보들이에요';
 
   @override
-  String get sessionCreationStepReviewHint => '방 생성 전 마지막으로 설정을 확인할까요?';
+  String get sessionCreationStepReviewHint => '추천값으로 채워 뒀어요. 바꿀 항목만 눌러요';
 
   @override
   String get buttonNext => '다음';
@@ -1144,10 +1144,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get buttonStartGame => '게임 시작';
 
   @override
-  String get buttonCancelReady => '준비 취소';
+  String get addSlotChangeRole => '역할 바꾸기';
 
   @override
-  String get buttonReady => '준비';
+  String get dialogStartGameTitle => '게임을 시작할까요?';
+
+  @override
+  String dialogStartGamePoliceCount(int count) {
+    return '경찰 $count명';
+  }
+
+  @override
+  String dialogStartGameRobberCount(int count) {
+    return '도둑 $count명';
+  }
 
   @override
   String get pageZonePreviewTitle => '게임 구역';
@@ -1315,9 +1325,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameSettingPoliceStartSuffix => '뒤';
 
   @override
-  String get buttonCompleteSetup => '완료하기';
-
-  @override
   String warnMaxReached(String max) {
     return '최대 $max까지 설정할 수 있어요';
   }
@@ -1360,7 +1367,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String teamSectionCurrentCount(int count) {
-    return '현재 $count명';
+    return '현재 인원 $count명';
   }
 
   @override
@@ -1696,6 +1703,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get lockScreenLocationReveal => '위치 공개';
+
+  @override
+  String get lockScreenShrink => '구역 축소';
+
+  @override
+  String lockScreenShrinkAt(String time) {
+    return '$time 구역 축소';
+  }
 
   @override
   String get lockScreenGameOver => '게임 종료';
@@ -2406,13 +2421,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요';
 
   @override
-  String get errorCodeNotAllReady => '모든 참가자가 준비 상태여야 게임을 시작할 수 있어요';
-
-  @override
   String get errorCodeNotRobberTeam => '도둑 팀만 위치를 전송할 수 있어요';
-
-  @override
-  String get errorCodeHostCannotUnready => '방장은 항상 준비 상태여야 해요';
 
   @override
   String get errorCodeParticipantGameMismatch => '경찰과 도둑이 서로 다른 게임에 참여하고 있어요';
@@ -2431,6 +2440,65 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeNotJailed => '수감된 상태에서만 탈옥할 수 있어요';
+
+  @override
+  String get errorCodeShrinkRequiresCircleArea => '구역 축소는 원형 구역에서만 쓸 수 있어요';
+
+  @override
+  String get errorCodeInvalidShrinkFinalRadius =>
+      '구역 축소 반경이 맞지 않아요. 구역을 다시 확인해 주세요';
+
+  @override
+  String get errorCodeForceArrestNotAllowedInEventGame => '이벤트 게임에서는 쓸 수 없어요';
+
+  @override
+  String get shrinkAutoOffSnackbar => '구역이 작아져서 구역 축소를 껐어요';
+
+  @override
+  String get shrinkTitle => '구역 축소';
+
+  @override
+  String get shrinkDescOff => '구역이 점점 줄어들어요';
+
+  @override
+  String shrinkDescOn(String start, String end) {
+    return '$start → $end까지 줄어요';
+  }
+
+  @override
+  String get shrinkLockTooSmall => '구역이 작아서 쓸 수 없어요';
+
+  @override
+  String get shrinkLockNotCircle => '원형 구역에서만 쓸 수 있어요';
+
+  @override
+  String get shrinkPinHint => '핀으로 그리면 구역 축소를 쓸 수 없어요';
+
+  @override
+  String gameShrinkNotice(int stage) {
+    return '구역이 줄었어요 ($stage/4)';
+  }
+
+  @override
+  String gameRevealShrinkCountdown(String reveal, String shrink) {
+    return '위치 공개 $reveal | 구역 축소 $shrink';
+  }
+
+  @override
+  String get gameShrinkFinalNotice => '마지막 구역이에요. 더 줄어들지 않아요';
+
+  @override
+  String get pingOutsideShrunkZone => '줄어든 구역 밖에는 핑을 찍을 수 없어요';
+
+  @override
+  String zoneWarnStatus(int count, int max, String formatted) {
+    return '경고 $count/$max · 다음 경고까지 $formatted';
+  }
+
+  @override
+  String gameEventForcedArrestNotice(String robberNickname) {
+    return '[$robberNickname]님이 구역 밖에 오래 있어서 잡혔어요!';
+  }
 
   @override
   String get errorCodePoliceWaitingTime => '경찰은 대기 시간 동안 도둑을 체포할 수 없어요';

@@ -27,6 +27,10 @@ abstract class GameSystemApi {
     @Body() ArrestRequestModel body,
   );
 
+  /// 구역 밖에 오래 머문 도둑 본인의 강제 체포 (#668). 본문 없음, 응답은 체포와 같다.
+  @POST('/api/games/{gameId}/system/force-arrest')
+  Future<ArrestResponseModel> forceArrest(@Path('gameId') int gameId);
+
   /// 탈옥
   @POST('/api/games/{gameId}/system/escape')
   Future<void> escape(@Path('gameId') int gameId);

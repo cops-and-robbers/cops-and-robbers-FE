@@ -22,6 +22,9 @@ abstract class SessionRepository {
     required int locationRevealIntervalMinutes,
     required int policeWaitMinutes,
     required int maxParticipants,
+
+    /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
+    int? shrinkFinalRadiusInMeters,
   });
 
   /// 초대 코드로 게임 방 참여

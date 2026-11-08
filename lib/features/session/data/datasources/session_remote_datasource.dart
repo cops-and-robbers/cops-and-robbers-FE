@@ -11,7 +11,6 @@ import '../models/join_game_request.dart';
 import '../models/join_game_response.dart';
 import '../models/leave_game_response.dart';
 import '../models/lobby_info_response.dart';
-import '../models/ready_request.dart';
 import '../models/team_change_request.dart';
 import '../models/user_game_status_model.dart';
 
@@ -58,34 +57,19 @@ abstract class SessionRemoteDataSource {
   ///
   /// 대기 중인 게임을 시작합니다.
   /// - 방장(Host)만 시작 가능
-  /// - 경찰/도둑 팀 각각 1명 이상 필요
-  /// - 모든 참가자가 준비(Ready) 상태여야 함
+  /// - 경찰/도둑 팀 각각 1명 이상 필요 (이벤트 게임은 검사 없음)
   ///
   /// - 204: 게임 시작 성공
-  /// - 400: 방장이 아님 / 준비 조건 미충족
+  /// - 400: 팀 구성 조건 미충족 (INVALID_TEAM_COMPOSITION)
+  /// - 403: 방장이 아님 (NOT_HOST)
   /// - 401: 인증 실패
   /// - 404: 게임 또는 참여 정보 없음
   @POST('/api/games/{gameId}/lobby/start')
   Future<void> startGame(@Path('gameId') int gameId);
 
-  /// 준비 상태 변경
-  ///
-  /// 대기 상태(WAITING)에서 준비 상태를 변경합니다.
-  ///
-  /// - 204: 준비 상태 변경 성공
-  /// - 400: 요청 바디 검증 실패
-  /// - 401: 인증 실패
-  /// - 404: 게임 또는 참여 정보 없음
-  @PATCH('/api/games/{gameId}/lobby/ready')
-  Future<void> updateReady(
-    @Path('gameId') int gameId,
-    @Body() ReadyRequest request,
-  );
-
   /// 팀 변경
   ///
   /// 대기 상태(WAITING)에서 팀을 변경합니다.
-  /// 팀 변경 시 해당 유저의 준비 상태는 해제됩니다.
   ///
   /// - 204: 팀 변경 성공
   /// - 400: 요청 바디 검증 실패

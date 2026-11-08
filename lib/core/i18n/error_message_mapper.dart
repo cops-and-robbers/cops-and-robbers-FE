@@ -194,12 +194,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeNotHost;
       case 'INVALID_TEAM_COMPOSITION':
         return errorCodeInvalidTeamComposition;
-      case 'NOT_ALL_READY':
-        return errorCodeNotAllReady;
       case 'NOT_ROBBER_TEAM':
         return errorCodeNotRobberTeam;
-      case 'HOST_CANNOT_UNREADY':
-        return errorCodeHostCannotUnready;
       // ── 게임 플레이 에러 ─────────────────────────────────────────────
       case 'PARTICIPANT_GAME_MISMATCH':
         return errorCodeParticipantGameMismatch;
@@ -211,6 +207,12 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeOnlyRobberCanEscape;
       case 'ALREADY_ARRESTED':
         return errorCodeAlreadyArrested;
+      case 'SHRINK_REQUIRES_CIRCLE_AREA':
+        return errorCodeShrinkRequiresCircleArea;
+      case 'INVALID_SHRINK_FINAL_RADIUS':
+        return errorCodeInvalidShrinkFinalRadius;
+      case 'FORCE_ARREST_NOT_ALLOWED_IN_EVENT_GAME':
+        return errorCodeForceArrestNotAllowedInEventGame;
       case 'NOT_JAILED':
         return errorCodeNotJailed;
       case 'POLICE_WAITING_TIME':

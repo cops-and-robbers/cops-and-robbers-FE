@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -15,6 +16,8 @@ import '../../../../core/constants/game_team.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/network/dio_exception_handler.dart';
+import '../../domain/zone_warning_flow.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/token_provider.dart';
 import '../../data/datasources/game_event_stomp_datasource.dart';
@@ -83,6 +86,9 @@ class GameEventState {
 
   /// 가장 최근 체포한 경찰 닉네임 (ARREST 이벤트 공지용)
   final String? lastArrestPoliceNickname;
+
+  /// 가장 최근 체포가 구역 밖 강제 체포였는지 (#668 — 서버가 `police: null`로 보낸다)
+  final bool lastArrestForced;
 
   /// STOMP 확정 체포 이벤트 카운터 (시스템 채팅 dedup용, optimistic 미포함)
   final int arrestEventCount;
@@ -171,6 +177,7 @@ class GameEventState {
     this.robberParticipantIds,
     this.lastArrestNickname,
     this.lastArrestPoliceNickname,
+    this.lastArrestForced = false,
     this.arrestEventCount = 0,
     this.escapeEventCount = 0,
     this.lastEscapeNickname,
@@ -202,6 +209,7 @@ class GameEventState {
     Set<int>? robberParticipantIds,
     Object? lastArrestNickname = _sentinel,
     Object? lastArrestPoliceNickname = _sentinel,
+    bool? lastArrestForced,
     int? arrestEventCount,
     int? escapeEventCount,
     Object? lastEscapeNickname = _sentinel,
@@ -242,6 +250,7 @@ class GameEventState {
       lastArrestPoliceNickname: lastArrestPoliceNickname == _sentinel
           ? this.lastArrestPoliceNickname
           : lastArrestPoliceNickname as String?,
+      lastArrestForced: lastArrestForced ?? this.lastArrestForced,
       arrestEventCount: arrestEventCount ?? this.arrestEventCount,
       escapeEventCount: escapeEventCount ?? this.escapeEventCount,
       lastEscapeNickname: lastEscapeNickname == _sentinel
@@ -641,6 +650,30 @@ class GameEventNotifier extends _$GameEventNotifier {
     }
   }
 
+  /// 구역 밖에 오래 있던 내(도둑) 강제 체포 (#668).
+  ///
+  /// 수감 상태는 서버가 보내는 ARREST(`police: null`)로 반영하고 여기서는 바꾸지 않는다.
+  /// 다시 불러도 안 되는 거절(이미 수감·게임 종료·이벤트 게임·도둑 아님)은 [ForceArrestResult.terminal].
+  Future<ForceArrestResult> forceArrest(int gameId) async {
+    try {
+      await ref.read(gameSystemApiProvider).forceArrest(gameId);
+      return ForceArrestResult.success;
+    } on DioException catch (e) {
+      final code = DioExceptionHandler.handle(e).code;
+      debugPrint('[GameEventNotifier] ⚠️ 강제 체포 실패: $code');
+      return switch (code) {
+        'ALREADY_ARRESTED' ||
+        'GAME_NOT_IN_PROGRESS' ||
+        'FORCE_ARREST_NOT_ALLOWED_IN_EVENT_GAME' ||
+        'ONLY_ROBBER_CAN_BE_ARRESTED' => ForceArrestResult.terminal,
+        _ => ForceArrestResult.retry,
+      };
+    } catch (e) {
+      debugPrint('[GameEventNotifier] ⚠️ 강제 체포 실패: $e');
+      return ForceArrestResult.retry;
+    }
+  }
+
   /// [DEBUG 전용] 자동 재연결 횟수 소진 상태 강제 시뮬레이션
   ///
   /// 실기기에서 화면을 끈 채로 재연결 5회 실패하는 상황을 재현합니다.
@@ -920,6 +953,8 @@ class GameEventNotifier extends _$GameEventNotifier {
       _pendingArrestId = null;
     }
 
+    // 구역 밖에 오래 있던 도둑이 스스로 잡힌 경우 서버가 police를 null로 보낸다 (#668)
+    final forced = police == null;
     final isLocalArrestEvent = robberPid == _myParticipantId;
     if (isLocalArrestEvent) _invalidateEscapeRequest();
 
@@ -931,8 +966,10 @@ class GameEventNotifier extends _$GameEventNotifier {
       remainingThieves: remaining,
       lastArrestNickname: robberNickname,
       lastArrestPoliceNickname: policeNickname,
-      // 닉네임이 있을 때만 카운터 증가 (시스템 채팅 dedup용)
-      arrestEventCount: (robberNickname != null && policeNickname != null)
+      lastArrestForced: forced,
+      // 닉네임이 있을 때만 카운터 증가 (시스템 채팅 dedup용). 강제 체포는 경찰이 없다.
+      arrestEventCount:
+          (robberNickname != null && (forced || policeNickname != null))
           ? state.arrestEventCount + 1
           : state.arrestEventCount,
       isApiLoading: false,
@@ -941,10 +978,14 @@ class GameEventNotifier extends _$GameEventNotifier {
           ? state.localArrestRevision + 1
           : state.localArrestRevision,
       // 배너는 plain Text이므로 아이콘 마커를 strip
-      bannerMessage: _localizeGameEvent(GameEventMessageKey.arrestNotice, [
-        policeNickname ?? _localizePoliceLabel(),
-        robberNickname ?? _localizeRobberLabel(),
-      ]).replaceAll(RegExp(r'@icon_(police|robber)\s*'), ''),
+      bannerMessage: forced
+          ? _localizeGameEvent(GameEventMessageKey.forcedArrestNotice, [
+              robberNickname ?? _localizeRobberLabel(),
+            ])
+          : _localizeGameEvent(GameEventMessageKey.arrestNotice, [
+              policeNickname ?? _localizePoliceLabel(),
+              robberNickname ?? _localizeRobberLabel(),
+            ]).replaceAll(RegExp(r'@icon_(police|robber)\s*'), ''),
     );
     _startBannerTimer();
     VibrationService.instance().arrested();

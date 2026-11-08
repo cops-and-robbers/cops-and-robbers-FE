@@ -11,7 +11,6 @@ import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
-import '../../../../core/widgets/indicators/step_indicator.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
 import '../../../../core/widgets/map/zone_setting_widget.dart';
@@ -20,11 +19,6 @@ import '../../../game/domain/entities/area_shape.dart';
 import '../../../game/domain/polygon_geometry.dart';
 import '../widgets/area_type_toggle.dart';
 import '../../../../l10n/app_localizations.dart';
-
-typedef PlaygroundSetupArgs = ({
-  AreaShape? initialShape,
-  LatLng? initialCenter,
-});
 
 /// 플레이그라운드 구역 설정 화면
 ///
@@ -40,8 +34,9 @@ class SetupPlaygroundPage extends ConsumerStatefulWidget {
     super.key,
     this.editInitialShape,
     this.initialCenter,
-    this.showStepIndicator = false,
     this.isInGameEdit = false,
+    this.onDone,
+    this.onExit,
   });
 
   /// 진행 중인 게임의 구역을 대기방에서 수정하러 들어왔는지
@@ -52,8 +47,14 @@ class SetupPlaygroundPage extends ConsumerStatefulWidget {
   /// 초기 도형을 넘기기 때문이다(#520).
   final bool isInGameEdit;
 
-  /// 생성 흐름에서 열렸을 때 상단에 진행 표시(1/3)를 보여줄지
-  final bool showStepIndicator;
+  /// 방 생성 흐름 안에 넣었을 때 완료한 구역을 받는다 (#658)
+  ///
+  /// 주어지면 화면을 닫지 않고 이 콜백으로 결과를 넘기며, 상단 바는 흐름이
+  /// 그린다. 대기방 구역 수정처럼 따로 띄운 화면은 null이라 지금처럼 pop 한다.
+  final ValueChanged<AreaShape>? onDone;
+
+  /// 방 생성 흐름 안에서 뒤로 나갈 때 (이탈 확인을 거친 뒤)
+  final VoidCallback? onExit;
 
   /// 지도에 미리 그려둘 초기 구역 (null이면 빈 상태로 시작)
   final AreaShape? editInitialShape;
@@ -169,24 +170,27 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   // ============================================
 
   /// 구역 변경 시 호출되는 콜백
-  /// 상단 바 — 생성 흐름에서는 제목 대신 진행 표시(1/3)를 보여준다
-  PreferredSizeWidget _buildTopBar(String title, bool isDark) {
-    if (!widget.showStepIndicator) {
-      return AppTopBar(title: title, isDarkMode: isDark, onBack: _handleBack);
-    }
-    return AppTopBar(
-      titleWidget: const StepIndicator(
-        totalSteps: 3,
-        currentStep: 0,
-        activeColor: AppColors.blue,
-      ),
-      centerTitle: false,
-      titleSpacing: 0,
-      isDarkMode: isDark,
-      onBack: _handleBack,
-      actions: [SizedBox(width: AppSpacing.horizontal20)],
-    );
-  }
+  /// 방 생성 흐름 안에 들어가 있는지 — 그때는 흐름이 상단 바를 그린다
+  bool get _isEmbedded => widget.onDone != null;
+
+  /// 상단 바 (흐름 안에서는 없음)
+  PreferredSizeWidget? _buildTopBar(String title, bool isDark) => _isEmbedded
+      ? null
+      : AppTopBar(title: title, isDarkMode: isDark, onBack: _handleBack);
+
+  void _exit() => _isEmbedded ? widget.onExit?.call() : context.pop();
+
+  void _finish(AreaShape shape) =>
+      _isEmbedded ? widget.onDone!(shape) : context.pop<AreaShape>(shape);
+
+  /// 시스템 뒤로와 상단 바 뒤로를 같은 [_handleBack]으로 받는다
+  Widget _withBackHandling(Widget child) => PopScope(
+    canPop: false,
+    onPopInvokedWithResult: (didPop, result) {
+      if (!didPop) _handleBack();
+    },
+    child: child,
+  );
 
   /// 뒤로 가기 처리
   ///
@@ -199,7 +203,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
         _pinPoints.isNotEmpty &&
         widget.editInitialShape == null;
     if (!shouldConfirm) {
-      context.pop();
+      _exit();
       return;
     }
     final l10n = AppLocalizations.of(context);
@@ -209,7 +213,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
       message: l10n.dialogQuitCreationMessage,
       cancelText: l10n.buttonKeepCreating,
       confirmText: l10n.buttonQuitCreation,
-      onConfirm: () => context.pop(),
+      onConfirm: _exit,
     );
   }
 
@@ -243,7 +247,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
         await _storageService.updatePlaygroundPinZone(_pinPoints);
       }
       if (mounted) {
-        context.pop<AreaShape>(
+        _finish(
           AreaShape.polygon(
             points: [
               for (final point in _pinPoints)
@@ -265,7 +269,7 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     }
 
     if (mounted) {
-      context.pop<AreaShape>(
+      _finish(
         AreaShape.circle(
           center: GeoPoint(
             latitude: center.latitude,
@@ -290,10 +294,12 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
 
     // 로딩 중일 때는 로딩 인디케이터 표시
     if (_isLoading) {
-      return Scaffold(
-        backgroundColor: bgColor,
-        appBar: _buildTopBar(l10n.zonePlayground, isDark),
-        body: const Center(child: CircularProgressIndicator()),
+      return _withBackHandling(
+        Scaffold(
+          backgroundColor: bgColor,
+          appBar: _buildTopBar(l10n.zonePlayground, isDark),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
       );
     }
 
@@ -301,12 +307,8 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
     _visitedAreaTypes.add(_areaType);
 
     // 로딩 완료 후 정상 UI 렌더링
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) _handleBack();
-      },
-      child: Scaffold(
+    return _withBackHandling(
+      Scaffold(
         backgroundColor: bgColor,
         appBar: _buildTopBar(l10n.zonePlayground, isDark),
         body: SafeArea(
@@ -326,6 +328,17 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                   },
                 ),
               ),
+
+              // 핀 구역은 구역 축소를 쓸 수 없다 — 다 그린 뒤에 알면 다시 그려야 하므로 미리 알린다 (#668)
+              if (_areaType == GameAreaType.polygon) ...[
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  l10n.shrinkPinHint,
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: isDark ? AppColors.black400 : AppColors.black600,
+                  ),
+                ),
+              ],
 
               // 간격 20px
               SizedBox(height: AppSpacing.vertical20),

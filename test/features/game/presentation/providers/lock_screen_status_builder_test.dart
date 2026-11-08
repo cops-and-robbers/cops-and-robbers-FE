@@ -113,4 +113,35 @@ void main() {
       ),
     );
   });
+
+  group('구역 축소 (#668)', () {
+    test('shrink_on_game_shows_next_shrink_time_on_lock_screen', () {
+      final status = buildLockScreenStatus(
+        start: start,
+        roundMinutes: 30,
+        policeWaitMinutes: 5,
+        intervalMinutes: 3,
+        now: DateTime(2026, 9, 30, 10, 12),
+        aliveRobbers: 3,
+        totalRobbers: 5,
+        isEventGame: false,
+        isRobberTeam: false,
+        nextShrinkAt: DateTime(2026, 9, 30, 10, 15),
+        l10n: l10n,
+      );
+      expect(status.nextShrinkAt, DateTime(2026, 9, 30, 10, 15));
+      expect(status.shrinkLabel, l10n.lockScreenShrink);
+      expect(status.shrinkText, l10n.lockScreenShrinkAt('10:15'));
+      expect(
+        status.toMap()['nextShrinkAtMs'],
+        DateTime(2026, 9, 30, 10, 15).millisecondsSinceEpoch,
+      );
+    });
+
+    test('shrink_off_game_sends_no_shrink_fields', () {
+      final status = build();
+      expect(status.nextShrinkAt, isNull);
+      expect(status.shrinkText, isNull);
+    });
+  });
 }

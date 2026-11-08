@@ -10,7 +10,6 @@ import 'package:cops_and_robbers/features/session/data/models/join_game_request.
 import 'package:cops_and_robbers/features/session/data/models/join_game_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/leave_game_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/lobby_info_response.dart';
-import 'package:cops_and_robbers/features/session/data/models/ready_request.dart';
 import 'package:cops_and_robbers/features/session/data/models/team_change_request.dart';
 import 'package:cops_and_robbers/features/session/data/models/user_game_status_model.dart';
 import 'package:cops_and_robbers/features/session/data/repositories/session_repository_impl.dart';
@@ -38,10 +37,6 @@ class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
 
   @override
   Future<void> startGame(int gameId) => throw UnimplementedError();
-
-  @override
-  Future<void> updateReady(int gameId, ReadyRequest request) =>
-      throw UnimplementedError();
 
   @override
   Future<void> changeTeam(int gameId, TeamChangeRequest request) =>
@@ -102,7 +97,10 @@ DioException _dioError(int statusCode) => DioException(
 );
 
 /// 테스트용 createGame 호출 헬퍼 (필수 인자 보일러플레이트 줄이기).
-Future<dynamic> _callCreateGame(SessionRepositoryImpl repo) => repo.createGame(
+Future<dynamic> _callCreateGame(
+  SessionRepositoryImpl repo, {
+  int? shrinkFinalRadiusInMeters,
+}) => repo.createGame(
   area: const GameAreaEntity(
     playground: AreaShape.circle(
       center: GeoPoint(latitude: 37.5, longitude: 127.0),
@@ -117,6 +115,7 @@ Future<dynamic> _callCreateGame(SessionRepositoryImpl repo) => repo.createGame(
   locationRevealIntervalMinutes: 5,
   policeWaitMinutes: 3,
   maxParticipants: 10,
+  shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
 );
 
 CreateSessionResponse _createSessionResponse() =>
@@ -133,6 +132,26 @@ CreateSessionResponse _createSessionResponse() =>
 
 void main() {
   group('SessionRepositoryImpl.createGame', () {
+    test('shrink_on_room_sends_final_radius_in_create_request', () async {
+      // 500m 구역·감옥 50m에서 구역 축소를 켜고 만든 방 (#668)
+      final fake = _FakeSessionRemoteDataSource()
+        ..responseToReturn = _createSessionResponse();
+      final repo = SessionRepositoryImpl(fake);
+
+      await _callCreateGame(repo, shrinkFinalRadiusInMeters: 200);
+
+      expect(fake.lastRequest?.settings.shrinkFinalRadiusInMeters, 200);
+    });
+
+    test('shrink_off_room_sends_null_final_radius', () async {
+      final fake = _FakeSessionRemoteDataSource()
+        ..responseToReturn = _createSessionResponse();
+      final repo = SessionRepositoryImpl(fake);
+
+      await _callCreateGame(repo);
+
+      expect(fake.lastRequest?.settings.shrinkFinalRadiusInMeters, isNull);
+    });
     test('circle_area_is_mapped_to_request_when_game_is_created', () async {
       final fake = _FakeSessionRemoteDataSource()
         ..responseToReturn = _createSessionResponse();

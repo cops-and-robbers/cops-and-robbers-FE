@@ -61,6 +61,9 @@ mixin _$SessionCreationDraftModel {
   /// 경찰 대기 시간 (분)
   int? get policeWaitMinutes => throw _privateConstructorUsedError;
 
+  /// 구역 축소 켬 여부 (#668). 구버전 초안에는 없으므로 꺼짐으로 시작한다.
+  bool get shrinkEnabled => throw _privateConstructorUsedError;
+
   /// 최대 참가자 수
   int? get maxParticipants => throw _privateConstructorUsedError;
 
@@ -92,6 +95,7 @@ abstract class $SessionCreationDraftModelCopyWith<$Res> {
     int? roundDurationMinutes,
     int? locationShareMinutes,
     int? policeWaitMinutes,
+    bool shrinkEnabled,
     int? maxParticipants,
   });
 }
@@ -124,6 +128,7 @@ class _$SessionCreationDraftModelCopyWithImpl<
     Object? roundDurationMinutes = freezed,
     Object? locationShareMinutes = freezed,
     Object? policeWaitMinutes = freezed,
+    Object? shrinkEnabled = null,
     Object? maxParticipants = freezed,
   }) {
     return _then(
@@ -168,6 +173,10 @@ class _$SessionCreationDraftModelCopyWithImpl<
                 ? _value.policeWaitMinutes
                 : policeWaitMinutes // ignore: cast_nullable_to_non_nullable
                       as int?,
+            shrinkEnabled: null == shrinkEnabled
+                ? _value.shrinkEnabled
+                : shrinkEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
             maxParticipants: freezed == maxParticipants
                 ? _value.maxParticipants
                 : maxParticipants // ignore: cast_nullable_to_non_nullable
@@ -198,6 +207,7 @@ abstract class _$$SessionCreationDraftModelImplCopyWith<$Res>
     int? roundDurationMinutes,
     int? locationShareMinutes,
     int? policeWaitMinutes,
+    bool shrinkEnabled,
     int? maxParticipants,
   });
 }
@@ -230,6 +240,7 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
     Object? roundDurationMinutes = freezed,
     Object? locationShareMinutes = freezed,
     Object? policeWaitMinutes = freezed,
+    Object? shrinkEnabled = null,
     Object? maxParticipants = freezed,
   }) {
     return _then(
@@ -274,6 +285,10 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
             ? _value.policeWaitMinutes
             : policeWaitMinutes // ignore: cast_nullable_to_non_nullable
                   as int?,
+        shrinkEnabled: null == shrinkEnabled
+            ? _value.shrinkEnabled
+            : shrinkEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
         maxParticipants: freezed == maxParticipants
             ? _value.maxParticipants
             : maxParticipants // ignore: cast_nullable_to_non_nullable
@@ -297,6 +312,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
     this.roundDurationMinutes,
     this.locationShareMinutes,
     this.policeWaitMinutes,
+    this.shrinkEnabled = false,
     this.maxParticipants,
   }) : _playgroundPinPoints = playgroundPinPoints,
        _jailPinPoints = jailPinPoints;
@@ -374,13 +390,18 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
   @override
   final int? policeWaitMinutes;
 
+  /// 구역 축소 켬 여부 (#668). 구버전 초안에는 없으므로 꺼짐으로 시작한다.
+  @override
+  @JsonKey()
+  final bool shrinkEnabled;
+
   /// 최대 참가자 수
   @override
   final int? maxParticipants;
 
   @override
   String toString() {
-    return 'SessionCreationDraftModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, areaType: $areaType, playgroundPinPoints: $playgroundPinPoints, jailPinPoints: $jailPinPoints, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
+    return 'SessionCreationDraftModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, areaType: $areaType, playgroundPinPoints: $playgroundPinPoints, jailPinPoints: $jailPinPoints, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, shrinkEnabled: $shrinkEnabled, maxParticipants: $maxParticipants)';
   }
 
   @override
@@ -415,6 +436,8 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
                 other.locationShareMinutes == locationShareMinutes) &&
             (identical(other.policeWaitMinutes, policeWaitMinutes) ||
                 other.policeWaitMinutes == policeWaitMinutes) &&
+            (identical(other.shrinkEnabled, shrinkEnabled) ||
+                other.shrinkEnabled == shrinkEnabled) &&
             (identical(other.maxParticipants, maxParticipants) ||
                 other.maxParticipants == maxParticipants));
   }
@@ -433,6 +456,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
     roundDurationMinutes,
     locationShareMinutes,
     policeWaitMinutes,
+    shrinkEnabled,
     maxParticipants,
   );
 
@@ -465,6 +489,7 @@ abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
     final int? roundDurationMinutes,
     final int? locationShareMinutes,
     final int? policeWaitMinutes,
+    final bool shrinkEnabled,
     final int? maxParticipants,
   }) = _$SessionCreationDraftModelImpl;
 
@@ -518,6 +543,10 @@ abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
   /// 경찰 대기 시간 (분)
   @override
   int? get policeWaitMinutes;
+
+  /// 구역 축소 켬 여부 (#668). 구버전 초안에는 없으므로 꺼짐으로 시작한다.
+  @override
+  bool get shrinkEnabled;
 
   /// 최대 참가자 수
   @override

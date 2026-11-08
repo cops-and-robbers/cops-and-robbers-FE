@@ -2039,7 +2039,7 @@ abstract class AppLocalizations {
   /// 방 생성 — 리뷰 단계 보조 설명
   ///
   /// In ko, this message translates to:
-  /// **'방 생성 전 마지막으로 설정을 확인할까요?'**
+  /// **'추천값으로 채워 뒀어요. 바꿀 항목만 눌러요'**
   String get sessionCreationStepReviewHint;
 
   /// 공통 — 다음 단계 버튼
@@ -2192,17 +2192,29 @@ abstract class AppLocalizations {
   /// **'게임 시작'**
   String get buttonStartGame;
 
-  /// 대기실 — 준비 취소 버튼
+  /// 대기실 — 다른 팀 칸 맨 앞 + 칸 라벨. 누르면 그 팀으로 옮긴다 (#661)
   ///
   /// In ko, this message translates to:
-  /// **'준비 취소'**
-  String get buttonCancelReady;
+  /// **'역할 바꾸기'**
+  String get addSlotChangeRole;
 
-  /// 대기실 — 준비 버튼
+  /// 대기실 — 방장이 게임 시작을 누르면 뜨는 확인창 제목 (#661)
   ///
   /// In ko, this message translates to:
-  /// **'준비'**
-  String get buttonReady;
+  /// **'게임을 시작할까요?'**
+  String get dialogStartGameTitle;
+
+  /// 대기실 — 시작 확인창 경찰 캐릭터 아래 인원 (#661)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰 {count}명'**
+  String dialogStartGamePoliceCount(int count);
+
+  /// 대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)
+  ///
+  /// In ko, this message translates to:
+  /// **'도둑 {count}명'**
+  String dialogStartGameRobberCount(int count);
 
   /// 구역 미리보기 페이지 타이틀
   ///
@@ -2510,12 +2522,6 @@ abstract class AppLocalizations {
   /// **'뒤'**
   String get gameSettingPoliceStartSuffix;
 
-  /// 방 생성 — 기본 정보 마지막 항목 완료 버튼
-  ///
-  /// In ko, this message translates to:
-  /// **'완료하기'**
-  String get buttonCompleteSetup;
-
   /// 방 생성 — 상한을 넘는 입력을 막았을 때 안내 (max 는 단위 포함, 예: 50명)
   ///
   /// In ko, this message translates to:
@@ -2597,7 +2603,7 @@ abstract class AppLocalizations {
   /// 팀 섹션 — 현재 인원수 표기
   ///
   /// In ko, this message translates to:
-  /// **'현재 {count}명'**
+  /// **'현재 인원 {count}명'**
   String teamSectionCurrentCount(int count);
 
   /// 대기실 구역 카드 섹션 타이틀
@@ -3241,6 +3247,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'위치 공개'**
   String get lockScreenLocationReveal;
+
+  /// No description provided for @lockScreenShrink.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소'**
+  String get lockScreenShrink;
+
+  /// 잠금 화면 — 다음 구역 축소 시각 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 구역 축소'**
+  String lockScreenShrinkAt(String time);
 
   /// 잠금 화면 게임 현황 — 종료 시각이 지난 뒤(앱이 종료 신호를 못 보낸 경우) 표시 (iOS Live Activity)
   ///
@@ -4567,23 +4585,11 @@ abstract class AppLocalizations {
   /// **'게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요'**
   String get errorCodeInvalidTeamComposition;
 
-  /// No description provided for @errorCodeNotAllReady.
-  ///
-  /// In ko, this message translates to:
-  /// **'모든 참가자가 준비 상태여야 게임을 시작할 수 있어요'**
-  String get errorCodeNotAllReady;
-
   /// No description provided for @errorCodeNotRobberTeam.
   ///
   /// In ko, this message translates to:
   /// **'도둑 팀만 위치를 전송할 수 있어요'**
   String get errorCodeNotRobberTeam;
-
-  /// No description provided for @errorCodeHostCannotUnready.
-  ///
-  /// In ko, this message translates to:
-  /// **'방장은 항상 준비 상태여야 해요'**
-  String get errorCodeHostCannotUnready;
 
   /// No description provided for @errorCodeParticipantGameMismatch.
   ///
@@ -4620,6 +4626,102 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'수감된 상태에서만 탈옥할 수 있어요'**
   String get errorCodeNotJailed;
+
+  /// No description provided for @errorCodeShrinkRequiresCircleArea.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소는 원형 구역에서만 쓸 수 있어요'**
+  String get errorCodeShrinkRequiresCircleArea;
+
+  /// No description provided for @errorCodeInvalidShrinkFinalRadius.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소 반경이 맞지 않아요. 구역을 다시 확인해 주세요'**
+  String get errorCodeInvalidShrinkFinalRadius;
+
+  /// No description provided for @errorCodeForceArrestNotAllowedInEventGame.
+  ///
+  /// In ko, this message translates to:
+  /// **'이벤트 게임에서는 쓸 수 없어요'**
+  String get errorCodeForceArrestNotAllowedInEventGame;
+
+  /// No description provided for @shrinkAutoOffSnackbar.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 작아져서 구역 축소를 껐어요'**
+  String get shrinkAutoOffSnackbar;
+
+  /// No description provided for @shrinkTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소'**
+  String get shrinkTitle;
+
+  /// No description provided for @shrinkDescOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 점점 줄어들어요'**
+  String get shrinkDescOff;
+
+  /// 구역 축소 켬 — 시작 반경에서 최종 반경까지 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'{start} → {end}까지 줄어요'**
+  String shrinkDescOn(String start, String end);
+
+  /// No description provided for @shrinkLockTooSmall.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 작아서 쓸 수 없어요'**
+  String get shrinkLockTooSmall;
+
+  /// No description provided for @shrinkLockNotCircle.
+  ///
+  /// In ko, this message translates to:
+  /// **'원형 구역에서만 쓸 수 있어요'**
+  String get shrinkLockNotCircle;
+
+  /// No description provided for @shrinkPinHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'핀으로 그리면 구역 축소를 쓸 수 없어요'**
+  String get shrinkPinHint;
+
+  /// 구역 축소 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'구역이 줄었어요 ({stage}/4)'**
+  String gameShrinkNotice(int stage);
+
+  /// 앱바 — 다음 도둑 위치 공개와 다음 구역 축소까지 남은 시간 한 줄 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공개 {reveal} | 구역 축소 {shrink}'**
+  String gameRevealShrinkCountdown(String reveal, String shrink);
+
+  /// No description provided for @gameShrinkFinalNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 구역이에요. 더 줄어들지 않아요'**
+  String get gameShrinkFinalNotice;
+
+  /// No description provided for @pingOutsideShrunkZone.
+  ///
+  /// In ko, this message translates to:
+  /// **'줄어든 구역 밖에는 핑을 찍을 수 없어요'**
+  String get pingOutsideShrunkZone;
+
+  /// 구역 밖 경고 횟수와 다음 경고까지 남은 시간 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'경고 {count}/{max} · 다음 경고까지 {formatted}'**
+  String zoneWarnStatus(int count, int max, String formatted);
+
+  /// 구역 밖 강제 체포 공지 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'[{robberNickname}]님이 구역 밖에 오래 있어서 잡혔어요!'**
+  String gameEventForcedArrestNotice(String robberNickname);
 
   /// No description provided for @errorCodePoliceWaitingTime.
   ///

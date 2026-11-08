@@ -60,6 +60,15 @@ class GoogleMapViewState extends State<GoogleMapView>
 
   Set<Circle> _areaCircles = {};
   Set<Polygon> _areaPolygons = {};
+
+  /// 축소 연출 직전 카메라로 돌아가기 위해 마지막 위치를 기억한다 (#668)
+  CameraPosition? _lastCameraPosition;
+
+  /// 축소 연출 중에는 지도 제스처를 막는다 — 제스처가 들어오면 카메라 애니메이션이 끊긴다
+  bool _gesturesLocked = false;
+
+  /// 다음 축소 경계 점선 (#668). Polygon은 테두리 패턴이 없어 Polyline으로 그린다.
+  Set<Polyline> _boundaryPolylines = {};
   Timer? _jailPulseTimer;
   double _jailPulse = 0;
 
@@ -341,6 +350,81 @@ class GoogleMapViewState extends State<GoogleMapView>
     setState(() => _areaPolygons = polygons);
   }
 
+  /// 구역이 줄어드는 순간의 카메라 연출 (#668, 튜토리얼 `_shrink`와 같은 흐름).
+  ///
+  /// 58°로 기울여 구역이 다 보이게 넓힌 뒤 [onShrink]로 원을 바꾸고,
+  /// 끝나면 연출 직전 카메라로 돌아온다. 그동안 제스처와 이동 범위 제한을 잠시 푼다.
+  Future<void> playShrinkCamera({
+    required LatLng center,
+    required double fitRadiusMeters,
+    required VoidCallback onShrink,
+  }) async {
+    final controller = _controller;
+    // 이미 연출 중이면 원만 바꾼다 — 겹치면 두 번째가 풀린 이동 범위를 원래 값으로 기억한다
+    if (controller == null || !mounted || _gesturesLocked) {
+      onShrink();
+      return;
+    }
+    final before = _lastCameraPosition;
+    final bounds = _cameraTargetBounds;
+    final width = MediaQuery.sizeOf(context).width;
+    setState(() {
+      _gesturesLocked = true;
+      _cameraTargetBounds = CameraTargetBounds.unbounded;
+    });
+    var shrunk = false;
+    try {
+      final bearing = before?.bearing ?? 0;
+      final zoom = _zoomToFit(center.latitude, fitRadiusMeters, width);
+      CameraUpdate at(double b) => CameraUpdate.newCameraPosition(
+        CameraPosition(target: center, zoom: zoom, tilt: 58, bearing: b),
+      );
+      await controller.animateCamera(at(bearing), duration: _shrinkTiltIn);
+      // 다음 경계 점선을 잠깐 보여 준 뒤 줄인다
+      await Future<void>.delayed(_shrinkHoldBefore);
+      shrunk = true;
+      onShrink();
+      // 원이 줄어드는 걸 기울인 채로 보여 준다 (원은 game_page가 0.9초에 걸쳐 줄인다)
+      await Future<void>.delayed(_shrinkHoldAfter);
+      await controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          before ?? CameraPosition(target: center, zoom: zoom),
+        ),
+        duration: _shrinkTiltOut,
+      );
+    } catch (e) {
+      debugPrint('❌ 구역 축소 카메라 연출 실패: $e');
+    } finally {
+      if (!shrunk) onShrink();
+      if (mounted) {
+        setState(() {
+          _gesturesLocked = false;
+          _cameraTargetBounds = bounds;
+        });
+      }
+    }
+  }
+
+  // 구역 축소 연출 시간 (#668). 실기기에서 "너무 빠르다"는 피드백으로 늘렸다 — 체감은 여기서만 조정
+  static const _shrinkTiltIn = Duration(milliseconds: 1200);
+  static const _shrinkHoldBefore = Duration(milliseconds: 600);
+  static const _shrinkHoldAfter = Duration(milliseconds: 1400);
+  static const _shrinkTiltOut = Duration(milliseconds: 1200);
+
+  /// 반경이 화면 폭 안에 여유 있게 들어오는 줌. 웹 메르카토르 축척 공식.
+  static double _zoomToFit(double latitude, double radiusMeters, double width) {
+    final metersPerPx = (radiusMeters * 2.4) / width;
+    final zoom =
+        log(156543.03392 * cos(latitude * pi / 180) / metersPerPx) / ln2;
+    return zoom.clamp(3.0, 20.0);
+  }
+
+  /// 구역 축소의 다음 경계 점선 업데이트 (#668)
+  void updateBoundaryPolylines(Set<Polyline> lines) {
+    if (!mounted) return;
+    setState(() => _boundaryPolylines = lines);
+  }
+
   /// 도둑 공개 위치 마커 업데이트
   ///
   /// 새 위치를 받으면 페이드 깜빡임 [_blinkCycles]회 후 영구 표시.
@@ -448,6 +532,7 @@ class GoogleMapViewState extends State<GoogleMapView>
   }
 
   void _onCameraMove(CameraPosition position) {
+    _lastCameraPosition = position;
     _zoom = position.zoom;
     final visible = _grid?.labelsVisibleAt(position.zoom);
     if (visible != null && visible != _gridLabelsVisible) {
@@ -559,6 +644,10 @@ class GoogleMapViewState extends State<GoogleMapView>
         minMaxZoomPreference: MinMaxZoomPreference(_minZoom, 20),
         cameraTargetBounds: _cameraTargetBounds,
         zoomControlsEnabled: false,
+        scrollGesturesEnabled: !_gesturesLocked,
+        zoomGesturesEnabled: !_gesturesLocked,
+        rotateGesturesEnabled: !_gesturesLocked,
+        tiltGesturesEnabled: !_gesturesLocked,
         compassEnabled: false,
         circles: {
           for (final circle in _areaCircles)
@@ -603,6 +692,7 @@ class GoogleMapViewState extends State<GoogleMapView>
                     : AppColors.black400,
                 width: 1,
               ),
+          ..._boundaryPolylines,
         },
         markers: {
           ..._robberMarkers,

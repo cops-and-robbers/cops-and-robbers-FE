@@ -179,7 +179,7 @@ class RoutePaths {
   // Game Flow Routes (PRD F1.6, F2.2)
   // ============================================================================
 
-  /// F1.6: 대기실 (팀 선택, 준비 완료)
+  /// F1.6: 대기실 (팀 선택, 방장의 게임 시작)
   /// 경로 파라미터: sessionId
   static const String waitingRoom = '/waiting-room/:sessionId';
 
@@ -296,8 +296,6 @@ class RoutePaths {
   static const String waitingRoomName = 'waitingRoom';
   static const String gameName = 'game';
   static const String noticesName = 'notices';
-  static const String setupPlaygroundFromFlowName = 'setupPlaygroundFromFlow';
-  static const String setupPrisonFromFlowName = 'setupPrisonFromFlow';
   static const String gameTutorialName = 'gameTutorial';
   static const String gameSettingsName = 'gameSettings';
   static const String gameSettingsEditName = 'gameSettingsEdit';

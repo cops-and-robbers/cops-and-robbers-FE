@@ -102,6 +102,15 @@ private struct IslandDetail: View {
       }
       .font(.cardFont(13))
       .foregroundColor(Color(hex: 0x93A2B3))  // AppColors.black400 — 어두운 배경의 보조 글자
+      // 구역 축소 (#668) — 아일랜드는 폭이 좁아 아랫줄에 둔다
+      if let label = context.state.shrinkLabel, let at = context.state.nextShrinkAt {
+        HStack(spacing: 4) {
+          Text(label)
+          CountdownText(until: at)
+        }
+        .font(.cardFont(13))
+        .foregroundColor(Color(hex: 0x93A2B3))  // AppColors.black400
+      }
       ProgressView(
         timerInterval: context.state.startAt...max(context.state.startAt, context.state.endAt),
         countsDown: false
@@ -130,7 +139,9 @@ extension ActivityViewContext where Attributes == GameStatusAttributes {
       nextRevealAt: state.nextRevealAt,
       aliveRobbers: state.aliveRobbers,
       totalRobbers: state.totalRobbers,
-      isStale: isStale
+      isStale: isStale,
+      shrinkLabel: state.shrinkLabel,
+      nextShrinkAt: state.nextShrinkAt
     )
   }
 

@@ -48,6 +48,33 @@ class _GameSystemApi implements GameSystemApi {
   }
 
   @override
+  Future<ArrestResponseModel> forceArrest(int gameId) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<ArrestResponseModel>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/games/${gameId}/system/force-arrest',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ArrestResponseModel _value;
+    try {
+      _value = ArrestResponseModel.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<void> escape(int gameId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
