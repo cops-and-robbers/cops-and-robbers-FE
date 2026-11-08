@@ -10,7 +10,6 @@ import 'package:cops_and_robbers/features/session/data/models/join_game_request.
 import 'package:cops_and_robbers/features/session/data/models/join_game_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/leave_game_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/lobby_info_response.dart';
-import 'package:cops_and_robbers/features/session/data/models/ready_request.dart';
 import 'package:cops_and_robbers/features/session/data/models/team_change_request.dart';
 import 'package:cops_and_robbers/features/session/data/models/user_game_status_model.dart';
 import 'package:cops_and_robbers/features/session/data/repositories/session_repository_impl.dart';
@@ -38,10 +37,6 @@ class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
 
   @override
   Future<void> startGame(int gameId) => throw UnimplementedError();
-
-  @override
-  Future<void> updateReady(int gameId, ReadyRequest request) =>
-      throw UnimplementedError();
 
   @override
   Future<void> changeTeam(int gameId, TeamChangeRequest request) =>

@@ -568,172 +568,11 @@ class _StartGameProviderElement extends AutoDisposeFutureProviderElement<void>
   int get gameId => (origin as StartGameProvider).gameId;
 }
 
-String _$updateReadyHash() => r'079ee77b3942105dd6e3dfd49a5e76f949543d99';
-
-/// 준비 상태 변경 기능
-///
-/// 대기실에서 준비 상태를 변경합니다.
-/// 실패 시 DioException을 rethrow합니다.
-///
-/// Copied from [updateReady].
-@ProviderFor(updateReady)
-const updateReadyProvider = UpdateReadyFamily();
-
-/// 준비 상태 변경 기능
-///
-/// 대기실에서 준비 상태를 변경합니다.
-/// 실패 시 DioException을 rethrow합니다.
-///
-/// Copied from [updateReady].
-class UpdateReadyFamily extends Family<AsyncValue<void>> {
-  /// 준비 상태 변경 기능
-  ///
-  /// 대기실에서 준비 상태를 변경합니다.
-  /// 실패 시 DioException을 rethrow합니다.
-  ///
-  /// Copied from [updateReady].
-  const UpdateReadyFamily();
-
-  /// 준비 상태 변경 기능
-  ///
-  /// 대기실에서 준비 상태를 변경합니다.
-  /// 실패 시 DioException을 rethrow합니다.
-  ///
-  /// Copied from [updateReady].
-  UpdateReadyProvider call(int gameId, {required bool isReady}) {
-    return UpdateReadyProvider(gameId, isReady: isReady);
-  }
-
-  @override
-  UpdateReadyProvider getProviderOverride(
-    covariant UpdateReadyProvider provider,
-  ) {
-    return call(provider.gameId, isReady: provider.isReady);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'updateReadyProvider';
-}
-
-/// 준비 상태 변경 기능
-///
-/// 대기실에서 준비 상태를 변경합니다.
-/// 실패 시 DioException을 rethrow합니다.
-///
-/// Copied from [updateReady].
-class UpdateReadyProvider extends AutoDisposeFutureProvider<void> {
-  /// 준비 상태 변경 기능
-  ///
-  /// 대기실에서 준비 상태를 변경합니다.
-  /// 실패 시 DioException을 rethrow합니다.
-  ///
-  /// Copied from [updateReady].
-  UpdateReadyProvider(int gameId, {required bool isReady})
-    : this._internal(
-        (ref) => updateReady(ref as UpdateReadyRef, gameId, isReady: isReady),
-        from: updateReadyProvider,
-        name: r'updateReadyProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$updateReadyHash,
-        dependencies: UpdateReadyFamily._dependencies,
-        allTransitiveDependencies: UpdateReadyFamily._allTransitiveDependencies,
-        gameId: gameId,
-        isReady: isReady,
-      );
-
-  UpdateReadyProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.gameId,
-    required this.isReady,
-  }) : super.internal();
-
-  final int gameId;
-  final bool isReady;
-
-  @override
-  Override overrideWith(
-    FutureOr<void> Function(UpdateReadyRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: UpdateReadyProvider._internal(
-        (ref) => create(ref as UpdateReadyRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        gameId: gameId,
-        isReady: isReady,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeFutureProviderElement<void> createElement() {
-    return _UpdateReadyProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is UpdateReadyProvider &&
-        other.gameId == gameId &&
-        other.isReady == isReady;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, gameId.hashCode);
-    hash = _SystemHash.combine(hash, isReady.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin UpdateReadyRef on AutoDisposeFutureProviderRef<void> {
-  /// The parameter `gameId` of this provider.
-  int get gameId;
-
-  /// The parameter `isReady` of this provider.
-  bool get isReady;
-}
-
-class _UpdateReadyProviderElement extends AutoDisposeFutureProviderElement<void>
-    with UpdateReadyRef {
-  _UpdateReadyProviderElement(super.provider);
-
-  @override
-  int get gameId => (origin as UpdateReadyProvider).gameId;
-  @override
-  bool get isReady => (origin as UpdateReadyProvider).isReady;
-}
-
 String _$changeTeamHash() => r'2bd0e191c99c031ab98a34d63aa840fe6c19f39d';
 
 /// 팀 변경 기능
 ///
 /// 대기실에서 팀을 변경합니다.
-/// 팀 변경 시 준비 상태가 해제됩니다.
 /// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [changeTeam].
@@ -743,7 +582,6 @@ const changeTeamProvider = ChangeTeamFamily();
 /// 팀 변경 기능
 ///
 /// 대기실에서 팀을 변경합니다.
-/// 팀 변경 시 준비 상태가 해제됩니다.
 /// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [changeTeam].
@@ -751,7 +589,6 @@ class ChangeTeamFamily extends Family<AsyncValue<void>> {
   /// 팀 변경 기능
   ///
   /// 대기실에서 팀을 변경합니다.
-  /// 팀 변경 시 준비 상태가 해제됩니다.
   /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [changeTeam].
@@ -760,7 +597,6 @@ class ChangeTeamFamily extends Family<AsyncValue<void>> {
   /// 팀 변경 기능
   ///
   /// 대기실에서 팀을 변경합니다.
-  /// 팀 변경 시 준비 상태가 해제됩니다.
   /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [changeTeam].
@@ -793,7 +629,6 @@ class ChangeTeamFamily extends Family<AsyncValue<void>> {
 /// 팀 변경 기능
 ///
 /// 대기실에서 팀을 변경합니다.
-/// 팀 변경 시 준비 상태가 해제됩니다.
 /// 실패 시 DioException을 rethrow합니다.
 ///
 /// Copied from [changeTeam].
@@ -801,7 +636,6 @@ class ChangeTeamProvider extends AutoDisposeFutureProvider<void> {
   /// 팀 변경 기능
   ///
   /// 대기실에서 팀을 변경합니다.
-  /// 팀 변경 시 준비 상태가 해제됩니다.
   /// 실패 시 DioException을 rethrow합니다.
   ///
   /// Copied from [changeTeam].

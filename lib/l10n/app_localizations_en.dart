@@ -1224,10 +1224,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buttonStartGame => 'Game start';
 
   @override
-  String get buttonCancelReady => 'Cancel';
+  String get addSlotChangeRole => 'Switch team';
 
   @override
-  String get buttonReady => 'Ready';
+  String get dialogStartGameTitle => 'Start the game?';
+
+  @override
+  String dialogStartGamePoliceCount(int count) {
+    return 'Cops: $count';
+  }
+
+  @override
+  String dialogStartGameRobberCount(int count) {
+    return 'Robbers: $count';
+  }
 
   @override
   String get pageZonePreviewTitle => 'Game area';
@@ -1451,7 +1461,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String teamSectionCurrentCount(int count) {
-    return 'Currently $count people';
+    return 'Players: $count';
   }
 
   @override
@@ -2587,14 +2597,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'To start the game, the police and robber teams each need at least one player';
 
   @override
-  String get errorCodeNotAllReady =>
-      'All participants must be ready to start the game';
-
-  @override
   String get errorCodeNotRobberTeam => 'Only the robber team can send location';
-
-  @override
-  String get errorCodeHostCannotUnready => 'The host must always be ready';
 
   @override
   String get errorCodeParticipantGameMismatch =>

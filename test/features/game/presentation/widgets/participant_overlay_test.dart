@@ -105,6 +105,50 @@ void main() {
 
       expect(fetchCount, 2);
     });
+
+    // 예전에는 카드 정보의 준비 필드를 수감 표시로 빌려 썼다. 준비 상태를 없애며(#661)
+    // 수감 판정을 직접 하도록 바꿨으니, 낙관적 체포·탈옥이 탭 판정에 그대로 반영되는지 지킨다.
+    testWidgets(
+      'opens_escape_dialog_when_my_robber_card_is_tapped_after_arrest',
+      (tester) async {
+        await _pumpOverlay(
+          tester,
+          initialGameEventState: const GameEventState(
+            arrestedParticipantIds: {2},
+          ),
+          fetchParticipants: () async => _participants,
+          myTeam: 'ROBBER',
+          myParticipantId: 2,
+        );
+        await tester.pump();
+
+        await tester.tap(find.text('도둑'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('탈옥할까요?'), findsOneWidget);
+      },
+    );
+
+    testWidgets('does_not_open_escape_dialog_when_escape_already_applied', (
+      tester,
+    ) async {
+      await _pumpOverlay(
+        tester,
+        initialGameEventState: const GameEventState(
+          arrestedParticipantIds: {2},
+          escapedParticipantIds: {2},
+        ),
+        fetchParticipants: () async => _participants,
+        myTeam: 'ROBBER',
+        myParticipantId: 2,
+      );
+      await tester.pump();
+
+      await tester.tap(find.text('도둑'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('탈옥할까요?'), findsNothing);
+    });
   });
 }
 
@@ -133,6 +177,8 @@ Future<void> _pumpOverlay(
   required GameEventState initialGameEventState,
   required Future<InGameParticipantsResponse> Function() fetchParticipants,
   void Function(_TestGameEventNotifier notifier)? onGameEventNotifierReady,
+  String myTeam = 'POLICE',
+  int myParticipantId = 1,
 }) async {
   final gameEventNotifier = _TestGameEventNotifier(initialGameEventState);
   onGameEventNotifierReady?.call(gameEventNotifier);
@@ -152,16 +198,16 @@ Future<void> _pumpOverlay(
         designSize: const Size(375, 812),
         minTextAdapt: true,
         splitScreenMode: true,
-        builder: (context, child) => const MaterialApp(
-          locale: Locale('ko'),
+        builder: (context, child) => MaterialApp(
+          locale: const Locale('ko'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: ParticipantOverlay(
               onClose: _noop,
               gameId: 1,
-              myTeam: 'POLICE',
-              myParticipantId: 1,
+              myTeam: myTeam,
+              myParticipantId: myParticipantId,
             ),
           ),
         ),

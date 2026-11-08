@@ -194,12 +194,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeNotHost;
       case 'INVALID_TEAM_COMPOSITION':
         return errorCodeInvalidTeamComposition;
-      case 'NOT_ALL_READY':
-        return errorCodeNotAllReady;
       case 'NOT_ROBBER_TEAM':
         return errorCodeNotRobberTeam;
-      case 'HOST_CANNOT_UNREADY':
-        return errorCodeHostCannotUnready;
       // ── 게임 플레이 에러 ─────────────────────────────────────────────
       case 'PARTICIPANT_GAME_MISMATCH':
         return errorCodeParticipantGameMismatch;

@@ -21,6 +21,16 @@ class WaitingRoomParticipantsState {
       .where((p) => p.team.toUpperCase() == team.toUpperCase())
       .toList();
 
+  /// 방장이 게임을 시작할 수 있는지.
+  ///
+  /// 서버 시작 검사와 같게 경찰과 도둑이 각각 1명 이상이어야 한다(#661, BE #230).
+  /// 혼자 있을 때와 모두 한 팀일 때가 여기에 걸린다. 이벤트 게임은 운영진만 먼저
+  /// 들어오고 경찰은 시작 뒤 코드로 합류하므로 서버도 팀 구성을 보지 않는다.
+  bool canStart({required bool isEventGame}) =>
+      isEventGame ||
+      (byTeam(GameTeam.police).isNotEmpty &&
+          byTeam(GameTeam.robber).isNotEmpty);
+
   WaitingRoomParticipantsState copyWith({
     List<LobbyParticipantInfo>? participants,
     int? hostParticipantId,
@@ -62,8 +72,8 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
 
   /// [임시] 더미 데이터 로드 (서버 미연동 시 UI 확인용)
   ///
-  /// participantId=3이 나(방장), 나머지는 전원 준비 완료 상태.
-  /// → 방장 왕관 표시 및 게임 시작 버튼 활성화 확인 가능.
+  /// participantId=3이 나(방장), 경찰과 도둑이 모두 있어
+  /// 방장 왕관 표시 및 게임 시작 버튼 활성화를 확인할 수 있다.
   void loadDummyData() {
     state = WaitingRoomParticipantsState(
       hostParticipantId: 3,
@@ -72,25 +82,21 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
           participantId: 3,
           nickname: '포근포근곰...',
           team: GameTeam.police,
-          isReady: false,
         ),
         LobbyParticipantInfo(
           participantId: 1,
           nickname: '오동통 너구리',
           team: GameTeam.police,
-          isReady: true,
         ),
         LobbyParticipantInfo(
           participantId: 2,
           nickname: '닉네임',
           team: GameTeam.police,
-          isReady: true,
         ),
         LobbyParticipantInfo(
           participantId: 4,
           nickname: '닉네임',
           team: GameTeam.robber,
-          isReady: true,
         ),
       ],
     );
@@ -106,8 +112,6 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
       case LobbyEventType.exit:
         _handleExit(event.data);
       case LobbyEventType.teamUpdate:
-        _handleUpdate(event.data);
-      case LobbyEventType.readyUpdate:
         _handleUpdate(event.data);
       case LobbyEventType.hostChanged:
         _handleHostChanged(event.data);
@@ -223,23 +227,6 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
     );
   }
 
-  /// [임시] 더미 참가자 준비 상태 토글
-  void toggleDummyReady(int participantId) {
-    state = state.copyWith(
-      participants: state.participants.map((p) {
-        if (p.participantId == participantId) {
-          return LobbyParticipantInfo(
-            participantId: p.participantId,
-            nickname: p.nickname,
-            team: p.team,
-            isReady: !p.isReady,
-          );
-        }
-        return p;
-      }).toList(),
-    );
-  }
-
   /// [임시] 더미 참가자 팀 변경
   void changeDummyTeam(int participantId, String newTeam) {
     final target = state.participants.firstWhere(
@@ -249,7 +236,6 @@ class WaitingRoomParticipants extends _$WaitingRoomParticipants {
       participantId: target.participantId,
       nickname: target.nickname,
       team: newTeam,
-      isReady: target.isReady,
     );
     final updated =
         state.participants

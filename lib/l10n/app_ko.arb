@@ -992,13 +992,31 @@
   "@buttonStartGame": {
     "description": "공통 — 게임 시작 버튼"
   },
-  "buttonCancelReady": "준비 취소",
-  "@buttonCancelReady": {
-    "description": "대기실 — 준비 취소 버튼"
+  "addSlotChangeRole": "역할 바꾸기",
+  "@addSlotChangeRole": {
+    "description": "대기실 — 다른 팀 칸 맨 앞 + 칸 라벨. 누르면 그 팀으로 옮긴다 (#661)"
   },
-  "buttonReady": "준비",
-  "@buttonReady": {
-    "description": "대기실 — 준비 버튼"
+  "dialogStartGameTitle": "게임을 시작할까요?",
+  "@dialogStartGameTitle": {
+    "description": "대기실 — 방장이 게임 시작을 누르면 뜨는 확인창 제목 (#661)"
+  },
+  "dialogStartGamePoliceCount": "경찰 {count}명",
+  "@dialogStartGamePoliceCount": {
+    "description": "대기실 — 시작 확인창 경찰 캐릭터 아래 인원 (#661)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dialogStartGameRobberCount": "도둑 {count}명",
+  "@dialogStartGameRobberCount": {
+    "description": "대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "pageZonePreviewTitle": "게임 구역",
   "@pageZonePreviewTitle": {
@@ -1284,7 +1302,7 @@
   "@fieldPoliceDispatchTime": {
     "description": "게임 설정 — 경찰 출동 시간 라벨"
   },
-  "teamSectionCurrentCount": "현재 {count}명",
+  "teamSectionCurrentCount": "현재 인원 {count}명",
   "@teamSectionCurrentCount": {
     "description": "팀 섹션 — 현재 인원수 표기",
     "placeholders": {
@@ -2521,9 +2539,7 @@
   "errorCodeLobbyActionNotAllowed": "게임이 시작된 이후에는 로비 상태를 변경할 수 없어요",
   "errorCodeNotHost": "방장만 할 수 있어요",
   "errorCodeInvalidTeamComposition": "게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요",
-  "errorCodeNotAllReady": "모든 참가자가 준비 상태여야 게임을 시작할 수 있어요",
   "errorCodeNotRobberTeam": "도둑 팀만 위치를 전송할 수 있어요",
-  "errorCodeHostCannotUnready": "방장은 항상 준비 상태여야 해요",
   "errorCodeParticipantGameMismatch": "경찰과 도둑이 서로 다른 게임에 참여하고 있어요",
   "errorCodeOnlyPoliceCanArrest": "경찰 팀만 도둑을 체포할 수 있어요",
   "errorCodeOnlyRobberCanBeArrested": "도둑 팀만 체포될 수 있어요",

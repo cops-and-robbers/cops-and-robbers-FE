@@ -13,7 +13,6 @@ import '../../data/models/join_game_request.dart';
 import '../../data/models/join_game_response.dart';
 import '../../data/models/leave_game_response.dart';
 import '../../data/models/lobby_info_response.dart';
-import '../../data/models/ready_request.dart';
 import '../../data/models/team_change_request.dart';
 import '../../data/repositories/session_repository_impl.dart';
 import '../../domain/entities/create_session_result.dart';
@@ -138,21 +137,9 @@ Future<void> startGame(Ref ref, int gameId) async {
   debugPrint('[Session] ✅ 게임 시작 성공: gameId=$gameId');
 }
 
-/// 준비 상태 변경 기능
-///
-/// 대기실에서 준비 상태를 변경합니다.
-/// 실패 시 DioException을 rethrow합니다.
-@riverpod
-Future<void> updateReady(Ref ref, int gameId, {required bool isReady}) async {
-  final dataSource = ref.read(sessionRemoteDataSourceProvider);
-  await dataSource.updateReady(gameId, ReadyRequest(isReady: isReady));
-  debugPrint('[Session] ✅ 준비 상태 변경 성공: gameId=$gameId, isReady=$isReady');
-}
-
 /// 팀 변경 기능
 ///
 /// 대기실에서 팀을 변경합니다.
-/// 팀 변경 시 준비 상태가 해제됩니다.
 /// 실패 시 DioException을 rethrow합니다.
 @riverpod
 Future<void> changeTeam(

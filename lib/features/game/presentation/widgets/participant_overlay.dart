@@ -96,21 +96,33 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     );
   }
 
-  /// [InGameParticipant] → [LobbyParticipantInfo] 변환
-  ///
-  /// - 경찰 (POLICE_WAITING): isReady: true
-  /// - 도둑 ALIVE: isReady: false (도주 중)
-  /// - 도둑 JAILED: isReady: true (레디 카드 색상으로 수감 표시)
+  /// [InGameParticipant] → [LobbyParticipantInfo] 변환. 카드 모습은 [ParticipantCard]의
+  /// gameStatus 로 정하므로 여기서는 이름과 팀만 옮긴다.
   LobbyParticipantInfo _toParticipantInfo(
     InGameParticipant p, {
     required bool isPolice,
   }) {
-    final isReady = isPolice || p.status == ParticipantStatus.jailed;
     return LobbyParticipantInfo(
       participantId: p.participantId,
       nickname: p.nickname,
       team: isPolice ? GameTeam.police : GameTeam.robber,
-      isReady: isReady,
+    );
+  }
+
+  /// 체포·탈옥 낙관적 반영까지 더한 도둑의 지금 수감 여부.
+  ///
+  /// 예전에는 카드 정보의 준비 필드를 수감 표시로 빌려 썼는데, 준비 상태가 없어지며(#661)
+  /// 같은 판정을 여기서 직접 한다.
+  bool _isRobberJailedNow(int participantId) {
+    final gameEventState = ref.read(gameEventNotifierProvider);
+    final robber = _participants?.robbers
+        .where((p) => p.participantId == participantId)
+        .firstOrNull;
+    return isRobberJailed(
+      participantId: participantId,
+      serverStatus: robber?.status ?? ParticipantStatus.alive,
+      arrestedIds: gameEventState.arrestedParticipantIds,
+      escapedIds: gameEventState.escapedParticipantIds,
     );
   }
 
@@ -180,7 +192,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     } else {
       // 도둑 역할: 본인 카드 + JAILED 상태일 때만 탈옥
       if (member.participantId != widget.myParticipantId) return;
-      if (!member.isReady) return; // isReady == true이 JAILED 상태
+      if (!_isRobberJailedNow(member.participantId)) return;
 
       // 모달 닫힘 시 채팅 입력 TextField로 포커스가 복원되어
       // 채팅 시트가 올라오는 현상 방지
@@ -233,27 +245,25 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
             .toList() ??
         const [];
 
-    // 체포/탈옥 낙관적 업데이트 + 서버 상태 통합 반영
-    // - isArrested: 체포 낙관적 업데이트 또는 API 상태 'JAILED'
-    // - isEscaped: 탈옥 낙관적 업데이트 (STOMP 이벤트 전 즉시 반영)
     final robberMembers =
-        _participants?.robbers.map((p) {
-          return LobbyParticipantInfo(
-            participantId: p.participantId,
-            nickname: p.nickname,
-            team: GameTeam.robber,
-            isReady: isRobberJailed(
-              participantId: p.participantId,
-              serverStatus: p.status,
-              arrestedIds: arrestedIds,
-              escapedIds: escapedIds,
-            ),
-          );
-        }).toList() ??
+        _participants?.robbers
+            .map((p) => _toParticipantInfo(p, isPolice: false))
+            .toList() ??
         const [];
 
-    // ALIVE 도둑 수 (도주 중)
-    final aliveCount = robberMembers.where((m) => !m.isReady).length;
+    // ALIVE 도둑 수 (도주 중). 체포·탈옥 낙관적 업데이트를 서버 상태 위에 얹어 센다.
+    final aliveCount =
+        _participants?.robbers
+            .where(
+              (p) => !isRobberJailed(
+                participantId: p.participantId,
+                serverStatus: p.status,
+                arrestedIds: arrestedIds,
+                escapedIds: escapedIds,
+              ),
+            )
+            .length ??
+        0;
 
     // 게임방 컨텍스트에서 ParticipantCard 의 SVG 선택을 위한 상태 맵.
     // 낙관적 체포/탈옥 업데이트를 반영한 유효 상태 사용.

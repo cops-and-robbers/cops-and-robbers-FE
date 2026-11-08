@@ -93,25 +93,6 @@ class _SessionRemoteDataSource implements SessionRemoteDataSource {
   }
 
   @override
-  Future<void> updateReady(int gameId, ReadyRequest request) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = request;
-    final _options = _setStreamType<void>(
-      Options(method: 'PATCH', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            '/api/games/${gameId}/lobby/ready',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    await _dio.fetch<void>(_options);
-  }
-
-  @override
   Future<void> changeTeam(int gameId, TeamChangeRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
