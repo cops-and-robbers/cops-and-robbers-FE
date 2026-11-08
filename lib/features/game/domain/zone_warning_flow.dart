@@ -65,6 +65,15 @@ class ZoneWarningFlow {
     return true;
   }
 
+  /// 위치 없이 1초마다 — 마지막 위치의 안/밖 그대로 시간을 이어 센다.
+  /// iOS는 가만히 서 있으면 위치를 거의 주지 않아, 위치로만 세면 밖에 서 있는 도둑의 경고가
+  /// "0/3 · 00:00"에서 멈추고 강제 체포도 오지 않았다(실기기).
+  bool onTick({required bool eligible, required DateTime at}) => onPosition(
+    eligible: eligible,
+    countsAsOutside: _countingSince != null,
+    at: at,
+  );
+
   void onForceArrestResult(ForceArrestResult result) {
     _inFlight = false;
     if (result != ForceArrestResult.retry) {

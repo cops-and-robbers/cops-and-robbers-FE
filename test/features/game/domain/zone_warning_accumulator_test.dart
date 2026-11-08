@@ -68,16 +68,4 @@ void main() {
     expect(acc.warnings, 1);
     expect(acc.untilNextWarning, const Duration(seconds: 45));
   });
-
-  test('gps_wobble_within_accuracy_does_not_count', () {
-    // 정확도 15m인데 경계 밖 10m — 실제로는 안일 수 있다
-    expect(
-      zoneWarningCounts(distanceOutsideMeters: 10, accuracyMeters: 15),
-      isFalse,
-    );
-    expect(
-      zoneWarningCounts(distanceOutsideMeters: 20, accuracyMeters: 15),
-      isTrue,
-    );
-  });
 }

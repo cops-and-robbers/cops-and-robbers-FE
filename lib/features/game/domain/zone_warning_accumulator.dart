@@ -6,12 +6,6 @@ const int kZoneWarnSeconds = 60;
 /// 경고가 이만큼 쌓이면 강제 체포.
 const int kZoneWarnMax = 3;
 
-/// GPS 정확도보다 확실히 밖일 때만 경고 시간을 센다. 경계 근처 흔들림으로 억울한 경고가 쌓이지 않게.
-bool zoneWarningCounts({
-  required double distanceOutsideMeters,
-  required double accuracyMeters,
-}) => distanceOutsideMeters > accuracyMeters;
-
 /// 라운드 동안 구역 밖에 있던 시간을 누적한다.
 ///
 /// 안으로 들어오면 멈출 뿐 0이 되지 않는다 — 들락날락으로 경고를 피하지 못하게.

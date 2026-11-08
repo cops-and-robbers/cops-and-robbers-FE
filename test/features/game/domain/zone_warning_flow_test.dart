@@ -91,4 +91,52 @@ void main() {
     flow.onPosition(eligible: true, countsAsOutside: true, at: sec(10));
     expect(flow.shouldSave(sec(10)), isTrue);
   });
+
+  group('위치가 더 오지 않아도 (iOS는 가만히 있으면 위치를 거의 안 준다)', () {
+    test(
+      'robber_standing_still_outside_gets_warnings_from_one_second_ticks',
+      () {
+        // 밖으로 밀려난 뒤 위치 한 번, 그다음은 1초 틱만
+        final flow = ZoneWarningFlow()
+          ..onPosition(eligible: true, countsAsOutside: true, at: sec(0));
+        for (var s = 1; s <= 61; s++) {
+          flow.onTick(eligible: true, at: sec(s));
+        }
+        expect(flow.warnings, 1);
+        expect(flow.untilNextWarningAt(sec(61)), const Duration(seconds: 59));
+      },
+    );
+
+    test(
+      'robber_standing_still_outside_is_force_arrested_at_three_minutes',
+      () {
+        final flow = ZoneWarningFlow()
+          ..onPosition(eligible: true, countsAsOutside: true, at: sec(0));
+        final calls = <int>[];
+        for (var s = 1; s <= 200; s++) {
+          if (flow.onTick(eligible: true, at: sec(s))) calls.add(s);
+        }
+        expect(calls, [180]);
+      },
+    );
+
+    test('ticks_do_not_count_after_robber_came_back_inside', () {
+      final flow = ZoneWarningFlow()
+        ..onPosition(eligible: true, countsAsOutside: true, at: sec(0))
+        ..onPosition(eligible: true, countsAsOutside: false, at: sec(30));
+      for (var s = 31; s <= 120; s++) {
+        flow.onTick(eligible: true, at: sec(s));
+      }
+      expect(flow.outsideSeconds, 30);
+    });
+
+    test('ticks_do_not_count_while_robber_is_jailed', () {
+      final flow = ZoneWarningFlow()
+        ..onPosition(eligible: true, countsAsOutside: true, at: sec(0));
+      for (var s = 1; s <= 120; s++) {
+        flow.onTick(eligible: false, at: sec(s));
+      }
+      expect(flow.outsideSeconds, 0);
+    });
+  });
 }

@@ -60,7 +60,6 @@ import '../../../session/data/models/game_settings_response.dart';
 import '../helpers/shrink_controller.dart';
 import '../../domain/shrink_animation_policy.dart';
 import '../widgets/shrink_pulse_rings.dart';
-import '../../domain/zone_warning_accumulator.dart';
 import '../../domain/zone_warning_flow.dart';
 import '../../data/datasources/zone_warning_local_datasource.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -235,6 +234,9 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 구역 밖 경고 누적 (#668). 축소 켠 일반 게임의 도둑만 — 그 밖에는 null.
   ZoneWarningFlow? _warningFlow;
+
+  /// 위치가 안 와도 1초마다 경고 시간을 이어 센다 — iOS는 가만히 있으면 위치를 거의 안 준다
+  Timer? _zoneWarningTicker;
   ZoneWarningLocalDataSource? _warningStore;
 
   /// 체포 QR(스캐너·내 QR)이 열려 있는지 — 열려 있으면 축소 연출로 화면을 덮지 않는다 (#668)
@@ -518,6 +520,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _zoneExitVibrationTimer?.cancel();
     _shrinkController?.dispose();
     _shrinkTweenTimer?.cancel();
+    _zoneWarningTicker?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
@@ -1671,9 +1674,11 @@ class _GamePageState extends ConsumerState<GamePage>
       Polyline(
         polylineId: const PolylineId('shrink_next'),
         points: [...points, points.first],
-        color: AppColors.blue500,
-        width: 2,
-        patterns: [PatternItem.dash(6), PatternItem.gap(6)],
+        // 지금 경계(blue800 실선)와 색부터 갈라야 묻히지 않는다 — blue500·두께 2·6/6은 실기기에서
+        // 잘 안 보였다 (#668 시안 16-B)
+        color: _isDarkMode ? AppColors.white : AppColors.black700,
+        width: 3,
+        patterns: [PatternItem.dash(12), PatternItem.gap(8)],
         consumeTapEvents: false,
       ),
     };
@@ -1724,6 +1729,10 @@ class _GamePageState extends ConsumerState<GamePage>
       _shrinkStart = inputs.start;
       _warningFlow = flow;
     });
+    _zoneWarningTicker?.cancel();
+    _zoneWarningTicker = flow == null
+        ? null
+        : Timer.periodic(const Duration(seconds: 1), (_) => _tickZoneWarning());
     // 잠금 화면 현황이 네트워크 없이 축소 여부를 알게 남긴다
     ref
         .read(gameParticipantNotifierProvider.notifier)
@@ -1781,30 +1790,51 @@ class _GamePageState extends ConsumerState<GamePage>
     final flow = _warningFlow;
     if (flow == null) return;
     final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
-    final gameState = ref.read(gameEventNotifierProvider);
-    // 수감·종료 동안은 세지 않는다 — 탈옥 직후 수감 시간이 한꺼번에 더해지지 않게
-    final eligible =
+    final eligible = _zoneWarningEligible(area);
+    // "플레이그라운드를 벗어났어요" 배너(_checkZoneExit)와 같은 판정 — 배너가 떠 있는데 숫자가
+    // 멈춰 있으면 이상하다(실기기). GPS 오차로 경계에서 잠깐 쌓이는 시간은 60초·3분 누적에 비해 작다.
+    final counts =
+        eligible &&
         area != null &&
+        !_judgedPlayground(
+          area,
+        ).contains(GeoPoint(latitude: pos.latitude, longitude: pos.longitude));
+    final now = clock.now();
+    _afterZoneWarningStep(
+      flow,
+      flow.onPosition(eligible: eligible, countsAsOutside: counts, at: now),
+      now,
+    );
+  }
+
+  /// 수감·종료 동안은 세지 않는다 — 탈옥 직후 수감 시간이 한꺼번에 더해지지 않게
+  bool _zoneWarningEligible(GameAreaEntity? area) {
+    final gameState = ref.read(gameEventNotifierProvider);
+    return area != null &&
         !_gameOverDialogShown &&
         !gameState.isGameOver &&
         !gameState.arrestedParticipantIds.contains(widget.participantId);
-    var counts = false;
-    if (eligible) {
-      final shape = _judgedPlayground(area);
-      final point = GeoPoint(latitude: pos.latitude, longitude: pos.longitude);
-      counts =
-          !shape.contains(point) &&
-          zoneWarningCounts(
-            distanceOutsideMeters: shape.distanceToBoundaryInMeters(point),
-            accuracyMeters: pos.accuracy,
-          );
-    }
+  }
+
+  /// 1초 틱 — 마지막 위치의 안/밖 그대로 이어 센다
+  void _tickZoneWarning() {
+    final flow = _warningFlow;
+    if (!mounted || flow == null) return;
+    final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
     final now = clock.now();
-    final shouldArrest = flow.onPosition(
-      eligible: eligible,
-      countsAsOutside: counts,
-      at: now,
+    _afterZoneWarningStep(
+      flow,
+      flow.onTick(eligible: _zoneWarningEligible(area), at: now),
+      now,
     );
+  }
+
+  /// 누적을 저장하고, 3번째 경고면 강제 체포를 부른다
+  void _afterZoneWarningStep(
+    ZoneWarningFlow flow,
+    bool shouldArrest,
+    DateTime now,
+  ) {
     final start = _shrinkStart;
     if (start != null && flow.shouldSave(now)) {
       flow.markSaved(now);
@@ -2008,6 +2038,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _shrinkGen++;
     _shrinkController?.dispose();
     _shrinkTweenTimer?.cancel();
+    _zoneWarningTicker?.cancel();
 
     // 위치 스트림 종료 전에 누적 경로/거리의 종료 시각을 확정한다.
     if (!widget.isDummy) _recordNotifier.markEnd(DateTime.now());
