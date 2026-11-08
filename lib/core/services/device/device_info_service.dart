@@ -77,7 +77,7 @@ class DeviceInfoService {
   ///
   /// Returns:
   /// - iOS: name, model, systemName, systemVersion, localizedModel 등
-  /// - Android: brand, manufacturer, model, device, product, androidId 등
+  /// - Android: brand, manufacturer, model, device, product, buildId 등
   static Future<Map<String, dynamic>> getFullDeviceInfo() async {
     try {
       if (Platform.isIOS) {
@@ -106,7 +106,8 @@ class DeviceInfoService {
           'model': androidInfo.model, // "SM-S911N"
           'device': androidInfo.device, // "r0s"
           'product': androidInfo.product, // "r0sxx"
-          'androidId': androidInfo.id, // 안드로이드 고유 ID
+          // device_info_plus 의 id 는 기기 ID가 아니라 OS 빌드 번호(Build.ID)다 (#687)
+          'buildId': androidInfo.id, // "BP4A.251205.006"
           'board': androidInfo.board, // 보드 이름
           'bootloader': androidInfo.bootloader, // 부트로더 버전
           'display': androidInfo.display, // 디스플레이 ID

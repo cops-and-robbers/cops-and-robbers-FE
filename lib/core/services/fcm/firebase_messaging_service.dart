@@ -145,7 +145,7 @@ class FirebaseMessagingService {
   /// 로그인 API 호출 시 FCM 토큰과 함께 이 정보를 서버에 전송합니다.
   ///
   /// **반환 데이터**:
-  /// - deviceId: 플랫폼 기기 고유 ID (Android ID / iOS IDFV)
+  /// - deviceId: 기기 식별 ID (Android ANDROID_ID / iOS IDFV, 못 읽으면 UUID) — [DeviceIdManager]
   /// - deviceName: 사용자가 지정한 기기 이름 (예: "루카의 iPhone")
   /// - deviceType: 플랫폼 타입 ("IOS" / "ANDROID")
   /// - osVersion: OS 버전 (예: "17.4" / "13")
