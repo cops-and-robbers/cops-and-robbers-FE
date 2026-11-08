@@ -33,7 +33,9 @@ class ZoneWarningAccumulator {
   void update({required bool countsAsOutside, required DateTime at}) {
     final since = _outsideSince;
     if (since != null) {
-      _outsideSeconds += at.difference(since).inMilliseconds / 1000;
+      // 폰 시계가 뒤로 보정되면 차이가 음수다 — 쌓인 경고를 깎지 않게 0으로 본다
+      _outsideSeconds +=
+          math.max(0, at.difference(since).inMilliseconds) / 1000;
     }
     _outsideSince = countsAsOutside ? at : null;
   }

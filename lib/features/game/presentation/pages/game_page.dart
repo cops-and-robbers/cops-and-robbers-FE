@@ -249,6 +249,9 @@ class _GamePageState extends ConsumerState<GamePage>
   /// [_setUpShrink] 세대 번호 — 겹쳐 돌면 마지막 호출만 남긴다
   int _shrinkGen = 0;
 
+  /// 설정 조회 실패·시작 시각 없음일 때 [_setUpShrink] 재시도 (DEC-0149)
+  Timer? _shrinkRetryTimer;
+
   /// 마지막으로 받은 내 위치 (축소로 밀려났는지 판단)
   Position? _lastZonePosition;
 
@@ -520,6 +523,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _zoneExitVibrationTimer?.cancel();
     _shrinkController?.dispose();
     _shrinkTweenTimer?.cancel();
+    _shrinkRetryTimer?.cancel();
     _zoneWarningTicker?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
@@ -1691,11 +1695,15 @@ class _GamePageState extends ConsumerState<GamePage>
     // 구역 로드·시작 시각 수신이 겹쳐 두 번 돌면 마지막 호출만 남긴다 — 컨트롤러가 둘이면
     // 알림이 두 번 나가고 카메라 연출이 겹쳐 이동 제한이 풀린다
     final gen = ++_shrinkGen;
+    _shrinkRetryTimer?.cancel();
     final GameSettingsResponse settings;
     try {
-      settings = await ref.read(fetchGameSettingsProvider(_gameId).future);
+      // 대기방이 살려 둔 캐시는 끊긴 동안 놓친 설정 변경을 모른다 — 매번 새로 받는다
+      settings = await ref.refresh(fetchGameSettingsProvider(_gameId).future);
     } catch (e) {
       debugPrint('[GamePage] ⚠️ 구역 축소 설정 조회 실패: $e');
+      // 한 번 실패로 그 판 내내 이 폰만 축소가 꺼지지 않게 다시 조회한다
+      if (mounted && gen == _shrinkGen) _scheduleShrinkRetry(area);
       return;
     }
     if (!mounted || gen != _shrinkGen) return;
@@ -1739,6 +1747,10 @@ class _GamePageState extends ConsumerState<GamePage>
         .setShrinkEnabled(at != null);
     if (at == null) {
       _drawArea(area);
+      // 축소는 켜졌는데 시작 시각을 아직 못 받았다 — 원래 구역으로 판정하며 다시 조회한다 (DEC-0149)
+      if (settings.shrinkFinalRadiusInMeters != null && inputs.start == null) {
+        _scheduleShrinkRetry(area);
+      }
       return;
     }
     // 대입한 뒤에 start한다 — `..start()`는 대입보다 먼저 돌아, 첫 그리기에서 _drawArea가
@@ -1749,6 +1761,9 @@ class _GamePageState extends ConsumerState<GamePage>
         if (!mounted) return;
         if (!animate) {
           _drawArea(area);
+          // 재진입·복귀로 놓친 축소에 밀려났을 수 있다 — 가만히 서 있으면 위치가 거의 안 와서
+          // 다음 위치까지 배너·경고가 시작되지 않는다
+          if (_lastZonePosition case final pos?) _checkZoneExit(pos);
           return;
         }
         _announceShrink(state);
@@ -1757,6 +1772,14 @@ class _GamePageState extends ConsumerState<GamePage>
     );
     _shrinkController = controller;
     controller.start();
+  }
+
+  void _scheduleShrinkRetry(GameAreaEntity area) {
+    _shrinkRetryTimer?.cancel();
+    _shrinkRetryTimer = Timer(
+      const Duration(seconds: 5),
+      () => unawaited(_setUpShrink(area)),
+    );
   }
 
   /// 경고 누적을 준비한다. 같은 라운드면 앱을 다시 켜도 이어서 센다 (게임 id + 시작 시각 2초).
@@ -2038,6 +2061,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _shrinkGen++;
     _shrinkController?.dispose();
     _shrinkTweenTimer?.cancel();
+    _shrinkRetryTimer?.cancel();
     _zoneWarningTicker?.cancel();
 
     // 위치 스트림 종료 전에 누적 경로/거리의 종료 시각을 확정한다.

@@ -68,4 +68,14 @@ void main() {
     expect(acc.warnings, 1);
     expect(acc.untilNextWarning, const Duration(seconds: 45));
   });
+
+  test('warnings_stay_when_phone_clock_is_corrected_backwards_outside', () {
+    // 밖에서 2분 버틴 뒤 폰이 네트워크 시각으로 30초 뒤로 보정된다
+    final acc = ZoneWarningAccumulator()
+      ..update(countsAsOutside: true, at: sec(0))
+      ..update(countsAsOutside: true, at: sec(120))
+      ..update(countsAsOutside: true, at: sec(90));
+    expect(acc.outsideSeconds, 120);
+    expect(acc.warnings, 2);
+  });
 }
