@@ -28,7 +28,8 @@
 name: AUTO UPDATE PROJECT CHANGELOG
 
 on:
-  pull_request_target:
+  # pull_request_target은 포크 PR에서도 저장소 시크릿으로 실행되고, 2026-12-02부터 공개 저장소에서 기본 차단된다
+  pull_request:
     types: [opened]
     branches: ["deploy"]
 
@@ -40,6 +41,8 @@ jobs:
   # Job 1: CodeRabbit Summary 감지 및 파싱
   detect-and-parse:
     name: CodeRabbit Summary 감지 및 파싱
+    # 같은 저장소 브랜치에서 연 배포 PR만 처리한다. 뒤 job은 모두 이 job에 needs로 묶여 함께 건너뛴다
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     outputs:
       summary_found: ${{ steps.detect_summary.outputs.summary_found }}
@@ -178,7 +181,7 @@ jobs:
 
       - name: Summary 파일 업로드
         if: steps.detect_summary.outputs.summary_found == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pr-content
           path: pr_body.md
@@ -295,7 +298,7 @@ jobs:
 
       - name: 폴백 Summary 파일 업로드
         if: steps.generate.outputs.summary_found == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pr-content
           path: pr_body.md
@@ -326,7 +329,7 @@ jobs:
           git pull origin $DEFAULT_BRANCH
 
       - name: Summary 파일 다운로드
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pr-content
 
