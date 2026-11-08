@@ -8,27 +8,19 @@ void main() {
     bool qrOpen = false,
     bool chatOpen = false,
     bool participantsOpen = false,
-    bool reduceMotion = false,
   }) => shrinkAnimationFor(
     stage: stage,
     appVisible: appVisible,
     qrOpen: qrOpen,
     chatOpen: chatOpen,
     participantsOpen: participantsOpen,
-    reduceMotion: reduceMotion,
   );
 
-  test('first_three_shrinks_tilt_only', () {
-    expect(pick(stage: 1), ShrinkAnimation.tilt);
-    expect(pick(stage: 3), ShrinkAnimation.tilt);
-  });
-
-  test('final_shrink_spins_once_around_the_zone', () {
-    expect(pick(stage: 4), ShrinkAnimation.tiltSpin);
-  });
-
-  test('reduce_motion_keeps_final_shrink_from_spinning', () {
-    expect(pick(stage: 4, reduceMotion: true), ShrinkAnimation.tilt);
+  test('every_shrink_tilts_the_same_way_when_nothing_is_open', () {
+    // 4차(최종)도 1~3차와 같은 연출 — 구글 지도에서 한 바퀴가 끊겨 뺐다
+    for (final stage in [1, 2, 3, 4]) {
+      expect(pick(stage: stage), ShrinkAnimation.tilt);
+    }
   });
 
   test('cop_scanning_robber_qr_is_not_interrupted', () {

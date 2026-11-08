@@ -1892,7 +1892,7 @@ class _GamePageState extends ConsumerState<GamePage>
     return (count: flow.warnings, untilNext: flow.untilNextWarningAt(now));
   }
 
-  /// 축소 순간 연출 — 1~3차는 기울기, 4차는 한 바퀴. 하던 일을 끊는 상황이면 원만 바꾼다.
+  /// 축소 순간 연출 — 모든 차수가 같은 기울기 연출. 하던 일을 끊는 상황이면 원만 바꾼다.
   Future<void> _playShrinkMoment(GameAreaEntity area, ShrinkState state) async {
     final isFinal = state.stage >= 4;
     void shrinkNow() {
@@ -1910,7 +1910,6 @@ class _GamePageState extends ConsumerState<GamePage>
       qrOpen: _isQrOpen,
       chatOpen: _showChat,
       participantsOpen: _showParticipants,
-      reduceMotion: MediaQuery.of(context).disableAnimations,
     );
     final map = _googleMapKey.currentState;
     if (animation == ShrinkAnimation.none || map == null) {
@@ -1925,7 +1924,6 @@ class _GamePageState extends ConsumerState<GamePage>
         state.current.center.longitude,
       ),
       fitRadiusMeters: start.radiusInMeters,
-      spin: animation == ShrinkAnimation.tiltSpin,
       onShrink: shrinkNow,
     );
   }

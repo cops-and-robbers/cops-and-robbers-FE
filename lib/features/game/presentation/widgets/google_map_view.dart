@@ -352,13 +352,11 @@ class GoogleMapViewState extends State<GoogleMapView>
 
   /// 구역이 줄어드는 순간의 카메라 연출 (#668, 튜토리얼 `_shrink`와 같은 흐름).
   ///
-  /// 58°로 기울여 구역이 다 보이게 넓힌 뒤 [onShrink]로 원을 바꾸고, [spin]이면 구역 중심을
-  /// 축으로 90°씩 네 번 돌아 한 바퀴(+360°를 한 번에 보내면 같은 방향이라 돌지 않는다),
+  /// 58°로 기울여 구역이 다 보이게 넓힌 뒤 [onShrink]로 원을 바꾸고,
   /// 끝나면 연출 직전 카메라로 돌아온다. 그동안 제스처와 이동 범위 제한을 잠시 푼다.
   Future<void> playShrinkCamera({
     required LatLng center,
     required double fitRadiusMeters,
-    required bool spin,
     required VoidCallback onShrink,
   }) async {
     final controller = _controller;
@@ -388,14 +386,6 @@ class GoogleMapViewState extends State<GoogleMapView>
       onShrink();
       // 원이 줄어드는 걸 기울인 채로 보여 준다 (원은 game_page가 0.9초에 걸쳐 줄인다)
       await Future<void>.delayed(_shrinkHoldAfter);
-      if (spin) {
-        for (var k = 1; k <= 4; k++) {
-          await controller.animateCamera(
-            at(bearing + 90 * k),
-            duration: _shrinkSpinQuarter,
-          );
-        }
-      }
       await controller.animateCamera(
         CameraUpdate.newCameraPosition(
           before ?? CameraPosition(target: center, zoom: zoom),
@@ -419,7 +409,6 @@ class GoogleMapViewState extends State<GoogleMapView>
   static const _shrinkTiltIn = Duration(milliseconds: 1200);
   static const _shrinkHoldBefore = Duration(milliseconds: 600);
   static const _shrinkHoldAfter = Duration(milliseconds: 1400);
-  static const _shrinkSpinQuarter = Duration(milliseconds: 1100);
   static const _shrinkTiltOut = Duration(milliseconds: 1200);
 
   /// 반경이 화면 폭 안에 여유 있게 들어오는 줌. 웹 메르카토르 축척 공식.
