@@ -108,7 +108,9 @@ import google_mobile_ads
             endAt: endAt,
             nextRevealAt: date("nextRevealAtMs"),
             aliveRobbers: (args["aliveRobbers"] as? NSNumber)?.intValue,
-            totalRobbers: (args["totalRobbers"] as? NSNumber)?.intValue
+            totalRobbers: (args["totalRobbers"] as? NSNumber)?.intValue,
+            nextShrinkAt: date("nextShrinkAtMs"),
+            shrinkLabel: args["shrinkLabel"] as? String
           )
           // 채널 핸들러는 메인 스레드에서 불린다. Task로 예약하면 update·stop의 실행 순서가 보장되지 않아
           // stop 뒤에 늦게 돈 update가 끝난 게임의 Live Activity를 다시 만들 수 있다 — 그 자리에서 실행한다.

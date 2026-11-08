@@ -240,6 +240,10 @@ class _GamePageState extends ConsumerState<GamePage>
   /// 체포 QR(스캐너·내 QR)이 열려 있는지 — 열려 있으면 축소 연출로 화면을 덮지 않는다 (#668)
   bool _isQrOpen = false;
 
+  /// 지도에 마지막으로 그린 지금 원 — 축소 순간 여기서부터 줄어들게 그린다
+  CircleShape? _drawnShrinkCircle;
+  Timer? _shrinkTweenTimer;
+
   /// [_setUpShrink] 세대 번호 — 겹쳐 돌면 마지막 호출만 남긴다
   int _shrinkGen = 0;
 
@@ -513,6 +517,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _locationSubscription?.cancel();
     _zoneExitVibrationTimer?.cancel();
     _shrinkController?.dispose();
+    _shrinkTweenTimer?.cancel();
     // dispose() 중 provider 상태 수정은 Riverpod이 차단하므로 다음 프레임으로 지연.
     // gameEventNotifier.disconnect()는 내부에서 ref.read()를 호출하므로
     // provider가 dispose된 후 호출 시 에러 가능. datasource를 직접 참조해 우회.
@@ -1607,23 +1612,33 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 구역 경계·외부 딤·축소 표시를 한 번에 다시 그린다.
-  void _drawArea(GameAreaEntity area) {
+  /// [circle]을 주면 그 원을 지금 원으로 그린다(줄어드는 중간 원). 다음 경계 점선은 다 줄어든 뒤에 보인다.
+  void _drawArea(GameAreaEntity area, {CircleShape? circle}) {
     final shrink = _shrinkController?.current;
+    final current = circle ?? shrink?.current;
+    _drawnShrinkCircle = current;
     final map = _googleMapKey.currentState;
-    map?.updateAreaCircles(_buildAreaCircles(area, current: shrink?.current));
+    map?.updateAreaCircles(_buildAreaCircles(area, current: current));
     map?.updateAreaPolygons({
       ..._buildAreaBorderPolygons(area),
       ..._buildOutsideOverlay(area),
-      ..._buildShrinkLostArea(area, shrink),
+      ..._buildShrinkLostArea(area, shrink, current: current),
     });
-    map?.updateBoundaryPolylines(_buildNextBoundary(shrink));
+    map?.updateBoundaryPolylines(
+      circle == null ? _buildNextBoundary(shrink) : const {},
+    );
   }
 
   /// 축소로 잃은 땅 = 원래 원 − 지금 원. 원래 구역 밖은 기존 검정 딤이 그대로 덮는다 (#668)
-  Set<Polygon> _buildShrinkLostArea(GameAreaEntity area, ShrinkState? shrink) {
+  Set<Polygon> _buildShrinkLostArea(
+    GameAreaEntity area,
+    ShrinkState? shrink, {
+    CircleShape? current,
+  }) {
     final start = area.playground;
-    if (shrink == null || shrink.stage == 0 || start is! CircleShape) return {};
-    final now = shrink.current;
+    final now = current ?? shrink?.current;
+    if (now == null || start is! CircleShape) return {};
+    if (now.radiusInMeters >= start.radiusInMeters) return {};
     return {
       Polygon(
         polygonId: const PolygonId('shrink_lost'),
@@ -1709,11 +1724,17 @@ class _GamePageState extends ConsumerState<GamePage>
       _shrinkStart = inputs.start;
       _warningFlow = flow;
     });
+    // 잠금 화면 현황이 네트워크 없이 축소 여부를 알게 남긴다
+    ref
+        .read(gameParticipantNotifierProvider.notifier)
+        .setShrinkEnabled(at != null);
     if (at == null) {
       _drawArea(area);
       return;
     }
-    _shrinkController = ShrinkController(
+    // 대입한 뒤에 start한다 — `..start()`는 대입보다 먼저 돌아, 첫 그리기에서 _drawArea가
+    // 컨트롤러를 못 보고 다음 경계 점선 없이 그렸다(실기기에서 1차 축소 전 점선이 안 보임)
+    final controller = ShrinkController(
       stateAt: at,
       onChange: (state, {required animate}) {
         if (!mounted) return;
@@ -1724,7 +1745,9 @@ class _GamePageState extends ConsumerState<GamePage>
         _announceShrink(state);
         unawaited(_playShrinkMoment(area, state));
       },
-    )..start();
+    );
+    _shrinkController = controller;
+    controller.start();
   }
 
   /// 경고 누적을 준비한다. 같은 라운드면 앱을 다시 켜도 이어서 센다 (게임 id + 시작 시각 2초).
@@ -1821,7 +1844,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final isFinal = state.stage >= 4;
     void shrinkNow() {
       if (!mounted) return;
-      _drawArea(area);
+      _tweenShrink(area, from: _drawnShrinkCircle, to: state.current);
       VibrationService.instance().zoneShrink(isFinal: isFinal);
       unawaited(_pulseIfPushedOut(state));
       // 가만히 서 있으면 GPS 틱이 드물다 — 밀려났으면 배너·경고를 바로 시작한다
@@ -1853,6 +1876,36 @@ class _GamePageState extends ConsumerState<GamePage>
       onShrink: shrinkNow,
     );
   }
+
+  /// 원이 한 번에 바뀌지 않고 [_shrinkTweenDuration] 동안 줄어들게 그린다
+  void _tweenShrink(
+    GameAreaEntity area, {
+    required CircleShape? from,
+    required CircleShape to,
+  }) {
+    _shrinkTweenTimer?.cancel();
+    if (from == null) {
+      _drawArea(area);
+      return;
+    }
+    final startedAt = clock.now();
+    _shrinkTweenTimer = Timer.periodic(const Duration(milliseconds: 40), (t) {
+      if (!mounted) return t.cancel();
+      final p =
+          clock.now().difference(startedAt).inMilliseconds /
+          _shrinkTweenDuration.inMilliseconds;
+      if (p >= 1) {
+        t.cancel();
+        _drawArea(area);
+        return;
+      }
+      // 처음엔 빠르게, 끝에선 천천히 (easeOutCubic)
+      final eased = 1 - math.pow(1 - p, 3).toDouble();
+      _drawArea(area, circle: lerpCircle(from, to, eased));
+    });
+  }
+
+  static const _shrinkTweenDuration = Duration(milliseconds: 900);
 
   /// 새 경계 밖에 놓였으면 내 위치에 빨간 링 두 번
   Future<void> _pulseIfPushedOut(ShrinkState state) async {
@@ -1954,6 +2007,7 @@ class _GamePageState extends ConsumerState<GamePage>
     _clearZoneExitWarning();
     _shrinkGen++;
     _shrinkController?.dispose();
+    _shrinkTweenTimer?.cancel();
 
     // 위치 스트림 종료 전에 누적 경로/거리의 종료 시각을 확정한다.
     if (!widget.isDummy) _recordNotifier.markEnd(DateTime.now());

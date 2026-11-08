@@ -381,19 +381,18 @@ class GoogleMapViewState extends State<GoogleMapView>
       CameraUpdate at(double b) => CameraUpdate.newCameraPosition(
         CameraPosition(target: center, zoom: zoom, tilt: 58, bearing: b),
       );
-      await controller.animateCamera(
-        at(bearing),
-        duration: const Duration(milliseconds: 700),
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 200));
+      await controller.animateCamera(at(bearing), duration: _shrinkTiltIn);
+      // 다음 경계 점선을 잠깐 보여 준 뒤 줄인다
+      await Future<void>.delayed(_shrinkHoldBefore);
       shrunk = true;
       onShrink();
-      await Future<void>.delayed(const Duration(milliseconds: 300));
+      // 원이 줄어드는 걸 기울인 채로 보여 준다 (원은 game_page가 0.9초에 걸쳐 줄인다)
+      await Future<void>.delayed(_shrinkHoldAfter);
       if (spin) {
         for (var k = 1; k <= 4; k++) {
           await controller.animateCamera(
             at(bearing + 90 * k),
-            duration: const Duration(milliseconds: 750),
+            duration: _shrinkSpinQuarter,
           );
         }
       }
@@ -401,7 +400,7 @@ class GoogleMapViewState extends State<GoogleMapView>
         CameraUpdate.newCameraPosition(
           before ?? CameraPosition(target: center, zoom: zoom),
         ),
-        duration: const Duration(milliseconds: 700),
+        duration: _shrinkTiltOut,
       );
     } catch (e) {
       debugPrint('❌ 구역 축소 카메라 연출 실패: $e');
@@ -415,6 +414,13 @@ class GoogleMapViewState extends State<GoogleMapView>
       }
     }
   }
+
+  // 구역 축소 연출 시간 (#668). 실기기에서 "너무 빠르다"는 피드백으로 늘렸다 — 체감은 여기서만 조정
+  static const _shrinkTiltIn = Duration(milliseconds: 1200);
+  static const _shrinkHoldBefore = Duration(milliseconds: 600);
+  static const _shrinkHoldAfter = Duration(milliseconds: 1400);
+  static const _shrinkSpinQuarter = Duration(milliseconds: 1100);
+  static const _shrinkTiltOut = Duration(milliseconds: 1200);
 
   /// 반경이 화면 폭 안에 여유 있게 들어오는 줌. 웹 메르카토르 축척 공식.
   static double _zoomToFit(double latitude, double radiusMeters, double width) {

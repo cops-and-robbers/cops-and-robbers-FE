@@ -11,6 +11,11 @@ struct GameStatusAttributes: ActivityAttributes {
     var nextRevealAt: Date?
     var aliveRobbers: Int?
     var totalRobbers: Int?
+    /// 구역 축소를 켠 게임의 다음 축소 시각 (#668). 없으면 줄을 숨긴다. 이전 Activity도 디코딩되게 optional.
+    var nextShrinkAt: Date? = nil
+    /// 축소 카운트다운 앞 라벨. 게임 중에 앱을 업데이트해 이전 Activity를 이어받아도 보이도록
+    /// attributes(처음 만들 때 고정)가 아니라 state에 둔다.
+    var shrinkLabel: String? = nil
   }
 
   var title: String

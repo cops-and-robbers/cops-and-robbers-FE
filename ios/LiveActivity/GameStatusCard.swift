@@ -15,6 +15,9 @@ struct GameStatusCardModel {
   var aliveRobbers: Int?
   var totalRobbers: Int?
   var isStale: Bool
+  /// 구역 축소 (#668) — 둘 다 있을 때만 줄을 보인다
+  var shrinkLabel: String? = nil
+  var nextShrinkAt: Date? = nil
 }
 
 /// 경찰과도둑 디자인 시스템(AppColors·AppTextStyles)의 팀 테마를 옮긴 값.
@@ -153,16 +156,36 @@ struct GameStatusCard: View {
   }
 
   private var detail: some View {
-    HStack(spacing: 10) {
-      if let alive = model.aliveRobbers, let total = model.totalRobbers {
-        labeled(model.remainingRobbersLabel) {
-          Text("\(alive)/\(total)")
-        }
+    // 구역 축소까지 한 줄에 안 들어가면(언어·글자 크기) 축소를 아랫줄로 내린다 — 잘리지 않게
+    ViewThatFits(in: .horizontal) {
+      HStack(spacing: 10) {
+        robbersAndReveal
+        shrink
       }
-      if let reveal = model.nextRevealAt {
-        labeled(model.locationRevealLabel) {
-          CountdownText(until: reveal)
-        }
+      VStack(alignment: .leading, spacing: 4) {
+        HStack(spacing: 10) { robbersAndReveal }
+        shrink
+      }
+    }
+  }
+
+  @ViewBuilder private var robbersAndReveal: some View {
+    if let alive = model.aliveRobbers, let total = model.totalRobbers {
+      labeled(model.remainingRobbersLabel) {
+        Text("\(alive)/\(total)")
+      }
+    }
+    if let reveal = model.nextRevealAt {
+      labeled(model.locationRevealLabel) {
+        CountdownText(until: reveal)
+      }
+    }
+  }
+
+  @ViewBuilder private var shrink: some View {
+    if let label = model.shrinkLabel, let at = model.nextShrinkAt {
+      labeled(label) {
+        CountdownText(until: at)
       }
     }
   }

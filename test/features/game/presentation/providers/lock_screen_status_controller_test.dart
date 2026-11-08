@@ -413,4 +413,53 @@ void main() {
       isEmpty,
     );
   });
+
+  group('구역 축소 (#668)', () {
+    test('shrink_on_game_sends_next_shrink_time_to_lock_screen', () {
+      fakeAsync((async) {
+        final h = _harness();
+        // 게임 화면이 축소 시계를 만들면 참가자 상태에 "축소 켬"을 남긴다
+        h.container
+            .read(gameParticipantNotifierProvider.notifier)
+            .setShrinkEnabled(true);
+        h.service.start(gameId: _gameId);
+        _listenController(h);
+        async.flushMicrotasks();
+        // 30분·경찰 5분 → 10:10 첫 축소
+        expect(
+          h.updates.last['nextShrinkAtMs'],
+          DateTime(2026, 9, 30, 10, 10).millisecondsSinceEpoch,
+        );
+      }, initialTime: twoMinutesIn);
+    });
+
+    test('lock_screen_moves_to_next_shrink_when_one_passes', () {
+      fakeAsync((async) {
+        final h = _harness();
+        h.container
+            .read(gameParticipantNotifierProvider.notifier)
+            .setShrinkEnabled(true);
+        h.service.start(gameId: _gameId);
+        _listenController(h);
+        async.flushMicrotasks();
+
+        async.elapse(const Duration(minutes: 8, seconds: 1)); // 10:10:01
+
+        expect(
+          h.updates.last['nextShrinkAtMs'],
+          DateTime(2026, 9, 30, 10, 15).millisecondsSinceEpoch,
+        );
+      }, initialTime: twoMinutesIn);
+    });
+
+    test('shrink_off_game_sends_no_shrink_time', () {
+      fakeAsync((async) {
+        final h = _harness();
+        h.service.start(gameId: _gameId);
+        _listenController(h);
+        async.flushMicrotasks();
+        expect(h.updates.last['nextShrinkAtMs'], isNull);
+      }, initialTime: twoMinutesIn);
+    });
+  });
 }

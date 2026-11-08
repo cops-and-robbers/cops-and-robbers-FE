@@ -297,4 +297,57 @@ void main() {
       expect(inputs.start, event);
     });
   });
+
+  group('줄어드는 중간 원', () {
+    test('halfway_between_800m_and_600m_is_700m', () {
+      // 축소 순간 원이 한 번에 바뀌지 않고 줄어드는 모습을 그리기 위한 중간 원
+      final a = circle(center, 800);
+      final b = circle(
+        const GeoPoint(latitude: 37.551, longitude: 127.07),
+        600,
+      );
+      final mid = lerpCircle(a, b, 0.5);
+      expect(mid.radiusInMeters, 700);
+      expect(mid.center.latitude, closeTo(37.5505, 1e-9));
+    });
+
+    test('ends_exactly_on_the_new_circle', () {
+      final a = circle(center, 800);
+      final b = circle(center, 600);
+      expect(lerpCircle(a, b, 1).radiusInMeters, 600);
+      expect(lerpCircle(a, b, 0).radiusInMeters, 800);
+    });
+  });
+
+  group('다음 축소 시각만 (잠금 화면용)', () {
+    final start = DateTime(2026, 11, 8, 12);
+    DateTime? next(DateTime now, {int round = 30, int wait = 5}) =>
+        nextShrinkAt(
+          start: start,
+          roundDurationMinutes: round,
+          policeWaitMinutes: wait,
+          now: now,
+        );
+
+    test(
+      'lock_screen_shows_first_shrink_at_10_minutes_before_police_leaves',
+      () {
+        expect(
+          next(DateTime(2026, 11, 8, 12, 3)),
+          DateTime(2026, 11, 8, 12, 10),
+        );
+      },
+    );
+
+    test('lock_screen_moves_to_next_shrink_after_one_passes', () {
+      expect(
+        next(DateTime(2026, 11, 8, 12, 10)),
+        DateTime(2026, 11, 8, 12, 15),
+      );
+    });
+
+    test('lock_screen_hides_shrink_after_final_area', () {
+      expect(next(DateTime(2026, 11, 8, 12, 25)), isNull);
+    });
+  });
 }

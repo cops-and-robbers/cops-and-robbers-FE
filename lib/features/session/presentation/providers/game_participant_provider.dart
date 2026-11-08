@@ -44,6 +44,10 @@ class GameParticipantInfo {
   /// 이벤트 게임 여부 (인게임 분기 단일 소스 — 도둑 ALIVE UI / 체포 / 결과)
   final bool isEventGame;
 
+  /// 이 게임에서 구역 축소가 돌고 있는지 (#668). 게임 화면이 축소 시계를 만들 때 남기고,
+  /// 잠금 화면 현황이 네트워크 없이 읽는다(DEC-0089).
+  final bool shrinkEnabled;
+
   const GameParticipantInfo({
     required this.gameId,
     required this.team,
@@ -57,6 +61,7 @@ class GameParticipantInfo {
     this.isHost = false,
     this.hostParticipantId,
     this.isEventGame = false,
+    this.shrinkEnabled = false,
   });
 
   GameParticipantInfo copyWith({
@@ -72,6 +77,7 @@ class GameParticipantInfo {
     bool? isHost,
     int? hostParticipantId,
     bool? isEventGame,
+    bool? shrinkEnabled,
   }) {
     return GameParticipantInfo(
       gameId: gameId ?? this.gameId,
@@ -87,6 +93,7 @@ class GameParticipantInfo {
       isHost: isHost ?? this.isHost,
       hostParticipantId: hostParticipantId ?? this.hostParticipantId,
       isEventGame: isEventGame ?? this.isEventGame,
+      shrinkEnabled: shrinkEnabled ?? this.shrinkEnabled,
     );
   }
 }
@@ -176,6 +183,12 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       hostParticipantId: hostParticipantId,
       isEventGame: isEventGame,
     );
+  }
+
+  /// 구역 축소가 도는지 (#668) — 게임 화면이 축소 시계를 만들 때 부른다
+  void setShrinkEnabled(bool enabled) {
+    if (state == null || state!.shrinkEnabled == enabled) return;
+    state = state!.copyWith(shrinkEnabled: enabled);
   }
 
   /// 방장 participantId 설정 (HOST_CHANGED 이벤트 시)

@@ -1817,6 +1817,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lockScreenLocationReveal => 'Location reveal';
 
   @override
+  String get lockScreenShrink => 'Area shrink';
+
+  @override
+  String lockScreenShrinkAt(String time) {
+    return 'Area shrink at $time';
+  }
+
+  @override
   String get lockScreenGameOver => 'Game over';
 
   @override
@@ -2658,13 +2666,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Shrinking area isn\'t available for areas drawn with pins';
 
   @override
-  String gameShrinkCountdown(String formatted) {
-    return 'Until next area shrink: $formatted';
+  String gameShrinkNotice(int stage) {
+    return 'The area got smaller ($stage/4)';
   }
 
   @override
-  String gameShrinkNotice(int stage) {
-    return 'The area got smaller ($stage/4)';
+  String gameRevealShrinkCountdown(String reveal, String shrink) {
+    return 'Reveal $reveal | Shrink $shrink';
   }
 
   @override

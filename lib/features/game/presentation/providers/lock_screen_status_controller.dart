@@ -12,6 +12,7 @@ import '../../../../core/utils/iso_timestamp_parser.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
 import '../../domain/robber_count.dart';
+import '../../domain/shrink_schedule.dart';
 import 'game_event_provider.dart';
 import 'lock_screen_status_builder.dart';
 
@@ -111,13 +112,28 @@ class LockScreenStatusController extends _$LockScreenStatusController {
       isEventGame: info.isEventGame,
       isRobberTeam: GameTeam.isRobber(info.team),
       l10n: lookupAppLocalizations(ref.read(appLocaleProvider).locale),
+      nextShrinkAt: info.shrinkEnabled
+          ? nextShrinkAt(
+              start: start,
+              roundDurationMinutes: round,
+              policeWaitMinutes: info.policeWaitMinutes ?? 0,
+              now: now,
+            )
+          : null,
     );
-    _scheduleRevealTimer(status.nextRevealAt, now);
+    // 위치 공개와 구역 축소 중 먼저 오는 시각에 깨어 다시 계산한다
+    _scheduleRevealTimer(
+      _earlier(status.nextRevealAt, status.nextShrinkAt),
+      now,
+    );
 
     if (status == _lastSent) return;
     _lastSent = status;
     ref.read(backgroundServiceProvider).update(status);
   }
+
+  static DateTime? _earlier(DateTime? a, DateTime? b) =>
+      a == null ? b : (b == null || a.isBefore(b) ? a : b);
 
   void _scheduleRevealTimer(DateTime? nextReveal, DateTime now) {
     _revealTimer?.cancel();

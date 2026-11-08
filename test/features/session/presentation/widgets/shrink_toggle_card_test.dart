@@ -3,6 +3,7 @@ import 'package:cops_and_robbers/features/session/presentation/widgets/shrink_to
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,7 +19,7 @@ Future<void> _pump(
   String locale = 'ko',
   bool isDarkMode = false,
 }) async {
-  tester.view.physicalSize = const Size(393, 852);
+  tester.view.physicalSize = const Size(375, 812);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -167,4 +168,32 @@ void main() {
     await _pump(tester, enabled: true, onChanged: (_) {});
     expect(thumb(), AppColors.white);
   });
+
+  // 375pt 폰·확인 화면 여백에서 설명이 한 줄에 다 들어가는지 (말줄임 없이)
+  for (final locale in ['ko', 'en', 'ja']) {
+    for (final (name, lock, on, fin) in [
+      ('off', ShrinkLock.none, false, 200),
+      ('on_1km', ShrinkLock.none, true, 200),
+      ('too_small', ShrinkLock.tooSmall, false, null),
+      ('pin', ShrinkLock.notCircle, false, null),
+    ]) {
+      testWidgets('card_description_fits_one_line_${name}_$locale', (
+        tester,
+      ) async {
+        await _pump(
+          tester,
+          enabled: on,
+          lock: lock,
+          startRadius: name == 'on_1km' ? 1000 : 500,
+          finalRadius: fin,
+          onChanged: (_) {},
+          locale: locale,
+        );
+        final desc = tester
+            .renderObjectList<RenderParagraph>(find.byType(RichText))
+            .elementAt(1);
+        expect(desc.didExceedMaxLines, isFalse, reason: desc.text.toPlainText());
+      });
+    }
+  }
 }

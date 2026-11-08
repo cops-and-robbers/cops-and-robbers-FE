@@ -3248,6 +3248,18 @@ abstract class AppLocalizations {
   /// **'위치 공개'**
   String get lockScreenLocationReveal;
 
+  /// No description provided for @lockScreenShrink.
+  ///
+  /// In ko, this message translates to:
+  /// **'구역 축소'**
+  String get lockScreenShrink;
+
+  /// 잠금 화면 — 다음 구역 축소 시각 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 구역 축소'**
+  String lockScreenShrinkAt(String time);
+
   /// 잠금 화면 게임 현황 — 종료 시각이 지난 뒤(앱이 종료 신호를 못 보낸 경우) 표시 (iOS Live Activity)
   ///
   /// In ko, this message translates to:
@@ -4678,14 +4690,14 @@ abstract class AppLocalizations {
   /// 구역 축소 (#668)
   ///
   /// In ko, this message translates to:
-  /// **'다음 구역 축소까지 {formatted}'**
-  String gameShrinkCountdown(String formatted);
-
-  /// 구역 축소 (#668)
-  ///
-  /// In ko, this message translates to:
   /// **'구역이 줄었어요 ({stage}/4)'**
   String gameShrinkNotice(int stage);
+
+  /// 앱바 — 다음 도둑 위치 공개와 다음 구역 축소까지 남은 시간 한 줄 (#668)
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공개 {reveal} | 구역 축소 {shrink}'**
+  String gameRevealShrinkCountdown(String reveal, String shrink);
 
   /// No description provided for @gameShrinkFinalNotice.
   ///

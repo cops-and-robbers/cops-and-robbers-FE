@@ -157,21 +157,9 @@ class _GameTimerTextState extends State<GameTimerText>
           LocationRevealCountdown(
             remainingTime: revealRemaining,
             intervalMinutes: interval,
+            shrinkRemaining: widget.nextShrinkAt?.call(_now)?.difference(_now),
             isDarkMode: widget.isDarkMode,
           ),
-          if (widget.nextShrinkAt?.call(_now) case final shrinkAt?) ...[
-            SizedBox(height: AppSpacing.vertical4),
-            Text(
-              AppLocalizations.of(
-                context,
-              ).gameShrinkCountdown(_formatted(shrinkAt.difference(_now))),
-              style: AppTextStyles.tag_12.copyWith(
-                color: widget.isDarkMode
-                    ? AppColors.black400
-                    : AppColors.black600,
-              ),
-            ),
-          ],
         ],
       ],
     );

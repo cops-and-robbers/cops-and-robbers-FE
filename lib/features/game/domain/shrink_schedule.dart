@@ -183,3 +183,38 @@ ShrinkState Function(DateTime now)? shrinkClockFor({
   round: participantRound ?? infoRound,
   wait: participantWait ?? infoWait,
 );
+
+/// [a]에서 [b]로 줄어드는 중간 원 ([t] 0~1). 축소 순간 원이 한 번에 바뀌지 않고 줄어들게 그린다.
+CircleShape lerpCircle(CircleShape a, CircleShape b, double t) =>
+    AreaShape.circle(
+          center: GeoPoint(
+            latitude:
+                a.center.latitude + (b.center.latitude - a.center.latitude) * t,
+            longitude:
+                a.center.longitude +
+                (b.center.longitude - a.center.longitude) * t,
+          ),
+          radiusInMeters:
+              a.radiusInMeters + (b.radiusInMeters - a.radiusInMeters) * t,
+        )
+        as CircleShape;
+
+/// 다음 축소 시각만 (잠금 화면용 — 원 모양은 필요 없다). 최종 구역이거나 줄일 수 없으면 null.
+/// [shrinkStateAt]과 같은 규칙: 1차 = 시작 + 경찰 대기 + 간격, 이후 간격마다, 4차까지.
+DateTime? nextShrinkAt({
+  required DateTime start,
+  required int roundDurationMinutes,
+  required int policeWaitMinutes,
+  required DateTime now,
+}) {
+  final intervalMs = (roundDurationMinutes - policeWaitMinutes) * 60000 ~/ 5;
+  if (intervalMs <= 0) return null;
+  final first = start.add(
+    Duration(minutes: policeWaitMinutes, milliseconds: intervalMs),
+  );
+  for (var k = 0; k < 4; k++) {
+    final at = first.add(Duration(milliseconds: intervalMs * k));
+    if (at.isAfter(now)) return at;
+  }
+  return null;
+}

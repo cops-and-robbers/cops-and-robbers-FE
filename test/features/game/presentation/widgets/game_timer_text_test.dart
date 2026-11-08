@@ -177,7 +177,9 @@ void main() {
   testWidgets('구역 축소를 켠 게임은 앱바에 다음 축소까지 남은 시간을 함께 보여 준다', (tester) async {
     await withClock(Clock.fixed(DateTime(2026, 11, 8, 12, 7)), () async {
       await pumpShrinkTimer(tester, DateTime(2026, 11, 8, 12, 10));
-      expect(find.text('다음 구역 축소까지 03:00'), findsOneWidget);
+      // 앱바가 두 줄이 되지 않게 위치 공개와 한 줄로 (#668 실기기 피드백)
+      expect(find.text('위치 공개 03:00 | 구역 축소 03:00'), findsOneWidget);
+      expect(find.textContaining('다음 도둑 위치 공개까지'), findsNothing);
       await tester.pumpWidget(const SizedBox.shrink());
     });
   });
@@ -185,7 +187,8 @@ void main() {
   testWidgets('마지막 축소가 끝나면 축소 줄을 숨긴다', (tester) async {
     await withClock(Clock.fixed(DateTime(2026, 11, 8, 12, 27)), () async {
       await pumpShrinkTimer(tester, null);
-      expect(find.textContaining('구역 축소까지'), findsNothing);
+      expect(find.textContaining('구역 축소'), findsNothing);
+      expect(find.text('다음 도둑 위치 공개까지 03:00'), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
     });
   });
@@ -213,9 +216,8 @@ void main() {
       );
       expect(find.text('경고 1/3 · 다음 경고까지 00:42'), findsOneWidget);
       expect(find.textContaining('위치 공개까지'), findsNothing);
-      expect(find.textContaining('구역 축소까지'), findsNothing);
+      expect(find.textContaining('구역 축소'), findsNothing);
       await tester.pumpWidget(const SizedBox.shrink());
     });
   });
 }
-

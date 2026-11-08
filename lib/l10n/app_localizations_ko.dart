@@ -1705,6 +1705,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lockScreenLocationReveal => '위치 공개';
 
   @override
+  String get lockScreenShrink => '구역 축소';
+
+  @override
+  String lockScreenShrinkAt(String time) {
+    return '$time 구역 축소';
+  }
+
+  @override
   String get lockScreenGameOver => '게임 종료';
 
   @override
@@ -2467,13 +2475,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get shrinkPinHint => '핀으로 그리면 구역 축소를 쓸 수 없어요';
 
   @override
-  String gameShrinkCountdown(String formatted) {
-    return '다음 구역 축소까지 $formatted';
+  String gameShrinkNotice(int stage) {
+    return '구역이 줄었어요 ($stage/4)';
   }
 
   @override
-  String gameShrinkNotice(int stage) {
-    return '구역이 줄었어요 ($stage/4)';
+  String gameRevealShrinkCountdown(String reveal, String shrink) {
+    return '위치 공개 $reveal | 구역 축소 $shrink';
   }
 
   @override
