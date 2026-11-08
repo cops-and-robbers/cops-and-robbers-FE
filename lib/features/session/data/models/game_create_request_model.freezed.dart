@@ -1225,6 +1225,11 @@ mixin _$GameSettingsRequestModel {
   /// 최대 참여 인원 (2~50명)
   int get maxParticipants => throw _privateConstructorUsedError;
 
+  /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
+  ///
+  /// `PUT /settings`는 값을 통째로 덮어쓰므로 null이어도 키를 빼지 않는다.
+  int? get shrinkFinalRadiusInMeters => throw _privateConstructorUsedError;
+
   /// Serializes this GameSettingsRequestModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -1247,6 +1252,7 @@ abstract class $GameSettingsRequestModelCopyWith<$Res> {
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
+    int? shrinkFinalRadiusInMeters,
   });
 }
 
@@ -1272,6 +1278,7 @@ class _$GameSettingsRequestModelCopyWithImpl<
     Object? locationRevealIntervalMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
+    Object? shrinkFinalRadiusInMeters = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -1291,6 +1298,10 @@ class _$GameSettingsRequestModelCopyWithImpl<
                 ? _value.maxParticipants
                 : maxParticipants // ignore: cast_nullable_to_non_nullable
                       as int,
+            shrinkFinalRadiusInMeters: freezed == shrinkFinalRadiusInMeters
+                ? _value.shrinkFinalRadiusInMeters
+                : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -1311,6 +1322,7 @@ abstract class _$$GameSettingsRequestModelImplCopyWith<$Res>
     int locationRevealIntervalMinutes,
     int policeWaitMinutes,
     int maxParticipants,
+    int? shrinkFinalRadiusInMeters,
   });
 }
 
@@ -1336,6 +1348,7 @@ class __$$GameSettingsRequestModelImplCopyWithImpl<$Res>
     Object? locationRevealIntervalMinutes = null,
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
+    Object? shrinkFinalRadiusInMeters = freezed,
   }) {
     return _then(
       _$GameSettingsRequestModelImpl(
@@ -1355,6 +1368,10 @@ class __$$GameSettingsRequestModelImplCopyWithImpl<$Res>
             ? _value.maxParticipants
             : maxParticipants // ignore: cast_nullable_to_non_nullable
                   as int,
+        shrinkFinalRadiusInMeters: freezed == shrinkFinalRadiusInMeters
+            ? _value.shrinkFinalRadiusInMeters
+            : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -1368,6 +1385,7 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
     required this.locationRevealIntervalMinutes,
     required this.policeWaitMinutes,
     required this.maxParticipants,
+    this.shrinkFinalRadiusInMeters,
   });
 
   factory _$GameSettingsRequestModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -1389,9 +1407,15 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
   @override
   final int maxParticipants;
 
+  /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
+  ///
+  /// `PUT /settings`는 값을 통째로 덮어쓰므로 null이어도 키를 빼지 않는다.
+  @override
+  final int? shrinkFinalRadiusInMeters;
+
   @override
   String toString() {
-    return 'GameSettingsRequestModel(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants)';
+    return 'GameSettingsRequestModel(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters)';
   }
 
   @override
@@ -1410,7 +1434,12 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
             (identical(other.policeWaitMinutes, policeWaitMinutes) ||
                 other.policeWaitMinutes == policeWaitMinutes) &&
             (identical(other.maxParticipants, maxParticipants) ||
-                other.maxParticipants == maxParticipants));
+                other.maxParticipants == maxParticipants) &&
+            (identical(
+                  other.shrinkFinalRadiusInMeters,
+                  shrinkFinalRadiusInMeters,
+                ) ||
+                other.shrinkFinalRadiusInMeters == shrinkFinalRadiusInMeters));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1421,6 +1450,7 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
     locationRevealIntervalMinutes,
     policeWaitMinutes,
     maxParticipants,
+    shrinkFinalRadiusInMeters,
   );
 
   /// Create a copy of GameSettingsRequestModel
@@ -1446,6 +1476,7 @@ abstract class _GameSettingsRequestModel implements GameSettingsRequestModel {
     required final int locationRevealIntervalMinutes,
     required final int policeWaitMinutes,
     required final int maxParticipants,
+    final int? shrinkFinalRadiusInMeters,
   }) = _$GameSettingsRequestModelImpl;
 
   factory _GameSettingsRequestModel.fromJson(Map<String, dynamic> json) =
@@ -1466,6 +1497,12 @@ abstract class _GameSettingsRequestModel implements GameSettingsRequestModel {
   /// 최대 참여 인원 (2~50명)
   @override
   int get maxParticipants;
+
+  /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
+  ///
+  /// `PUT /settings`는 값을 통째로 덮어쓰므로 null이어도 키를 빼지 않는다.
+  @override
+  int? get shrinkFinalRadiusInMeters;
 
   /// Create a copy of GameSettingsRequestModel
   /// with the given fields replaced by the non-null parameter values.

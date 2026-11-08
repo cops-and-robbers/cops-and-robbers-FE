@@ -39,6 +39,9 @@ class GameSettingsResponse with _$GameSettingsResponse {
 
     /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false) — 콜드 재진입 복원용
     @Default(false) bool isEventGame,
+
+    /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
+    int? shrinkFinalRadiusInMeters,
   }) = _GameSettingsResponse;
 
   factory GameSettingsResponse.fromJson(Map<String, dynamic> json) =>

@@ -329,6 +329,17 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
                 ),
               ),
 
+              // 핀 구역은 구역 축소를 쓸 수 없다 — 다 그린 뒤에 알면 다시 그려야 하므로 미리 알린다 (#668)
+              if (_areaType == GameAreaType.polygon) ...[
+                SizedBox(height: AppSpacing.vertical8),
+                Text(
+                  l10n.shrinkPinHint,
+                  style: AppTextStyles.tag_12.copyWith(
+                    color: isDark ? AppColors.black400 : AppColors.black600,
+                  ),
+                ),
+              ],
+
               // 간격 20px
               SizedBox(height: AppSpacing.vertical20),
 

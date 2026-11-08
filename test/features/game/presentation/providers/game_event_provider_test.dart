@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cops_and_robbers/features/game/data/datasources/game_event_stomp_datasource.dart';
@@ -10,10 +12,13 @@ import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart'
 import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart';
 import 'package:cops_and_robbers/features/game/data/services/event_arrest_storage.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
+import 'package:cops_and_robbers/features/game/domain/zone_warning_flow.dart';
 import 'package:cops_and_robbers/features/auth/presentation/providers/token_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:cops_and_robbers/core/i18n/locale_provider.dart';
+import 'package:cops_and_robbers/l10n/app_localizations.dart';
 
 /// STOMP 실제 연결을 차단하는 fake.
 /// build()가 datasource를 watch하므로 주입해 네트워크 부작용을 막는다.
@@ -48,6 +53,16 @@ class _FakeGameSystemApi implements GameSystemApi {
     lastArrest = (gameId, body.robberParticipantId);
     if (arrestGate != null) await arrestGate!.future;
     if (arrestError != null) throw arrestError!;
+    return const ArrestResponseModel(robberNickname: '도둑', remainingThieves: 1);
+  }
+
+  Object? forceArrestError;
+  int forceArrestCount = 0;
+
+  @override
+  Future<ArrestResponseModel> forceArrest(int gameId) async {
+    forceArrestCount++;
+    if (forceArrestError != null) throw forceArrestError!;
     return const ArrestResponseModel(robberNickname: '도둑', remainingThieves: 1);
   }
 
@@ -113,8 +128,9 @@ class _EventInjectableDatasource extends GameEventStompDatasource {
     // no-op (실제 STOMP 구독 차단)
   }
 
+  /// [policeId]가 null이면 구역 밖 강제 체포(#668) — 서버가 `police: null`로 보낸다.
   void emitArrest({
-    required int policeId,
+    required int? policeId,
     required int robberId,
     String robberNickname = '운영진',
   }) {
@@ -122,11 +138,13 @@ class _EventInjectableDatasource extends GameEventStompDatasource {
       GameEventModel(
         type: GameEventType.arrest,
         data: {
-          'police': {
-            'participantId': policeId,
-            'nickname': '경찰',
-            'status': 'ALIVE',
-          },
+          'police': policeId == null
+              ? null
+              : {
+                  'participantId': policeId,
+                  'nickname': '경찰',
+                  'status': 'ALIVE',
+                },
           'robber': {
             'participantId': robberId,
             'nickname': robberNickname,
@@ -766,6 +784,130 @@ void main() {
       final s = c.read(gameEventNotifierProvider);
       expect(s.gameStartTime, isNotNull);
       expect(s.bannerMessage, isNull);
+    });
+  });
+
+  group('강제 체포 ARREST (#668, police: null)', () {
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
+    Future<ProviderContainer> connected(_EventInjectableDatasource ds) async {
+      final c = ProviderContainer(
+        overrides: [
+          gameEventStompDatasourceProvider.overrideWithValue(ds),
+          gameSystemApiProvider.overrideWithValue(_FakeGameSystemApi()),
+          tokenProviderProvider.overrideWithValue(_FakeTokenProvider()),
+        ],
+      );
+      c.listen(gameEventNotifierProvider, (_, _) {}, fireImmediately: true);
+      addTearDown(c.dispose);
+      await c
+          .read(gameEventNotifierProvider.notifier)
+          .connectAndSubscribe(1, team: 'police');
+      return c;
+    }
+
+    test(
+      'robber_caught_for_staying_outside_shows_forced_banner_without_police',
+      () async {
+        final ds = _EventInjectableDatasource();
+        final c = await connected(ds);
+
+        ds.emitArrest(policeId: null, robberId: 7, robberNickname: '번개도둑');
+        await Future<void>.delayed(Duration.zero);
+
+        final s = c.read(gameEventNotifierProvider);
+        // 테스트 기본 언어는 기기 설정을 따르므로 현재 언어의 전용 문구와 비교한다
+        final l10n = lookupAppLocalizations(c.read(appLocaleProvider).locale);
+        expect(s.lastArrestForced, isTrue);
+        expect(s.bannerMessage, l10n.gameEventForcedArrestNotice('번개도둑'));
+        expect(s.arrestedParticipantIds, contains(7));
+      },
+    );
+
+    test('forced_arrest_still_counts_for_system_chat', () async {
+      final ds = _EventInjectableDatasource();
+      final c = await connected(ds);
+      final before = c.read(gameEventNotifierProvider).arrestEventCount;
+
+      ds.emitArrest(policeId: null, robberId: 7, robberNickname: '번개도둑');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(c.read(gameEventNotifierProvider).arrestEventCount, before + 1);
+    });
+
+    test('police_arrest_keeps_police_wording', () async {
+      final ds = _EventInjectableDatasource();
+      final c = await connected(ds);
+
+      ds.emitArrest(policeId: 2, robberId: 7, robberNickname: '번개도둑');
+      await Future<void>.delayed(Duration.zero);
+
+      final s = c.read(gameEventNotifierProvider);
+      expect(s.lastArrestForced, isFalse);
+      expect(s.bannerMessage, contains('경찰'));
+    });
+  });
+
+  group('강제 체포 호출 (#668)', () {
+    DioException rejected(String code) => DioException(
+      requestOptions: RequestOptions(path: '/api/games/1/system/force-arrest'),
+      response: Response(
+        requestOptions: RequestOptions(
+          path: '/api/games/1/system/force-arrest',
+        ),
+        statusCode: 400,
+        data: {
+          'title': 'error',
+          'status': 400,
+          'detail': 'msg',
+          'instance': '/api/games/1/system/force-arrest',
+          'errorCode': code,
+        },
+      ),
+      type: DioExceptionType.badResponse,
+    );
+
+    test('force_arrest_succeeds_for_robber_outside_too_long', () async {
+      final api = _FakeGameSystemApi();
+      final c = _container(api: api);
+      expect(
+        await c.read(gameEventNotifierProvider.notifier).forceArrest(1),
+        ForceArrestResult.success,
+      );
+      expect(api.forceArrestCount, 1);
+    });
+
+    test('already_jailed_rejection_is_terminal', () async {
+      final api = _FakeGameSystemApi()
+        ..forceArrestError = rejected('ALREADY_ARRESTED');
+      final c = _container(api: api);
+      expect(
+        await c.read(gameEventNotifierProvider.notifier).forceArrest(1),
+        ForceArrestResult.terminal,
+      );
+    });
+
+    test('game_already_over_is_terminal', () async {
+      final api = _FakeGameSystemApi()
+        ..forceArrestError = rejected('GAME_NOT_IN_PROGRESS');
+      final c = _container(api: api);
+      expect(
+        await c.read(gameEventNotifierProvider.notifier).forceArrest(1),
+        ForceArrestResult.terminal,
+      );
+    });
+
+    test('network_failure_is_retried', () async {
+      final api = _FakeGameSystemApi()
+        ..forceArrestError = DioException(
+          requestOptions: RequestOptions(path: '/x'),
+          type: DioExceptionType.connectionError,
+        );
+      final c = _container(api: api);
+      expect(
+        await c.read(gameEventNotifierProvider.notifier).forceArrest(1),
+        ForceArrestResult.retry,
+      );
     });
   });
 }

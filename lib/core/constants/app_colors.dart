@@ -190,6 +190,9 @@ class AppColors {
   /// Red 500 with 20% opacity
   static const Color red500Alpha20 = Color(0x33FA9C9E);
 
+  /// 빨강 30% — 구역 축소로 잃은 땅 (#668). 다크 지도에서도 빨강으로 읽히는 값. 디자이너 확인 대기
+  static const Color redAlpha30 = Color(0x4DFF383C);
+
   /// 빨강 100
   /// Red 100
   static const Color red100 = Color(0xFFFEECEC);

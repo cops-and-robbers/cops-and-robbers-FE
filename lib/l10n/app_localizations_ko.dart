@@ -2434,6 +2434,65 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeNotJailed => '수감된 상태에서만 탈옥할 수 있어요';
 
   @override
+  String get errorCodeShrinkRequiresCircleArea => '구역 축소는 원형 구역에서만 쓸 수 있어요';
+
+  @override
+  String get errorCodeInvalidShrinkFinalRadius =>
+      '구역 축소 반경이 맞지 않아요. 구역을 다시 확인해 주세요';
+
+  @override
+  String get errorCodeForceArrestNotAllowedInEventGame => '이벤트 게임에서는 쓸 수 없어요';
+
+  @override
+  String get shrinkAutoOffSnackbar => '구역이 작아져서 구역 축소를 껐어요';
+
+  @override
+  String get shrinkTitle => '구역 축소';
+
+  @override
+  String get shrinkDescOff => '구역이 점점 줄어들어요';
+
+  @override
+  String shrinkDescOn(String start, String end) {
+    return '$start → $end까지 줄어요';
+  }
+
+  @override
+  String get shrinkLockTooSmall => '구역이 작아서 쓸 수 없어요';
+
+  @override
+  String get shrinkLockNotCircle => '원형 구역에서만 쓸 수 있어요';
+
+  @override
+  String get shrinkPinHint => '핀으로 그리면 구역 축소를 쓸 수 없어요';
+
+  @override
+  String gameShrinkCountdown(String formatted) {
+    return '다음 구역 축소까지 $formatted';
+  }
+
+  @override
+  String gameShrinkNotice(int stage) {
+    return '구역이 줄었어요 ($stage/4)';
+  }
+
+  @override
+  String get gameShrinkFinalNotice => '마지막 구역이에요. 더 줄어들지 않아요';
+
+  @override
+  String get pingOutsideShrunkZone => '줄어든 구역 밖에는 핑을 찍을 수 없어요';
+
+  @override
+  String zoneWarnStatus(int count, int max, String formatted) {
+    return '경고 $count/$max · 다음 경고까지 $formatted';
+  }
+
+  @override
+  String gameEventForcedArrestNotice(String robberNickname) {
+    return '[$robberNickname]님이 구역 밖에 오래 있어서 잡혔어요!';
+  }
+
+  @override
   String get errorCodePoliceWaitingTime => '경찰은 대기 시간 동안 도둑을 체포할 수 없어요';
 
   @override

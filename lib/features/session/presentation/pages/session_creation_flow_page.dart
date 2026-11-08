@@ -21,6 +21,8 @@ import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
+import '../../../game/domain/shrink_schedule.dart';
+import '../widgets/shrink_toggle_card.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
@@ -145,6 +147,9 @@ class _SessionCreationFlowPageState
   int _locationShareMinutes = GameSettingValues.recommendedLocationShare;
   int _policeWaitMinutes = GameSettingValues.recommendedPoliceWait;
 
+  /// 구역 축소 (#668). 기본 꺼짐.
+  bool _shrinkEnabled = false;
+
   // ============================================
   // Lifecycle
   // ============================================
@@ -188,6 +193,7 @@ class _SessionCreationFlowPageState
         _policeWaitMinutes =
             (draft.policeWaitMinutes ?? GameSettingValues.recommendedPoliceWait)
                 .clamp(1, 10);
+        _shrinkEnabled = draft.shrinkEnabled;
       });
     }
   }
@@ -206,6 +212,7 @@ class _SessionCreationFlowPageState
       roundDurationMinutes: _roundDurationMinutes,
       locationShareMinutes: _locationShareMinutes,
       policeWaitMinutes: _policeWaitMinutes,
+      shrinkEnabled: _shrinkEnabled,
     );
     await _storageService.saveDraft(draft);
   }
@@ -237,8 +244,32 @@ class _SessionCreationFlowPageState
 
   void _onJailDone(AreaShape shape) {
     _onPrisonResult(shape);
+    _turnShrinkOffIfLocked();
     unawaited(_saveDraft());
     _show(_CreationPhase.confirm, _Motion.forward);
+  }
+
+  /// 구역을 고쳐 축소 조건이 깨지면 끄고 알린다. 다시 가능해져도 켜는 건 방장 몫이다 (#668).
+  void _turnShrinkOffIfLocked() {
+    final area = _buildAreaEntity();
+    if (!_shrinkEnabled || area == null) return;
+    if (shrinkLockFor(area) == ShrinkLock.none) return;
+    _shrinkEnabled = false;
+    AppSnackbar.show(
+      context,
+      message: AppLocalizations.of(context).shrinkAutoOffSnackbar,
+    );
+  }
+
+  /// 이 구역에서 켰을 때의 최종 반경. 잠겼으면 null.
+  int? _shrinkFinalRadius(GameAreaEntity area) {
+    if (shrinkLockFor(area) != ShrinkLock.none) return null;
+    final playground = area.playground as CircleShape;
+    final jail = area.jail;
+    return computeShrinkFinalRadius(
+      startRadius: playground.radiusInMeters.round(),
+      jailRadius: jail is CircleShape ? jail.radiusInMeters.round() : 0,
+    );
   }
 
   void _onJailExit() {
@@ -313,6 +344,9 @@ class _SessionCreationFlowPageState
             locationRevealIntervalMinutes: _locationShareMinutes,
             policeWaitMinutes: _policeWaitMinutes,
             maxParticipants: _maxParticipants,
+            shrinkFinalRadiusInMeters: _shrinkEnabled
+                ? _shrinkFinalRadius(area)
+                : null,
           );
     } finally {
       // 성공/실패 무관하게 로딩 종료 보장 (최소 표시 시간은 핸들이 처리)
@@ -814,6 +848,23 @@ class _SessionCreationFlowPageState
     );
   }
 
+  /// 확인 화면 맨 위 구역 축소 카드 (#668 시안 위치)
+  Widget _buildShrinkCard(GameAreaEntity area) {
+    final playground = area.playground;
+    return ShrinkToggleCard(
+      enabled: _shrinkEnabled,
+      lock: shrinkLockFor(area),
+      startRadius: playground is CircleShape
+          ? playground.radiusInMeters.round()
+          : 0,
+      finalRadius: _shrinkFinalRadius(area),
+      onChanged: (value) {
+        setState(() => _shrinkEnabled = value);
+        unawaited(_saveDraft());
+      },
+    );
+  }
+
   Widget _buildConfirmPhase(AppLocalizations l10n) {
     final area = _buildAreaEntity();
 
@@ -832,6 +883,8 @@ class _SessionCreationFlowPageState
                 ? Center(child: Text(l10n.errorZoneNotConfigured))
                 : Column(
                     children: [
+                      _buildShrinkCard(area),
+                      SizedBox(height: AppSpacing.vertical8),
                       ZoneListCard(
                         area: area,
                         onTapPlayground: _editPlaygroundFromConfirm,

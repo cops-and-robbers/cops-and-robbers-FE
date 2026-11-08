@@ -15,13 +15,17 @@ import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../router/route_paths.dart';
 import '../../../game/domain/entities/area_shape.dart';
+import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
+import '../../domain/shrink_area_save_plan.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import 'setup_prison_page.dart';
 import '../widgets/setting_list_card.dart';
+import '../widgets/shrink_toggle_card.dart';
+import '../../../game/domain/shrink_schedule.dart';
 import '../widgets/zone_list_card.dart';
 
 /// 게임 설정 확인/수정 페이지
@@ -72,22 +76,56 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
     if (jail == null || !mounted) return;
 
-    await _updateArea(GameAreaEntity(playground: playground, jail: jail));
+    await _updateArea(
+      currentArea,
+      GameAreaEntity(playground: playground, jail: jail),
+    );
   }
 
   /// PUT /api/games/{gameId}/area 호출
-  Future<void> _updateArea(GameAreaEntity area) async {
+  ///
+  /// 구역 축소가 켜져 있으면 서버가 각 요청을 저장된 다른 쪽 값과 대조하므로
+  /// [planShrinkAreaSave]가 정한 순서로 설정과 구역을 함께 보낸다 (#668).
+  Future<void> _updateArea(GameAreaEntity oldArea, GameAreaEntity area) async {
     final gameId = _gameId;
     if (gameId == null) return;
 
     final loading = AppLoading.show(context, LoadingCategory.updateArea);
 
     try {
-      await ref.read(updateGameAreaProvider(gameId, area: area).future);
+      final settings = await ref.read(fetchGameSettingsProvider(gameId).future);
+      final plan = planShrinkAreaSave(
+        oldArea: oldArea,
+        newArea: area,
+        currentFinalRadius: settings.shrinkFinalRadiusInMeters,
+      );
+      await runShrinkAreaSave(
+        plan,
+        putSettings: (radius) => ref.read(
+          updateGameSettingsProvider(
+            gameId,
+            request: settings.toRequest(shrinkFinalRadiusInMeters: radius),
+          ).future,
+        ),
+        putArea: () =>
+            ref.read(updateGameAreaProvider(gameId, area: area).future),
+        previousFinalRadius: settings.shrinkFinalRadiusInMeters,
+        putPreviousArea: () =>
+            ref.read(updateGameAreaProvider(gameId, area: oldArea).future),
+      );
       await loading.close();
       debugPrint('[GameSettingsPage] ✅ 영역 수정 성공');
+      if (plan.turnedOff && mounted) {
+        AppSnackbar.show(
+          context,
+          message: AppLocalizations.of(context).shrinkAutoOffSnackbar,
+        );
+      }
     } on DioException catch (e) {
       await loading.close();
+      // 되돌리기까지 실패했을 수 있으니 서버 값을 다시 읽는다
+      ref.invalidate(fetchGameSettingsProvider(gameId));
+      ref.invalidate(fetchGameAreaProvider(gameId));
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
@@ -102,6 +140,61 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       // 안전망: 위에서 처리하지 못한 예외 타입으로 인해 close()가 호출되지
       // 않는 경로를 막는다. close()는 멱등이므로 정상 경로에는 영향 없음.
       await loading.close();
+    }
+  }
+
+  /// 구역 축소 카드. 방장은 바로 켜고 끄고(PUT /settings), 참가자는 볼 수만 있다.
+  Widget _buildShrinkCard(
+    int gameId,
+    GameSettingsResponse settings,
+    GameAreaEntity area, {
+    required bool isHost,
+    required bool isDark,
+  }) {
+    final playground = area.playground;
+    final jail = area.jail;
+    final lock = shrinkLockFor(area);
+    final finalRadius = lock == ShrinkLock.none
+        ? computeShrinkFinalRadius(
+            startRadius: (playground as CircleShape).radiusInMeters.round(),
+            jailRadius: jail is CircleShape ? jail.radiusInMeters.round() : 0,
+          )
+        : null;
+    return ShrinkToggleCard(
+      enabled: settings.shrinkFinalRadiusInMeters != null,
+      lock: lock,
+      startRadius: playground is CircleShape
+          ? playground.radiusInMeters.round()
+          : 0,
+      finalRadius: finalRadius,
+      isDarkMode: isDark,
+      onChanged: isHost
+          ? (on) => _saveShrink(gameId, settings, on ? finalRadius : null)
+          : null,
+    );
+  }
+
+  Future<void> _saveShrink(
+    int gameId,
+    GameSettingsResponse settings,
+    int? finalRadius,
+  ) async {
+    try {
+      await ref.read(
+        updateGameSettingsProvider(
+          gameId,
+          request: settings.toRequest(shrinkFinalRadiusInMeters: finalRadius),
+        ).future,
+      );
+    } on DioException catch (e) {
+      if (!mounted) return;
+      AppSnackbar.show(
+        context,
+        message: AppLocalizations.of(
+          context,
+        ).errorByException(DioExceptionHandler.handle(e)),
+        backgroundColor: AppColors.red,
+      );
     }
   }
 
@@ -149,6 +242,21 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
           child: Column(
             children: [
               SizedBox(height: AppSpacing.vertical20),
+
+              // ── 구역 축소 (#668) — 방 생성 확인 화면과 같은 맨 위 ──
+              if ((settingsAsync.valueOrNull, areaAsync.valueOrNull) case (
+                final settings?,
+                final area?,
+              )) ...[
+                _buildShrinkCard(
+                  gameId,
+                  settings,
+                  area,
+                  isHost: isHost,
+                  isDark: isDark,
+                ),
+                SizedBox(height: AppSpacing.vertical8),
+              ],
 
               // ── 구역 섹션 ──
               areaAsync.when(

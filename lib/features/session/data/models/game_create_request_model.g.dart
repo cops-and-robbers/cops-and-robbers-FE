@@ -113,6 +113,8 @@ _$GameSettingsRequestModelImpl _$$GameSettingsRequestModelImplFromJson(
       .toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num).toInt(),
   maxParticipants: (json['maxParticipants'] as num).toInt(),
+  shrinkFinalRadiusInMeters: (json['shrinkFinalRadiusInMeters'] as num?)
+      ?.toInt(),
 );
 
 Map<String, dynamic> _$$GameSettingsRequestModelImplToJson(
@@ -122,4 +124,5 @@ Map<String, dynamic> _$$GameSettingsRequestModelImplToJson(
   'locationRevealIntervalMinutes': instance.locationRevealIntervalMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
+  'shrinkFinalRadiusInMeters': instance.shrinkFinalRadiusInMeters,
 };

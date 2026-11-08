@@ -26,12 +26,12 @@ class QrDisplayDialog extends StatelessWidget {
   /// 도둑의 참가자 ID
   final int participantId;
 
-  /// 다이얼로그 표시
-  static void show({
+  /// 다이얼로그 표시. 닫힐 때 끝나는 Future — 열려 있는 동안 구역 축소 연출을 건너뛴다 (#668).
+  static Future<void> show({
     required BuildContext context,
     required int participantId,
   }) {
-    showDialog(
+    return showDialog(
       context: context,
       barrierDismissible: true,
       builder: (_) => QrDisplayDialog(participantId: participantId),

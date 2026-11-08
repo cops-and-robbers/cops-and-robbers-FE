@@ -53,6 +53,15 @@ abstract final class VibrationPatterns {
   static const List<int> zoneExitIntensities = [0, 255, 0, 255, 0, 255];
 
   // ═══════════════════════════════════════════════════════════════════════
+  // 인게임 — 구역 축소 (#668). 1~3차는 짧게 두 번, 최종은 길게
+  // ═══════════════════════════════════════════════════════════════════════
+
+  static const List<int> zoneShrinkPattern = [0, 120, 80, 120];
+  static const List<int> zoneShrinkIntensities = [0, 200, 0, 255];
+  static const List<int> zoneShrinkFinalPattern = [0, 500];
+  static const List<int> zoneShrinkFinalIntensities = [0, 255];
+
+  // ═══════════════════════════════════════════════════════════════════════
   // 인게임 — 게임 종료 (리듬 패턴)
   // ═══════════════════════════════════════════════════════════════════════
 

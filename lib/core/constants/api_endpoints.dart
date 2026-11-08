@@ -108,6 +108,10 @@ class ApiEndpoints {
   /// 도둑 체포 (경찰만)
   static String arrestRobber(int gameId) => '/api/games/$gameId/system/arrest';
 
+  /// 구역 밖에 오래 머문 도둑이 스스로 체포된다 (#668)
+  static String forceArrest(int gameId) =>
+      '/api/games/$gameId/system/force-arrest';
+
   /// 도둑 탈옥 (수감된 도둑만)
   static String escapeFromPrison(int gameId) =>
       '/api/games/$gameId/system/escape';

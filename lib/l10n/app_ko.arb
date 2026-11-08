@@ -2546,6 +2546,55 @@
   "errorCodeOnlyRobberCanEscape": "도둑 팀만 탈옥할 수 있어요",
   "errorCodeAlreadyArrested": "이미 수감된 도둑이에요",
   "errorCodeNotJailed": "수감된 상태에서만 탈옥할 수 있어요",
+  "errorCodeShrinkRequiresCircleArea": "구역 축소는 원형 구역에서만 쓸 수 있어요",
+  "errorCodeInvalidShrinkFinalRadius": "구역 축소 반경이 맞지 않아요. 구역을 다시 확인해 주세요",
+  "errorCodeForceArrestNotAllowedInEventGame": "이벤트 게임에서는 쓸 수 없어요",
+  "shrinkAutoOffSnackbar": "구역이 작아져서 구역 축소를 껐어요",
+  "shrinkTitle": "구역 축소",
+  "shrinkDescOff": "구역이 점점 줄어들어요",
+  "shrinkDescOn": "{start} → {end}까지 줄어요",
+  "@shrinkDescOn": {
+    "description": "구역 축소 켬 — 시작 반경에서 최종 반경까지 (#668)",
+    "placeholders": {
+      "start": {"type": "String"},
+      "end": {"type": "String"}
+    }
+  },
+  "shrinkLockTooSmall": "구역이 작아서 쓸 수 없어요",
+  "shrinkLockNotCircle": "원형 구역에서만 쓸 수 있어요",
+  "shrinkPinHint": "핀으로 그리면 구역 축소를 쓸 수 없어요",
+  "gameShrinkCountdown": "다음 구역 축소까지 {formatted}",
+  "@gameShrinkCountdown": {
+    "description": "구역 축소 (#668)",
+    "placeholders": {
+      "formatted": {"type": "String"}
+    }
+  },
+  "gameShrinkNotice": "구역이 줄었어요 ({stage}/4)",
+  "@gameShrinkNotice": {
+    "description": "구역 축소 (#668)",
+    "placeholders": {
+      "stage": {"type": "int"}
+    }
+  },
+  "gameShrinkFinalNotice": "마지막 구역이에요. 더 줄어들지 않아요",
+  "pingOutsideShrunkZone": "줄어든 구역 밖에는 핑을 찍을 수 없어요",
+  "zoneWarnStatus": "경고 {count}/{max} · 다음 경고까지 {formatted}",
+  "@zoneWarnStatus": {
+    "description": "구역 밖 경고 횟수와 다음 경고까지 남은 시간 (#668)",
+    "placeholders": {
+      "count": {"type": "int"},
+      "max": {"type": "int"},
+      "formatted": {"type": "String"}
+    }
+  },
+  "gameEventForcedArrestNotice": "[{robberNickname}]님이 구역 밖에 오래 있어서 잡혔어요!",
+  "@gameEventForcedArrestNotice": {
+    "description": "구역 밖 강제 체포 공지 (#668)",
+    "placeholders": {
+      "robberNickname": {"type": "String"}
+    }
+  },
   "errorCodePoliceWaitingTime": "경찰은 대기 시간 동안 도둑을 체포할 수 없어요",
   "errorCodeCannotKickYourself": "방장은 자기 자신을 강퇴할 수 없어요",
   "errorCodeNoticeNotFound": "해당 공지사항을 찾을 수 없어요",

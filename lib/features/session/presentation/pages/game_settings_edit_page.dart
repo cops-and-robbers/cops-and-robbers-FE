@@ -105,7 +105,8 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
       await ref.read(
         updateGameSettingsProvider(
           gameId,
-          request: GameSettingsRequestModel(
+          // PUT /settings는 통째로 덮어쓰므로 켜 둔 구역 축소도 함께 싣는다 (#668)
+          request: widget.initialSettings.toEditRequest(
             roundDurationMinutes: _values[GameSettingField.roundDuration],
             locationRevealIntervalMinutes:
                 _values[GameSettingField.locationShare],

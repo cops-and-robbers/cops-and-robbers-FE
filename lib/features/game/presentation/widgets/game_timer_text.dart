@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/reveal_schedule.dart';
+import '../../domain/zone_warning_accumulator.dart';
 import 'location_reveal_countdown.dart';
 
 /// 게임 제한 시간과 다음 위치 공개까지 남은 시간을 함께 표시한다.
@@ -20,6 +22,8 @@ class GameTimerText extends StatefulWidget {
     required this.totalDuration,
     this.policeWaitMinutes,
     this.locationRevealIntervalMinutes,
+    this.nextShrinkAt,
+    this.zoneWarningAt,
     this.isDarkMode = false,
   });
 
@@ -33,7 +37,9 @@ class GameTimerText extends StatefulWidget {
   }) : startTime = receivedAt,
        totalDuration = remainingTime,
        policeWaitMinutes = null,
-       locationRevealIntervalMinutes = null;
+       locationRevealIntervalMinutes = null,
+       nextShrinkAt = null,
+       zoneWarningAt = null;
 
   /// 게임 시작 시각
   final DateTime? startTime;
@@ -46,6 +52,13 @@ class GameTimerText extends StatefulWidget {
 
   /// 경찰 이동 시작 후 위치 공개 간격 (분).
   final int? locationRevealIntervalMinutes;
+
+  /// 구역 축소를 켠 게임의 다음 축소 시각 (#668). null을 돌려주면(최종 구역) 줄을 숨긴다.
+  final DateTime? Function(DateTime now)? nextShrinkAt;
+
+  /// 구역 밖 경고 (#668). 값이 있으면 작은 줄 자리에 경고만 빨갛게 보인다 — 위험한 순간엔 하나만.
+  final ({int count, Duration untilNext})? Function(DateTime now)?
+  zoneWarningAt;
 
   /// 다크 모드 여부
   final bool isDarkMode;
@@ -131,11 +144,35 @@ class _GameTimerTextState extends State<GameTimerText>
               : AppTextStyles.heading_20.copyWith(color: AppColors.black),
         ),
         SizedBox(height: AppSpacing.vertical6),
-        LocationRevealCountdown(
-          remainingTime: revealRemaining,
-          intervalMinutes: interval,
-          isDarkMode: widget.isDarkMode,
-        ),
+        if (widget.zoneWarningAt?.call(_now) case final warning?)
+          Text(
+            AppLocalizations.of(context).zoneWarnStatus(
+              warning.count,
+              kZoneWarnMax,
+              _formatted(warning.untilNext),
+            ),
+            style: AppTextStyles.tag12Semibold.copyWith(color: AppColors.red),
+          )
+        else ...[
+          LocationRevealCountdown(
+            remainingTime: revealRemaining,
+            intervalMinutes: interval,
+            isDarkMode: widget.isDarkMode,
+          ),
+          if (widget.nextShrinkAt?.call(_now) case final shrinkAt?) ...[
+            SizedBox(height: AppSpacing.vertical4),
+            Text(
+              AppLocalizations.of(
+                context,
+              ).gameShrinkCountdown(_formatted(shrinkAt.difference(_now))),
+              style: AppTextStyles.tag_12.copyWith(
+                color: widget.isDarkMode
+                    ? AppColors.black400
+                    : AppColors.black600,
+              ),
+            ),
+          ],
+        ],
       ],
     );
   }

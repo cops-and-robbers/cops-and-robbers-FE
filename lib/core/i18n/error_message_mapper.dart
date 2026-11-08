@@ -207,6 +207,12 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeOnlyRobberCanEscape;
       case 'ALREADY_ARRESTED':
         return errorCodeAlreadyArrested;
+      case 'SHRINK_REQUIRES_CIRCLE_AREA':
+        return errorCodeShrinkRequiresCircleArea;
+      case 'INVALID_SHRINK_FINAL_RADIUS':
+        return errorCodeInvalidShrinkFinalRadius;
+      case 'FORCE_ARREST_NOT_ALLOWED_IN_EVENT_GAME':
+        return errorCodeForceArrestNotAllowedInEventGame;
       case 'NOT_JAILED':
         return errorCodeNotJailed;
       case 'POLICE_WAITING_TIME':

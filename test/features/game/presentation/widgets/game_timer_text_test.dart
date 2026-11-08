@@ -153,4 +153,69 @@ void main() {
       },
     );
   });
+
+  // 30분·경찰 5분 게임 12:07 — 1차 축소(12:10)까지 3분 (#668)
+  Future<void> pumpShrinkTimer(WidgetTester tester, DateTime? nextShrinkAt) =>
+      tester.pumpWidget(
+        ScreenUtilInit(
+          designSize: const Size(375, 812),
+          builder: (_, _) => MaterialApp(
+            locale: const Locale('ko'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: GameTimerText(
+              startTime: DateTime(2026, 11, 8, 12),
+              totalDuration: const Duration(minutes: 30),
+              policeWaitMinutes: 5,
+              locationRevealIntervalMinutes: 5,
+              nextShrinkAt: (_) => nextShrinkAt,
+            ),
+          ),
+        ),
+      );
+
+  testWidgets('구역 축소를 켠 게임은 앱바에 다음 축소까지 남은 시간을 함께 보여 준다', (tester) async {
+    await withClock(Clock.fixed(DateTime(2026, 11, 8, 12, 7)), () async {
+      await pumpShrinkTimer(tester, DateTime(2026, 11, 8, 12, 10));
+      expect(find.text('다음 구역 축소까지 03:00'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  });
+
+  testWidgets('마지막 축소가 끝나면 축소 줄을 숨긴다', (tester) async {
+    await withClock(Clock.fixed(DateTime(2026, 11, 8, 12, 27)), () async {
+      await pumpShrinkTimer(tester, null);
+      expect(find.textContaining('구역 축소까지'), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  });
+
+  testWidgets('구역 밖에 있는 동안은 작은 줄 자리에 경고만 빨갛게 보여 준다', (tester) async {
+    await withClock(Clock.fixed(DateTime(2026, 11, 8, 12, 12)), () async {
+      await tester.pumpWidget(
+        ScreenUtilInit(
+          designSize: const Size(375, 812),
+          builder: (_, _) => MaterialApp(
+            locale: const Locale('ko'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: GameTimerText(
+              startTime: DateTime(2026, 11, 8, 12),
+              totalDuration: const Duration(minutes: 30),
+              policeWaitMinutes: 5,
+              locationRevealIntervalMinutes: 5,
+              nextShrinkAt: (_) => DateTime(2026, 11, 8, 12, 15),
+              zoneWarningAt: (_) =>
+                  (count: 1, untilNext: const Duration(seconds: 42)),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('경고 1/3 · 다음 경고까지 00:42'), findsOneWidget);
+      expect(find.textContaining('위치 공개까지'), findsNothing);
+      expect(find.textContaining('구역 축소까지'), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  });
 }
+
