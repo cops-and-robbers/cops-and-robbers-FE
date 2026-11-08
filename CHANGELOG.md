@@ -1,7 +1,52 @@
 # Changelog
 
-**현재 버전:** 3.2.17  
-**마지막 업데이트:** 2026-11-07T15:19:29Z  
+**현재 버전:** 4.0.1  
+**마지막 업데이트:** 2026-11-08T16:27:46Z  
+
+---
+
+## [4.0.1] - 2026-11-08
+
+**PR:** #693  
+
+**새 기능**
+- 출동 카운팅 "출동!"에 사이렌 한 번 재생, 시스템 소리 설정 따름 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/691
+- 잠금 화면에 구역 축소 표시, 앱바 한 줄·다음 경계 점선·축소 연출 개선 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 구역 축소 옵션과 인게임 축소 표시·구역 밖 경고·강제 체포 추가 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 방 생성을 구역 두 단계 후 추천값 확인으로 개편 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/658
+- 준비 단계를 없애고 방장이 확인창에서 바로 게임을 시작하게 바꿈 #661
+
+**버그 수정**
+- 4차 구역 축소도 1~3차와 같은 기울기 연출로, 끊기던 한 바퀴 회전 제거 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 놓친 축소 뒤 구역 이탈 재판정, 축소 설정 조회 실패 시 재조회, 시계 역행 시 경고 유지, 축소 스위치 스크린 리더 묶음 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 구역 밖 경고를 1초마다·배너와 같은 판정으로 세고, 다음 경계 점선을 잘 보이게 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 구역 축소 토글을 팀 테마 토큰 색으로 맞추고 참가자 화면은 흐리게 표시 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+
+**문서**
+- v4.0.1 릴리즈 노트, #691 이슈 문서, ui-design 폴더 gitignore 추가
+- 출동 사이렌 소리 작업 리포트 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/691
+- 구역 축소 리포트에 경고 1초 틱·판정 변경·점선 스타일·재설치 초기화 반영 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 구역 축소 리포트 시안 캡처 시점 안내 추가 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 구역 축소 리포트에 잠금 화면·앱바 한 줄·점선 수정 반영 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- 구역 축소 작업 리포트 추가 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/668
+- #658 작업 리포트 추가 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/658
+- #661 리포트에 not_ready 그림 정리 반영 #661
+- #661 리포트에 isReady 제거 이유와 시작 조건 주의사항 추가 #661
+- #685 작업 리포트 추가 #685
+- #661 작업 리포트 추가 #661
+
+**기타**
+- chore : 버전 증가 4.0.0
+- Merge pull request #692 from cops-and-robbers/20261109_#691_기능추가_인게임_출동_사이렌_소리
+- Merge pull request #690 from cops-and-robbers/20261104_#668_구역_축소
+- Merge pull request #683 from cops-and-robbers/20261103_#661_준비_완료_제거_시작_확인_모달
+- Merge pull request #688 from cops-and-robbers/20261108_#687_Android_deviceId에_기기_고유_ID_대신_OS_빌드_번호가_전송됨
+- Merge pull request #689 from cops-and-robbers/20261103_#658_방_생성_정보_위계_개편
+- Android deviceId에 기기 고유 ID 대신 OS 빌드 번호가 전송됨 : fix : Android는 ANDROID_ID를 보내고 캐시 키를 DEVICE_ID_V2로 이전 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/687
+- 준비 상태가 없어져 안 쓰는 경찰 not_ready 캐릭터 그림 삭제 #661
+- Merge pull request #686 from cops-and-robbers/20261108_#685_기능개선_정리_문서_체계_일원화_및_미사용_에셋_제거
+- 작업 문서를 docs/projectops로 일원화하고 미사용 에셋 제거 #685
+- api-docs 서버 v3.0.0 동기화 #661
 
 ---
 
