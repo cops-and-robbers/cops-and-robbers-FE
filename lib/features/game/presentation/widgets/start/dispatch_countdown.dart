@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_icons.dart';
 import '../../../../../core/constants/text_styles.dart';
+import '../../../../../core/services/sound_service.dart';
 import '../../../../../core/services/vibration_service.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/start_flow.dart';
@@ -25,6 +26,7 @@ class DispatchCountdown extends StatefulWidget {
     required this.releaseAt,
     required this.onDone,
     this.now,
+    this.siren,
   });
 
   final DateTime releaseAt;
@@ -33,6 +35,9 @@ class DispatchCountdown extends StatefulWidget {
   /// 기기 시계. 테스트가 시계를 대신 넣을 때만 쓴다.
   final DateTime Function()? now;
 
+  /// 사이렌 켜기·끄기. 테스트가 스피커를 대신 넣을 때만 쓴다.
+  final void Function(bool on)? siren;
+
   static const designWidth = 393.0;
 
   @override
@@ -40,7 +45,7 @@ class DispatchCountdown extends StatefulWidget {
 }
 
 class _DispatchCountdownState extends State<DispatchCountdown>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   // 시안 크기: 사이렌 185×229, 사이렌 아래 46 띄우고 숫자 80
   static const _sirenWidth = 185.0;
   static const _sirenHeight = 229.0;
@@ -59,6 +64,7 @@ class _DispatchCountdownState extends State<DispatchCountdown>
   Duration _secondStartedAt = Duration.zero;
   double _angle = 0;
   bool _doneCalled = false;
+  bool _sirenOn = false;
   final _random = math.Random();
 
   DateTime _now() => (widget.now ?? clock.now)();
@@ -68,10 +74,15 @@ class _DispatchCountdownState extends State<DispatchCountdown>
     super.initState();
     _frame = dispatchCountdownFrame(releaseAt: widget.releaseAt, now: _now());
     _ticker = createTicker(_onTick)..start();
+    WidgetsBinding.instance.addObserver(this);
+    // 덮는 1초 동안 꺼내 두면 "출동!"과 소리가 같이 나온다
+    if (widget.siren == null) SoundService.instance().preloadSiren();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _setSiren(false);
     _ticker.dispose();
     super.dispose();
   }
@@ -87,7 +98,7 @@ class _DispatchCountdownState extends State<DispatchCountdown>
       _seconds = frame.seconds;
       _secondStartedAt = elapsed;
       // 화면을 덮는 동안(6)은 아직 세지 않는다 — 대기 화면이 6까지 울린다
-      if (!_covering(frame)) _vibrate(frame.seconds);
+      if (!_covering(frame)) _cue(frame.seconds);
     }
     // 세질수록 빨리 돈다(초당 80° → 840°)
     _angle += dt * (80 + 760 * frame.intensity);
@@ -100,14 +111,33 @@ class _DispatchCountdownState extends State<DispatchCountdown>
 
   bool _covering(DispatchCountdownFrame f) => f.cover < 1;
 
-  /// 5~1초는 초마다 점점 세게, "출동!"에는 가장 센 진동. 경찰·도둑 같다.
-  /// 화면을 끈 채면 울리지 않는다 — 주머니 속에서 진동하지 않게.
-  void _vibrate(int? seconds) {
+  bool get _appVisible {
     final lifecycle = WidgetsBinding.instance.lifecycleState;
-    if (lifecycle != null && lifecycle != AppLifecycleState.resumed) return;
+    return lifecycle == null || lifecycle == AppLifecycleState.resumed;
+  }
+
+  // 주머니 속에서 울리지 않게 끈다. 한 번만 트는 소리라 돌아와도 다시 틀지 않는다
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) _setSiren(false);
+  }
+
+  /// 바뀔 때만 스피커에 알린다.
+  void _setSiren(bool on) {
+    if (on == _sirenOn) return;
+    _sirenOn = on;
+    (widget.siren ?? SoundService.instance().siren)(on);
+  }
+
+  /// 5~1초는 초마다 점점 세게 진동, "출동!"에는 가장 센 진동과 사이렌 한 번. 경찰·도둑 같다.
+  /// 사이렌 음원은 "출동!"부터 원형 열기 끝까지(2.2초)에 맞춰 잘라 둬서 스스로 끝난다.
+  /// 화면을 끈 채면 울리지 않는다 — 주머니 속에서 울리지 않게.
+  void _cue(int? seconds) {
+    if (!_appVisible) return;
     final vibration = VibrationService.instance();
     if (seconds == null) {
       vibration.dispatchGo();
+      _setSiren(true);
     } else {
       vibration.dispatchCountdownBeat(seconds);
     }

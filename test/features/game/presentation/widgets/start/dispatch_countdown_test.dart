@@ -19,6 +19,7 @@ Future<void> pumpCountdown(
   required VoidCallback onDone,
   Locale locale = const Locale('ko'),
   bool reduceMotion = false,
+  List<bool>? siren,
 }) async {
   fakeNow = release.subtract(beforeRelease);
   tester.view.physicalSize = const Size(393, 852) * 3;
@@ -44,6 +45,8 @@ Future<void> pumpCountdown(
                       releaseAt: release,
                       onDone: onDone,
                       now: () => fakeNow,
+                      // 스피커 자리 — 켜고 끈 순서를 남긴다 (테스트에선 늘 대신 넣는다)
+                      siren: (on) => (siren ?? [])..add(on),
                     ),
                   ),
                 ],
@@ -135,6 +138,62 @@ void main() {
     expect(find.text('2'), findsOneWidget);
     await advance(tester, const Duration(milliseconds: 3800));
     expect(done, 1);
+  });
+
+  // 경찰·도둑 모두 숫자는 진동만, "출동!"이 뜰 때 사이렌을 한 번 낸다.
+  // 음원(2.2초)이 원형 열기 끝에 맞춰 스스로 끝나므로 다시 틀지 않는다
+  testWidgets('siren_sounds_once_when_go_word_appears', (tester) async {
+    final siren = <bool>[];
+    await pumpCountdown(
+      tester,
+      beforeRelease: const Duration(seconds: 6),
+      onDone: () {},
+      siren: siren,
+    );
+    await advance(tester, const Duration(milliseconds: 5900));
+    expect(siren, isEmpty); // 5 → 1 동안은 조용하다
+    await advance(tester, const Duration(milliseconds: 200));
+    expect(siren, [true]); // 출동!
+    await advance(tester, const Duration(seconds: 3)); // 원형 열기 끝까지
+    expect(siren, [true]);
+  });
+
+  // "출동!" 때 홈 버튼을 누르면 주머니 속에서 울리지 않게 끄고, 돌아와도 다시 틀지 않는다
+  testWidgets('siren_stops_and_stays_off_when_app_goes_background_at_go', (
+    tester,
+  ) async {
+    final siren = <bool>[];
+    await pumpCountdown(
+      tester,
+      beforeRelease: const Duration(milliseconds: 100),
+      onDone: () {},
+      siren: siren,
+    );
+    await advance(tester, const Duration(milliseconds: 200));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    expect(siren, [true, false]);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await advance(tester, const Duration(milliseconds: 300));
+    expect(siren, [true, false]);
+    await advance(tester, const Duration(seconds: 3));
+  });
+
+  // "출동!" 직후 게임이 끝나거나 나가서 화면이 사라지면 사이렌도 같이 끊긴다
+  testWidgets('siren_stops_when_countdown_leaves_screen_at_go', (tester) async {
+    final siren = <bool>[];
+    await pumpCountdown(
+      tester,
+      beforeRelease: const Duration(milliseconds: 100),
+      onDone: () {},
+      siren: siren,
+    );
+    await advance(tester, const Duration(milliseconds: 200));
+    await tester.pumpWidget(const SizedBox());
+    expect(siren, [true, false]);
   });
 
   // 대기 화면은 10~6초만 울리고, 5~1초는 카운팅이 이어받는다 — 5초가 빠지면 박자가 끊긴다
