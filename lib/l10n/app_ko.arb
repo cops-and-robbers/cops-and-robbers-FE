@@ -2529,6 +2529,9 @@
   "errorCodeRequiredTermsNotAgreed": "필수 약관은 모두 동의해야 해요",
   "errorCodeGameNotFound": "요청하신 게임 정보가 존재하지 않아요",
   "errorCodeGameNotInProgress": "게임이 진행 중인 상태가 아니에요",
+  "errorCodeRadioNotAllowedInEventGame": "이벤트 게임에서는 무전을 쓸 수 없어요",
+  "errorCodeOnlyPoliceCanUseRadio": "무전은 경찰만 쓸 수 있어요",
+  "errorCodeRadioPoliceWaitingTime": "경찰이 출동한 뒤에 쓸 수 있어요",
   "errorCodeGameNotActive": "대기 중이거나 진행 중인 게임에서만 조회할 수 있어요",
   "errorCodeGameNotWaiting": "대기 중인 게임에서만 설정을 변경할 수 있어요",
   "errorCodeInvalidLocationInterval": "위치 공개 주기는 라운드 시간보다 짧아야 해요",
@@ -2842,5 +2845,19 @@
   "onboardingGuideTitle": "앱이 게임을 진행해요",
   "onboardingGuideBody": "남은 시간도, 구역 이탈도 앱이 알려줘요",
   "onboardingRecordTitle": "달린 기록도 남아요",
-  "onboardingRecordBody": "게임이 끝나면 이동 경로와 거리를 볼 수 있어요"
+  "onboardingRecordBody": "게임이 끝나면 이동 경로와 거리를 볼 수 있어요",
+  "radioSpeaking": "{nickname} 무전 중",
+  "@radioSpeaking": {
+    "description": "다른 경찰이 무전 버튼을 누르고 말하는 동안 무전 버튼 위 파란 알약 — 채팅 말풍선과 헷갈리지 않게 '무전'을 넣었다 (#697)",
+    "placeholders": {
+      "nickname": {
+        "type": "String",
+        "example": "상희"
+      }
+    }
+  },
+  "@radioSpeakerFallback": {"description": "참가자 목록에 아직 없는 경찰이 말할 때 이름 대신 쓰는 말 (radioSpeaking의 nickname 자리)"},
+  "radioSpeakerFallback": "경찰",
+  "radioMicDenied": "마이크를 허용하면 무전을 쓸 수 있어요",
+  "radioPttLabel": "무전"
 }

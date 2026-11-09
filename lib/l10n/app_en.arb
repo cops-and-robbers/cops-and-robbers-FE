@@ -807,6 +807,9 @@
   "errorCodeRequiredTermsNotAgreed": "You must agree to all required terms",
   "errorCodeGameNotFound": "The requested game does not exist",
   "errorCodeGameNotInProgress": "The game is not in progress",
+  "errorCodeRadioNotAllowedInEventGame": "Radio isn't available in event games",
+  "errorCodeOnlyPoliceCanUseRadio": "Only cops can use the radio",
+  "errorCodeRadioPoliceWaitingTime": "Available after the cops move out",
   "errorCodeGameNotActive": "Can only be viewed in a waiting or in-progress game",
   "errorCodeGameNotWaiting": "Settings can only be changed while the game is waiting",
   "errorCodeInvalidLocationInterval": "Location reveal interval must be shorter than the round time",
@@ -963,5 +966,9 @@
   "onboardingGuideTitle": "The app runs the game",
   "onboardingGuideBody": "The app shows the time left and tells you when you leave the area",
   "onboardingRecordTitle": "Your run gets recorded",
-  "onboardingRecordBody": "See your route and distance when the game ends"
+  "onboardingRecordBody": "See your route and distance when the game ends",
+  "radioSpeaking": "{nickname} on radio",
+  "radioSpeakerFallback": "A cop",
+  "radioMicDenied": "Allow microphone access to use the radio",
+  "radioPttLabel": "Radio"
 }

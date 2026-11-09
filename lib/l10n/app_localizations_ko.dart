@@ -2364,6 +2364,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeGameNotInProgress => '게임이 진행 중인 상태가 아니에요';
 
   @override
+  String get errorCodeRadioNotAllowedInEventGame => '이벤트 게임에서는 무전을 쓸 수 없어요';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadio => '무전은 경찰만 쓸 수 있어요';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTime => '경찰이 출동한 뒤에 쓸 수 있어요';
+
+  @override
   String get errorCodeGameNotActive => '대기 중이거나 진행 중인 게임에서만 조회할 수 있어요';
 
   @override
@@ -2837,4 +2846,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get onboardingRecordBody => '게임이 끝나면 이동 경로와 거리를 볼 수 있어요';
+
+  @override
+  String radioSpeaking(String nickname) {
+    return '$nickname 무전 중';
+  }
+
+  @override
+  String get radioSpeakerFallback => '경찰';
+
+  @override
+  String get radioMicDenied => '마이크를 허용하면 무전을 쓸 수 있어요';
+
+  @override
+  String get radioPttLabel => '무전';
 }

@@ -19,6 +19,29 @@ void main() {
       );
     });
 
+    // 무전 토큰 발급 거절 (BE PR #239) — 공통 "잠시 후 다시 시도"로 떨어지면 안 된다.
+    // 대기 시간 중에는 다시 눌러도 안 되고, 출동한 뒤에 된다는 걸 알려야 한다.
+    test('tells_police_to_wait_for_dispatch_when_radio_requested_during_wait', () {
+      expect(
+        l10n.errorByCode('RADIO_POLICE_WAITING_TIME'),
+        l10n.errorCodeRadioPoliceWaitingTime,
+      );
+    });
+
+    test('says_radio_is_police_only_when_robber_requests_token', () {
+      expect(
+        l10n.errorByCode('ONLY_POLICE_CAN_USE_RADIO'),
+        l10n.errorCodeOnlyPoliceCanUseRadio,
+      );
+    });
+
+    test('says_no_radio_in_event_game_when_event_police_requests_token', () {
+      expect(
+        l10n.errorByCode('RADIO_NOT_ALLOWED_IN_EVENT_GAME'),
+        l10n.errorCodeRadioNotAllowedInEventGame,
+      );
+    });
+
     test('returns_pick_another_spot_when_code_is_address_not_found', () {
       // 그 좌표에 주소·국가가 없어 서버가 글 생성을 거절한 경우다. 공통 폴백
       // "잠시 후 다시 시도"는 틀린 안내다 — 같은 핀으로는 몇 번을 해도 실패한다.
