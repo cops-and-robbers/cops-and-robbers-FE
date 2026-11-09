@@ -2063,6 +2063,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorDeleteAccountUnexpected => '退会処理中に予期せぬエラーが発生しました';
 
   @override
+  String get errorAppleTokenRevokeFailed =>
+      'Appleアカウントの連携を解除できませんでした。もう一度お試しください';
+
+  @override
   String get errorAgreementFetchUnexpected => '規約同意状態の照会中に予期せぬエラーが発生しました';
 
   @override

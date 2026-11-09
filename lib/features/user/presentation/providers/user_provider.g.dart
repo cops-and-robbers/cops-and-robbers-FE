@@ -67,6 +67,28 @@ final deleteAccountUseCaseProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef DeleteAccountUseCaseRef = AutoDisposeProviderRef<DeleteAccountUseCase>;
+String _$prepareAccountDeletionUseCaseHash() =>
+    r'442f7cdec22788ebc25672cc596e847966578741';
+
+/// 회원 탈퇴 준비 UseCase Provider
+///
+/// Copied from [prepareAccountDeletionUseCase].
+@ProviderFor(prepareAccountDeletionUseCase)
+final prepareAccountDeletionUseCaseProvider =
+    AutoDisposeProvider<PrepareAccountDeletionUseCase>.internal(
+      prepareAccountDeletionUseCase,
+      name: r'prepareAccountDeletionUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$prepareAccountDeletionUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef PrepareAccountDeletionUseCaseRef =
+    AutoDisposeProviderRef<PrepareAccountDeletionUseCase>;
 String _$gamePushNotifierHash() => r'd34c1d27b4ea78fde34fa429e0e725a5b0a9c9ed';
 
 /// 게임 푸시 알림 동의 상태 Provider

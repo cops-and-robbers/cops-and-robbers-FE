@@ -2188,6 +2188,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while deleting account';
 
   @override
+  String get errorAppleTokenRevokeFailed =>
+      'Couldn\'t disconnect your Apple account. Please try again';
+
+  @override
   String get errorAgreementFetchUnexpected =>
       'An unexpected error occurred while retrieving agreement status';
 
