@@ -66,6 +66,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/services/fcm/local_notifications_service.dart';
 import '../../domain/ping_chat_policy.dart';
 import '../../domain/game_menu_entries.dart';
+import '../../../radio/domain/radio_rules.dart';
+import '../../../radio/presentation/providers/radio_session_provider.dart';
+import '../../../radio/presentation/widgets/radio_ptt_button.dart';
+import '../../../radio/presentation/widgets/radio_speaker_pill.dart';
 import '../../domain/zone_grid.dart';
 import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
@@ -177,6 +181,9 @@ class _GamePageState extends ConsumerState<GamePage>
   /// keepAlive provider이므로 게임 화면 dispose 이후에도 인스턴스 유효.
   /// initState에서 동기 할당 (post-frame 이전 dispose 시 LateInitializationError 방지)
   late final BackgroundService _backgroundService;
+
+  /// 무전을 시작한 경우만 — dispose 중에는 ref를 못 써서 잡아 둔다
+  RadioSession? _radioSession;
 
   /// dispose 이후 ref 무효화 대비, 사전에 저장한 내 기록 notifier.
   late final PlayerGameRecordNotifier _recordNotifier;
@@ -304,6 +311,16 @@ class _GamePageState extends ConsumerState<GamePage>
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => GameTeam.isRobber(widget.team);
 
+  /// 무전 켜진 일반 게임의 경찰만 오른쪽 아래 채팅 자리에 무전 버튼을 둔다 (#697)
+  bool get _hasRadio =>
+      !widget.isDummy &&
+      radioAvailable(
+        isPolice: GameTeam.isPolice(widget.team),
+        isEventGame:
+            ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false,
+        radioEnabled: kRadioEnabledDefault,
+      );
+
   @override
   void initState() {
     super.initState();
@@ -344,7 +361,13 @@ class _GamePageState extends ConsumerState<GamePage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 누른 채 전화가 오거나 앱이 내려가면 손을 뗀 것으로 본다 — 열린 마이크가 남으면 안 된다
+    if (state != AppLifecycleState.resumed && _hasRadio) {
+      ref.read(radioSessionProvider(_gameId).notifier).onAppPaused();
+    }
     if (state == AppLifecycleState.resumed) {
+      // 백그라운드에서 출동 시각이 지나 미뤄 둔 무전 입장을 지금 한다
+      _radioSession?.onAppResumed();
       _checkLocationPermissionOnResume();
       // 일시정지 동안 지나간 축소는 연출 없이 지금 차수로 다시 그린다 (DEC-0149)
       _shrinkController?.recompute(animate: false);
@@ -512,6 +535,7 @@ class _GamePageState extends ConsumerState<GamePage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _radioSession?.shutdown();
     _gameStateSyncRetryTimer?.cancel();
     _policeReleaseTimer?.cancel();
     _dispatchCountdownTimer?.cancel();
@@ -564,6 +588,12 @@ class _GamePageState extends ConsumerState<GamePage>
     )!;
     _introStartTime = start;
     _policeReleaseAt = releaseAt;
+    if (_hasRadio) {
+      // 출동 전이면 그 시각까지 기다렸다가 무전 방에 들어간다
+      final session = ref.read(radioSessionProvider(_gameId).notifier);
+      _radioSession = session;
+      session.start(policeReleaseAt: releaseAt);
+    }
     _introWaitMinutes = wait;
     _introRevealMinutes = info?.locationRevealIntervalMinutes ?? 5;
     final intro = StartIntroController(
@@ -2615,6 +2645,7 @@ class _GamePageState extends ConsumerState<GamePage>
       if (_isLeaving) return;
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
         _policeReleaseTimer?.cancel();
+        if (_hasRadio) ref.read(radioSessionProvider(_gameId).notifier).stop();
         // 결과 화면 밑에서 뜨면 못 본 안내가 본 것으로 저장된다 — 다음 게임에서 띄운다
         _rulesHintTimer?.cancel();
         _intro?.gameOver();
@@ -2873,12 +2904,19 @@ class _GamePageState extends ConsumerState<GamePage>
         .centroid;
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
     final actionButtonBottom = 38.h + bottomInset;
+    final hasRadio = _hasRadio;
+    // autoDispose — 화면이 지켜보는 동안만 무전 방에 머문다
+    final radio = hasRadio
+        ? ref.watch(radioSessionProvider(_gameId))
+        : const RadioSessionState();
+    final showsRadioPill = hasRadio && radio.speakerIdentity != null;
     final menuEntries = gameMenuEntries(
       isPolice: GameTeam.isPolice(widget.team),
       isArrested: isArrestedNow,
       isZoneExitActive: _isZoneExitWarningActive,
       isEventGame: isEventGame,
       isMapVisible: sceneMode == null,
+      hasRadioButton: hasRadio,
     );
     // 지도는 가운데 아래, 대기·설명 장면은 시안대로 오른쪽 아래에서 위로 펼친다.
     // 참가자 목록에서는 지도로 돌아갈 버튼이 필요해 오른쪽 버튼 열을 유지한다.
@@ -3069,6 +3107,11 @@ class _GamePageState extends ConsumerState<GamePage>
                     _buildQrButton(isArrestedNow: isArrestedNow),
                     SizedBox(height: AppSpacing.vertical8),
                     _buildChatButton(),
+                    // 참가자 목록에서는 메뉴가 없어 채팅을 남기고, 엄지 자리(맨 아래)에 무전
+                    if (hasRadio) ...[
+                      SizedBox(height: AppSpacing.vertical8),
+                      _buildRadioButton(radio),
+                    ],
                   ],
                 ),
               )
@@ -3076,7 +3119,28 @@ class _GamePageState extends ConsumerState<GamePage>
               Positioned(
                 right: 20.w,
                 bottom: actionButtonBottom,
-                child: Column(children: [_buildChatButton()]),
+                // 무전 켜진 경찰은 채팅 자리를 무전이 쓰고 채팅은 메뉴로 간다 (#697)
+                child: Column(
+                  children: [
+                    hasRadio ? _buildRadioButton(radio) : _buildChatButton(),
+                  ],
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+
+            /// index 5a: 다른 경찰이 무전 중 — 무전 버튼 바로 위 파란 알약 (if/else로 개수 고정)
+            if (showsRadioPill && !sceneShown)
+              Positioned(
+                right: 20.w,
+                bottom: actionButtonBottom + 56.w + AppSpacing.vertical8,
+                child: RadioSpeakerPill(
+                  label: radioSpeakerLabel(
+                    l10n,
+                    radio.speakerIdentity!,
+                    _policeNicknames(),
+                  ),
+                ),
               )
             else
               const SizedBox.shrink(),
@@ -3191,7 +3255,12 @@ class _GamePageState extends ConsumerState<GamePage>
                   ? EdgeInsets.only(
                       left: AppSpacing.horizontal20,
                       right: AppSpacing.horizontal20,
-                      bottom: actionButtonBottom + 56.w + AppSpacing.vertical8,
+                      bottom:
+                          actionButtonBottom +
+                          56.w +
+                          AppSpacing.vertical8 +
+                          // 무전 알약이 떠 있으면 그 위로 쌓는다
+                          (showsRadioPill ? 36.h + AppSpacing.vertical8 : 0),
                     )
                   // 양쪽 하단 버튼(56)과 버튼 사이 여백을 비우고, 바닥은 채팅
                   // 버튼 세로 중앙(반 칸 위)에 맞춰 화면 가장자리에서 띄운다.
@@ -3384,6 +3453,38 @@ class _GamePageState extends ConsumerState<GamePage>
       _showArrestInfo = false;
     });
     _closePingCard();
+  }
+
+  Widget _buildRadioButton(RadioSessionState radio) {
+    final session = ref.read(radioSessionProvider(_gameId).notifier);
+    return RadioPttButton(
+      state: radio,
+      onPress: session.press,
+      onRelease: session.release,
+      onBlockedTap: () => _explainBlockedRadio(radio.status),
+    );
+  }
+
+  /// 무전이 안 눌리는 이유 — 다른 경찰이 말하는 중이면 알약이 이미 보여서 따로 알리지 않는다
+  void _explainBlockedRadio(RadioStatus status) {
+    final l10n = AppLocalizations.of(context);
+    final message = switch (status) {
+      RadioStatus.waitingPolice => l10n.errorCodeRadioPoliceWaitingTime,
+      RadioStatus.micDenied => l10n.radioMicDenied,
+      _ => null,
+    };
+    if (message == null) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// 무전 identity(참가자 ID 문자열) → 닉네임. 목록을 못 받았으면 빈 맵(알약은 "경찰"로)
+  Map<String, String> _policeNicknames() {
+    final police =
+        ref.watch(fetchGameParticipantsProvider(_gameId)).valueOrNull?.police ??
+        const [];
+    return {for (final p in police) p.participantId.toString(): p.nickname};
   }
 
   Widget _buildChatButton() {

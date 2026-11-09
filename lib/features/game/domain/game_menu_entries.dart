@@ -25,6 +25,7 @@ List<GameMenuEntry> gameMenuEntries({
   required bool isZoneExitActive,
   required bool isEventGame,
   bool isMapVisible = true,
+  bool hasRadioButton = false,
 }) {
   final qrSlot = isArrested
       ? GameMenuEntry.jailed
@@ -43,5 +44,7 @@ List<GameMenuEntry> gameMenuEntries({
     GameMenuEntry.grid,
     if (!isZoneExitActive) ...[GameMenuEntry.participants, qrSlot],
     ...evidence,
+    // 무전 버튼이 오른쪽 아래 채팅 자리를 가져가서 채팅은 메뉴 끝으로 옮긴다 (#697)
+    if (hasRadioButton) GameMenuEntry.chat,
   ];
 }
