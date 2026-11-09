@@ -21,4 +21,13 @@ abstract class BackgroundService {
 
   /// 현재 실행 중인지
   bool get isRunning;
+
+  /// 경찰 팀 무전(#697) 중 화면이 꺼져도 마이크를 유지한다.
+  ///
+  /// Android는 위치와 분리된 microphone 타입 서비스를 띄운다 — 앱이 화면에 있고
+  /// 마이크 권한을 받은 뒤에만 불러야 한다(백그라운드 시작은 Android 14+에서 거절).
+  /// iOS는 `audio` 배경 모드로 OS가 처리해 할 일이 없다.
+  Future<void> startRadio();
+
+  Future<void> stopRadio();
 }
