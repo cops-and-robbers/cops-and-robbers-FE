@@ -10,12 +10,16 @@ import 'package:flutter/foundation.dart';
 class FirebaseAuthDataSource {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final Future<String> Function() _requestAppleAuthorizationCode;
 
   FirebaseAuthDataSource({
     FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
+    Future<String> Function()? requestAppleAuthorizationCode,
   }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn();
+       _googleSignIn = googleSignIn ?? GoogleSignIn(),
+       _requestAppleAuthorizationCode =
+           requestAppleAuthorizationCode ?? _appleAuthorizationCode;
 
   /// Firebase Auth State Stream (GoRouter 감지용)
   Stream<User?> authStateChanges() {
@@ -168,6 +172,46 @@ class FirebaseAuthDataSource {
       debugPrint('❌ Apple Sign-In Error: $e');
       rethrow;
     }
+  }
+
+  /// 현재 Firebase 계정이 Apple 로그인 계정인지 여부
+  bool get isAppleUser =>
+      _firebaseAuth.currentUser?.providerData.any(
+        (info) => info.providerId == 'apple.com',
+      ) ??
+      false;
+
+  /// Apple 토큰 철회
+  ///
+  /// 로그인 때 받은 authorizationCode는 저장하지 않으므로 Apple 인증을 다시 받습니다.
+  ///
+  /// **주의**: Firebase 계정이 있어야 철회할 수 있어 백엔드 탈퇴 전에 호출해야 합니다.
+  ///
+  /// Throws: [FirebaseAuthException], [SignInWithAppleAuthorizationException], [Exception]
+  Future<void> revokeAppleToken() async {
+    try {
+      final authorizationCode = await _requestAppleAuthorizationCode();
+      await _firebaseAuth.revokeTokenWithAuthorizationCode(authorizationCode);
+    } on SignInWithAppleAuthorizationException catch (e) {
+      debugPrint('❌ Apple Token Revoke Error: ${e.code} - ${e.message}');
+
+      // signInWithApple과 같은 기준으로 사용자 취소를 구분한다
+      if (e.code == AuthorizationErrorCode.canceled ||
+          e.code == AuthorizationErrorCode.unknown) {
+        throw FirebaseAuthException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Apple token revocation aborted by user',
+        );
+      }
+      rethrow;
+    }
+  }
+
+  static Future<String> _appleAuthorizationCode() async {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: const [],
+    );
+    return credential.authorizationCode;
   }
 
   /// 디버그 정보 출력 (Google)
