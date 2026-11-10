@@ -19,6 +19,8 @@ enum GameMenuEntry {
 ///
 /// 구역 이탈 중에는 체포·QR이 무의미해 참가자와 QR 자리를 뺀다. 증거보드는 읽기
 /// 전용 현황이라 이탈 중에도 남긴다.
+///
+/// [hasRadioButton]이면 무전 버튼이 채팅 버튼 자리를 써서 지도 메뉴 끝에 채팅을 넣는다 (#697).
 List<GameMenuEntry> gameMenuEntries({
   required bool isPolice,
   required bool isArrested,

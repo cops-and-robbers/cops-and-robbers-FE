@@ -20,13 +20,13 @@ mixin _$RadioSessionState {
   RadioStatus get status => throw _privateConstructorUsedError;
 
   /// 내가 버튼을 누르고 말하는 중
-  bool get talking => throw _privateConstructorUsedError;
+  bool get isTalking => throw _privateConstructorUsedError;
 
   /// 다른 경찰이 발언권을 쥐고 있으면 그 참가자 ID
   String? get speakerIdentity => throw _privateConstructorUsedError;
 
   /// 마이크가 올라가 있어 누르면 바로 말할 수 있다. false면 첫 누름에 권한을 묻는다.
-  bool get micReady => throw _privateConstructorUsedError;
+  bool get isMicReady => throw _privateConstructorUsedError;
 
   /// Create a copy of RadioSessionState
   /// with the given fields replaced by the non-null parameter values.
@@ -44,9 +44,9 @@ abstract class $RadioSessionStateCopyWith<$Res> {
   @useResult
   $Res call({
     RadioStatus status,
-    bool talking,
+    bool isTalking,
     String? speakerIdentity,
-    bool micReady,
+    bool isMicReady,
   });
 }
 
@@ -66,9 +66,9 @@ class _$RadioSessionStateCopyWithImpl<$Res, $Val extends RadioSessionState>
   @override
   $Res call({
     Object? status = null,
-    Object? talking = null,
+    Object? isTalking = null,
     Object? speakerIdentity = freezed,
-    Object? micReady = null,
+    Object? isMicReady = null,
   }) {
     return _then(
       _value.copyWith(
@@ -76,17 +76,17 @@ class _$RadioSessionStateCopyWithImpl<$Res, $Val extends RadioSessionState>
                 ? _value.status
                 : status // ignore: cast_nullable_to_non_nullable
                       as RadioStatus,
-            talking: null == talking
-                ? _value.talking
-                : talking // ignore: cast_nullable_to_non_nullable
+            isTalking: null == isTalking
+                ? _value.isTalking
+                : isTalking // ignore: cast_nullable_to_non_nullable
                       as bool,
             speakerIdentity: freezed == speakerIdentity
                 ? _value.speakerIdentity
                 : speakerIdentity // ignore: cast_nullable_to_non_nullable
                       as String?,
-            micReady: null == micReady
-                ? _value.micReady
-                : micReady // ignore: cast_nullable_to_non_nullable
+            isMicReady: null == isMicReady
+                ? _value.isMicReady
+                : isMicReady // ignore: cast_nullable_to_non_nullable
                       as bool,
           )
           as $Val,
@@ -105,9 +105,9 @@ abstract class _$$RadioSessionStateImplCopyWith<$Res>
   @useResult
   $Res call({
     RadioStatus status,
-    bool talking,
+    bool isTalking,
     String? speakerIdentity,
-    bool micReady,
+    bool isMicReady,
   });
 }
 
@@ -126,9 +126,9 @@ class __$$RadioSessionStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? status = null,
-    Object? talking = null,
+    Object? isTalking = null,
     Object? speakerIdentity = freezed,
-    Object? micReady = null,
+    Object? isMicReady = null,
   }) {
     return _then(
       _$RadioSessionStateImpl(
@@ -136,17 +136,17 @@ class __$$RadioSessionStateImplCopyWithImpl<$Res>
             ? _value.status
             : status // ignore: cast_nullable_to_non_nullable
                   as RadioStatus,
-        talking: null == talking
-            ? _value.talking
-            : talking // ignore: cast_nullable_to_non_nullable
+        isTalking: null == isTalking
+            ? _value.isTalking
+            : isTalking // ignore: cast_nullable_to_non_nullable
                   as bool,
         speakerIdentity: freezed == speakerIdentity
             ? _value.speakerIdentity
             : speakerIdentity // ignore: cast_nullable_to_non_nullable
                   as String?,
-        micReady: null == micReady
-            ? _value.micReady
-            : micReady // ignore: cast_nullable_to_non_nullable
+        isMicReady: null == isMicReady
+            ? _value.isMicReady
+            : isMicReady // ignore: cast_nullable_to_non_nullable
                   as bool,
       ),
     );
@@ -158,9 +158,9 @@ class __$$RadioSessionStateImplCopyWithImpl<$Res>
 class _$RadioSessionStateImpl implements _RadioSessionState {
   const _$RadioSessionStateImpl({
     this.status = RadioStatus.off,
-    this.talking = false,
+    this.isTalking = false,
     this.speakerIdentity,
-    this.micReady = false,
+    this.isMicReady = false,
   });
 
   @override
@@ -170,7 +170,7 @@ class _$RadioSessionStateImpl implements _RadioSessionState {
   /// 내가 버튼을 누르고 말하는 중
   @override
   @JsonKey()
-  final bool talking;
+  final bool isTalking;
 
   /// 다른 경찰이 발언권을 쥐고 있으면 그 참가자 ID
   @override
@@ -179,11 +179,11 @@ class _$RadioSessionStateImpl implements _RadioSessionState {
   /// 마이크가 올라가 있어 누르면 바로 말할 수 있다. false면 첫 누름에 권한을 묻는다.
   @override
   @JsonKey()
-  final bool micReady;
+  final bool isMicReady;
 
   @override
   String toString() {
-    return 'RadioSessionState(status: $status, talking: $talking, speakerIdentity: $speakerIdentity, micReady: $micReady)';
+    return 'RadioSessionState(status: $status, isTalking: $isTalking, speakerIdentity: $speakerIdentity, isMicReady: $isMicReady)';
   }
 
   @override
@@ -192,16 +192,17 @@ class _$RadioSessionStateImpl implements _RadioSessionState {
         (other.runtimeType == runtimeType &&
             other is _$RadioSessionStateImpl &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.talking, talking) || other.talking == talking) &&
+            (identical(other.isTalking, isTalking) ||
+                other.isTalking == isTalking) &&
             (identical(other.speakerIdentity, speakerIdentity) ||
                 other.speakerIdentity == speakerIdentity) &&
-            (identical(other.micReady, micReady) ||
-                other.micReady == micReady));
+            (identical(other.isMicReady, isMicReady) ||
+                other.isMicReady == isMicReady));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, status, talking, speakerIdentity, micReady);
+      Object.hash(runtimeType, status, isTalking, speakerIdentity, isMicReady);
 
   /// Create a copy of RadioSessionState
   /// with the given fields replaced by the non-null parameter values.
@@ -218,9 +219,9 @@ class _$RadioSessionStateImpl implements _RadioSessionState {
 abstract class _RadioSessionState implements RadioSessionState {
   const factory _RadioSessionState({
     final RadioStatus status,
-    final bool talking,
+    final bool isTalking,
     final String? speakerIdentity,
-    final bool micReady,
+    final bool isMicReady,
   }) = _$RadioSessionStateImpl;
 
   @override
@@ -228,7 +229,7 @@ abstract class _RadioSessionState implements RadioSessionState {
 
   /// 내가 버튼을 누르고 말하는 중
   @override
-  bool get talking;
+  bool get isTalking;
 
   /// 다른 경찰이 발언권을 쥐고 있으면 그 참가자 ID
   @override
@@ -236,7 +237,7 @@ abstract class _RadioSessionState implements RadioSessionState {
 
   /// 마이크가 올라가 있어 누르면 바로 말할 수 있다. false면 첫 누름에 권한을 묻는다.
   @override
-  bool get micReady;
+  bool get isMicReady;
 
   /// Create a copy of RadioSessionState
   /// with the given fields replaced by the non-null parameter values.

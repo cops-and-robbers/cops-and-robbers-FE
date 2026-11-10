@@ -318,7 +318,7 @@ class _GamePageState extends ConsumerState<GamePage>
         isPolice: GameTeam.isPolice(widget.team),
         isEventGame:
             ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false,
-        radioEnabled: kRadioEnabledDefault,
+        isRadioEnabled: kRadioEnabledDefault,
       );
 
   @override
@@ -570,6 +570,7 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 게임 시작 흐름을 정한다. 이벤트 게임은 예전 경찰 대기 팝업 그대로.
+  /// 무전 켜진 경찰은 여기서 출동 시각까지 무전 입장을 걸어 둔다.
   void _startIntro() {
     // 위치 권한을 다시 허용하면 _initGameConnections가 한 번 더 돈다 — 흐름은 한 번만 만든다
     if (widget.isDummy || _intro != null) return;
@@ -3484,7 +3485,10 @@ class _GamePageState extends ConsumerState<GamePage>
     final police =
         ref.watch(fetchGameParticipantsProvider(_gameId)).valueOrNull?.police ??
         const [];
-    return {for (final p in police) p.participantId.toString(): p.nickname};
+    return {
+      for (final participant in police)
+        participant.participantId.toString(): participant.nickname,
+    };
   }
 
   Widget _buildChatButton() {

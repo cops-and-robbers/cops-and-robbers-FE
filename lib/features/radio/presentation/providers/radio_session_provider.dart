@@ -69,13 +69,13 @@ class RadioSessionState with _$RadioSessionState {
     @Default(RadioStatus.off) RadioStatus status,
 
     /// 내가 버튼을 누르고 말하는 중
-    @Default(false) bool talking,
+    @Default(false) bool isTalking,
 
     /// 다른 경찰이 발언권을 쥐고 있으면 그 참가자 ID
     String? speakerIdentity,
 
     /// 마이크가 올라가 있어 누르면 바로 말할 수 있다. false면 첫 누름에 권한을 묻는다.
-    @Default(false) bool micReady,
+    @Default(false) bool isMicReady,
   }) = _RadioSessionState;
 }
 
@@ -101,20 +101,20 @@ class RadioSession extends _$RadioSession {
   StreamSubscription<RadioRoomEvent>? _sub;
   Timer? _timer;
   RadioFloor _floor = const RadioFloor();
-  bool _active = false;
+  bool _isActive = false;
 
   /// 방을 떠나거나 다시 붙을 때마다 올린다 — await 뒤 돌아온 옛 흐름이 새 세션을 건드리지 않게
   int _gen = 0;
 
   /// 출동 시각이 백그라운드에서 지나 입장을 미뤄 둔 상태
-  bool _pendingJoin = false;
+  bool _isJoinPending = false;
 
   /// 내 참가자 ID (토큰의 identity) — 내 발언도 발언권 순서에 넣는다
   String? _me;
 
   /// 손가락이 버튼 위에 있다 — 권한 팝업·마이크 준비가 끝났을 때 아직 누르고 있으면 바로 말한다
-  bool _wantTalk = false;
-  bool _preparingMic = false;
+  bool _isHolding = false;
+  bool _isPreparingMic = false;
   late BackgroundService _background;
 
   @override
@@ -127,9 +127,9 @@ class RadioSession extends _$RadioSession {
 
   /// 출동 전이면 그 시각까지 기다렸다가 들어간다.
   void start({required DateTime policeReleaseAt}) {
-    if (_active) return;
-    _active = true;
-    SoundService.instance().radioActive = true;
+    if (_isActive) return;
+    _isActive = true;
+    SoundService.instance().isRadioActive = true;
     final wait = policeReleaseAt.difference(clock.now());
     if (wait > Duration.zero) {
       state = state.copyWith(status: RadioStatus.waitingPolice);
@@ -145,19 +145,19 @@ class RadioSession extends _$RadioSession {
     if (room == null ||
         me == null ||
         state.status != RadioStatus.ready ||
-        state.talking ||
+        state.isTalking ||
         _floor.lockedFor(me)) {
       return;
     }
-    _wantTalk = true;
-    if (!state.micReady) {
+    _isHolding = true;
+    if (!state.isMicReady) {
       // 처음 누름 — 여기서 OS 마이크 권한을 묻는다
-      if (_preparingMic) return;
+      if (_isPreparingMic) return;
       final gen = _gen;
       final ok = await _prepareMic(gen);
       if (!ok ||
           _stale(gen) ||
-          !_wantTalk ||
+          !_isHolding ||
           state.status != RadioStatus.ready ||
           _floor.lockedFor(me)) {
         return;
@@ -165,17 +165,17 @@ class RadioSession extends _$RadioSession {
     }
     // 내 발언도 순서에 넣는다 — 바로 뒤에 누른 경찰의 mute 해제가 와도 발언권은 나다
     _floor = _floor.onUnmuted(me);
-    state = state.copyWith(talking: true);
+    state = state.copyWith(isTalking: true);
     await room.setMicMuted(false);
   }
 
   Future<void> release() async {
-    _wantTalk = false;
-    if (!state.talking) return;
+    _isHolding = false;
+    if (!state.isTalking) return;
     final me = _me;
     if (me != null) _floor = _floor.onMuted(me);
     // 내가 떼는 동안 계속 말하던 경찰이 있으면 그 사람이 발언권을 넘겨받는다
-    state = state.copyWith(talking: false, speakerIdentity: _visibleSpeaker);
+    state = state.copyWith(isTalking: false, speakerIdentity: _visibleSpeaker);
     await _room?.setMicMuted(true);
   }
 
@@ -184,15 +184,15 @@ class RadioSession extends _$RadioSession {
 
   /// 백그라운드에서 출동 시각이 지났거나 끊겼으면 화면에 돌아온 지금 들어간다
   void onAppResumed() {
-    if (_active && _pendingJoin) _connect();
+    if (_isActive && _isJoinPending) _connect();
   }
 
   Future<void> stop() async {
     _gen++;
-    _active = false;
-    _pendingJoin = false;
+    _isActive = false;
+    _isJoinPending = false;
     _timer?.cancel();
-    SoundService.instance().radioActive = false;
+    SoundService.instance().isRadioActive = false;
     unawaited(_background.stopRadio());
     _floor = const RadioFloor();
     state = const RadioSessionState();
@@ -205,15 +205,15 @@ class RadioSession extends _$RadioSession {
     return holder == _me ? null : holder;
   }
 
-  bool _stale(int gen) => gen != _gen || !_active;
+  bool _stale(int gen) => gen != _gen || !_isActive;
 
   Future<void> _connect() async {
-    if (!_active) return;
+    if (!_isActive) return;
     if (!ref.read(radioAppInForegroundProvider)()) {
-      _pendingJoin = true;
+      _isJoinPending = true;
       return;
     }
-    _pendingJoin = false;
+    _isJoinPending = false;
     final gen = _gen;
     if (state.status != RadioStatus.reconnecting) {
       state = state.copyWith(status: RadioStatus.connecting);
@@ -239,7 +239,7 @@ class RadioSession extends _$RadioSession {
     }
     if (_stale(gen)) return;
     // 듣기는 바로 된다. 마이크는 예전에 허용한 기기만 지금 올리고, 아니면 첫 누름에 묻는다.
-    state = state.copyWith(status: RadioStatus.ready, micReady: false);
+    state = state.copyWith(status: RadioStatus.ready, isMicReady: false);
     _scheduleRefresh(token.lifetime);
     if (await ref.read(radioMicMemoryProvider).wasGranted() && !_stale(gen)) {
       await _prepareMic(gen);
@@ -252,27 +252,27 @@ class RadioSession extends _$RadioSession {
   Future<bool> _prepareMic(int gen) async {
     final room = _room;
     if (room == null) return false;
-    _preparingMic = true;
+    _isPreparingMic = true;
     try {
       await room.publishMutedMic();
     } catch (e) {
       if (_stale(gen) || !identical(room, _room)) return false;
       debugPrint('[Radio] ⚠️ 마이크 사용 불가: $e');
-      state = state.copyWith(status: RadioStatus.micDenied, talking: false);
+      state = state.copyWith(status: RadioStatus.micDenied, isTalking: false);
       return false;
     } finally {
-      _preparingMic = false;
+      _isPreparingMic = false;
     }
     if (_stale(gen) || !identical(room, _room)) return false;
     unawaited(ref.read(radioMicMemoryProvider).rememberGranted());
-    state = state.copyWith(micReady: true);
+    state = state.copyWith(isMicReady: true);
     // 마이크를 받은 뒤에만 — 권한 없이 microphone 서비스를 띄우면 Android 14+가 거절한다
     unawaited(_background.startRadio());
     return true;
   }
 
   void _scheduleRefresh(Duration lifetime) {
-    if (!_active) return;
+    if (!_isActive) return;
     _timer?.cancel();
     _timer = Timer(
       radioRefreshDelay(lifetime, ref.read(radioRandomProvider)),
@@ -332,16 +332,16 @@ class RadioSession extends _$RadioSession {
 
   /// 끊긴 뒤에는 새 토큰부터 받는다 — 만료된 토큰으로 다시 붙으면 실패한다
   Future<void> _reconnect() async {
-    if (!_active) return;
+    if (!_isActive) return;
     _gen++; // 아직 진행 중인 옛 접속 흐름은 여기서 손을 뗀다
     _timer?.cancel();
     await _closeRoom();
     _floor = const RadioFloor();
     state = state.copyWith(
       status: RadioStatus.reconnecting,
-      talking: false,
+      isTalking: false,
       speakerIdentity: null,
-      micReady: false,
+      isMicReady: false,
     );
     await _connect();
   }
@@ -360,11 +360,11 @@ class RadioSession extends _$RadioSession {
   /// 화면 dispose 중에는 provider 상태를 바꿀 수 없고, autoDispose 정리는 다음 프레임이라
   /// 그 사이 출동 대기·재시도 타이머가 남지 않게 화면이 직접 부른다.
   void shutdown() {
-    if (_active) unawaited(_background.stopRadio());
+    if (_isActive) unawaited(_background.stopRadio());
     _gen++;
-    _active = false;
-    _pendingJoin = false;
-    SoundService.instance().radioActive = false;
+    _isActive = false;
+    _isJoinPending = false;
+    SoundService.instance().isRadioActive = false;
     _timer?.cancel();
     _sub?.cancel();
     _sub = null;

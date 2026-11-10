@@ -1,8 +1,5 @@
 package com.elipair.copsandrobbers
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
@@ -14,12 +11,8 @@ import androidx.core.app.ServiceCompat
 /**
  * 경찰 팀 무전(#697) 중 화면이 꺼져도 마이크·소리를 유지하는 Foreground Service.
  *
- * 위치용 [GameSessionForegroundService]와 합치지 않는다 — 한 서비스에 microphone 타입을 같이
- * 넣으면 마이크를 거부한 경찰은 서비스가 못 떠서 위치 추적까지 멈춘다. 무전은 부가 기능이라
- * 게임 본체(위치)를 죽이지 않게 따로 띄운다.
- *
- * microphone 타입은 백그라운드에서 시작하면 Android 14+에서 SecurityException이 나므로,
- * Flutter 쪽은 앱이 화면에 있고 마이크 권한을 받은 뒤에만 start를 부른다.
+ * 위치 서비스와 합치지 않는다 — 마이크를 거부한 경찰의 서비스가 못 떠서 위치 추적까지 멈추면 안 된다.
+ * microphone 타입은 백그라운드 시작이 거절되므로(Android 14+) 앱이 화면에 있을 때만 시작한다.
  */
 class RadioForegroundService : android.app.Service() {
 
@@ -29,7 +22,7 @@ class RadioForegroundService : android.app.Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        ensureChannel()
+        GameSessionNotification.ensureChannel(this)
         val notification = NotificationCompat.Builder(this, GameSessionNotification.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_notification)
             .setContentTitle(getString(R.string.fgs_notification_title))
@@ -59,21 +52,4 @@ class RadioForegroundService : android.app.Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-
-    // 게임 알림과 같은 채널을 쓴다 — 보통 위치 서비스가 먼저 만들지만 순서를 믿지 않는다
-    private fun ensureChannel() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (manager.getNotificationChannel(GameSessionNotification.CHANNEL_ID) != null) return
-        manager.createNotificationChannel(
-            NotificationChannel(
-                GameSessionNotification.CHANNEL_ID,
-                getString(R.string.fgs_channel_name),
-                NotificationManager.IMPORTANCE_LOW,
-            ).apply {
-                description = getString(R.string.fgs_channel_description)
-                setShowBadge(false)
-            },
-        )
-    }
 }

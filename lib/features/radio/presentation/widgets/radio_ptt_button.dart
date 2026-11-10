@@ -9,11 +9,9 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/radio_session_provider.dart';
 
-/// 누르고 있는 동안만 말하는 무전 버튼 (#697)
+/// 누르고 있는 동안만 말하는 무전 버튼 (#697). 게임 화면 좌우 버튼(SvgIconButton)과 같은 크기.
 ///
-/// 게임 화면 좌우 버튼(SvgIconButton)과 같은 56·모서리 16. 경찰(라이트) 화면에서만 쓴다.
-/// 탭이 아니라 누름/뗌을 받아야 해서 GestureDetector 대신 [Listener]를 쓴다 —
-/// 손가락이 밖으로 미끄러지거나 전화가 와서 포인터가 취소돼도 반드시 [onRelease]가 불린다.
+/// 누름/뗌을 받아야 해서 [Listener]를 쓴다 — 포인터가 취소돼도 [onRelease]가 불려 마이크가 닫힌다.
 class RadioPttButton extends StatelessWidget {
   const RadioPttButton({
     super.key,
@@ -35,8 +33,8 @@ class RadioPttButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final talking = state.talking;
-    final iconColor = talking
+    final isTalking = state.isTalking;
+    final iconColor = isTalking
         ? AppColors.white
         : _canTalk
         ? AppColors.blue
@@ -56,13 +54,13 @@ class RadioPttButton extends StatelessWidget {
         onPointerUp: (_) => onRelease(),
         onPointerCancel: (_) => onRelease(),
         child: AnimatedScale(
-          scale: talking ? 1.08 : 1,
+          scale: isTalking ? 1.08 : 1,
           duration: const Duration(milliseconds: 80),
           child: Container(
             width: 56.w,
             height: 56.w,
             decoration: BoxDecoration(
-              color: talking ? AppColors.blue : AppColors.white,
+              color: isTalking ? AppColors.blue : AppColors.white,
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: AppShadows.softThemed(false),
             ),

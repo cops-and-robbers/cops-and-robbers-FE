@@ -4,8 +4,8 @@ import 'dart:math';
 bool radioAvailable({
   required bool isPolice,
   required bool isEventGame,
-  required bool radioEnabled,
-}) => isPolice && !isEventGame && radioEnabled;
+  required bool isRadioEnabled,
+}) => isPolice && !isEventGame && isRadioEnabled;
 
 /// 토큰 재발급까지 기다릴 시간 — 수명의 70~90% 사이에서 고른다.
 ///
@@ -13,12 +13,9 @@ bool radioAvailable({
 Duration radioRefreshDelay(Duration lifetime, Random random) =>
     lifetime * (0.70 + 0.20 * random.nextDouble());
 
-/// PTT 발언권 — 한 채널에 한 명만 말한다.
+/// PTT 발언권 — mute를 푼 순서대로 줄을 세워 맨 앞 사람이 갖는다.
 ///
-/// 버튼을 누른 시점과 정확히 맞는 트랙 mute 해제/mute 이벤트로만 판정한다.
-/// 음량 기반 ActiveSpeakers는 늦게 오고 조용한 사람을 놓쳐 잠금에 쓰지 않는다.
-/// mute를 푼 순서대로 줄을 세워, 맨 앞 사람이 발언권을 갖는다 — 거의 동시에 눌러
-/// 둘 다 송신 중이면 먼저 사람이 떼는 순간 남은 사람에게 넘어간다.
+/// 누른 시점과 맞는 트랙 mute 이벤트로만 판정한다(음량 기반 ActiveSpeakers는 늦고 조용한 사람을 놓친다).
 class RadioFloor {
   const RadioFloor([this._order = const []]);
 

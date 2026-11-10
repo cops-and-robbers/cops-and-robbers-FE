@@ -210,7 +210,7 @@ void main() {
       h.api.rejectWith = _rejected('GAME_NOT_IN_PROGRESS', 400);
       async.elapse(const Duration(seconds: 97));
       expect(h.state.status, RadioStatus.off);
-      expect(h.state.talking, isFalse);
+      expect(h.state.isTalking, isFalse);
       expect(h.room.disconnected, isTrue);
     });
   });
@@ -236,7 +236,7 @@ void main() {
       h.session.press();
       async.flushMicrotasks();
       expect(h.state.speakerIdentity, _sanghee);
-      expect(h.state.talking, isFalse);
+      expect(h.state.isTalking, isFalse);
       expect(h.room.micMuted, isTrue);
     });
   });
@@ -266,11 +266,11 @@ void main() {
       h.session.press();
       async.flushMicrotasks();
       expect(h.room.micMuted, isFalse);
-      expect(h.state.talking, isTrue);
+      expect(h.state.isTalking, isTrue);
       h.session.release(); // 손가락이 버튼 밖으로 미끄러져 취소된 경우도 이 경로
       async.flushMicrotasks();
       expect(h.room.micMuted, isTrue);
-      expect(h.state.talking, isFalse);
+      expect(h.state.isTalking, isFalse);
     });
   });
 
@@ -372,7 +372,7 @@ void main() {
       async.flushMicrotasks();
       expect(h.state.speakerIdentity, isNull);
       expect(h.beeps, 0);
-      expect(h.state.talking, isTrue);
+      expect(h.state.isTalking, isTrue);
     });
   });
 
@@ -383,7 +383,7 @@ void main() {
       h.session.start(policeReleaseAt: gameStart);
       async.flushMicrotasks();
       expect(h.state.status, RadioStatus.ready);
-      expect(h.state.micReady, isFalse);
+      expect(h.state.isMicReady, isFalse);
       expect(h.room.published, isFalse);
       expect(h.background.radioRunning, isFalse);
     });
@@ -398,7 +398,7 @@ void main() {
       async.flushMicrotasks();
       expect(h.room.published, isTrue);
       expect(h.room.micMuted, isFalse);
-      expect(h.state.talking, isTrue);
+      expect(h.state.isTalking, isTrue);
       expect(h.micMemory.granted, isTrue);
       expect(h.background.radioRunning, isTrue);
     });
@@ -414,7 +414,7 @@ void main() {
       async.flushMicrotasks();
       expect(h.room.published, isTrue);
       expect(h.room.micMuted, isTrue);
-      expect(h.state.talking, isFalse);
+      expect(h.state.isTalking, isFalse);
     });
   });
 

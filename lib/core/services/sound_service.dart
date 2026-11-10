@@ -5,8 +5,8 @@ import '../constants/app_sounds.dart';
 
 /// 효과음 서비스
 ///
-/// 시스템 소리 설정을 따른다 — iOS는 무음 스위치를 켜면 울리지 않고(ambient),
-/// Android는 미디어 볼륨을 따른다(게임 용도). 듣던 음악은 끊지 않고 섞어 낸다.
+/// 시스템 소리 설정을 따른다 — iOS는 무음 스위치를 켜면 울리지 않고(ambient, 단 무전 중은
+/// [audioContextFor] 참고), Android는 미디어 볼륨을 따른다(게임 용도). 듣던 음악은 끊지 않고 섞어 낸다.
 /// 소리가 안 나도 진동·화면이 같은 신호를 주므로 실패는 로그만 남긴다.
 class SoundService {
   SoundService._();
@@ -14,15 +14,12 @@ class SoundService {
   static final SoundService _instance = SoundService._();
   factory SoundService.instance() => _instance;
 
-  /// 효과음 오디오 설정.
-  ///
-  /// iOS 오디오 세션은 앱 전체에 하나라 효과음이 바꾸면 무전(WebRTC)도 같이 바뀐다.
-  /// 무전 중에 ambient로 바꾸면 마이크 입력이 끊기고 무음 스위치에 상대 목소리까지 꺼지므로,
-  /// 무전이 켜져 있는 동안은 녹음·재생이 되는 playAndRecord로 둔다 (#697).
+  /// iOS 오디오 세션은 앱 전체에 하나라, 무전 중에 ambient로 바꾸면 마이크와 상대 목소리가
+  /// 끊긴다. 무전이 켜져 있는 동안은 playAndRecord로 둔다 (#697).
   @visibleForTesting
-  static AudioContext audioContextFor({required bool radioActive}) =>
+  static AudioContext audioContextFor({required bool isRadioActive}) =>
       AudioContext(
-        iOS: radioActive
+        iOS: isRadioActive
             ? AudioContextIOS(
                 category: AVAudioSessionCategory.playAndRecord,
                 options: const {
@@ -40,9 +37,9 @@ class SoundService {
       );
 
   /// 경찰 무전 방에 있는 동안 true — 무전 세션이 켜고 끈다
-  bool radioActive = false;
+  bool isRadioActive = false;
 
-  AudioContext get _context => audioContextFor(radioActive: radioActive);
+  AudioContext get _context => audioContextFor(isRadioActive: isRadioActive);
 
   AudioPlayer? _siren;
   bool _sirenOn = false;

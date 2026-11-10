@@ -19,7 +19,7 @@ void main() {
   group('radioAvailable', () {
     test('radio_shown_for_police_when_room_has_radio', () {
       expect(
-        radioAvailable(isPolice: true, isEventGame: false, radioEnabled: true),
+        radioAvailable(isPolice: true, isEventGame: false, isRadioEnabled: true),
         isTrue,
       );
     });
@@ -27,21 +27,21 @@ void main() {
     // 도둑끼리 대화가 되면 추격 정보가 공유된다 (DEC-0114)
     test('radio_hidden_for_robber_when_room_has_radio', () {
       expect(
-        radioAvailable(isPolice: false, isEventGame: false, radioEnabled: true),
+        radioAvailable(isPolice: false, isEventGame: false, isRadioEnabled: true),
         isFalse,
       );
     });
 
     test('radio_hidden_for_police_in_event_game', () {
       expect(
-        radioAvailable(isPolice: true, isEventGame: true, radioEnabled: true),
+        radioAvailable(isPolice: true, isEventGame: true, isRadioEnabled: true),
         isFalse,
       );
     });
 
     test('radio_hidden_for_police_when_host_turned_radio_off', () {
       expect(
-        radioAvailable(isPolice: true, isEventGame: false, radioEnabled: false),
+        radioAvailable(isPolice: true, isEventGame: false, isRadioEnabled: false),
         isFalse,
       );
     });
