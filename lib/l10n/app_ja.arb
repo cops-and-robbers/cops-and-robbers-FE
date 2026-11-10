@@ -969,6 +969,7 @@
   "onboardingRecordBody": "ゲームが終わると移動経路と距離を見られます",
   "radioSpeaking": "{nickname} 無線中",
   "radioSpeakerFallback": "警察",
-  "radioMicDenied": "マイクを許可すると無線が使えます",
+  "dialogMicPermissionTitle": "マイクの権限が必要です",
+  "dialogMicPermissionMessage": "無線で話すにはマイクの権限が必要です\n設定でマイクの権限を許可してください",
   "radioPttLabel": "無線"
 }

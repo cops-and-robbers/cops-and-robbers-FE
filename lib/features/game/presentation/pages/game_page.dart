@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:app_settings/app_settings.dart';
 import 'package:clock/clock.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -2911,6 +2912,10 @@ class _GamePageState extends ConsumerState<GamePage>
         ? ref.watch(radioSessionProvider(_gameId))
         : const RadioSessionState();
     final showsRadioPill = hasRadio && radio.speakerIdentity != null;
+    // 알약이 뜰 때만 지켜보면 autoDispose라 화자가 바뀔 때마다 참가자 목록을 다시 받는다
+    final policeNicknames = hasRadio
+        ? _policeNicknames()
+        : const <String, String>{};
     final menuEntries = gameMenuEntries(
       isPolice: GameTeam.isPolice(widget.team),
       isArrested: isArrestedNow,
@@ -3139,7 +3144,7 @@ class _GamePageState extends ConsumerState<GamePage>
                   label: radioSpeakerLabel(
                     l10n,
                     radio.speakerIdentity!,
-                    _policeNicknames(),
+                    policeNicknames,
                   ),
                 ),
               )
@@ -3460,7 +3465,16 @@ class _GamePageState extends ConsumerState<GamePage>
     final session = ref.read(radioSessionProvider(_gameId).notifier);
     return RadioPttButton(
       state: radio,
-      onPress: session.press,
+      onPress: () async {
+        final wasDenied = radio.status == RadioStatus.micDenied;
+        await session.press();
+        // 거부한 채 다시 눌렀는데 또 안 됐다 — OS가 팝업을 더 안 띄우니 설정으로 안내한다
+        if (!mounted || !wasDenied) return;
+        if (ref.read(radioSessionProvider(_gameId)).status ==
+            RadioStatus.micDenied) {
+          _showMicPermissionDialog();
+        }
+      },
       onRelease: session.release,
       onBlockedTap: () => _explainBlockedRadio(radio.status),
     );
@@ -3468,16 +3482,24 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 무전이 안 눌리는 이유 — 다른 경찰이 말하는 중이면 알약이 이미 보여서 따로 알리지 않는다
   void _explainBlockedRadio(RadioStatus status) {
+    if (status != RadioStatus.waitingPolice) return;
+    AppSnackbar.show(
+      context,
+      message: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTime,
+      isDarkMode: _isDarkMode,
+    );
+  }
+
+  void _showMicPermissionDialog() {
     final l10n = AppLocalizations.of(context);
-    final message = switch (status) {
-      RadioStatus.waitingPolice => l10n.errorCodeRadioPoliceWaitingTime,
-      RadioStatus.micDenied => l10n.radioMicDenied,
-      _ => null,
-    };
-    if (message == null) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message)));
+    AppDialog.show(
+      context: context,
+      title: l10n.dialogMicPermissionTitle,
+      message: l10n.dialogMicPermissionMessage,
+      confirmText: l10n.buttonGoToSettings,
+      cancelText: l10n.buttonClose,
+      onConfirm: () => AppSettings.openAppSettings(),
+    );
   }
 
   /// 무전 identity(참가자 ID 문자열) → 닉네임. 목록을 못 받았으면 빈 맵(알약은 "경찰"로)

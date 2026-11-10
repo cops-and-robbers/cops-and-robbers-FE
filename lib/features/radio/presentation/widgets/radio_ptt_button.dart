@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
+import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/services/vibration_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/radio_session_provider.dart';
@@ -25,7 +26,7 @@ class RadioPttButton extends StatelessWidget {
   final VoidCallback onPress;
   final VoidCallback onRelease;
 
-  /// 대기 시간·마이크 거부·다른 경찰 송신 중에 눌렀을 때 — 왜 안 되는지 알려 준다
+  /// 대기 시간·다른 경찰 송신 중에 눌렀을 때 — 왜 안 되는지 알려 준다
   final VoidCallback onBlockedTap;
 
   bool get _canTalk =>
@@ -47,6 +48,8 @@ class RadioPttButton extends StatelessWidget {
       child: Listener(
         behavior: HitTestBehavior.opaque,
         onPointerDown: (_) {
+          // 마이크 거부 상태는 그대로 넘긴다 — 설정에서 허용하고 돌아왔으면 누를 때 다시 준비된다
+          if (state.status == RadioStatus.micDenied) return onPress();
           if (!_canTalk) return onBlockedTap();
           VibrationService.instance().buttonTap();
           onPress();
@@ -61,7 +64,7 @@ class RadioPttButton extends StatelessWidget {
             height: 56.w,
             decoration: BoxDecoration(
               color: isTalking ? AppColors.blue : AppColors.white,
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: AppRadius.xlarge,
               boxShadow: AppShadows.softThemed(false),
             ),
             alignment: Alignment.center,

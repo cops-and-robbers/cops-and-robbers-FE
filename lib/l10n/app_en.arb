@@ -969,6 +969,7 @@
   "onboardingRecordBody": "See your route and distance when the game ends",
   "radioSpeaking": "{nickname} on radio",
   "radioSpeakerFallback": "A cop",
-  "radioMicDenied": "Allow microphone access to use the radio",
+  "dialogMicPermissionTitle": "Microphone permission required",
+  "dialogMicPermissionMessage": "Microphone permission is required to talk on the radio\nPlease allow microphone permission in settings",
   "radioPttLabel": "Radio"
 }

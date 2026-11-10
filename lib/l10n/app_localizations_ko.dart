@@ -2856,7 +2856,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get radioSpeakerFallback => '경찰';
 
   @override
-  String get radioMicDenied => '마이크를 허용하면 무전을 쓸 수 있어요';
+  String get dialogMicPermissionTitle => '마이크 권한 필요';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      '무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요';
 
   @override
   String get radioPttLabel => '무전';

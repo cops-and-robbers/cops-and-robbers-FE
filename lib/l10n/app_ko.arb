@@ -2858,6 +2858,13 @@
   },
   "@radioSpeakerFallback": {"description": "참가자 목록에 아직 없는 경찰이 말할 때 이름 대신 쓰는 말 (radioSpeaking의 nickname 자리)"},
   "radioSpeakerFallback": "경찰",
-  "radioMicDenied": "마이크를 허용하면 무전을 쓸 수 있어요",
+  "dialogMicPermissionTitle": "마이크 권한 필요",
+  "@dialogMicPermissionTitle": {
+    "description": "무전 마이크 권한 안내 다이얼로그 타이틀 (거부한 뒤 무전 버튼을 다시 눌렀을 때)"
+  },
+  "dialogMicPermissionMessage": "무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요",
+  "@dialogMicPermissionMessage": {
+    "description": "무전 마이크 권한 안내 다이얼로그 본문"
+  },
   "radioPttLabel": "무전"
 }

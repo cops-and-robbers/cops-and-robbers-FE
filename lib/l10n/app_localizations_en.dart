@@ -3077,7 +3077,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioSpeakerFallback => 'A cop';
 
   @override
-  String get radioMicDenied => 'Allow microphone access to use the radio';
+  String get dialogMicPermissionTitle => 'Microphone permission required';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      'Microphone permission is required to talk on the radio\nPlease allow microphone permission in settings';
 
   @override
   String get radioPttLabel => 'Radio';

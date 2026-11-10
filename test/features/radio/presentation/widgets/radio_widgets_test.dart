@@ -91,6 +91,23 @@ void main() {
       expect(pressed, 0);
       expect(blocked, 1);
     });
+
+    // 마이크를 거부한 경찰이 설정에서 허용하고 돌아와 다시 누른다 — 눌러야 다시 시도할 수 있다
+    testWidgets('ptt_button_passes_press_through_when_mic_was_denied', (tester) async {
+      var pressed = 0, blocked = 0;
+      await _pump(
+        tester,
+        RadioPttButton(
+          state: const RadioSessionState(status: RadioStatus.micDenied),
+          onPress: () => pressed++,
+          onRelease: () {},
+          onBlockedTap: () => blocked++,
+        ),
+      );
+      await tester.tap(find.byType(RadioPttButton));
+      expect(pressed, 1);
+      expect(blocked, 0);
+    });
   });
 
   group('radioSpeakerLabel', () {

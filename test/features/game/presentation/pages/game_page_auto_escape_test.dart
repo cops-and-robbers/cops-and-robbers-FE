@@ -1482,16 +1482,12 @@ void main() {
       );
       if (variant.team == 'POLICE') {
         // 무전 켜진 경찰은 채팅이 + 메뉴 맨 끝에 있다 (#697)
-        await tester.tap(find.byType(GameFabMenu));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 400));
-        await tester.tap(
-          find.text(
-            AppLocalizations.of(tester.element(find.byType(GamePage))).gameChatTitle,
-          ),
+        await tapFloatingMenuItem(
+          tester,
+          AppLocalizations.of(
+            tester.element(find.byType(GamePage)),
+          ).gameChatTitle,
         );
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 400));
       } else {
         await tester.tap(
           find.byWidgetPredicate(

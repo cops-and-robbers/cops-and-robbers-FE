@@ -5377,11 +5377,17 @@ abstract class AppLocalizations {
   /// **'경찰'**
   String get radioSpeakerFallback;
 
-  /// No description provided for @radioMicDenied.
+  /// 무전 마이크 권한 안내 다이얼로그 타이틀 (거부한 뒤 무전 버튼을 다시 눌렀을 때)
   ///
   /// In ko, this message translates to:
-  /// **'마이크를 허용하면 무전을 쓸 수 있어요'**
-  String get radioMicDenied;
+  /// **'마이크 권한 필요'**
+  String get dialogMicPermissionTitle;
+
+  /// 무전 마이크 권한 안내 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요'**
+  String get dialogMicPermissionMessage;
 
   /// No description provided for @radioPttLabel.
   ///

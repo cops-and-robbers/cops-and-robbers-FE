@@ -2854,7 +2854,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get radioSpeakerFallback => '警察';
 
   @override
-  String get radioMicDenied => 'マイクを許可すると無線が使えます';
+  String get dialogMicPermissionTitle => 'マイクの権限が必要です';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      '無線で話すにはマイクの権限が必要です\n設定でマイクの権限を許可してください';
 
   @override
   String get radioPttLabel => '無線';

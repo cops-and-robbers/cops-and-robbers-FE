@@ -142,9 +142,13 @@ class RadioSession extends _$RadioSession {
   Future<void> press() async {
     final room = _room;
     final me = _me;
+    // 거부 상태에서도 받는다 — 설정에서 마이크를 허용하고 돌아왔을 수 있어 아래에서 다시 준비해 본다
+    final canPress =
+        state.status == RadioStatus.ready ||
+        state.status == RadioStatus.micDenied;
     if (room == null ||
         me == null ||
-        state.status != RadioStatus.ready ||
+        !canPress ||
         state.isTalking ||
         _floor.lockedFor(me)) {
       return;
@@ -265,7 +269,7 @@ class RadioSession extends _$RadioSession {
     }
     if (_stale(gen) || !identical(room, _room)) return false;
     unawaited(ref.read(radioMicMemoryProvider).rememberGranted());
-    state = state.copyWith(isMicReady: true);
+    state = state.copyWith(status: RadioStatus.ready, isMicReady: true);
     // 마이크를 받은 뒤에만 — 권한 없이 microphone 서비스를 띄우면 Android 14+가 거절한다
     unawaited(_background.startRadio());
     return true;

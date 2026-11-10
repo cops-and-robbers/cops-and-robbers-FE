@@ -435,4 +435,40 @@ void main() {
       expect(h.state.speakerIdentity, _sanghee);
     });
   });
+
+  // 첫 팝업에서 거부했다가 설정에서 마이크를 허용하고 게임으로 돌아와 다시 눌렀다
+  test('talks_when_pressed_again_after_allowing_mic_in_settings', () {
+    inGame((async, h) {
+      h.micMemory.granted = false;
+      h.denyMic = true;
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      h.session.press();
+      async.flushMicrotasks();
+      h.session.release();
+      h.room.micDenied = false; // 설정에서 허용
+      h.session.press();
+      async.flushMicrotasks();
+      expect(h.state.status, RadioStatus.ready);
+      expect(h.state.isTalking, isTrue);
+      expect(h.room.micMuted, isFalse);
+    });
+  });
+
+  // 거부한 채로 다시 눌렀다 — 여전히 말할 수 없고, 화면이 설정 안내를 띄울 수 있게 거부 상태로 남는다
+  test('stays_denied_when_pressed_again_without_allowing_mic', () {
+    inGame((async, h) {
+      h.micMemory.granted = false;
+      h.denyMic = true;
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      h.session.press();
+      async.flushMicrotasks();
+      h.session.release();
+      h.session.press();
+      async.flushMicrotasks();
+      expect(h.state.status, RadioStatus.micDenied);
+      expect(h.state.isTalking, isFalse);
+    });
+  });
 }

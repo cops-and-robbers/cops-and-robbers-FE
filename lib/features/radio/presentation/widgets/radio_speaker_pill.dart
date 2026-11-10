@@ -65,8 +65,8 @@ class _RadioSpeakerPillState extends State<RadioSpeakerPill>
             FadeTransition(
               opacity: _blink,
               child: Container(
-                width: 8.w,
-                height: 8.w,
+                width: AppSpacing.horizontal8,
+                height: AppSpacing.horizontal8,
                 decoration: const BoxDecoration(
                   color: AppColors.white,
                   shape: BoxShape.circle,
@@ -76,8 +76,8 @@ class _RadioSpeakerPillState extends State<RadioSpeakerPill>
             SizedBox(width: AppSpacing.horizontal6),
             SvgPicture.asset(
               AppIcons.mic,
-              width: 16.w,
-              height: 16.w,
+              width: AppSpacing.horizontal16,
+              height: AppSpacing.horizontal16,
               colorFilter: const ColorFilter.mode(
                 AppColors.white,
                 BlendMode.srcIn,
