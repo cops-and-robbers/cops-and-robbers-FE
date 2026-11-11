@@ -16,4 +16,10 @@ class NoopBackgroundService implements BackgroundService {
 
   @override
   Future<void> stop() async => _isRunning = false;
+
+  @override
+  Future<void> startRadio() async {}
+
+  @override
+  Future<void> stopRadio() async {}
 }

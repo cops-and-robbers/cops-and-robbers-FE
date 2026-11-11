@@ -27,6 +27,39 @@ void main() {
     isMapVisible: false,
   );
 
+  // 무전 켜진 방의 경찰은 오른쪽 아래 채팅 버튼 자리를 무전 버튼이 쓴다 — 채팅은 메뉴 맨 끝으로 (#697)
+  test('police_map_menu_ends_with_chat_when_radio_takes_chat_button', () {
+    expect(
+      gameMenuEntries(
+        isPolice: true,
+        isArrested: false,
+        isZoneExitActive: false,
+        isEventGame: false,
+        hasRadioButton: true,
+      ),
+      [
+        GameMenuEntry.grid,
+        GameMenuEntry.participants,
+        GameMenuEntry.arrest,
+        GameMenuEntry.chat,
+      ],
+    );
+  });
+
+  // 구역 이탈 중에도 채팅은 써야 한다 — 체포·참가자만 빠진다
+  test('police_keeps_chat_in_menu_when_zone_exit_hides_arrest', () {
+    expect(
+      gameMenuEntries(
+        isPolice: true,
+        isArrested: false,
+        isZoneExitActive: true,
+        isEventGame: false,
+        hasRadioButton: true,
+      ),
+      [GameMenuEntry.grid, GameMenuEntry.chat],
+    );
+  });
+
   // 시작 장면 메뉴는 위로 펼쳐진다 — 위에서부터 QR, 참가자, 채팅(DEC-0133). 지도를 덮어 좌표는 뺀다.
   test('police_wait_scene_stacks_arrest_participants_chat_when_menu_opens', () {
     expect(sceneEntries(isPolice: true), [

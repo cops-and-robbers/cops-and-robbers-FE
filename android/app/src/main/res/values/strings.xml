@@ -8,4 +8,5 @@
     <string name="fgs_channel_description">Shows that a Cops and Robbers game is in progress</string>
     <string name="fgs_notification_title">Cops and Robbers</string>
     <string name="fgs_notification_text">A game is in progress</string>
+    <string name="radio_notification_text">Cops radio connected</string>
 </resources>

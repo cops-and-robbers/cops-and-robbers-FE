@@ -156,6 +156,13 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeGameNotFound;
       case 'GAME_NOT_IN_PROGRESS':
         return errorCodeGameNotInProgress;
+      // ── 무전 토큰 발급 거절 (BE PR #239) ──
+      case 'RADIO_NOT_ALLOWED_IN_EVENT_GAME':
+        return errorCodeRadioNotAllowedInEventGame;
+      case 'ONLY_POLICE_CAN_USE_RADIO':
+        return errorCodeOnlyPoliceCanUseRadio;
+      case 'RADIO_POLICE_WAITING_TIME':
+        return errorCodeRadioPoliceWaitingTime;
       case 'GAME_NOT_ACTIVE':
         return errorCodeGameNotActive;
       case 'GAME_NOT_WAITING':

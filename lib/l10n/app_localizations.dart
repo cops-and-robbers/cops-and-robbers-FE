@@ -4477,6 +4477,24 @@ abstract class AppLocalizations {
   /// **'게임이 진행 중인 상태가 아니에요'**
   String get errorCodeGameNotInProgress;
 
+  /// No description provided for @errorCodeRadioNotAllowedInEventGame.
+  ///
+  /// In ko, this message translates to:
+  /// **'이벤트 게임에서는 무전을 쓸 수 없어요'**
+  String get errorCodeRadioNotAllowedInEventGame;
+
+  /// No description provided for @errorCodeOnlyPoliceCanUseRadio.
+  ///
+  /// In ko, this message translates to:
+  /// **'무전은 경찰만 쓸 수 있어요'**
+  String get errorCodeOnlyPoliceCanUseRadio;
+
+  /// No description provided for @errorCodeRadioPoliceWaitingTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 출동한 뒤에 쓸 수 있어요'**
+  String get errorCodeRadioPoliceWaitingTime;
+
   /// No description provided for @errorCodeGameNotActive.
   ///
   /// In ko, this message translates to:
@@ -5346,6 +5364,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'게임이 끝나면 이동 경로와 거리를 볼 수 있어요'**
   String get onboardingRecordBody;
+
+  /// 다른 경찰이 무전 버튼을 누르고 말하는 동안 무전 버튼 위 파란 알약 — 채팅 말풍선과 헷갈리지 않게 '무전'을 넣었다 (#697)
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname} 무전 중'**
+  String radioSpeaking(String nickname);
+
+  /// 참가자 목록에 아직 없는 경찰이 말할 때 이름 대신 쓰는 말 (radioSpeaking의 nickname 자리)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰'**
+  String get radioSpeakerFallback;
+
+  /// 무전 마이크 권한 안내 다이얼로그 타이틀 (거부한 뒤 무전 버튼을 다시 눌렀을 때)
+  ///
+  /// In ko, this message translates to:
+  /// **'마이크 권한 필요'**
+  String get dialogMicPermissionTitle;
+
+  /// 무전 마이크 권한 안내 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요'**
+  String get dialogMicPermissionMessage;
+
+  /// No description provided for @radioPttLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'무전'**
+  String get radioPttLabel;
 }
 
 class _AppLocalizationsDelegate

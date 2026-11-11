@@ -89,4 +89,20 @@ class MethodChannelBackgroundService implements BackgroundService {
       debugPrint('[BackgroundService] ❌ update 실패: $e');
     }
   }
+
+  @override
+  Future<void> startRadio() => _radio('startRadio');
+
+  @override
+  Future<void> stopRadio() => _radio('stopRadio');
+
+  // iOS는 audio 배경 모드가 맡아 네이티브 호출이 없다. 실패해도 무전·게임은 계속된다.
+  Future<void> _radio(String method) async {
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+    try {
+      await _channel.invokeMethod(method);
+    } catch (e) {
+      debugPrint('[BackgroundService] ❌ $method 실패: $e');
+    }
+  }
 }

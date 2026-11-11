@@ -26,6 +26,7 @@
 | 라운드                  | Round           | ラウンド         | 게임 1회 단위                        |
 | 게임 영역 / 구역        | Game area       | ゲームエリア     | playground + jail 묶음               |
 | 출동                    | Move out        | 出動             | 경찰이 도둑 추격 시작                |
+| 무전 | Radio | 無線 | 경찰 팀 음성(PTT). "상희 무전 중" = "Sanghee on radio" = "サンヒ 無線中" |
 | 위치 공개               | Location reveal | 位置公開         | 주기적으로 도둑 위치 공개            |
 | 발자국                  | Footprint       | 足跡 (あしあと)  | 도둑이 남기는 위치 흔적              |
 | 신고                    | Report          | 通報             | 유저 신고                            |

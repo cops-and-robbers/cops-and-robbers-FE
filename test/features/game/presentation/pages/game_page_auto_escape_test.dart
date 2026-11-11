@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:clock/clock.dart';
+import 'package:cops_and_robbers/features/radio/presentation/widgets/radio_ptt_button.dart';
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/core/constants/app_icons.dart';
 import 'package:cops_and_robbers/core/constants/map_styles.dart';
@@ -1079,9 +1080,12 @@ void main() {
           textScale: variant.scale,
         );
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-        final chatButton = find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
-        );
+        // 무전 켜진 경찰은 채팅 버튼 자리를 무전 버튼이 쓴다 — 미리보기는 그 버튼 위에 뜬다 (#697)
+        final chatButton = variant.team == 'POLICE'
+            ? find.byType(RadioPttButton)
+            : find.byWidgetPredicate(
+                (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+              );
         final message = ChatMessageDto(
           id: 'preview-1',
           gameId: 1,
@@ -1476,11 +1480,21 @@ void main() {
         locale: Locale(variant.locale),
         textScale: variant.scale,
       );
-      await tester.tap(
-        find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
-        ),
-      );
+      if (variant.team == 'POLICE') {
+        // 무전 켜진 경찰은 채팅이 + 메뉴 맨 끝에 있다 (#697)
+        await tapFloatingMenuItem(
+          tester,
+          AppLocalizations.of(
+            tester.element(find.byType(GamePage)),
+          ).gameChatTitle,
+        );
+      } else {
+        await tester.tap(
+          find.byWidgetPredicate(
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+          ),
+        );
+      }
       await tester.pump();
       final l10n = AppLocalizations.of(
         tester.element(find.byType(CommunityMessageInput)),

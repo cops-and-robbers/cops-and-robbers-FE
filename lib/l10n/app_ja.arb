@@ -807,6 +807,9 @@
   "errorCodeRequiredTermsNotAgreed": "必須規約にはすべて同意する必要があります",
   "errorCodeGameNotFound": "リクエストされたゲーム情報が存在しません",
   "errorCodeGameNotInProgress": "ゲームが進行中の状態ではありません",
+  "errorCodeRadioNotAllowedInEventGame": "イベントゲームでは無線を使えません",
+  "errorCodeOnlyPoliceCanUseRadio": "無線は警察だけが使えます",
+  "errorCodeRadioPoliceWaitingTime": "警察が出動した後に使えます",
   "errorCodeGameNotActive": "待機中または進行中のゲームでのみ照会できます",
   "errorCodeGameNotWaiting": "待機中のゲームのみ設定を変更できます",
   "errorCodeInvalidLocationInterval": "位置公開間隔はラウンド時間より短くしてください",
@@ -963,5 +966,10 @@
   "onboardingGuideTitle": "進行はアプリにおまかせ",
   "onboardingGuideBody": "残り時間もエリア外れも、アプリが知らせます",
   "onboardingRecordTitle": "走った記録も残ります",
-  "onboardingRecordBody": "ゲームが終わると移動経路と距離を見られます"
+  "onboardingRecordBody": "ゲームが終わると移動経路と距離を見られます",
+  "radioSpeaking": "{nickname} 無線中",
+  "radioSpeakerFallback": "警察",
+  "dialogMicPermissionTitle": "マイクの権限が必要です",
+  "dialogMicPermissionMessage": "無線で話すにはマイクの権限が必要です\n設定でマイクの権限を許可してください",
+  "radioPttLabel": "無線"
 }

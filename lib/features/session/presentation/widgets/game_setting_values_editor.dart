@@ -8,8 +8,8 @@ import '../../../../l10n/app_localizations.dart';
 
 /// 방 생성 시 정하는 설정 항목. 선언 순서가 곧 입력 순서다.
 enum GameSettingField {
-  /// 참여 인원 (2~150명)
-  participants(min: 2, max: 150, quickAmounts: [5, 10, 20]),
+  /// 참여 인원 (2~50명) — 서버 상한을 50으로 내렸다 (cops-and-robbers-BE#235)
+  participants(min: 2, max: 50, quickAmounts: [5, 10, 20]),
 
   /// 게임 시간 (10~180분)
   roundDuration(min: 10, max: 180, quickAmounts: [5, 10, 30]),

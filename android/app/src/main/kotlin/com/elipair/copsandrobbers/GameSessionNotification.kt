@@ -1,11 +1,13 @@
 package com.elipair.copsandrobbers
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.core.app.NotificationCompat
 
 /**
@@ -26,6 +28,26 @@ object GameSessionNotification {
     @Volatile var latest: Map<*, *>? = null
     @Volatile var dismissedByUser = false
     @Volatile var serviceRunning = false
+
+    /**
+     * 게임 알림 채널 생성 (Android 8.0+). 위치·무전 서비스가 같이 쓰고, 이미 있으면 그대로 둔다.
+     *
+     * IMPORTANCE_LOW: 헤드업 알림 안 뜨고 사운드/진동 없음. 게임 진행 표시용에 적합.
+     */
+    fun ensureChannel(context: Context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            context.getString(R.string.fgs_channel_name),
+            NotificationManager.IMPORTANCE_LOW,
+        ).apply {
+            description = context.getString(R.string.fgs_channel_description)
+            setShowBadge(false)
+        }
+        notificationManager.createNotificationChannel(channel)
+    }
 
     fun build(context: Context): Notification {
         val status = latest
