@@ -3919,6 +3919,12 @@ abstract class AppLocalizations {
   /// **'회원 탈퇴 중 예기치 않은 오류가 생겼어요'**
   String get errorDeleteAccountUnexpected;
 
+  /// 회원 탈퇴 전 Apple 토큰 철회 실패 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'Apple 계정 연결을 해제하지 못했어요. 다시 시도해 주세요'**
+  String get errorAppleTokenRevokeFailed;
+
   /// 약관 동의 상태 조회 중 예기치 않은 오류 안내
   ///
   /// In ko, this message translates to:

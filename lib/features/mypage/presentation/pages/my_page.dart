@@ -733,8 +733,30 @@ class _MyPageState extends ConsumerState<MyPage> {
     });
   }
 
+  /// 탈퇴 전 준비. 탈퇴를 이어가도 되면 true를 반환한다
+  Future<bool> _prepareAccountDeletion() async {
+    try {
+      await ref.read(prepareAccountDeletionUseCaseProvider).execute();
+      return true;
+    } on AuthCancelledException {
+      return false;
+    } on AppException catch (e) {
+      if (mounted) {
+        AppSnackbar.show(
+          context,
+          message: AppLocalizations.of(context).errorByException(e),
+          backgroundColor: AppColors.red,
+        );
+      }
+      return false;
+    }
+  }
+
   /// 회원 탈퇴 실행
   Future<void> _executeDeleteAccount() async {
+    // Apple 인증 창이 로딩에 가려지지 않게 로딩을 띄우기 전에 처리한다
+    if (!await _prepareAccountDeletion() || !mounted) return;
+
     final loading = AppLoading.show(context, LoadingCategory.deleteAccount);
 
     try {

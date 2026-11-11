@@ -2065,6 +2065,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorDeleteAccountUnexpected => '회원 탈퇴 중 예기치 않은 오류가 생겼어요';
 
   @override
+  String get errorAppleTokenRevokeFailed =>
+      'Apple 계정 연결을 해제하지 못했어요. 다시 시도해 주세요';
+
+  @override
   String get errorAgreementFetchUnexpected => '약관 동의 상태 조회 중 예기치 않은 오류가 생겼어요';
 
   @override

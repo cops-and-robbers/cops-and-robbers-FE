@@ -714,6 +714,7 @@
   "errorNicknameUpdateUnexpected": "ニックネームの変更中に予期せぬエラーが発生しました",
   "errorUserInfoFetch": "ユーザー情報の照会中にエラーが発生しました",
   "errorDeleteAccountUnexpected": "退会処理中に予期せぬエラーが発生しました",
+  "errorAppleTokenRevokeFailed": "Appleアカウントの連携を解除できませんでした。もう一度お試しください",
   "errorAgreementFetchUnexpected": "規約同意状態の照会中に予期せぬエラーが発生しました",
   "errorAgreementSaveUnexpected": "規約同意の保存中に予期せぬエラーが発生しました",
   "errorGamePushFetchUnexpected": "ゲームプッシュ通知同意の照会中に予期せぬエラーが発生しました",

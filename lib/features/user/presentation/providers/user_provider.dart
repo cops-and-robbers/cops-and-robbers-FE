@@ -2,10 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/network/dio_client.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../session/presentation/providers/session_provider.dart';
 import '../../data/datasources/user_remote_datasource.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/delete_account_usecase.dart';
+import '../../domain/usecases/prepare_account_deletion_usecase.dart';
 
 part 'user_provider.g.dart';
 
@@ -34,6 +37,15 @@ UserRepository userRepository(Ref ref) {
 @riverpod
 DeleteAccountUseCase deleteAccountUseCase(Ref ref) {
   return DeleteAccountUseCase(repository: ref.watch(userRepositoryProvider));
+}
+
+/// 회원 탈퇴 준비 UseCase Provider
+@riverpod
+PrepareAccountDeletionUseCase prepareAccountDeletionUseCase(Ref ref) {
+  return PrepareAccountDeletionUseCase(
+    authRepository: ref.watch(authRepositoryProvider),
+    sessionRepository: ref.watch(sessionRepositoryProvider),
+  );
 }
 
 // ============================================================================
