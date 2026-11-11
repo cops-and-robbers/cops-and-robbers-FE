@@ -88,6 +88,9 @@ class RadioSession extends _$RadioSession {
   /// 거절이 아닌 실패(네트워크 등) 뒤 다시 시도할 간격
   static const _retryAfter = Duration(seconds: 10);
 
+  /// 출동 대기로 거절됐을 때 다시 시도할 간격 — 서버의 출동 반영이 예정 시각보다 조금 늦다
+  static const _retryWhileWaiting = Duration(seconds: 2);
+
   /// 이 코드로 거절되면 이 게임에서 무전은 끝이다
   static const _endCodes = {
     'GAME_NOT_IN_PROGRESS',
@@ -304,7 +307,7 @@ class RadioSession extends _$RadioSession {
       if (_endCodes.contains(code)) {
         await stop();
       } else if (code == 'RADIO_POLICE_WAITING_TIME') {
-        // 폰 시계가 서버보다 빨라 출동 전에 요청했다 — 잠시 뒤 다시
+        // 서버가 아직 출동을 반영하지 않았거나 폰 시계가 빠르다 — 곧 다시 (_retry)
         state = state.copyWith(status: RadioStatus.waitingPolice);
       }
       return null;
@@ -313,7 +316,12 @@ class RadioSession extends _$RadioSession {
 
   void _retry(Future<void> Function() action) {
     _timer?.cancel();
-    _timer = Timer(_retryAfter, action);
+    _timer = Timer(
+      state.status == RadioStatus.waitingPolice
+          ? _retryWhileWaiting
+          : _retryAfter,
+      action,
+    );
   }
 
   void _onEvent(RadioRoomEvent event) {

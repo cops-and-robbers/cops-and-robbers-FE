@@ -188,6 +188,20 @@ void main() {
     });
   });
 
+  test('joins_within_seconds_when_server_releases_police_slightly_late', () {
+    inGame((async, h) {
+      // 서버의 출동 처리가 예정 시각보다 조금 늦어, 정각에 보낸 첫 요청은 대기 중으로 거절된다
+      h.api.rejectWith = _rejected('RADIO_POLICE_WAITING_TIME', 400);
+      h.session.start(policeReleaseAt: release);
+      async.elapse(const Duration(minutes: 3));
+      expect(h.state.status, RadioStatus.waitingPolice);
+
+      h.api.rejectWith = null; // 그 사이 서버가 출동을 반영했다
+      async.elapse(const Duration(seconds: 2));
+      expect(h.state.status, RadioStatus.ready);
+    });
+  });
+
   test('reissues_token_96_seconds_after_previous_response', () {
     inGame((async, h) {
       h.session.start(policeReleaseAt: gameStart);
