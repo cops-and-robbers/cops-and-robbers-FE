@@ -45,6 +45,25 @@ class MainActivity : FlutterActivity() {
                         stopGameSessionService()
                         result.success(null)
                     }
+                    "startRadio" -> {
+                        // 무전(#697) — 위치 서비스와 분리된 microphone 타입 서비스
+                        val intent = Intent(this, RadioForegroundService::class.java)
+                        try {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                startForegroundService(intent)
+                            } else {
+                                startService(intent)
+                            }
+                        } catch (e: Exception) {
+                            // Android 12+ 백그라운드 시작 금지 등 — 무전 화면 꺼짐 유지만 포기한다
+                            android.util.Log.w("RadioFGS", "무전 포그라운드 서비스 시작 거절", e)
+                        }
+                        result.success(null)
+                    }
+                    "stopRadio" -> {
+                        stopService(Intent(this, RadioForegroundService::class.java))
+                        result.success(null)
+                    }
                     "update" -> {
                         GameSessionNotification.latest = call.arguments as? Map<*, *>
                         GameSessionNotification.post(this)

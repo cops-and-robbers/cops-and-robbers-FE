@@ -32,6 +32,9 @@
     <!-- Foreground Service permission for background location tracking -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <!-- 경찰 팀 무전(#697): 마이크, 화면이 꺼져도 무전을 유지하는 microphone 타입 FGS -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <!-- Android 16 Live Updates: 게임 진행 알림을 상단바 칩·잠금 화면으로 승격 요청 (런타임 요청 없음) -->
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
 
@@ -172,6 +175,11 @@
         <service
             android:name=".GameSessionForegroundService"
             android:foregroundServiceType="location"
+            android:exported="false" />
+        <!-- 경찰 팀 무전용 — 위치 서비스와 분리 (마이크 거부가 위치 추적을 막지 않게) -->
+        <service
+            android:name=".RadioForegroundService"
+            android:foregroundServiceType="microphone"
             android:exported="false" />
         <receiver
             android:name=".GameSessionNotificationDismissReceiver"

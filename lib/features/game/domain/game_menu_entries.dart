@@ -19,12 +19,15 @@ enum GameMenuEntry {
 ///
 /// 구역 이탈 중에는 체포·QR이 무의미해 참가자와 QR 자리를 뺀다. 증거보드는 읽기
 /// 전용 현황이라 이탈 중에도 남긴다.
+///
+/// [hasRadioButton]이면 무전 버튼이 채팅 버튼 자리를 써서 지도 메뉴 끝에 채팅을 넣는다 (#697).
 List<GameMenuEntry> gameMenuEntries({
   required bool isPolice,
   required bool isArrested,
   required bool isZoneExitActive,
   required bool isEventGame,
   bool isMapVisible = true,
+  bool hasRadioButton = false,
 }) {
   final qrSlot = isArrested
       ? GameMenuEntry.jailed
@@ -43,5 +46,7 @@ List<GameMenuEntry> gameMenuEntries({
     GameMenuEntry.grid,
     if (!isZoneExitActive) ...[GameMenuEntry.participants, qrSlot],
     ...evidence,
+    // 무전 버튼이 오른쪽 아래 채팅 자리를 가져가서 채팅은 메뉴 끝으로 옮긴다 (#697)
+    if (hasRadioButton) GameMenuEntry.chat,
   ];
 }

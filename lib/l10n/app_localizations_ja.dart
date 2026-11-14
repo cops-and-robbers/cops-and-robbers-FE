@@ -2600,6 +2600,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeGameNotInProgress => 'ゲームが進行中の状態ではありません';
 
   @override
+  String get errorCodeRadioNotAllowedInEventGame => 'イベントゲームでは無線を使えません';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadio => '無線は警察だけが使えます';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTime => '警察が出動した後に使えます';
+
+  @override
   String get errorCodeGameNotActive => '待機中または進行中のゲームでのみ照会できます';
 
   @override
@@ -3160,4 +3169,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get onboardingRecordBody => 'ゲームが終わると移動経路と距離を見られます';
+
+  @override
+  String radioSpeaking(String nickname) {
+    return '$nickname 無線中';
+  }
+
+  @override
+  String get radioSpeakerFallback => '警察';
+
+  @override
+  String get dialogMicPermissionTitle => 'マイクの権限が必要です';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      '無線で話すにはマイクの権限が必要です\n設定でマイクの権限を許可してください';
+
+  @override
+  String get radioPttLabel => '無線';
 }

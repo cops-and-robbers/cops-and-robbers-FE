@@ -2785,6 +2785,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeGameNotInProgress => 'The game is not in progress';
 
   @override
+  String get errorCodeRadioNotAllowedInEventGame =>
+      'Radio isn\'t available in event games';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadio => 'Only cops can use the radio';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTime =>
+      'Available after the cops move out';
+
+  @override
   String get errorCodeGameNotActive =>
       'Can only be viewed in a waiting or in-progress game';
 
@@ -3409,4 +3420,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingRecordBody =>
       'See your route and distance when the game ends';
+
+  @override
+  String radioSpeaking(String nickname) {
+    return '$nickname on radio';
+  }
+
+  @override
+  String get radioSpeakerFallback => 'A cop';
+
+  @override
+  String get dialogMicPermissionTitle => 'Microphone permission required';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      'Microphone permission is required to talk on the radio\nPlease allow microphone permission in settings';
+
+  @override
+  String get radioPttLabel => 'Radio';
 }

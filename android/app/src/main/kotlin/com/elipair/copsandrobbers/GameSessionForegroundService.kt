@@ -1,10 +1,7 @@
 package com.elipair.copsandrobbers
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 
@@ -35,7 +32,7 @@ class GameSessionForegroundService : android.app.Service() {
         // 이전 게임 종료 직전에 닫은 알림의 delete 브로드캐스트가 reset()·onDestroy 뒤에 늦게 오면
         // 닫힘 표시가 남아 이번 게임 내내 갱신이 막힌다 — 새 게임 서비스가 뜰 때 한 번 더 끈다.
         GameSessionNotification.dismissedByUser = false
-        createNotificationChannel()
+        GameSessionNotification.ensureChannel(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -87,25 +84,4 @@ class GameSessionForegroundService : android.app.Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-
-    /**
-     * 알림 채널 생성 (Android 8.0+)
-     *
-     * IMPORTANCE_LOW: 헤드업 알림 안 뜨고 사운드/진동 없음. 게임 진행 표시용에 적합.
-     */
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-
-        val channel = NotificationChannel(
-            GameSessionNotification.CHANNEL_ID,
-            getString(R.string.fgs_channel_name),
-            NotificationManager.IMPORTANCE_LOW,
-        ).apply {
-            description = getString(R.string.fgs_channel_description)
-            setShowBadge(false)
-        }
-
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(channel)
-    }
 }

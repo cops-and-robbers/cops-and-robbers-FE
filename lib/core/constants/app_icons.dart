@@ -32,6 +32,9 @@ abstract final class AppIcons {
   static const String checkCircleTrue = 'assets/icons/check_circle_true.svg';
   static const String checkMark = 'assets/icons/icon_check mark.svg';
   static const String comment = 'assets/icons/icon_comment.svg';
+
+  /// 무전(PTT) 버튼 — 임시 아이콘, 디자인 확정 시 파일만 교체 (#697)
+  static const String mic = 'assets/icons/icon_mic.svg';
   static const String commuActive = 'assets/icons/icon_commu_active.svg';
   static const String commuInactive = 'assets/icons/icon_commu_inactive.svg';
   static const String copy = 'assets/icons/icon_copy.svg';
