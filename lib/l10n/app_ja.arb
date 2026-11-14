@@ -146,6 +146,7 @@
   "gameSettingPoliceStartDelay": "泥棒スタートから {minutes}分後",
   "gameSettingPoliceStartDelayTag": "隠れる人のスタートから {minutes}分後",
   "pageGameSettingsEditTitle": "設定の編集",
+  "pageModeChangeTitle": "モード変更",
   "buttonSaving": "保存中...",
   "buttonSave": "保存",
   "pageGameSettingsTitle": "ゲーム設定",

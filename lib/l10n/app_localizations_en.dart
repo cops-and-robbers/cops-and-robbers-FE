@@ -504,6 +504,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pageGameSettingsEditTitle => 'Edit settings';
 
   @override
+  String get pageModeChangeTitle => 'Change mode';
+
+  @override
   String get buttonSaving => 'Saving...';
 
   @override

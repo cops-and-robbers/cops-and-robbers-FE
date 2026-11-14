@@ -146,6 +146,7 @@
   "gameSettingPoliceStartDelay": "{minutes} min after Robbers start",
   "gameSettingPoliceStartDelayTag": "{minutes} min after Hiders start",
   "pageGameSettingsEditTitle": "Edit settings",
+  "pageModeChangeTitle": "Change mode",
   "buttonSaving": "Saving...",
   "buttonSave": "Save",
   "pageGameSettingsTitle": "Game settings",

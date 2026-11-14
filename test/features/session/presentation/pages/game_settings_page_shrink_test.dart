@@ -1,4 +1,5 @@
 import 'package:cops_and_robbers/core/constants/game_mode.dart';
+import 'package:cops_and_robbers/core/widgets/buttons/previous_button.dart';
 import 'package:dio/dio.dart';
 import 'package:cops_and_robbers/features/game/domain/entities/area_shape.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
@@ -6,13 +7,16 @@ import 'package:cops_and_robbers/features/session/data/models/game_create_reques
 import 'package:cops_and_robbers/features/session/data/models/game_mode_update_request_model.dart';
 import 'package:cops_and_robbers/features/session/data/models/game_settings_response.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/game_settings_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/pages/mode_change_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
+import 'package:cops_and_robbers/router/route_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'creation_flow_fakes.dart';
 
@@ -89,13 +93,30 @@ Future<_FakeRemote> _pump(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(
-        locale: const Locale('ko'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: ScreenUtilInit(
-          designSize: const Size(375, 812),
-          builder: (context, _) => const GameSettingsPage(sessionId: '7'),
+      child: ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, _) => MaterialApp.router(
+          locale: const Locale('ko'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          // 설정 → 모드 변경 화면 이동만 실제 라우트 이름으로 재현한다
+          routerConfig: GoRouter(
+            initialLocation: '/waiting-room/7/game-settings',
+            routes: [
+              GoRoute(
+                path: '/waiting-room/:sessionId/game-settings',
+                builder: (_, _) => const GameSettingsPage(sessionId: '7'),
+                routes: [
+                  GoRoute(
+                    path: 'mode',
+                    name: RoutePaths.gameSettingsModeName,
+                    builder: (_, state) =>
+                        ModeChangePage(current: state.extra! as GameMode),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     ),
@@ -154,7 +175,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('술래잡기'));
       await tester.pump();
-      await tester.tap(find.text('다음'));
+      await tester.tap(find.text('저장'));
       await tester.pumpAndSettle();
 
       final sent = remote.modeSent.single;
@@ -187,7 +208,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('술래잡기'));
     await tester.pump();
-    await tester.tap(find.text('다음'));
+    await tester.tap(find.text('저장'));
     await tester.pumpAndSettle();
 
     expect(remote.modeSent, isNotEmpty);
@@ -198,6 +219,39 @@ void main() {
     await tester.pump(const Duration(seconds: 4));
   });
 
+  testWidgets('host_tapping_mode_row_opens_mode_change_page_with_save_disabled', (
+    tester,
+  ) async {
+    // 방장이 모드 행을 누르면 설정 수정처럼 전체 화면이 열리고, 지금 모드 그대로면 저장할 게 없다
+    final remote = await _pump(tester, isHost: true);
+
+    await tester.tap(find.text('경찰과 도둑'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('모드 변경'), findsOneWidget);
+    await tester.tap(find.text('다음'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ModeChangePage), findsOneWidget);
+    expect(remote.modeSent, isEmpty);
+  });
+
+  testWidgets('host_leaving_mode_change_page_with_back_keeps_mode', (
+    tester,
+  ) async {
+    // 모드를 골랐다가 뒤로 가면 아무것도 보내지 않는다
+    final remote = await _pump(tester, isHost: true);
+
+    await tester.tap(find.text('경찰과 도둑'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('술래잡기'));
+    await tester.pump();
+    await tester.tap(find.byType(PreviousButton));
+    await tester.pumpAndSettle();
+
+    expect(remote.modeSent, isEmpty);
+    expect(find.text('경찰과 도둑'), findsOneWidget);
+  });
+
   testWidgets('guest_tapping_mode_row_does_not_open_mode_choice', (
     tester,
   ) async {
@@ -206,7 +260,7 @@ void main() {
     await tester.tap(find.text('경찰과 도둑'));
     await tester.pumpAndSettle();
 
-    expect(find.text('다음'), findsNothing);
+    expect(find.byType(ModeChangePage), findsNothing);
   });
 
   testWidgets('host_cannot_change_mode_when_room_is_event_game', (
@@ -218,6 +272,6 @@ void main() {
     await tester.tap(find.text('경찰과 도둑'));
     await tester.pumpAndSettle();
 
-    expect(find.text('다음'), findsNothing);
+    expect(find.byType(ModeChangePage), findsNothing);
   });
 }

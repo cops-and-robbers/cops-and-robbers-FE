@@ -244,6 +244,10 @@
   "@pageGameSettingsEditTitle": {
     "description": "게임 설정 수정 페이지 타이틀"
   },
+  "pageModeChangeTitle": "모드 변경",
+  "@pageModeChangeTitle": {
+    "description": "대기실 게임 설정에서 모드를 바꾸는 페이지 타이틀"
+  },
   "buttonSaving": "저장 중...",
   "@buttonSaving": {
     "description": "저장 진행 중 버튼 라벨"

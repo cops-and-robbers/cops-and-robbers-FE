@@ -27,7 +27,6 @@ import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import 'setup_prison_page.dart';
 import '../widgets/mode_row_card.dart';
-import '../widgets/mode_select_step.dart';
 import '../widgets/setting_list_card.dart';
 import '../widgets/shrink_toggle_card.dart';
 import '../../../game/domain/shrink_schedule.dart';
@@ -100,22 +99,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
   /// 모드 행 탭 → 모드 선택 → (경찰과 도둑이면 감옥 그리기) → 저장
   Future<void> _changeMode(GameAreaEntity currentArea) async {
     final current = _currentMode;
-    final target = await showModalBottomSheet<GameMode>(
-      context: context,
-      backgroundColor: AppColors.white,
-      builder: (sheetContext) {
-        var selected = current;
-        return StatefulBuilder(
-          builder: (_, setSheetState) => SizedBox(
-            height: MediaQuery.sizeOf(sheetContext).height * 0.5,
-            child: ModeSelectStep(
-              selected: selected,
-              onSelected: (m) => setSheetState(() => selected = m),
-              onNext: () => Navigator.of(sheetContext).pop(selected),
-            ),
-          ),
-        );
-      },
+    final target = await GoRouter.of(context).pushNamed<GameMode>(
+      RoutePaths.gameSettingsModeName,
+      pathParameters: {'sessionId': widget.sessionId},
+      extra: current,
     );
     if (target == null || target == current || !mounted) return;
 

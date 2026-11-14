@@ -8,10 +8,9 @@ import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../l10n/app_localizations.dart';
 
-/// 방 생성 첫 단계 — 모드 고르기 (#658 시안 1번)
+/// 모드 고르기 — 방 생성 첫 단계(#658 시안 1번)와 대기실 모드 변경 화면이 같이 쓴다
 ///
-/// 제목·부제는 다른 단계와 같은 머리말을 쓰도록 흐름 페이지가 그린다.
-/// 여기서는 모드 카드와 "다음"만 맡는다. 방 생성은 실제 모드 두 개만 고르게 하므로
+/// 제목·부제는 쓰는 페이지가 그린다. 여기서는 모드 카드와 하단 버튼만 맡는다. 방 생성은 실제 모드 두 개만 고르게 하므로
 /// `GameMode.unknown`은 카드가 없다.
 class ModeSelectStep extends StatelessWidget {
   const ModeSelectStep({
@@ -19,11 +18,17 @@ class ModeSelectStep extends StatelessWidget {
     required this.selected,
     required this.onSelected,
     required this.onNext,
+    this.buttonText,
   });
 
   final GameMode selected;
   final ValueChanged<GameMode> onSelected;
-  final VoidCallback onNext;
+
+  /// null이면 버튼이 비활성 — 모드 변경에서 지금 모드를 그대로 골랐을 때
+  final VoidCallback? onNext;
+
+  /// 하단 버튼 문구. 없으면 "다음"
+  final String? buttonText;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +59,10 @@ class ModeSelectStep extends StatelessWidget {
         ),
         Padding(
           padding: AppPadding.all20,
-          child: AppButton(text: l10n.buttonNext, onPressed: onNext),
+          child: AppButton(
+            text: buttonText ?? l10n.buttonNext,
+            onPressed: onNext,
+          ),
         ),
       ],
     );

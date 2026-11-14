@@ -451,6 +451,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pageGameSettingsEditTitle => '설정 수정';
 
   @override
+  String get pageModeChangeTitle => '모드 변경';
+
+  @override
   String get buttonSaving => '저장 중...';
 
   @override

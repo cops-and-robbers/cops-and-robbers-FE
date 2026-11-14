@@ -934,6 +934,12 @@ abstract class AppLocalizations {
   /// **'설정 수정'**
   String get pageGameSettingsEditTitle;
 
+  /// 대기실 게임 설정에서 모드를 바꾸는 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'모드 변경'**
+  String get pageModeChangeTitle;
+
   /// 저장 진행 중 버튼 라벨
   ///
   /// In ko, this message translates to:
