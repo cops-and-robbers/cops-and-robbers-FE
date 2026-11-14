@@ -111,6 +111,7 @@ class LockScreenStatusController extends _$LockScreenStatusController {
       totalRobbers: robbers?.length,
       isEventGame: info.isEventGame,
       isRobberTeam: GameTeam.isRobber(info.team),
+      gameMode: info.gameMode,
       l10n: lookupAppLocalizations(ref.read(appLocaleProvider).locale),
       nextShrinkAt: info.shrinkEnabled
           ? nextShrinkAt(

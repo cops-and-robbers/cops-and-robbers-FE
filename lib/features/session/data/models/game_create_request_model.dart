@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../game/data/models/game_area_model.dart';
 import '../../../game/domain/entities/area_shape.dart';
@@ -19,6 +20,7 @@ part 'game_create_request_model.g.dart';
 /// **요청 예시 (원형)**:
 /// ```json
 /// {
+///   "gameMode": "COPS_AND_ROBBERS",
 ///   "area": {
 ///     "areaType": "CIRCLE",
 ///     "circle": {
@@ -39,6 +41,10 @@ part 'game_create_request_model.g.dart';
 @freezed
 class GameCreateRequestModel with _$GameCreateRequestModel {
   const factory GameCreateRequestModel({
+    /// 게임 모드 (최상위 키, 서버 값 COPS_AND_ROBBERS / TAG)
+    @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+    required GameMode gameMode,
+
     /// 영역 설정 (areaType + circle/polygon)
     required GameAreaRequestModel area,
 
@@ -49,6 +55,9 @@ class GameCreateRequestModel with _$GameCreateRequestModel {
   factory GameCreateRequestModel.fromJson(Map<String, dynamic> json) =>
       _$GameCreateRequestModelFromJson(json);
 }
+
+/// 요청 직렬화용 — [GameMode.toJson]을 json_serializable에 연결한다.
+String gameModeToJson(GameMode mode) => mode.toJson();
 
 /// 영역 설정 요청 DTO (v2.13.0 areaType 중첩 구조)
 ///
@@ -76,10 +85,11 @@ class CircleAreaRequestModel with _$CircleAreaRequestModel {
     required int playgroundRadiusInMeters,
 
     /// 감옥 중심 좌표
-    required CoordinatesRequestModel jailCenter,
+    // 술래잡기는 감옥 키를 아예 보내지 않는다 (BE #232: 보내면 거절)
+    @JsonKey(includeIfNull: false) CoordinatesRequestModel? jailCenter,
 
     /// 감옥 반경 (미터, 최소 5m, 정수)
-    required int jailRadiusInMeters,
+    @JsonKey(includeIfNull: false) int? jailRadiusInMeters,
   }) = _CircleAreaRequestModel;
 
   factory CircleAreaRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -94,7 +104,7 @@ class PolygonAreaRequestModel with _$PolygonAreaRequestModel {
     required List<CoordinatesRequestModel> playgroundPolygon,
 
     /// 감옥 꼭짓점 좌표 목록
-    required List<CoordinatesRequestModel> jailPolygon,
+    @JsonKey(includeIfNull: false) List<CoordinatesRequestModel>? jailPolygon,
   }) = _PolygonAreaRequestModel;
 
   factory PolygonAreaRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -152,7 +162,8 @@ extension GameAreaEntityRequestMapper on GameAreaEntity {
     final playgroundShape = playground;
     final jailShape = jail;
 
-    if (playgroundShape is CircleShape && jailShape is CircleShape) {
+    if (playgroundShape is CircleShape &&
+        (jailShape == null || jailShape is CircleShape)) {
       return GameAreaRequestModel(
         areaType: GameAreaType.circle,
         circle: CircleAreaRequestModel(
@@ -160,22 +171,27 @@ extension GameAreaEntityRequestMapper on GameAreaEntity {
           // round() — 감옥 슬라이더는 스텝이 9.83m라 반경이 소수로 나온다.
           // toInt()(내림)를 쓰면 UI 표시값(formatRadiusValue의 round)과 전송값이 어긋난다.
           playgroundRadiusInMeters: playgroundShape.radiusInMeters.round(),
-          jailCenter: _toCoordinates(jailShape.center),
-          jailRadiusInMeters: jailShape.radiusInMeters.round(),
+          jailCenter: jailShape is CircleShape
+              ? _toCoordinates(jailShape.center)
+              : null,
+          jailRadiusInMeters: jailShape is CircleShape
+              ? jailShape.radiusInMeters.round()
+              : null,
         ),
       );
     }
 
-    if (playgroundShape is PolygonShape && jailShape is PolygonShape) {
+    if (playgroundShape is PolygonShape &&
+        (jailShape == null || jailShape is PolygonShape)) {
       return GameAreaRequestModel(
         areaType: GameAreaType.polygon,
         polygon: PolygonAreaRequestModel(
           playgroundPolygon: [
             for (final point in playgroundShape.points) _toCoordinates(point),
           ],
-          jailPolygon: [
-            for (final point in jailShape.points) _toCoordinates(point),
-          ],
+          jailPolygon: jailShape is PolygonShape
+              ? [for (final point in jailShape.points) _toCoordinates(point)]
+              : null,
         ),
       );
     }

@@ -6,6 +6,7 @@ import 'package:cops_and_robbers/features/radio/presentation/widgets/radio_ptt_b
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/core/constants/app_icons.dart';
 import 'package:cops_and_robbers/core/constants/map_styles.dart';
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/widgets/navigation/app_top_bar.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/previous_button.dart';
 import 'package:cops_and_robbers/features/chat/presentation/providers/chat_notification_provider.dart';
@@ -2213,6 +2214,45 @@ void main() {
       },
     );
   }
+
+  testWidgets(
+    'auto_escape_never_requests_when_caught_hider_leaves_area_without_jail',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        // 술래잡기 방: 잡힘(JAILED) 상태지만 감옥 구역이 없다
+        container.read(gameParticipantNotifierProvider.notifier)
+          ..setGameInfo(
+            gameId: 1,
+            participantId: 5,
+            nickname: '도둑',
+            team: 'ROBBER',
+            gameMode: GameMode.hideAndSeek,
+          )
+          ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
+          ..setGameStartTime(
+            DateTime.now()
+                .subtract(const Duration(minutes: 1))
+                .toUtc()
+                .toIso8601String(),
+          );
+        game.area = const GameAreaModel(
+          areaType: GameAreaType.circle,
+          circle: CircleAreaModel(
+            playgroundCenter: LatLngModel(latitude: 37.5665, longitude: 126.9780),
+            playgroundRadiusInMeters: 500,
+          ),
+        );
+        await mount(tester);
+        await sendPosition(tester, inside: true);
+        await tester.pump(const Duration(seconds: 1));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(seconds: 3));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(game.escapes, 0);
+      });
+    },
+  );
 
   testWidgets(
     'jailed_state_is_restored_when_paused_reconnect_retries_without_a_frame',

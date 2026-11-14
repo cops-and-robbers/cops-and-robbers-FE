@@ -9,6 +9,7 @@ part of 'game_create_request_model.dart';
 _$GameCreateRequestModelImpl _$$GameCreateRequestModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$GameCreateRequestModelImpl(
+  gameMode: GameMode.fromJson(json['gameMode'] as String?),
   area: GameAreaRequestModel.fromJson(json['area'] as Map<String, dynamic>),
   settings: GameSettingsRequestModel.fromJson(
     json['settings'] as Map<String, dynamic>,
@@ -18,6 +19,7 @@ _$GameCreateRequestModelImpl _$$GameCreateRequestModelImplFromJson(
 Map<String, dynamic> _$$GameCreateRequestModelImplToJson(
   _$GameCreateRequestModelImpl instance,
 ) => <String, dynamic>{
+  'gameMode': gameModeToJson(instance.gameMode),
   'area': instance.area.toJson(),
   'settings': instance.settings.toJson(),
 };
@@ -56,10 +58,12 @@ _$CircleAreaRequestModelImpl _$$CircleAreaRequestModelImplFromJson(
     json['playgroundCenter'] as Map<String, dynamic>,
   ),
   playgroundRadiusInMeters: (json['playgroundRadiusInMeters'] as num).toInt(),
-  jailCenter: CoordinatesRequestModel.fromJson(
-    json['jailCenter'] as Map<String, dynamic>,
-  ),
-  jailRadiusInMeters: (json['jailRadiusInMeters'] as num).toInt(),
+  jailCenter: json['jailCenter'] == null
+      ? null
+      : CoordinatesRequestModel.fromJson(
+          json['jailCenter'] as Map<String, dynamic>,
+        ),
+  jailRadiusInMeters: (json['jailRadiusInMeters'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$CircleAreaRequestModelImplToJson(
@@ -67,8 +71,9 @@ Map<String, dynamic> _$$CircleAreaRequestModelImplToJson(
 ) => <String, dynamic>{
   'playgroundCenter': instance.playgroundCenter.toJson(),
   'playgroundRadiusInMeters': instance.playgroundRadiusInMeters,
-  'jailCenter': instance.jailCenter.toJson(),
-  'jailRadiusInMeters': instance.jailRadiusInMeters,
+  if (instance.jailCenter?.toJson() case final value?) 'jailCenter': value,
+  if (instance.jailRadiusInMeters case final value?)
+    'jailRadiusInMeters': value,
 };
 
 _$PolygonAreaRequestModelImpl _$$PolygonAreaRequestModelImplFromJson(
@@ -77,8 +82,8 @@ _$PolygonAreaRequestModelImpl _$$PolygonAreaRequestModelImplFromJson(
   playgroundPolygon: (json['playgroundPolygon'] as List<dynamic>)
       .map((e) => CoordinatesRequestModel.fromJson(e as Map<String, dynamic>))
       .toList(),
-  jailPolygon: (json['jailPolygon'] as List<dynamic>)
-      .map((e) => CoordinatesRequestModel.fromJson(e as Map<String, dynamic>))
+  jailPolygon: (json['jailPolygon'] as List<dynamic>?)
+      ?.map((e) => CoordinatesRequestModel.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
@@ -88,7 +93,8 @@ Map<String, dynamic> _$$PolygonAreaRequestModelImplToJson(
   'playgroundPolygon': instance.playgroundPolygon
       .map((e) => e.toJson())
       .toList(),
-  'jailPolygon': instance.jailPolygon.map((e) => e.toJson()).toList(),
+  if (instance.jailPolygon?.map((e) => e.toJson()).toList() case final value?)
+    'jailPolygon': value,
 };
 
 _$CoordinatesRequestModelImpl _$$CoordinatesRequestModelImplFromJson(

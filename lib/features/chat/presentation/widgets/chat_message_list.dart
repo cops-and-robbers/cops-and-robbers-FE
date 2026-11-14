@@ -8,9 +8,11 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/chat_constants.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/models/chat_message_dto.dart';
@@ -31,6 +33,7 @@ class ChatMessageList extends StatefulWidget {
     this.onOverscrollDown,
     this.onMessageLongPress,
     this.blockedParticipantIds = const {},
+    required this.gameMode,
     super.key,
   });
 
@@ -51,6 +54,7 @@ class ChatMessageList extends StatefulWidget {
 
   /// 차단된 유저 ID 목록 (해당 유저 메시지 숨김)
   final Set<int> blockedParticipantIds;
+  final GameMode gameMode;
 
   @override
   State<ChatMessageList> createState() => _ChatMessageListState();
@@ -190,7 +194,11 @@ class _ChatMessageListState extends State<ChatMessageList> {
               Text(
                 widget.scope == ChatScope.team
                     ? l10n.gameChatTeamHint
-                    : l10n.gameChatAllHint,
+                    : byMode(
+                        widget.gameMode,
+                        classic: l10n.gameChatAllHint,
+                        tag: l10n.gameChatAllHintTag,
+                      ),
                 textAlign: TextAlign.center,
                 style: AppTextStyles.tag_12.copyWith(
                   color: widget.isDarkMode

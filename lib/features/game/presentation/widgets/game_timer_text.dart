@@ -4,6 +4,7 @@ import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -25,6 +26,7 @@ class GameTimerText extends StatefulWidget {
     this.nextShrinkAt,
     this.zoneWarningAt,
     this.isDarkMode = false,
+    required this.gameMode,
   });
 
   /// 서버 남은 시간은 수신 시각과 함께 전달한다. 재수신하면 즉시 보정된다.
@@ -39,7 +41,8 @@ class GameTimerText extends StatefulWidget {
        policeWaitMinutes = null,
        locationRevealIntervalMinutes = null,
        nextShrinkAt = null,
-       zoneWarningAt = null;
+       zoneWarningAt = null,
+       gameMode = GameMode.copsAndRobbers;
 
   /// 게임 시작 시각
   final DateTime? startTime;
@@ -62,6 +65,7 @@ class GameTimerText extends StatefulWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+  final GameMode gameMode;
 
   @override
   State<GameTimerText> createState() => _GameTimerTextState();
@@ -159,6 +163,7 @@ class _GameTimerTextState extends State<GameTimerText>
             intervalMinutes: interval,
             shrinkRemaining: widget.nextShrinkAt?.call(_now)?.difference(_now),
             isDarkMode: widget.isDarkMode,
+            gameMode: widget.gameMode,
           ),
         ],
       ],

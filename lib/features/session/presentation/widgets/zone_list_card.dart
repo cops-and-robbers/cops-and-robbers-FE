@@ -90,13 +90,15 @@ class ZoneListCard extends StatelessWidget {
               isDarkMode: isDarkMode,
               onTap: onTapPlayground,
             ),
-            SizedBox(height: AppSpacing.vertical12),
-            _ZoneItem(
-              name: l10n.zoneJail,
-              shape: area.jail,
-              isDarkMode: isDarkMode,
-              onTap: onTapJail,
-            ),
+            if (area.jail != null) ...[
+              SizedBox(height: AppSpacing.vertical12),
+              _ZoneItem(
+                name: l10n.zoneJail,
+                shape: area.jail!,
+                isDarkMode: isDarkMode,
+                onTap: onTapJail,
+              ),
+            ],
           ],
         ),
       ),

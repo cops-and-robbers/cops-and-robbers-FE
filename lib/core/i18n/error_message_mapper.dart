@@ -1,4 +1,6 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
+import 'package:cops_and_robbers/core/i18n/role_names.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 
 /// [AppException.messageKey] / 백엔드 [AppException.code] → [AppLocalizations] 메서드 매핑
@@ -32,11 +34,14 @@ import 'package:cops_and_robbers/l10n/app_localizations.dart';
 /// ```
 extension AppLocalizationsErrorMapping on AppLocalizations {
   /// 예외를 사용자 노출 문자열로 변환 (3단계 우선순위 적용)
-  String errorByException(AppException e) {
+  String errorByException(
+    AppException e, {
+    GameMode mode = GameMode.copsAndRobbers,
+  }) {
     // ① docs/api-docs.json 기반 백엔드 errorCode 우선
     if (shouldUseBackendErrorCode(e)) {
       // errorByCode: 매핑 누락 시 내부에서 errorTemporaryRetry 반환
-      return errorByCode(e.code!);
+      return errorByCode(e.code!, mode: mode);
     }
     // ② messageKey (네트워크 레벨 / Firebase provider code 등)
     final key = e.messageKey;
@@ -68,11 +73,13 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
   ///
   /// STOMP Notifier 등에서 errorCode를 직접 보유하는 경우 바로 호출 가능.
   /// 매핑 테이블에 없는 코드는 [errorTemporaryRetry] 공통 문구 반환 (non-null 보장).
-  String errorByCode(String code) =>
-      _errorByCodeOrNull(code) ?? errorTemporaryRetry;
+  ///
+  /// 술래잡기 문구가 따로 있는 코드(역할 단어가 들어간 8개)만 [mode]로 갈린다.
+  String errorByCode(String code, {GameMode mode = GameMode.copsAndRobbers}) =>
+      _errorByCodeOrNull(code, mode) ?? errorTemporaryRetry;
 
   /// 내부 — 매핑 없으면 null 반환 (errorByCode가 폴백 처리)
-  String? _errorByCodeOrNull(String code) {
+  String? _errorByCodeOrNull(String code, GameMode mode) {
     switch (code) {
       // ── 요청 검증 에러 ──────────────────────────────────────────────
       case 'MISSING_REQUEST_PART':
@@ -160,9 +167,17 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       case 'RADIO_NOT_ALLOWED_IN_EVENT_GAME':
         return errorCodeRadioNotAllowedInEventGame;
       case 'ONLY_POLICE_CAN_USE_RADIO':
-        return errorCodeOnlyPoliceCanUseRadio;
+        return byMode(
+          mode,
+          classic: errorCodeOnlyPoliceCanUseRadio,
+          tag: errorCodeOnlyPoliceCanUseRadioTag,
+        );
       case 'RADIO_POLICE_WAITING_TIME':
-        return errorCodeRadioPoliceWaitingTime;
+        return byMode(
+          mode,
+          classic: errorCodeRadioPoliceWaitingTime,
+          tag: errorCodeRadioPoliceWaitingTimeTag,
+        );
       case 'GAME_NOT_ACTIVE':
         return errorCodeGameNotActive;
       case 'GAME_NOT_WAITING':
@@ -170,7 +185,11 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       case 'INVALID_LOCATION_INTERVAL':
         return errorCodeInvalidLocationInterval;
       case 'INVALID_POLICE_WAIT_TIME':
-        return errorCodeInvalidPoliceWaitTime;
+        return byMode(
+          mode,
+          classic: errorCodeInvalidPoliceWaitTime,
+          tag: errorCodeInvalidPoliceWaitTimeTag,
+        );
       case 'INVITE_CODE_GENERATION_FAILED':
         return errorCodeInviteCodeGenerationFailed;
       case 'INVALID_JAIL_RADIUS':
@@ -200,30 +219,68 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       case 'NOT_HOST':
         return errorCodeNotHost;
       case 'INVALID_TEAM_COMPOSITION':
-        return errorCodeInvalidTeamComposition;
+        return byMode(
+          mode,
+          classic: errorCodeInvalidTeamComposition,
+          tag: errorCodeInvalidTeamCompositionTag,
+        );
       case 'NOT_ROBBER_TEAM':
-        return errorCodeNotRobberTeam;
+        return byMode(
+          mode,
+          classic: errorCodeNotRobberTeam,
+          tag: errorCodeNotRobberTeamTag,
+        );
       // ── 게임 플레이 에러 ─────────────────────────────────────────────
       case 'PARTICIPANT_GAME_MISMATCH':
-        return errorCodeParticipantGameMismatch;
+        return byMode(
+          mode,
+          classic: errorCodeParticipantGameMismatch,
+          tag: errorCodeParticipantGameMismatchTag,
+        );
       case 'ONLY_POLICE_CAN_ARREST':
-        return errorCodeOnlyPoliceCanArrest;
+        return byMode(
+          mode,
+          classic: errorCodeOnlyPoliceCanArrest,
+          tag: errorCodeOnlyPoliceCanArrestTag,
+        );
       case 'ONLY_ROBBER_CAN_BE_ARRESTED':
-        return errorCodeOnlyRobberCanBeArrested;
+        return byMode(
+          mode,
+          classic: errorCodeOnlyRobberCanBeArrested,
+          tag: errorCodeOnlyRobberCanBeArrestedTag,
+        );
       case 'ONLY_ROBBER_CAN_ESCAPE':
         return errorCodeOnlyRobberCanEscape;
       case 'ALREADY_ARRESTED':
-        return errorCodeAlreadyArrested;
+        return byMode(
+          mode,
+          classic: errorCodeAlreadyArrested,
+          tag: errorCodeAlreadyArrestedTag,
+        );
       case 'SHRINK_REQUIRES_CIRCLE_AREA':
         return errorCodeShrinkRequiresCircleArea;
       case 'INVALID_SHRINK_FINAL_RADIUS':
         return errorCodeInvalidShrinkFinalRadius;
       case 'FORCE_ARREST_NOT_ALLOWED_IN_EVENT_GAME':
         return errorCodeForceArrestNotAllowedInEventGame;
+      case 'ESCAPE_NOT_ALLOWED_IN_MODE':
+        return errorCodeEscapeNotAllowedInMode;
+      case 'EVENT_GAME_NOT_SUPPORTED_IN_MODE':
+        return errorCodeEventGameNotSupportedInMode;
+      case 'JAIL_AREA_REQUIRED':
+        return errorCodeJailAreaRequired;
+      case 'JAIL_AREA_NOT_ALLOWED':
+        return errorCodeJailAreaNotAllowed;
+      case 'WITHDRAWAL_USER_NOT_FOUND':
+        return errorCodeWithdrawalUserNotFound;
       case 'NOT_JAILED':
         return errorCodeNotJailed;
       case 'POLICE_WAITING_TIME':
-        return errorCodePoliceWaitingTime;
+        return byMode(
+          mode,
+          classic: errorCodePoliceWaitingTime,
+          tag: errorCodePoliceWaitingTimeTag,
+        );
       case 'CANNOT_KICK_YOURSELF':
         return errorCodeCannotKickYourself;
       // ── 공지/게임 결과 에러 ──────────────────────────────────────────
@@ -442,6 +499,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorAgreementSaveUnexpected;
       case 'errorGameRoomCreateUnexpected':
         return errorGameRoomCreateUnexpected;
+      case 'errorGameModeUpdateUnexpected':
+        return errorGameModeUpdateUnexpected;
       case 'errorGameJoinUnexpected':
         return errorGameJoinUnexpected;
       case 'errorActiveGameFetchUnexpected':

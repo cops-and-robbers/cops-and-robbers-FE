@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/network/dio_client.dart';
 import 'package:cops_and_robbers/core/services/fcm/push_navigation_event.dart';
 import 'package:cops_and_robbers/core/services/fcm/push_navigation_service.dart';
@@ -79,6 +80,7 @@ class _GameScreenState extends State<_GameScreen> {
           child: const Text('close chat'),
         ),
         ChatOverlay(
+          gameMode: GameMode.copsAndRobbers,
           gameId: 42,
           myParticipantId: 7,
           myTeam: 'POLICE',

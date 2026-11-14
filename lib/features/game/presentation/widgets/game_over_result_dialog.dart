@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
+import 'package:cops_and_robbers/core/i18n/role_names.dart';
 
 import '../../../../core/constants/app_icons.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -77,12 +79,20 @@ String resolveRightArmAsset({
 ///
 /// 도둑만 의미가 있다(경찰은 늘 ALIVE). 게임 중 상태(WAITING·POLICE_WAITING)는
 /// 종료 시점에 올 수 없으므로 값 없음 `-`로 둔다.
-String finalStatusLabel(AppLocalizations l10n, String status) {
+String finalStatusLabel(
+  AppLocalizations l10n,
+  String status, {
+  required GameMode gameMode,
+}) {
   switch (status) {
     case 'ALIVE':
       return l10n.statusAlive;
     case 'JAILED':
-      return l10n.statusJailed;
+      return byMode(
+        gameMode,
+        classic: l10n.statusJailed,
+        tag: l10n.statusJailedTag,
+      );
     default:
       return '-';
   }
@@ -110,7 +120,11 @@ class GameOverResultDialog extends ConsumerWidget {
     required this.gameResultId,
     required this.onGoHome,
     required this.onRematch,
+    required this.gameMode,
   });
+
+  /// 술래잡기면 통계 라벨을 술래·도망자 말로 바꾼다.
+  final GameMode gameMode;
 
   /// 팀 테마 (도둑=true, 경찰=false)
   final bool isDarkMode;
@@ -206,6 +220,7 @@ class GameOverResultDialog extends ConsumerWidget {
     required int gameResultId,
     required VoidCallback onGoHome,
     required VoidCallback onRematch,
+    required GameMode gameMode,
   }) {
     return showDialog<void>(
       context: context,
@@ -220,6 +235,7 @@ class GameOverResultDialog extends ConsumerWidget {
           gameResultId: gameResultId,
           onGoHome: onGoHome,
           onRematch: onRematch,
+          gameMode: gameMode,
         ),
       ),
     );
@@ -307,6 +323,7 @@ class GameOverResultDialog extends ConsumerWidget {
               gameResultId: gameResultId,
               onGoHome: onGoHome,
               onRematch: onRematch,
+              gameMode: gameMode,
             ),
 
             // 3) 왼쪽 팔 — 맨 앞. SizedBox로 크기를 고정해 inset에 영향 받지 않게.
@@ -438,8 +455,10 @@ class _GameOverCard extends ConsumerStatefulWidget {
     required this.gameResultId,
     required this.onGoHome,
     required this.onRematch,
+    required this.gameMode,
   });
 
+  final GameMode gameMode;
   final bool isDarkMode;
   final String myTeam;
   final String winnerTeam;
@@ -684,6 +703,7 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
                       child: _StatsSection(
                         isDarkMode: widget.isDarkMode,
                         isRobber: isRobber,
+                        gameMode: widget.gameMode,
                         tabIndex: _tabIndex,
                         resultAsync: resultAsync,
                         myRecordAsync: myRecordAsync,
@@ -853,8 +873,10 @@ class _StatsSection extends StatelessWidget {
     required this.tabIndex,
     required this.resultAsync,
     required this.myRecordAsync,
+    required this.gameMode,
   });
 
+  final GameMode gameMode;
   final bool isDarkMode;
 
   /// 팀 갈림은 다이얼로그가 받은 `myTeam` 기준이다. `/me.team`도 같은 값이지만
@@ -876,8 +898,16 @@ class _StatsSection extends StatelessWidget {
   Widget _teamRows(AppLocalizations l10n) {
     final labels = [
       l10n.fieldGamePlaytime,
-      l10n.labelArrestCount,
-      l10n.fieldRemainingRobbers,
+      byMode(
+        gameMode,
+        classic: l10n.labelArrestCount,
+        tag: l10n.labelArrestCountTag,
+      ),
+      byMode(
+        gameMode,
+        classic: l10n.fieldRemainingRobbers,
+        tag: l10n.fieldRemainingRobbersTag,
+      ),
     ];
     return resultAsync.when(
       data: (entity) => _rows(labels, [
@@ -898,8 +928,16 @@ class _StatsSection extends StatelessWidget {
         ? [l10n.labelNickname, l10n.labelMyArrestedCount, l10n.labelFinalStatus]
         : [
             l10n.labelNickname,
-            l10n.labelMyArrestCount,
-            l10n.labelTeamArrestShare,
+            byMode(
+              gameMode,
+              classic: l10n.labelMyArrestCount,
+              tag: l10n.labelMyArrestCountTag,
+            ),
+            byMode(
+              gameMode,
+              classic: l10n.labelTeamArrestShare,
+              tag: l10n.labelTeamArrestShareTag,
+            ),
           ];
 
     return myRecordAsync.when(
@@ -909,7 +947,7 @@ class _StatsSection extends StatelessWidget {
             ? [
                 me.nickname,
                 '${me.arrestedCount}',
-                finalStatusLabel(l10n, me.status),
+                finalStatusLabel(l10n, me.status, gameMode: gameMode),
               ]
             : [
                 me.nickname,

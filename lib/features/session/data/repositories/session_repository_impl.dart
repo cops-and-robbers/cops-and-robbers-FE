@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../game/domain/entities/area_shape.dart';
@@ -10,6 +11,7 @@ import '../../domain/entities/user_game_status_entity.dart';
 import '../../domain/repositories/session_repository.dart';
 import '../datasources/session_remote_datasource.dart';
 import '../models/game_create_request_model.dart';
+import '../models/game_mode_update_request_model.dart';
 import '../models/join_game_request.dart';
 
 /// Session Repository 구현체
@@ -23,6 +25,7 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Future<CreateSessionResult> createGame({
+    required GameMode gameMode,
     required GameAreaEntity area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
@@ -32,10 +35,15 @@ class SessionRepositoryImpl implements SessionRepository {
     /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
     int? shrinkFinalRadiusInMeters,
   }) async {
+    // unknown은 서버가 모르는 값이다. toJson의 assert는 release에서 빠지므로 여기서 막는다.
+    if (gameMode == GameMode.unknown) {
+      throw ArgumentError.value(gameMode, 'gameMode', '서버로 보낼 수 없는 모드');
+    }
     final areaRequest = area.toRequestModel();
 
     try {
       final request = GameCreateRequestModel(
+        gameMode: gameMode,
         area: areaRequest,
         settings: GameSettingsRequestModel(
           roundDurationMinutes: roundDurationMinutes,
@@ -72,6 +80,34 @@ class SessionRepositoryImpl implements SessionRepository {
       throw ServerException(
         message: '게임 방 생성 중 예기치 않은 오류가 발생했습니다.',
         messageKey: 'errorGameRoomCreateUnexpected',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> updateGameMode(
+    int gameId, {
+    required GameMode mode,
+    required GameAreaEntity area,
+  }) async {
+    // createGame과 같은 이유로 unknown은 요청 전에 막는다.
+    if (mode == GameMode.unknown) {
+      throw ArgumentError.value(mode, 'mode', '서버로 보낼 수 없는 모드');
+    }
+    final areaRequest = area.toRequestModel();
+
+    try {
+      await _dataSource.updateGameMode(
+        gameId,
+        GameModeUpdateRequestModel(gameMode: mode, area: areaRequest),
+      );
+    } on DioException catch (e) {
+      throw DioExceptionHandler.handle(e);
+    } catch (e) {
+      throw ServerException(
+        message: '게임 모드 변경 중 예기치 않은 오류가 발생했습니다.',
+        messageKey: 'errorGameModeUpdateUnexpected',
         originalException: e,
       );
     }

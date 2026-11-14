@@ -13,6 +13,12 @@ String characterAssetPath({required String team, String state = 'default'}) {
   return 'assets/characters/$team/default/$state.svg';
 }
 
+/// 잡힌 도망자(도둑 팀) 캐릭터. 술래잡기 전용 잡힘 그림이 아직 없어 두 모드 모두 철창 그림(jailed)을 쓴다.
+///
+/// ponytail: 잡힘 전용 에셋이 나오면 [usesJail]이 false인 쪽만 그 그림으로 바꾼다.
+String caughtRobberAssetPath({required bool usesJail}) =>
+    characterAssetPath(team: 'robber', state: 'jailed');
+
 /// 게임 결과 화면 캐릭터 SVG 경로를 생성한다.
 ///
 /// 반환 경로: `assets/characters/{team}/result/default/{result}_{part}.svg`

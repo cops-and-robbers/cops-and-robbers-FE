@@ -7,7 +7,7 @@ part of 'game_participant_provider.dart';
 // **************************************************************************
 
 String _$gameParticipantNotifierHash() =>
-    r'd1ee0d2a23885a2daa2ca1cf7dc68941727deabe';
+    r'2f50aaadff43baa162ab9b966cf4164e2485f40c';
 
 /// 게임 참가 정보 관리 Notifier
 ///

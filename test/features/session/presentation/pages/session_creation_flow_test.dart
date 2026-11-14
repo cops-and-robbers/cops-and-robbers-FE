@@ -1,6 +1,10 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
+import 'package:cops_and_robbers/core/network/dio_client.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/previous_button.dart';
+import 'package:cops_and_robbers/core/widgets/map/zone_draw_layer.dart';
 import 'package:cops_and_robbers/core/widgets/indicators/step_indicator.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/session_creation_flow_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +16,49 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'creation_flow_fakes.dart';
 
-/// 생성 흐름을 열고 플레이그라운드·감옥 지도의 완료를 차례로 누른다.
-Future<void> _finishBothMaps(WidgetTester tester) async {
-  await pumpCreationFlow(tester);
+/// 생성 흐름을 열어 모드 화면에서 [mode]를 고르고 다음을 누른다.
+Future<void> _openFlowAndPickMode(
+  WidgetTester tester, {
+  String mode = '경찰과 도둑',
+  FakeCreateGameServer? server,
+}) async {
+  await pumpCreationFlow(
+    tester,
+    overrides: [if (server != null) dioProvider.overrideWithValue(server.dio)],
+  );
   await tester.tap(find.text('start'));
   await tester.pumpAndSettle();
+  await tester.tap(find.text(mode));
+  await tester.tap(find.text('다음'));
+  await tester.pumpAndSettle();
+}
+
+/// 폴리곤으로 플레이그라운드를 올가미로 그리고 완료한다.
+Future<void> _drawPolygonPlayground(WidgetTester tester) async {
+  await tester.tap(find.text('핀으로 설정'));
+  await tester.pumpAndSettle();
+  // 손가락으로 삼각형을 그린 것과 같은 화면 좌표 궤적
+  await tester.runAsync(
+    () async => tester
+        .widget<ZoneDrawLayer>(find.byType(ZoneDrawLayer))
+        .onDrawEnd(const [
+          Offset(100, 300),
+          Offset(200, 200),
+          Offset(300, 100),
+          Offset(300, 200),
+          Offset(300, 300),
+          Offset(200, 300),
+          Offset(100, 300),
+        ]),
+  );
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('완료'));
+  await tester.pumpAndSettle();
+}
+
+/// 생성 흐름을 열고 플레이그라운드·감옥 지도의 완료를 차례로 누른다.
+Future<void> _finishBothMaps(WidgetTester tester) async {
+  await _openFlowAndPickMode(tester);
   await tester.tap(find.text('완료')); // 플레이그라운드
   await tester.pumpAndSettle();
   await tester.tap(find.text('완료')); // 감옥
@@ -64,9 +106,7 @@ void main() {
   testWidgets('top_bar_stays_single_while_moving_from_playground_to_prison', (
     tester,
   ) async {
-    await pumpCreationFlow(tester);
-    await tester.tap(find.text('start'));
-    await tester.pumpAndSettle();
+    await _openFlowAndPickMode(tester);
     final barTop = tester.getTopLeft(find.byType(StepIndicator));
 
     await tester.tap(find.text('완료'));
@@ -83,9 +123,7 @@ void main() {
   testWidgets('prison_slides_left_when_done_on_first_pass_to_confirm', (
     tester,
   ) async {
-    await pumpCreationFlow(tester);
-    await tester.tap(find.text('start'));
-    await tester.pumpAndSettle();
+    await _openFlowAndPickMode(tester);
     await tester.tap(find.text('완료')); // 플레이그라운드
     await tester.pumpAndSettle();
 
@@ -102,7 +140,7 @@ void main() {
   });
 
   // 방장은 단계 표시로 지금이 몇 번째 화면인지 본다.
-  // 플레이그라운드, 감옥, 확인이 한 칸씩 차지하고 칸 수는 끝까지 같다
+  // 모드, 구역(플레이그라운드·감옥), 확인 세 칸이고 칸 수는 끝까지 같다
   testWidgets('step_indicator_advances_one_step_per_screen_out_of_three', (
     tester,
   ) async {
@@ -116,11 +154,15 @@ void main() {
     await pumpCreationFlow(tester);
     await tester.tap(find.text('start'));
     await tester.pumpAndSettle();
-    expect(step(), (0, 3)); // 플레이그라운드
+    expect(step(), (0, 3)); // 모드
+
+    await tester.tap(find.text('다음'));
+    await tester.pumpAndSettle();
+    expect(step(), (1, 3)); // 플레이그라운드
 
     await tester.tap(find.text('완료'));
     await tester.pumpAndSettle();
-    expect(step(), (1, 3)); // 감옥
+    expect(step(), (1, 3)); // 감옥도 같은 구역 단계
 
     await tester.tap(find.text('완료'));
     await tester.pumpAndSettle();
@@ -159,7 +201,7 @@ void main() {
   });
 
   // 확인 화면까지 왔다가 방을 만들지 않기로 하고 뒤로만 계속 눌러 나간다
-  testWidgets('back_from_confirm_through_both_maps_leaves_the_flow', (
+  testWidgets('back_from_confirm_through_maps_and_mode_leaves_the_flow', (
     tester,
   ) async {
     await _finishBothMaps(tester);
@@ -167,7 +209,9 @@ void main() {
     await _tapBack(tester); // 확인 → 감옥
     await _tapBack(tester); // 감옥 → 플레이그라운드
     expect(find.byType(SetupPlaygroundPage), findsOneWidget);
-    await _tapBack(tester); // 플레이그라운드 → 흐름 종료
+    await _tapBack(tester); // 플레이그라운드 → 모드
+    expect(find.text('어떤 모드로 할까요?'), findsOneWidget);
+    await _tapBack(tester); // 모드 → 흐름 종료
 
     expect(find.byType(SessionCreationFlowPage), findsNothing);
     expect(find.text('start'), findsOneWidget);
@@ -202,9 +246,7 @@ void main() {
   testWidgets('choosing_pins_warns_that_shrinking_is_unavailable', (
     tester,
   ) async {
-    await pumpCreationFlow(tester);
-    await tester.tap(find.text('start'));
-    await tester.pumpAndSettle();
+    await _openFlowAndPickMode(tester);
     expect(find.text('핀으로 그리면 구역 축소를 쓸 수 없어요'), findsNothing);
 
     await tester.tap(find.text('핀으로 설정'));
@@ -212,5 +254,152 @@ void main() {
 
     expect(find.text('핀으로 그리면 구역 축소를 쓸 수 없어요'), findsOneWidget);
   });
-}
 
+  // 술래잡기는 감옥이 없으니 플레이그라운드를 마치면 감옥 지도를 건너뛴다
+  testWidgets('hide_and_seek_room_skips_jail_map_when_playground_is_done', (
+    tester,
+  ) async {
+    await _openFlowAndPickMode(tester, mode: '술래잡기');
+
+    await tester.tap(find.text('완료'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SetupPrisonPage), findsNothing);
+    expect(find.text('최종 설정을 확인해요'), findsOneWidget);
+    expect(find.text('감옥'), findsNothing);
+    expect(find.text('모드'), findsOneWidget);
+    expect(find.text('술래잡기'), findsOneWidget);
+  });
+
+  // 방장이 술래잡기로 방을 만들면 서버에는 TAG와 함께 감옥 키 없는 구역이 간다
+  testWidgets('hide_and_seek_room_sends_null_jail_when_host_taps_create', (
+    tester,
+  ) async {
+    final server = FakeCreateGameServer();
+    await _openFlowAndPickMode(tester, mode: '술래잡기', server: server);
+    await tester.tap(find.text('완료'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('게임 생성하기'));
+    await tester.pumpAndSettle();
+
+    final body = server.requestBodies.single;
+    expect(body['gameMode'], 'TAG');
+    final circle = (body['area'] as Map)['circle'] as Map;
+    expect(circle.containsKey('jailCenter'), isFalse);
+    expect(circle.containsKey('jailRadiusInMeters'), isFalse);
+  });
+
+  // 확인 화면에서 모드 행을 눌러 술래잡기 → 경찰과 도둑으로 바꾸면 그려 둔 감옥이
+  // 없으니 감옥 지도로 간다
+  testWidgets(
+    'switching_to_cops_and_robbers_on_confirm_opens_jail_map_when_no_jail_was_drawn',
+    (tester) async {
+      await _openFlowAndPickMode(tester, mode: '술래잡기');
+      await tester.tap(find.text('완료'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('술래잡기')); // 모드 행
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('경찰과 도둑'));
+      await tester.tap(find.text('다음'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SetupPrisonPage), findsOneWidget);
+      await tester.tap(find.text('완료'));
+      await tester.pumpAndSettle();
+      expect(find.text('최종 설정을 확인해요'), findsOneWidget);
+      expect(find.text('경찰과 도둑'), findsOneWidget);
+    },
+  );
+
+  // 감옥을 그려 둔 경찰과 도둑 방에서 모드 행만 열었다 닫으면 그대로 확인으로 돌아온다
+  testWidgets(
+    'mode_row_keeps_jail_and_returns_to_confirm_when_mode_unchanged',
+    (tester) async {
+      await _finishBothMaps(tester);
+
+      await tester.tap(find.text('경찰과 도둑')); // 모드 행
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('다음'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('최종 설정을 확인해요'), findsOneWidget);
+      expect(find.text('감옥'), findsOneWidget);
+    },
+  );
+
+  // 폴리곤으로 그린 술래잡기 방은 감옥 없이 만들어지고, 축소는 원형이 아니라 잠긴다
+  testWidgets(
+    'hide_and_seek_polygon_room_creates_without_jail_and_locks_shrink',
+    (tester) async {
+      final server = FakeCreateGameServer();
+      final container = await pumpCreationFlow(
+        tester,
+        overrides: [dioProvider.overrideWithValue(server.dio)],
+      );
+      await tester.tap(find.text('start'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('술래잡기'));
+      await tester.tap(find.text('다음'));
+      await tester.pumpAndSettle();
+      await _drawPolygonPlayground(tester);
+
+      expect(find.text('최종 설정을 확인해요'), findsOneWidget);
+      expect(find.text('원형 구역에서만 쓸 수 있어요'), findsOneWidget);
+
+      await tester.tap(find.text('게임 생성하기'));
+      await tester.pumpAndSettle();
+
+      final body = server.requestBodies.single;
+      expect(body['gameMode'], 'TAG');
+      final polygon = (body['area'] as Map)['polygon'] as Map;
+      expect(polygon.keys, isNot(contains('jailPolygon')));
+      expect(
+        container.read(gameParticipantNotifierProvider)?.gameMode,
+        GameMode.hideAndSeek,
+      );
+    },
+  );
+
+  // 모드 카드는 두 모드의 규칙 요약을 한 줄씩 보여 준다
+  testWidgets('mode_screen_shows_both_modes_with_one_line_rules', (
+    tester,
+  ) async {
+    await pumpCreationFlow(tester);
+    await tester.tap(find.text('start'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('어떤 모드로 할까요?'), findsOneWidget);
+    expect(find.text('잡히면 감옥에 갇혀요'), findsOneWidget);
+    expect(find.text('감옥 없이 잡히면 바로 끝나요'), findsOneWidget);
+  });
+
+  // 술래잡기 → 경찰과 도둑으로 바꿨다가 감옥 지도를 그리지 않고 닫으면 구역이 비어
+  // 있다. 그래도 방장은 모드 행으로 술래잡기로 되돌릴 수 있어야 한다
+  testWidgets(
+    'host_can_switch_back_to_hide_and_seek_when_jail_map_was_abandoned_on_confirm',
+    (tester) async {
+      await _openFlowAndPickMode(tester, mode: '술래잡기');
+      await tester.tap(find.text('완료'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('술래잡기')); // 모드 행
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('경찰과 도둑'));
+      await tester.tap(find.text('다음'));
+      await tester.pumpAndSettle();
+      await _tapBack(tester); // 감옥을 그리지 않고 닫는다
+
+      expect(find.text('구역 정보를 먼저 설정해주세요'), findsOneWidget);
+      await tester.tap(find.text('경찰과 도둑')); // 모드 행
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('술래잡기'));
+      await tester.tap(find.text('다음'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('구역 정보를 먼저 설정해주세요'), findsNothing);
+      expect(find.text('감옥'), findsNothing);
+      expect(find.text('술래잡기'), findsOneWidget);
+    },
+  );
+}

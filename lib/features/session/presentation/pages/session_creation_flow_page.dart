@@ -7,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../../core/constants/game_mode.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -41,6 +43,8 @@ import '../../../community/presentation/providers/community_chat_rooms_provider.
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import '../widgets/basic_settings_form.dart';
+import '../widgets/mode_row_card.dart';
+import '../widgets/mode_select_step.dart';
 import '../widgets/game_setting_values_editor.dart';
 import '../widgets/setting_list_card.dart';
 import '../widgets/zone_list_card.dart';
@@ -50,10 +54,13 @@ import 'setup_prison_page.dart';
 /// 방 생성 흐름의 단계. 상단 바(뒤로·단계 표시)는 흐름이 하나만 그리고
 /// 본문만 단계에 따라 바뀐다(#658 전환 B안).
 enum _CreationPhase {
-  /// 플레이그라운드 지도 (1/3)
+  /// 모드 선택 (1/3)
+  mode,
+
+  /// 플레이그라운드 지도 (2/3)
   playground,
 
-  /// 감옥 지도 (2/3)
+  /// 감옥 지도 (2/3, 경찰과 도둑만)
   jail,
 
   /// 최종 확인 (3/3, 행을 탭하면 해당 화면으로 되돌아가 수정)
@@ -83,8 +90,8 @@ enum _Motion {
 
 /// 세션 생성 플로우 페이지
 ///
-/// 생성을 누르면 바로 플레이그라운드 지도로 들어가고, 감옥 지도를 마치면
-/// 추천값이 채워진 최종 확인으로 간다(#658 B안). 설정은 묻지 않고, 바꿀
+/// 생성을 누르면 모드를 고르고 플레이그라운드 지도로 들어가, 감옥 지도(경찰과
+/// 도둑만)를 마치면 추천값이 채워진 최종 확인으로 간다(#658 B안). 설정은 묻지 않고, 바꿀
 /// 항목만 확인 화면에서 탭해 고친다.
 ///
 /// 임시 저장(SessionDraftStorageService)은 숫자 값을 조용히 복원하고, 구역은
@@ -112,8 +119,14 @@ class _SessionCreationFlowPageState
     extends ConsumerState<SessionCreationFlowPage> {
   late final SessionDraftStorageService _storageService;
 
-  _CreationPhase _phase = _CreationPhase.playground;
+  _CreationPhase _phase = _CreationPhase.mode;
   _Motion _motion = _Motion.none;
+
+  GameMode _gameMode = GameMode.copsAndRobbers;
+
+  /// 확인 화면에서 모드 행을 열었을 때의 원래 모드 — 뒤로 나가면 되돌린다.
+  /// null이면 처음 고르는 중이다.
+  GameMode? _modeBeforeEdit;
 
   /// 플레이그라운드에서 뒤로 나가면 최종 확인으로 돌아가는지
   /// (확인 화면의 플레이그라운드 행을 눌러 들어온 경우). 아니면 흐름을 끝낸다.
@@ -171,6 +184,9 @@ class _SessionCreationFlowPageState
     final draft = await _storageService.loadDraft();
     if (draft != null && mounted) {
       setState(() {
+        // 모드가 없던 구버전 초안·모르는 값은 경찰과 도둑으로 복원한다
+        final restored = GameMode.fromJson(draft.gameMode);
+        _gameMode = restored.isSupported ? restored : GameMode.copsAndRobbers;
         _areaType = draft.areaType;
         _playgroundPinPoints = draft.playgroundPinPoints == null
             ? null
@@ -201,6 +217,7 @@ class _SessionCreationFlowPageState
   /// 임시 저장
   Future<void> _saveDraft() async {
     final draft = SessionCreationDraftModel(
+      gameMode: _gameMode.toJson(),
       areaType: _areaType,
       playgroundPinPoints: _playgroundPinPoints,
       jailPinPoints: _prisonPinPoints,
@@ -226,19 +243,63 @@ class _SessionCreationFlowPageState
     _motion = motion;
   });
 
-  /// 플레이그라운드 완료 → 감옥 (이전에 그린 도형은 지도에 그려진 채로 열린다)
+  void _onModeSelected(GameMode mode) => setState(() => _gameMode = mode);
+
+  /// 모드 선택 완료. 처음이면 플레이그라운드로, 확인 화면에서 열었으면 바뀐 모드에
+  /// 맞게 감옥을 정리하고 확인으로 돌아간다.
+  void _onModeNext() {
+    final fromConfirm = _modeBeforeEdit != null;
+    _modeBeforeEdit = null;
+    if (!fromConfirm) {
+      // 구역을 마칠 때 초안을 저장하므로 여기서는 쓰지 않는다
+      _show(_CreationPhase.playground, _Motion.forward);
+      return;
+    }
+    if (!_gameMode.usesJail) {
+      // 술래잡기에는 감옥이 없으니 그려 둔 것은 버린다
+      setState(() {
+        _prisonCenter = null;
+        _prisonRadiusMeters = null;
+        _prisonPinPoints = null;
+      });
+      _turnShrinkOffIfLocked();
+    }
+    unawaited(_saveDraft());
+    if (_gameMode.usesJail && _prisonShape == null) {
+      // 감옥을 그린 적이 없으면 지도부터 — 마치면 확인으로 돌아온다
+      _jailExitsToConfirm = true;
+      _show(_CreationPhase.jail, _Motion.forward);
+    } else {
+      _show(_CreationPhase.confirm, _Motion.forward);
+    }
+  }
+
+  /// 최종 확인의 모드 행
+  void _editModeFromConfirm() {
+    _modeBeforeEdit = _gameMode;
+    _show(_CreationPhase.mode, _Motion.back);
+  }
+
+  /// 플레이그라운드 완료 → 감옥(경찰과 도둑) 또는 확인(술래잡기).
+  /// 이전에 그린 도형은 지도에 그려진 채로 열린다.
   void _onPlaygroundDone(AreaShape shape) {
     _onPlaygroundResult(shape);
-    unawaited(_saveDraft());
-    _jailExitsToConfirm = false;
-    _show(_CreationPhase.jail, _Motion.forward);
+    if (_gameMode.usesJail) {
+      unawaited(_saveDraft());
+      _jailExitsToConfirm = false;
+      _show(_CreationPhase.jail, _Motion.forward);
+    } else {
+      _turnShrinkOffIfLocked();
+      unawaited(_saveDraft());
+      _show(_CreationPhase.confirm, _Motion.forward);
+    }
   }
 
   void _onPlaygroundExit() {
     if (_playgroundExitsToConfirm) {
       _show(_CreationPhase.confirm, _Motion.forward);
     } else {
-      context.pop();
+      _show(_CreationPhase.mode, _Motion.back);
     }
   }
 
@@ -305,15 +366,28 @@ class _SessionCreationFlowPageState
       case _CreationPhase.playground:
       case _CreationPhase.jail:
         return;
+      case _CreationPhase.mode:
+        final before = _modeBeforeEdit;
+        if (before == null) {
+          context.pop();
+        } else {
+          // 확인 화면에서 열었다면 고르던 모드는 버리고 돌아간다
+          _modeBeforeEdit = null;
+          setState(() => _gameMode = before);
+          _show(_CreationPhase.confirm, _Motion.forward);
+        }
       case _CreationPhase.edit:
         // 확인을 누르지 않고 나가면 고친 값은 버린다
         _editTarget = null;
         _show(_CreationPhase.confirm, _Motion.down);
       case _CreationPhase.confirm:
-        // 뒤로 계속 누르면 감옥 → 플레이그라운드 → 흐름 종료로 되짚는다
+        // 뒤로 계속 누르면 (감옥 →) 플레이그라운드 → 모드 → 흐름 종료로 되짚는다
         _playgroundExitsToConfirm = false;
         _jailExitsToConfirm = false;
-        _show(_CreationPhase.jail, _Motion.back);
+        _show(
+          _gameMode.usesJail ? _CreationPhase.jail : _CreationPhase.playground,
+          _Motion.back,
+        );
     }
   }
 
@@ -339,6 +413,7 @@ class _SessionCreationFlowPageState
       await ref
           .read(sessionCreationNotifierProvider.notifier)
           .createGame(
+            gameMode: _gameMode,
             area: area,
             roundDurationMinutes: _roundDurationMinutes,
             locationRevealIntervalMinutes: _locationShareMinutes,
@@ -401,6 +476,7 @@ class _SessionCreationFlowPageState
             maxParticipants: result.maxParticipants,
             locationRevealIntervalMinutes: result.locationRevealIntervalMinutes,
             isHost: true,
+            gameMode: _gameMode,
           );
 
       // 채팅방에서 온 생성이면 초대 코드를 그 방에 쏜다(#516).
@@ -637,8 +713,11 @@ class _SessionCreationFlowPageState
   /// 포함 관계만 검증한다.
   GameAreaEntity? _buildAreaEntity() {
     final playground = _playgroundShape;
+    if (playground == null) return null;
+    // 술래잡기는 감옥 없이 만든다 (그려 둔 감옥이 남아 있어도 보내지 않는다)
+    if (!_gameMode.usesJail) return GameAreaEntity(playground: playground);
     final jail = _prisonShape;
-    if (playground == null || jail == null) return null;
+    if (jail == null) return null;
 
     if (playground is PolygonShape && jail is PolygonShape) {
       if (!isPolygonInsidePolygon(jail.points, playground.points)) return null;
@@ -711,8 +790,8 @@ class _SessionCreationFlowPageState
           titleWidget: StepIndicator(
             totalSteps: 3,
             currentStep: switch (_phase) {
-              _CreationPhase.playground => 0,
-              _CreationPhase.jail => 1,
+              _CreationPhase.mode => 0,
+              _CreationPhase.playground || _CreationPhase.jail => 1,
               _CreationPhase.confirm || _CreationPhase.edit => 2,
             },
             activeColor: AppColors.blue,
@@ -742,6 +821,21 @@ class _SessionCreationFlowPageState
   Widget _buildBody(AppLocalizations l10n) {
     final playground = _playgroundShape;
     return switch (_phase) {
+      _CreationPhase.mode => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(l10n, l10n.modeSelectTitle, l10n.modeSelectHint),
+          Expanded(
+            child: SafeArea(
+              child: ModeSelectStep(
+                selected: _gameMode,
+                onSelected: _onModeSelected,
+                onNext: _onModeNext,
+              ),
+            ),
+          ),
+        ],
+      ),
       _CreationPhase.playground => SetupPlaygroundPage(
         editInitialShape: playground,
         initialCenter: widget.initialCenter,
@@ -842,6 +936,7 @@ class _SessionCreationFlowPageState
             initialPoliceWait: _policeWaitMinutes,
             editTarget: target,
             onSubmit: _onBasicSubmit,
+            gameMode: _gameMode,
           ),
         ),
       ],
@@ -879,29 +974,39 @@ class _SessionCreationFlowPageState
         Expanded(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal20),
-            child: area == null
-                ? Center(child: Text(l10n.errorZoneNotConfigured))
-                : Column(
-                    children: [
-                      _buildShrinkCard(area),
-                      SizedBox(height: AppSpacing.vertical8),
-                      ZoneListCard(
-                        area: area,
-                        onTapPlayground: _editPlaygroundFromConfirm,
-                        onTapJail: _editJailFromConfirm,
-                      ),
-                      SizedBox(height: AppSpacing.vertical8),
-                      SettingListCard(
-                        settings: SessionSettings(
-                          maxPlayers: _maxParticipants,
-                          roundTimeMinutes: _roundDurationMinutes,
-                          locationShareMinutes: _locationShareMinutes,
-                          policeStartDelayMinutes: _policeWaitMinutes,
-                        ),
-                        onTapField: _onSettingRowTap,
-                      ),
-                    ],
+            // 모드 행은 구역이 없어도 항상 맨 위에 둔다 — 감옥 지도를 닫고 돌아와도
+            // 방장이 모드를 되돌릴 수 있어야 한다
+            child: Column(
+              children: [
+                ModeRowCard(mode: _gameMode, onTap: _editModeFromConfirm),
+                SizedBox(height: AppSpacing.vertical8),
+                if (area == null)
+                  Padding(
+                    padding: EdgeInsets.only(top: AppSpacing.vertical20),
+                    child: Center(child: Text(l10n.errorZoneNotConfigured)),
+                  )
+                else ...[
+                  _buildShrinkCard(area),
+                  SizedBox(height: AppSpacing.vertical8),
+                  ZoneListCard(
+                    area: area,
+                    onTapPlayground: _editPlaygroundFromConfirm,
+                    onTapJail: _editJailFromConfirm,
                   ),
+                  SizedBox(height: AppSpacing.vertical8),
+                  SettingListCard(
+                    settings: SessionSettings(
+                      maxPlayers: _maxParticipants,
+                      roundTimeMinutes: _roundDurationMinutes,
+                      locationShareMinutes: _locationShareMinutes,
+                      policeStartDelayMinutes: _policeWaitMinutes,
+                    ),
+                    onTapField: _onSettingRowTap,
+                    gameMode: _gameMode,
+                  ),
+                ],
+              ],
+            ),
           ),
         ),
         Padding(

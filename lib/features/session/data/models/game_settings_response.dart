@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/constants/game_mode.dart';
+
 part 'game_settings_response.freezed.dart';
 part 'game_settings_response.g.dart';
 
@@ -42,8 +44,15 @@ class GameSettingsResponse with _$GameSettingsResponse {
 
     /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
     int? shrinkFinalRadiusInMeters,
+
+    /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    @Default(GameMode.copsAndRobbers)
+    GameMode gameMode,
   }) = _GameSettingsResponse;
 
   factory GameSettingsResponse.fromJson(Map<String, dynamic> json) =>
       _$GameSettingsResponseFromJson(json);
 }
+
+String _modeToJson(GameMode mode) => mode.toJson();

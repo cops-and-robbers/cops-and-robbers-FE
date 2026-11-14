@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/game/domain/entities/game_result_entity.dart';
 import 'package:cops_and_robbers/features/game/domain/entities/my_game_record_entity.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_result_provider.dart';
@@ -40,10 +41,10 @@ void main() {
     test('maps_status_to_label_when_given_alive_jailed_or_other', () {
       final l10n = lookupAppLocalizations(const Locale('ko'));
 
-      expect(finalStatusLabel(l10n, 'ALIVE'), '생존');
-      expect(finalStatusLabel(l10n, 'JAILED'), '수감');
-      expect(finalStatusLabel(l10n, 'WAITING'), '-');
-      expect(finalStatusLabel(l10n, ''), '-');
+      expect(finalStatusLabel(l10n, 'ALIVE', gameMode: GameMode.copsAndRobbers), '생존');
+      expect(finalStatusLabel(l10n, 'JAILED', gameMode: GameMode.copsAndRobbers), '수감');
+      expect(finalStatusLabel(l10n, 'WAITING', gameMode: GameMode.copsAndRobbers), '-');
+      expect(finalStatusLabel(l10n, '', gameMode: GameMode.copsAndRobbers), '-');
     });
   });
 
@@ -721,6 +722,7 @@ Future<void> pumpGameOverDialog(
               // 첫 프레임 이후 다이얼로그 오픈
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 GameOverResultDialog.show(
+                  gameMode: GameMode.copsAndRobbers,
                   context: context,
                   isDarkMode: isDarkMode,
                   myTeam: myTeam,

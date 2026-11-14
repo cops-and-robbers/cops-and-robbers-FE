@@ -32,8 +32,8 @@ class CircleAreaModel with _$CircleAreaModel {
   const factory CircleAreaModel({
     required LatLngModel playgroundCenter,
     required double playgroundRadiusInMeters,
-    required LatLngModel jailCenter,
-    required double jailRadiusInMeters,
+    LatLngModel? jailCenter,
+    double? jailRadiusInMeters,
   }) = _CircleAreaModel;
 
   factory CircleAreaModel.fromJson(Map<String, dynamic> json) =>
@@ -45,7 +45,7 @@ class CircleAreaModel with _$CircleAreaModel {
 class PolygonAreaModel with _$PolygonAreaModel {
   const factory PolygonAreaModel({
     required List<LatLngModel> playgroundPolygon,
-    required List<LatLngModel> jailPolygon,
+    List<LatLngModel>? jailPolygon,
   }) = _PolygonAreaModel;
 
   factory PolygonAreaModel.fromJson(Map<String, dynamic> json) =>
@@ -81,6 +81,8 @@ extension GameAreaModelMapper on GameAreaModel {
             messageKey: 'errorAreaLoadFailed',
           );
         }
+        final jailCenter = c.jailCenter;
+        final jailRadius = c.jailRadiusInMeters;
         return GameAreaEntity(
           playground: AreaShape.circle(
             center: GeoPoint(
@@ -89,25 +91,29 @@ extension GameAreaModelMapper on GameAreaModel {
             ),
             radiusInMeters: c.playgroundRadiusInMeters,
           ),
-          jail: AreaShape.circle(
-            center: GeoPoint(
-              latitude: c.jailCenter.latitude,
-              longitude: c.jailCenter.longitude,
-            ),
-            radiusInMeters: c.jailRadiusInMeters,
-          ),
+          // 술래잡기 방은 감옥 필드가 null — 감옥 없음
+          jail: (jailCenter == null || jailRadius == null)
+              ? null
+              : AreaShape.circle(
+                  center: GeoPoint(
+                    latitude: jailCenter.latitude,
+                    longitude: jailCenter.longitude,
+                  ),
+                  radiusInMeters: jailRadius,
+                ),
         );
       case GameAreaType.polygon:
         final p = polygon;
         if (p == null ||
             p.playgroundPolygon.length < 3 ||
-            p.jailPolygon.length < 3) {
+            (p.jailPolygon != null && p.jailPolygon!.length < 3)) {
           // 꼭짓점 3개 미만은 다각형이 아님 — 판정·렌더링 모두 무의미
           throw const ServerException(
             message: '게임 구역 응답 형식이 올바르지 않습니다 (POLYGON 데이터 불량)',
             messageKey: 'errorAreaLoadFailed',
           );
         }
+        final jailPolygon = p.jailPolygon;
         return GameAreaEntity(
           playground: AreaShape.polygon(
             points: [
@@ -115,12 +121,14 @@ extension GameAreaModelMapper on GameAreaModel {
                 GeoPoint(latitude: v.latitude, longitude: v.longitude),
             ],
           ),
-          jail: AreaShape.polygon(
-            points: [
-              for (final v in p.jailPolygon)
-                GeoPoint(latitude: v.latitude, longitude: v.longitude),
-            ],
-          ),
+          jail: jailPolygon == null
+              ? null
+              : AreaShape.polygon(
+                  points: [
+                    for (final v in jailPolygon)
+                      GeoPoint(latitude: v.latitude, longitude: v.longitude),
+                  ],
+                ),
         );
     }
   }

@@ -4,6 +4,8 @@
 /// 위젯이 아니라 순수 상태라 화면은 mutate 후 setState 만 하면 된다.
 library;
 
+import '../../../../core/constants/game_mode.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 방 생성 시 정하는 설정 항목. 선언 순서가 곧 입력 순서다.
@@ -140,12 +142,24 @@ class GameSettingValues {
 }
 
 /// 항목 이름 (카드 라벨)
-String settingFieldLabel(AppLocalizations l10n, GameSettingField field) {
+String settingFieldLabel(
+  AppLocalizations l10n,
+  GameSettingField field, {
+  required GameMode gameMode,
+}) {
   return switch (field) {
     GameSettingField.participants => l10n.labelParticipantCount,
     GameSettingField.roundDuration => l10n.fieldRoundTimeLimit,
-    GameSettingField.locationShare => l10n.fieldLocationShareInterval,
-    GameSettingField.policeWait => l10n.fieldPoliceDispatchTime,
+    GameSettingField.locationShare => byMode(
+      gameMode,
+      classic: l10n.fieldLocationShareInterval,
+      tag: l10n.fieldLocationShareIntervalTag,
+    ),
+    GameSettingField.policeWait => byMode(
+      gameMode,
+      classic: l10n.fieldPoliceDispatchTime,
+      tag: l10n.fieldPoliceDispatchTimeTag,
+    ),
   };
 }
 
@@ -163,8 +177,9 @@ String settingFieldUnit(AppLocalizations l10n, GameSettingField field) {
 (String, bool)? settingFieldHint(
   AppLocalizations l10n,
   GameSettingValues values,
-  GameSettingField field,
-) {
+  GameSettingField field, {
+  required GameMode gameMode,
+}) {
   // 방금 상한 때문에 입력이 막혔으면 그 이유를 먼저 알린다
   if (field == values.active && values.lastInputExceededMax) {
     return (
@@ -183,13 +198,29 @@ String settingFieldUnit(AppLocalizations l10n, GameSettingField field) {
         return (l10n.warnShorterThanRoundDuration, true);
       }
       if (values[field] == 0) {
-        return (l10n.gameSettingNoLocationShareWarning, false);
+        return (
+          byMode(
+            gameMode,
+            classic: l10n.gameSettingNoLocationShareWarning,
+            tag: l10n.gameSettingNoLocationShareWarningTag,
+          ),
+          false,
+        );
       }
       return null;
     case GameSettingField.policeWait:
       if (values.violatesRoundDuration(field)) {
         return (l10n.warnShorterThanRoundDuration, true);
       }
-      return invalid ? (l10n.warnPoliceWaitMin, true) : null;
+      return invalid
+          ? (
+              byMode(
+                gameMode,
+                classic: l10n.warnPoliceWaitMin,
+                tag: l10n.warnPoliceWaitMinTag,
+              ),
+              true,
+            )
+          : null;
   }
 }

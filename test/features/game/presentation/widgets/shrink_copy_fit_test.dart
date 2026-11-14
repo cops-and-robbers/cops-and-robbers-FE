@@ -1,4 +1,5 @@
 import 'package:clock/clock.dart';
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_timer_text.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,7 @@ void main() {
               child: SizedBox(
                 width: 230,
                 child: GameTimerText(
+                  gameMode: GameMode.copsAndRobbers,
                   startTime: DateTime(2026, 11, 8, 12),
                   totalDuration: const Duration(minutes: 60),
                   policeWaitMinutes: 5,

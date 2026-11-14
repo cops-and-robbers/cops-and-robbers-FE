@@ -6,8 +6,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/cards/info_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/session_settings.dart';
@@ -36,10 +38,14 @@ class SettingListCard extends StatelessWidget {
     this.onTap,
     this.onTapField,
     this.isDarkMode = false,
+    required this.gameMode,
   });
 
   /// 게임 설정 정보
   final SessionSettings settings;
+
+  /// 술래잡기면 항목 이름을 술래·도망자 말로 바꾼다.
+  final GameMode gameMode;
 
   /// 설정 카드 탭 콜백 (호스트 전용 — 설정 수정 페이지 이동)
   final VoidCallback? onTap;
@@ -102,7 +108,11 @@ class SettingListCard extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: l10n.fieldLocationShareInterval,
+              label: byMode(
+                gameMode,
+                classic: l10n.fieldLocationShareInterval,
+                tag: l10n.fieldLocationShareIntervalTag,
+              ),
               onTap: onTapField == null
                   ? null
                   : () => onTapField!(GameSettingField.locationShare),
@@ -113,12 +123,22 @@ class SettingListCard extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.vertical12),
             _SettingRow(
-              label: l10n.fieldPoliceDispatchTime,
+              label: byMode(
+                gameMode,
+                classic: l10n.fieldPoliceDispatchTime,
+                tag: l10n.fieldPoliceDispatchTimeTag,
+              ),
               onTap: onTapField == null
                   ? null
                   : () => onTapField!(GameSettingField.policeWait),
-              value: l10n.gameSettingPoliceStartDelay(
-                settings.policeStartDelayMinutes,
+              value: byMode(
+                gameMode,
+                classic: l10n.gameSettingPoliceStartDelay(
+                  settings.policeStartDelayMinutes,
+                ),
+                tag: l10n.gameSettingPoliceStartDelayTag(
+                  settings.policeStartDelayMinutes,
+                ),
               ),
               isDarkMode: isDarkMode,
             ),

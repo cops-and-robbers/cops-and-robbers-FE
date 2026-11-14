@@ -307,6 +307,28 @@ class _SessionRemoteDataSource implements SessionRemoteDataSource {
   }
 
   @override
+  Future<void> updateGameMode(
+    int gameId,
+    GameModeUpdateRequestModel request,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = request;
+    final _options = _setStreamType<void>(
+      Options(method: 'PUT', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/games/${gameId}/mode',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
   Future<void> kickMember(int gameId, int participantId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

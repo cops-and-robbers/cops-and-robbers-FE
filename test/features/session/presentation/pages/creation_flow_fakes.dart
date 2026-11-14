@@ -1,5 +1,7 @@
 // 방 생성 흐름 테스트가 같이 쓰는 시스템 경계 페이크.
 // 네이티브 지도와 GPS만 대체한다. 구역 설정과 저장소 로직은 실제 객체를 사용한다.
+import 'dart:convert';
+
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/core/widgets/map/zone_vertex_handle_icon.dart';
 import 'package:cops_and_robbers/features/auth/data/datasources/firebase_auth_datasource.dart';
@@ -8,6 +10,7 @@ import 'package:cops_and_robbers/features/session/presentation/game_creation_ent
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/app_router.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,6 +49,46 @@ class FakeLocation extends GeolocatorPlatform {
       pending ?? Future.value(position);
 }
 
+/// 방 생성 POST 본문을 붙잡고 성공 응답을 돌려주는 HTTP 경계 페이크.
+class FakeCreateGameServer implements HttpClientAdapter {
+  final requestBodies = <Map<String, dynamic>>[];
+
+  // 실제 클라이언트처럼 JSON으로 보내야 요청 모델이 toJson으로 직렬화된다
+  Dio get dio =>
+      Dio(BaseOptions(contentType: Headers.jsonContentType))
+        ..httpClientAdapter = this;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<List<int>>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    // 전송 직전이라 본문은 이미 JSON 바이트로 직렬화돼 있다
+    final bytes = await requestStream!.expand((chunk) => chunk).toList();
+    requestBodies.add(jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>);
+    return ResponseBody.fromString(
+      jsonEncode({
+        'gameId': 7,
+        'inviteCode': 'ABC123',
+        'status': 'WAITING',
+        'roundDurationMinutes': 30,
+        'locationRevealIntervalMinutes': 5,
+        'policeWaitMinutes': 5,
+        'maxParticipants': 10,
+        'createdAt': '2026-11-14T10:00:00+09:00',
+      }),
+      200,
+      headers: {
+        Headers.contentTypeHeader: [Headers.jsonContentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
 class FakeFirebaseAuth extends Fake implements FirebaseAuth {
   @override
   User? get currentUser => null;
@@ -82,6 +125,16 @@ class FakeMap extends MethodChannelGoogleMapsFlutter {
             }
             if (call.method == 'map#getScreenCoordinate') {
               return {'x': 100, 'y': 100};
+            }
+            if (call.method == 'map#getLatLng') {
+              // 화면 한 칸을 위경도 .00001도로 보는 단순 선형 변환
+              final center = centers[creationId]!;
+              final x = (call.arguments['x'] as num).toDouble();
+              final y = (call.arguments['y'] as num).toDouble();
+              return [
+                center.latitude - (y - 100) * .00001,
+                center.longitude + (x - 100) * .00001,
+              ];
             }
             if (call.method == 'map#getVisibleRegion') {
               final center = centers[creationId]!;
@@ -149,9 +202,11 @@ Future<ProviderContainer> pumpCreationFlow(
   WidgetTester tester, {
   int? communityPostId,
   LatLng? initialCenter,
+  List<Override> overrides = const [],
 }) async {
   final container = ProviderContainer(
     overrides: [
+      ...overrides,
       firebaseAuthDataSourceProvider.overrideWithValue(
         FirebaseAuthDataSource(firebaseAuth: FakeFirebaseAuth()),
       ),

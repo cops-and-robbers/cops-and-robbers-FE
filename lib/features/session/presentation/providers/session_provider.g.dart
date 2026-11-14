@@ -729,6 +729,185 @@ class _ChangeTeamProviderElement extends AutoDisposeFutureProviderElement<void>
   String get targetTeam => (origin as ChangeTeamProvider).targetTeam;
 }
 
+String _$updateGameModeHash() => r'54074d033a6c257c0ca53e543ba8b99b0173e16b';
+
+/// 대기실 게임 모드 변경 (방장 전용)
+///
+/// 응답은 쓰지 않는다. 성공하면 설정·구역 캐시를 무효화해 새 모드 기준으로 다시 읽는다.
+///
+/// Copied from [updateGameMode].
+@ProviderFor(updateGameMode)
+const updateGameModeProvider = UpdateGameModeFamily();
+
+/// 대기실 게임 모드 변경 (방장 전용)
+///
+/// 응답은 쓰지 않는다. 성공하면 설정·구역 캐시를 무효화해 새 모드 기준으로 다시 읽는다.
+///
+/// Copied from [updateGameMode].
+class UpdateGameModeFamily extends Family<AsyncValue<void>> {
+  /// 대기실 게임 모드 변경 (방장 전용)
+  ///
+  /// 응답은 쓰지 않는다. 성공하면 설정·구역 캐시를 무효화해 새 모드 기준으로 다시 읽는다.
+  ///
+  /// Copied from [updateGameMode].
+  const UpdateGameModeFamily();
+
+  /// 대기실 게임 모드 변경 (방장 전용)
+  ///
+  /// 응답은 쓰지 않는다. 성공하면 설정·구역 캐시를 무효화해 새 모드 기준으로 다시 읽는다.
+  ///
+  /// Copied from [updateGameMode].
+  UpdateGameModeProvider call(
+    int gameId, {
+    required GameMode mode,
+    required GameAreaEntity area,
+  }) {
+    return UpdateGameModeProvider(gameId, mode: mode, area: area);
+  }
+
+  @override
+  UpdateGameModeProvider getProviderOverride(
+    covariant UpdateGameModeProvider provider,
+  ) {
+    return call(provider.gameId, mode: provider.mode, area: provider.area);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'updateGameModeProvider';
+}
+
+/// 대기실 게임 모드 변경 (방장 전용)
+///
+/// 응답은 쓰지 않는다. 성공하면 설정·구역 캐시를 무효화해 새 모드 기준으로 다시 읽는다.
+///
+/// Copied from [updateGameMode].
+class UpdateGameModeProvider extends AutoDisposeFutureProvider<void> {
+  /// 대기실 게임 모드 변경 (방장 전용)
+  ///
+  /// 응답은 쓰지 않는다. 성공하면 설정·구역 캐시를 무효화해 새 모드 기준으로 다시 읽는다.
+  ///
+  /// Copied from [updateGameMode].
+  UpdateGameModeProvider(
+    int gameId, {
+    required GameMode mode,
+    required GameAreaEntity area,
+  }) : this._internal(
+         (ref) => updateGameMode(
+           ref as UpdateGameModeRef,
+           gameId,
+           mode: mode,
+           area: area,
+         ),
+         from: updateGameModeProvider,
+         name: r'updateGameModeProvider',
+         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+             ? null
+             : _$updateGameModeHash,
+         dependencies: UpdateGameModeFamily._dependencies,
+         allTransitiveDependencies:
+             UpdateGameModeFamily._allTransitiveDependencies,
+         gameId: gameId,
+         mode: mode,
+         area: area,
+       );
+
+  UpdateGameModeProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.gameId,
+    required this.mode,
+    required this.area,
+  }) : super.internal();
+
+  final int gameId;
+  final GameMode mode;
+  final GameAreaEntity area;
+
+  @override
+  Override overrideWith(
+    FutureOr<void> Function(UpdateGameModeRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: UpdateGameModeProvider._internal(
+        (ref) => create(ref as UpdateGameModeRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        gameId: gameId,
+        mode: mode,
+        area: area,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<void> createElement() {
+    return _UpdateGameModeProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UpdateGameModeProvider &&
+        other.gameId == gameId &&
+        other.mode == mode &&
+        other.area == area;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, gameId.hashCode);
+    hash = _SystemHash.combine(hash, mode.hashCode);
+    hash = _SystemHash.combine(hash, area.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin UpdateGameModeRef on AutoDisposeFutureProviderRef<void> {
+  /// The parameter `gameId` of this provider.
+  int get gameId;
+
+  /// The parameter `mode` of this provider.
+  GameMode get mode;
+
+  /// The parameter `area` of this provider.
+  GameAreaEntity get area;
+}
+
+class _UpdateGameModeProviderElement
+    extends AutoDisposeFutureProviderElement<void>
+    with UpdateGameModeRef {
+  _UpdateGameModeProviderElement(super.provider);
+
+  @override
+  int get gameId => (origin as UpdateGameModeProvider).gameId;
+  @override
+  GameMode get mode => (origin as UpdateGameModeProvider).mode;
+  @override
+  GameAreaEntity get area => (origin as UpdateGameModeProvider).area;
+}
+
 String _$joinGameHash() => r'db8d682e07b47b40a727368e54342c43cf946a9f';
 
 /// 게임 방 참여 기능
@@ -1791,7 +1970,7 @@ class _UpdateGameAreaProviderElement
 }
 
 String _$sessionCreationNotifierHash() =>
-    r'dd3ac2a127e335dee85db1691d4db8ea86ee25d4';
+    r'84ea0559698889c0c43586b6a199f04332e9505e';
 
 /// 세션 생성 상태 관리 Notifier
 ///

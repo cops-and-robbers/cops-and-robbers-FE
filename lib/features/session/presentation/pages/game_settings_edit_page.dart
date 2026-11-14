@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
@@ -125,7 +126,10 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
       final l10n = AppLocalizations.of(context);
       // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
       final ex = DioExceptionHandler.handle(e);
-      final message = l10n.errorByException(ex);
+      final message = l10n.errorByException(
+        ex,
+        mode: widget.initialSettings.gameMode,
+      );
       AppSnackbar.show(
         context,
         message: message,
@@ -204,13 +208,20 @@ class _GameSettingsEditPageState extends ConsumerState<GameSettingsEditPage> {
     bool isDark,
   ) {
     final isActive = field == _values.active;
-    final hint = settingFieldHint(l10n, _values, field);
+    final mode = widget.initialSettings.gameMode;
+    final hint = settingFieldHint(l10n, _values, field, gameMode: mode);
     final isPolice = field == GameSettingField.policeWait;
 
     return SettingFieldCard(
-      label: settingFieldLabel(l10n, field),
+      label: settingFieldLabel(l10n, field, gameMode: mode),
       value: '${_values[field]}${settingFieldUnit(l10n, field)}',
-      valuePrefix: isPolice ? l10n.gameSettingPoliceStartPrefix : null,
+      valuePrefix: isPolice
+          ? byMode(
+              mode,
+              classic: l10n.gameSettingPoliceStartPrefix,
+              tag: l10n.gameSettingPoliceStartPrefixTag,
+            )
+          : null,
       valueSuffix: isPolice ? l10n.gameSettingPoliceStartSuffix : null,
       hint: hint?.$1,
       isHintWarning: hint?.$2 ?? false,

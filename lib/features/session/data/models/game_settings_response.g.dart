@@ -18,6 +18,9 @@ _$GameSettingsResponseImpl _$$GameSettingsResponseImplFromJson(
   isEventGame: json['isEventGame'] as bool? ?? false,
   shrinkFinalRadiusInMeters: (json['shrinkFinalRadiusInMeters'] as num?)
       ?.toInt(),
+  gameMode: json['gameMode'] == null
+      ? GameMode.copsAndRobbers
+      : GameMode.fromJson(json['gameMode'] as String?),
 );
 
 Map<String, dynamic> _$$GameSettingsResponseImplToJson(
@@ -30,4 +33,5 @@ Map<String, dynamic> _$$GameSettingsResponseImplToJson(
   'gameStartTime': instance.gameStartTime,
   'isEventGame': instance.isEventGame,
   'shrinkFinalRadiusInMeters': instance.shrinkFinalRadiusInMeters,
+  'gameMode': _modeToJson(instance.gameMode),
 };

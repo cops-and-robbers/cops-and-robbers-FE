@@ -3,19 +3,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/app_shadows.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 
-/// "상희 무전 중" — 참가자 목록에 없으면 이름 대신 "경찰"
+/// "상희 무전 중" — 참가자 목록에 없으면 이름 대신 "경찰"(술래잡기는 "술래")
 String radioSpeakerLabel(
   AppLocalizations l10n,
   String identity,
-  Map<String, String> nicknamesByParticipantId,
-) => l10n.radioSpeaking(
-  nicknamesByParticipantId[identity] ?? l10n.radioSpeakerFallback,
+  Map<String, String> nicknamesByParticipantId, {
+  required GameMode mode,
+}) => l10n.radioSpeaking(
+  nicknamesByParticipantId[identity] ??
+      byMode(
+        mode,
+        classic: l10n.radioSpeakerFallback,
+        tag: l10n.radioSpeakerFallbackTag,
+      ),
 );
 
 /// 다른 경찰이 무전으로 말하는 동안 무전 버튼 위에 뜨는 파란 알약 (#697)

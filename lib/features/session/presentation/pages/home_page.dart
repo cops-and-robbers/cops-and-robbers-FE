@@ -392,6 +392,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             participantId: response.participantId,
             isHost: false,
             isEventGame: response.isEventGame || kEventGameDevOverride,
+            gameMode: response.gameMode,
           );
       // 다이얼로그 닫힘 애니메이션 완료 + overlay cleanup frame 대기
       final elapsed = DateTime.now().difference(dialogCloseStart);

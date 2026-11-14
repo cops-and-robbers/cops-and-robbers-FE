@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v3.1.0 업데이트 내역\n\n### ✨ 추가 — 구역 축소 최종 반경, 강제 체포 API\n- 게임 설정에 shrinkFinalRadiusInMeters(Integer, nullable) 추가. null 이면 축소 꺼짐\n  - 요청: POST /api/games 의 settings, PUT /api/games/{gameId}/settings\n  - 응답: POST /api/games, GET /api/games/{gameId}, PUT /api/games/{gameId}/settings, 로비 SETTINGS_UPDATED 이벤트\n- 값이 있을 때만 검증한다. 구역 타입이 CIRCLE 이고, 감옥 반경보다 크고 플레이그라운드 반경보다 작아야 한다\n- ⚠️ 에러코드 추가 — SHRINK_REQUIRES_CIRCLE_AREA, INVALID_SHRINK_FINAL_RADIUS\n  - POST /api/games, PUT /api/games/{gameId}/settings, PUT /api/games/{gameId}/area 세 곳에서 발생한다\n  - PUT /api/games/{gameId}/settings 는 구역을 함께 조회하므로 기존 GAME_AREA_NOT_FOUND(404) 도 새로 발생할 수 있다\n  - 구역을 바꿀 때 저장된 최종 반경이 조건에 안 맞으면 PUT /area 가 400 이다. 앱이 축소를 먼저 끄고 구역을 저장하면 된다\n- 강제 체포 POST /api/games/{gameId}/system/force-arrest 추가. 구역 밖에 오래 머문 도둑이 스스로 체포된다\n  - 요청 본문 없음(로그인한 도둑 본인), 응답은 /system/arrest 와 같다\n  - 경찰 대기 시간 중에도 호출할 수 있고, 경찰의 체포 수는 올라가지 않는다\n  - ⚠️ 에러코드 추가 — FORCE_ARREST_NOT_ALLOWED_IN_EVENT_GAME. 이벤트 게임에서 호출하면 400 이다\n- ⚠️ ARREST 이벤트의 police 가 null 가능으로 전환 — 강제 체포일 때 null 이다\n  - 앱은 police 가 null 이면 \"구역 밖에 오래 있어서 잡혔다\"로 표시한다\n- 게임이 끝나도 남도록 GameResult 에 최종 반경을 함께 복사한다. 어드민 GraphQL 의 AdminGame, GameResult, AdminGameHistory 에 shrinkFinalRadiusInMeters(Int, nullable) 추가\n- 앱 영향 — 최종 반경 계산, 축소 표시, 구역 이탈 판정과 경고 횟수는 앱이 처리한다. 서버는 위치를 검증하지 않는다\n\n## v3.0.0 업데이트 내역\n\n### 변경 — 준비(Ready) 상태 제거, 방장이 시작하면 바로 게임 시작\n- POST /api/games/{gameId}/lobby/start 는 방장 권한과 팀 구성만 확인, 준비 여부는 보지 않는다\n- 에러코드 NOT_ALL_READY, HOST_CANNOT_UNREADY 삭제\n- 팀을 바꾸거나 라운드가 끝나도 풀릴 준비 상태가 없다\n- 로비 이벤트 READY_UPDATE 는 더 이상 발행하지 않는다\n- 앱 영향\n  1. 구버전 앱은 그대로 동작한다(아래 Deprecated 항목 유지)\n  2. 신버전은 준비 UI 와 시작 버튼의 준비 조건을 빼면 된다\n\n### Deprecated API\n\n로비 준비 상태 변경 `PATCH /api/games/{gameId}/lobby/ready`\n- 호출해도 아무것도 바뀌지 않고 이벤트도 없다. 응답 코드는 예전과 같고, 방장이 호출했을 때만 400 대신 204\n- 구버전 앱 호환용으로만 남겨 두고, 다음 메이저에서 삭제 예정\n\n참가자 isReady\n  - 로비 조회 API(GET /api/games/{gameId}/lobby), 로비 이벤트(ENTER, TEAM_UPDATE, HOST_CHANGED)에서 항상 true 반환\n",
-    "version": "3.1.0"
+    "description": "## v4.0.0 업데이트 내역\n\n### ✨ 추가 — 술래잡기 모드\n- 게임 모드 gameMode(COPS_AND_ROBBERS | TAG) 추가\n  - 술래잡기는 감옥과 탈옥이 없고, 나머지 규칙은 경찰과도둑과 같다\n  - 요청: POST /api/games 에 gameMode(optional). 없으면 COPS_AND_ROBBERS\n  - 응답\n    - POST /api/games, GET /api/games/{gameId}, POST /api/games/join\n    - PUT /api/games/{gameId}/settings, GET /api/games/{gameId}/state\n    - 게임 결과, 로비 SETTINGS_UPDATED 이벤트\n    - 어드민 GraphQL 의 AdminGameSummary, AdminGame, AdminGameHistory, UserGameHistory\n  - 어드민 GraphQL 필터: adminGames, adminGameHistories 에 gameMode(optional) 추가\n\n- 대기실 모드 변경 PUT /api/games/{gameId}/mode 추가\n  - 방장만 호출할 수 있고, 모드와 구역을 함께 보낸다\n  - 로비 이벤트 MODE_UPDATED(gameMode, areaData) 발행\n  - ⚠️ 에러코드 추가 — EVENT_GAME_NOT_SUPPORTED_IN_MODE(400)\n    - 이벤트 게임을 술래잡기로 바꿀 때\n    - 어드민에서 술래잡기 게임을 이벤트로 전환할 때\n\n- 구역의 감옥(jail) 필드가 선택 값으로 바뀜\n  - 술래잡기는 감옥을 보내지 않고, 응답의 감옥 필드는 null 이다\n  - CIRCLE 의 감옥 중심과 반경은 둘 다 보내거나 둘 다 빼야 한다\n  - ⚠️ 에러코드 추가 — JAIL_AREA_REQUIRED, JAIL_AREA_NOT_ALLOWED\n    - 경찰과도둑에 감옥이 없거나, 술래잡기에 감옥이 있을 때\n    - POST /api/games, PUT /api/games/{gameId}/area, PUT /api/games/{gameId}/mode\n\n- 술래잡기에서 탈옥 POST /api/games/{gameId}/system/escape 거절\n  - ⚠️ 에러코드 추가 — ESCAPE_NOT_ALLOWED_IN_MODE(400)\n\n- FCM 시스템 알림 문구가 모드별로 바뀜\n  - 술래잡기는 \"술래\", \"도망자\", \"잡힘\" 문구를 쓴다\n- 식별자는 그대로다\n  - POLICE 는 술래, ROBBER 는 도망자, JAILED 는 잡힌 상태로 해석한다\n\n### 🧹 삭제 — Deprecated API\n- 로비 준비 상태 변경 PATCH /api/games/{gameId}/lobby/ready\n- 참가자 isReady\n  - 로비 조회 GET /api/games/{gameId}/lobby\n  - 로비 이벤트 ENTER, TEAM_UPDATE, HOST_CHANGED\n- 구역 평면 필드 (요청, 응답 모두)\n  - playgroundCenter, playgroundRadiusInMeters, jailCenter, jailRadiusInMeters\n  - circle / polygon 을 쓴다. 요청에 areaType 이 필수가 된다\n- 도둑 위치 조회 GET /api/games/{gameId}/robbers/location\n- 구버전 소켓 경로 /game-connection\n- 앱 영향\n  - 이 API 를 쓰는 구버전 앱은 동작하지 않는다\n  - 배포 전에 강제 업데이트 최소 버전을 올려야 한다\n\n## v3.3.0 업데이트 내역\n\n### ✨ 추가 — 웹 회원 탈퇴 API\n- POST /api/auth/withdrawal/preview 추가. Firebase ID 토큰으로 계정을 확인하고 닉네임과 게임 참여 여부를 응답한다.\n- POST /api/auth/withdrawal 추가. DELETE /api/user/me 와 같은 탈퇴 처리를 한다.\n- 두 API 모두 회원가입을 하지 않고 JWT 도 발급하지 않는다.\n- ⚠️ 에러코드 추가 — WITHDRAWAL_USER_NOT_FOUND. 가입되지 않은 계정이면 404 를 응답한다.\n- 앱 영향 — 없음. 웹사이트의 계정 삭제 페이지에서만 사용한다.\n\n## v3.2.0 업데이트 내역\n\n### ✨ 추가 — 경찰 무전 접속 토큰 API\n- 무전 접속 토큰 발급 POST /api/games/{gameId}/radio/token 추가. 경찰이 무전 서버에 들어갈 토큰을 받는다\n  - 요청 본문 없음(로그인한 경찰 본인). 응답은 url, room, identity, token, expiresAt\n  - 토큰 수명은 2분이다. 앱은 수명의 70~90% 지점에서 랜덤하게 다시 호출해 재발급받는다\n  - 재발급 때마다 자격을 다시 검증한다. 게임이 끝났거나 나갔으면 거절된다\n  - 음성은 서버를 거치지 않고 무전 서버와 앱 사이에서만 흐른다. 앱은 url 을 하드코딩하지 않는다\n  - ⚠️ 에러코드 추가 — ONLY_POLICE_CAN_USE_RADIO(403), RADIO_POLICE_WAITING_TIME(400), RADIO_NOT_ALLOWED_IN_EVENT_GAME(400)\n- 무전 사용 시간을 라운드별 참가자 기록에 누적한다. 어드민 GraphQL 의 AdminGameHistoryParticipant 에 radioSeconds(Int!), AdminUser 에 누적 radioSeconds(Int!) 추가\n\n### 변경 — 최대 참가 인원 150명 → 50명\n- ⚠️ maxParticipants 상한이 50 으로 내려간다. 51 이상이면 400 이다\n  - POST /api/games 의 settings, PUT /api/games/{gameId}/settings\n- 앱 영향 — 방 생성 인원 슬라이더 최대값을 50 으로 맞춘다\n",
+    "version": "4.0.0"
   },
   "servers": [
     {
@@ -76,6 +76,10 @@
     {
       "name": "Notice",
       "description": "공지사항 관리 API"
+    },
+    {
+      "name": "Radio",
+      "description": "경찰 팀 무전(음성 대화) API"
     },
     {
       "name": "Location",
@@ -1118,6 +1122,219 @@
         }
       }
     },
+    "/api/games/{gameId}/mode": {
+      "put": {
+        "tags": [
+          "Game"
+        ],
+        "summary": "게임 모드 변경 (방장 전용)",
+        "description": "대기실에서 게임 모드를 바꾸고, 새 모드에 맞는 영역으로 함께 수정합니다.\n\n**제약 조건**\n- 방장만 호출 가능\n- 게임이 WAITING 상태일 때만 가능\n- 영역은 `PUT /area` 와 같은 형식으로 전체를 전송 (모드와 무관한 플레이그라운드도 다시 전송)\n- 경찰과도둑은 감옥 필수, 술래잡기는 감옥을 보내지 않음\n- 저장된 축소 최종 반경은 새 감옥 반경 기준으로 다시 검증\n- 이벤트 게임은 술래잡기로 바꿀 수 없음\n- 게임 설정은 바꾸지 않음\n\n**WebSocket**\n성공 시 대기실 구독자 전체에게 `MODE_UPDATED` 이벤트가 브로드캐스트됩니다. (gameMode + 영역)\n",
+        "operationId": "updateGameMode",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "게임 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameModeUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "모드 변경 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameModeUpdateResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "호스트 권한 필요": {
+                    "summary": "호스트 권한 필요",
+                    "value": {
+                      "errorCode": "NOT_HOST",
+                      "title": "호스트 권한 필요",
+                      "status": 403,
+                      "detail": "게임을 시작할 수 있는 권한이 없습니다. 방장만 게임을 시작할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "대기 중인 게임이 아님": {
+                    "summary": "대기 중인 게임이 아님",
+                    "value": {
+                      "errorCode": "GAME_NOT_WAITING",
+                      "title": "대기 중인 게임이 아님",
+                      "status": 400,
+                      "detail": "대기 중인 게임에서만 설정을 변경할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "이벤트 게임 전환 불가 모드": {
+                    "summary": "이벤트 게임 전환 불가 모드",
+                    "value": {
+                      "errorCode": "EVENT_GAME_NOT_SUPPORTED_IN_MODE",
+                      "title": "이벤트 게임 전환 불가 모드",
+                      "status": 400,
+                      "detail": "이 게임 모드는 이벤트 게임으로 전환할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "유효하지 않은 감옥 반지름": {
+                    "summary": "유효하지 않은 감옥 반지름",
+                    "value": {
+                      "errorCode": "INVALID_JAIL_RADIUS",
+                      "title": "유효하지 않은 감옥 반지름",
+                      "status": 400,
+                      "detail": "감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없습니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "감옥 영역 벗어남": {
+                    "summary": "감옥 영역 벗어남",
+                    "value": {
+                      "errorCode": "JAIL_OUTSIDE_PLAYGROUND",
+                      "title": "감옥 영역 벗어남",
+                      "status": 400,
+                      "detail": "감옥은 플레이그라운드 내부에 완전히 포함되어야 합니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "구역 축소 미지원 구역": {
+                    "summary": "구역 축소 미지원 구역",
+                    "value": {
+                      "errorCode": "SHRINK_REQUIRES_CIRCLE_AREA",
+                      "title": "구역 축소 미지원 구역",
+                      "status": 400,
+                      "detail": "구역 축소는 원형 구역에서만 설정할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "유효하지 않은 최종 반경": {
+                    "summary": "유효하지 않은 최종 반경",
+                    "value": {
+                      "errorCode": "INVALID_SHRINK_FINAL_RADIUS",
+                      "title": "유효하지 않은 최종 반경",
+                      "status": 400,
+                      "detail": "최종 반경은 감옥 반지름보다 크고 플레이그라운드 반지름보다 작아야 합니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "감옥 구역 필요": {
+                    "summary": "감옥 구역 필요",
+                    "value": {
+                      "errorCode": "JAIL_AREA_REQUIRED",
+                      "title": "감옥 구역 필요",
+                      "status": 400,
+                      "detail": "이 게임 모드는 감옥 구역을 입력해야 합니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "감옥 구역 사용 불가": {
+                    "summary": "감옥 구역 사용 불가",
+                    "value": {
+                      "errorCode": "JAIL_AREA_NOT_ALLOWED",
+                      "title": "감옥 구역 사용 불가",
+                      "status": 400,
+                      "detail": "이 게임 모드는 감옥 구역을 사용하지 않습니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/mode"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/games/{gameId}/area": {
       "get": {
         "tags": [
@@ -1265,7 +1482,7 @@
           "Game"
         ],
         "summary": "게임 영역 수정 (방장 전용)",
-        "description": "대기실에서 플레이그라운드·감옥 영역을 수정합니다.\n\n**제약 조건**\n- 방장만 호출 가능\n- 게임이 WAITING 상태일 때만 가능\n- 플레이그라운드와 감옥을 반드시 세트로 전송 (부분 수정 불가)\n- 감옥은 플레이그라운드 내부에 완전히 포함되어야 함\n- 감옥 반경 < 플레이그라운드 반경\n\n**WebSocket**\n성공 시 대기실 구독자 전체에게 `AREA_UPDATED` 이벤트가 브로드캐스트됩니다.\n",
+        "description": "대기실에서 플레이그라운드·감옥 영역을 수정합니다.\n\n**제약 조건**\n- 방장만 호출 가능\n- 게임이 WAITING 상태일 때만 가능\n- 영역 전체를 전송 (부분 수정 불가)\n- 경찰과도둑은 감옥 필수, 술래잡기는 감옥을 보내지 않음\n- 감옥은 플레이그라운드 내부에 완전히 포함되어야 함\n- 감옥 반경 < 플레이그라운드 반경\n\n**WebSocket**\n성공 시 대기실 구독자 전체에게 `AREA_UPDATED` 이벤트가 브로드캐스트됩니다.\n",
         "operationId": "updateGameArea",
         "parameters": [
           {
@@ -1378,6 +1595,26 @@
                       "title": "유효하지 않은 최종 반경",
                       "status": 400,
                       "detail": "최종 반경은 감옥 반지름보다 크고 플레이그라운드 반지름보다 작아야 합니다.",
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  },
+                  "감옥 구역 필요": {
+                    "summary": "감옥 구역 필요",
+                    "value": {
+                      "errorCode": "JAIL_AREA_REQUIRED",
+                      "title": "감옥 구역 필요",
+                      "status": 400,
+                      "detail": "이 게임 모드는 감옥 구역을 입력해야 합니다.",
+                      "instance": "/api/games/{gameId}/area"
+                    }
+                  },
+                  "감옥 구역 사용 불가": {
+                    "summary": "감옥 구역 사용 불가",
+                    "value": {
+                      "errorCode": "JAIL_AREA_NOT_ALLOWED",
+                      "title": "감옥 구역 사용 불가",
+                      "status": 400,
+                      "detail": "이 게임 모드는 감옥 구역을 사용하지 않습니다.",
                       "instance": "/api/games/{gameId}/area"
                     }
                   },
@@ -3341,7 +3578,7 @@
           "Game"
         ],
         "summary": "게임 방 생성",
-        "description": "새로운 게임 방을 생성하고 초대 코드를 발급받습니다. 게임 영역(플레이그라운드, 감옥)과 게임 규칙을 설정할 수 있습니다. 방을 생성한 사용자는 자동으로 방장이 됩니다.",
+        "description": "새로운 게임 방을 생성하고 초대 코드를 발급받습니다. 게임 영역(플레이그라운드, 경찰과도둑은 감옥 포함)과 게임 규칙을 설정할 수 있습니다. 방을 생성한 사용자는 자동으로 방장이 됩니다.",
         "operationId": "createGame",
         "requestBody": {
           "content": {
@@ -3409,6 +3646,26 @@
                       "title": "유효하지 않은 최종 반경",
                       "status": 400,
                       "detail": "최종 반경은 감옥 반지름보다 크고 플레이그라운드 반지름보다 작아야 합니다.",
+                      "instance": "/api/games"
+                    }
+                  },
+                  "감옥 구역 필요": {
+                    "summary": "감옥 구역 필요",
+                    "value": {
+                      "errorCode": "JAIL_AREA_REQUIRED",
+                      "title": "감옥 구역 필요",
+                      "status": 400,
+                      "detail": "이 게임 모드는 감옥 구역을 입력해야 합니다.",
+                      "instance": "/api/games"
+                    }
+                  },
+                  "감옥 구역 사용 불가": {
+                    "summary": "감옥 구역 사용 불가",
+                    "value": {
+                      "errorCode": "JAIL_AREA_NOT_ALLOWED",
+                      "title": "감옥 구역 사용 불가",
+                      "status": 400,
+                      "detail": "이 게임 모드는 감옥 구역을 사용하지 않습니다.",
                       "instance": "/api/games"
                     }
                   },
@@ -3704,7 +3961,7 @@
           "System"
         ],
         "summary": "도둑 탈옥",
-        "description": "수감된 도둑이 탈옥합니다.\n\n- 도둑만 요청 가능\n- 수감된 상태(JAILED)에서만 탈옥 가능\n",
+        "description": "수감된 도둑이 탈옥합니다.\n\n- 도둑만 요청 가능\n- 수감된 상태(JAILED)에서만 탈옥 가능\n- 술래잡기에서는 탈옥할 수 없음\n",
         "operationId": "escapeFromPrison",
         "parameters": [
           {
@@ -3738,6 +3995,16 @@
                       "title": "게임 진행 중 아님",
                       "status": 400,
                       "detail": "게임이 진행 중인 상태가 아닙니다.",
+                      "instance": "/api/games/{gameId}/system/escape"
+                    }
+                  },
+                  "탈옥 불가 모드": {
+                    "summary": "탈옥 불가 모드",
+                    "value": {
+                      "errorCode": "ESCAPE_NOT_ALLOWED_IN_MODE",
+                      "title": "탈옥 불가 모드",
+                      "status": 400,
+                      "detail": "이 게임 모드에서는 탈옥할 수 없습니다.",
                       "instance": "/api/games/{gameId}/system/escape"
                     }
                   },
@@ -4038,6 +4305,191 @@
                       "status": 500,
                       "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
                       "instance": "/api/games/{gameId}/system/arrest"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/games/{gameId}/radio/token": {
+      "post": {
+        "tags": [
+          "Radio"
+        ],
+        "summary": "무전 접속 토큰 발급",
+        "description": "경찰이 무전 서버에 접속할 토큰을 발급받습니다.\n\n- 경찰만 요청 가능\n- 경찰 대기 시간이 끝난 뒤에만 사용 가능\n- 이벤트 게임에서는 사용 불가\n- 토큰 수명은 2분입니다. 수명의 70~90% 지점에서 다시 호출해 재발급받습니다\n- 재발급 때마다 자격을 다시 검증하므로 게임이 끝났거나 나갔으면 거절됩니다\n- 음성은 서버를 거치지 않고 무전 서버와 앱 사이에서만 흐릅니다\n",
+        "operationId": "issueToken",
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "게임 ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "토큰 발급 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadioTokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임 진행 중 아님": {
+                    "summary": "게임 진행 중 아님",
+                    "value": {
+                      "errorCode": "GAME_NOT_IN_PROGRESS",
+                      "title": "게임 진행 중 아님",
+                      "status": 400,
+                      "detail": "게임이 진행 중인 상태가 아닙니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  },
+                  "이벤트 게임 무전 불가": {
+                    "summary": "이벤트 게임 무전 불가",
+                    "value": {
+                      "errorCode": "RADIO_NOT_ALLOWED_IN_EVENT_GAME",
+                      "title": "이벤트 게임 무전 불가",
+                      "status": 400,
+                      "detail": "이벤트 게임에서는 무전을 사용할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  },
+                  "경찰 대기 시간": {
+                    "summary": "경찰 대기 시간",
+                    "value": {
+                      "errorCode": "RADIO_POLICE_WAITING_TIME",
+                      "title": "경찰 대기 시간",
+                      "status": 400,
+                      "detail": "경찰은 대기 시간 동안 무전을 사용할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  },
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "게임을 찾을 수 없음": {
+                    "summary": "게임을 찾을 수 없음",
+                    "value": {
+                      "errorCode": "GAME_NOT_FOUND",
+                      "title": "게임을 찾을 수 없음",
+                      "status": 404,
+                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  },
+                  "참가자를 찾을 수 없음": {
+                    "summary": "참가자를 찾을 수 없음",
+                    "value": {
+                      "errorCode": "PARTICIPANT_NOT_FOUND",
+                      "title": "참가자를 찾을 수 없음",
+                      "status": 404,
+                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "경찰만 무전 가능": {
+                    "summary": "경찰만 무전 가능",
+                    "value": {
+                      "errorCode": "ONLY_POLICE_CAN_USE_RADIO",
+                      "title": "경찰만 무전 가능",
+                      "status": 403,
+                      "detail": "경찰 팀만 무전을 사용할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "인증되지 않은 요청": {
+                    "summary": "인증되지 않은 요청",
+                    "value": {
+                      "errorCode": "UNAUTHENTICATED_REQUEST",
+                      "title": "인증되지 않은 요청",
+                      "status": 401,
+                      "detail": "로그인이 필요합니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/games/{gameId}/radio/token"
                     }
                   }
                 }
@@ -5803,6 +6255,288 @@
         }
       }
     },
+    "/api/auth/withdrawal": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "웹 회원 탈퇴",
+        "description": "Firebase ID 토큰으로 본인을 확인한 뒤 회원 탈퇴를 진행합니다. 처리 내용은 `DELETE /api/user/me` 와 같습니다.",
+        "operationId": "withdraw",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "탈퇴 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAccountResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Firebase 인증 실패": {
+                    "summary": "Firebase 인증 실패",
+                    "value": {
+                      "errorCode": "INVALID_FIREBASE_TOKEN",
+                      "title": "Firebase 인증 실패",
+                      "status": 401,
+                      "detail": "유효하지 않은 Firebase 토큰입니다.",
+                      "instance": "/api/auth/withdrawal"
+                    }
+                  },
+                  "Firebase 인증 만료": {
+                    "summary": "Firebase 인증 만료",
+                    "value": {
+                      "errorCode": "EXPIRED_FIREBASE_TOKEN",
+                      "title": "Firebase 인증 만료",
+                      "status": 401,
+                      "detail": "Firebase 토큰이 만료되었습니다. 다시 인증해주세요.",
+                      "instance": "/api/auth/withdrawal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "사용자 없음": {
+                    "summary": "사용자 없음",
+                    "value": {
+                      "errorCode": "WITHDRAWAL_USER_NOT_FOUND",
+                      "title": "사용자 없음",
+                      "status": 404,
+                      "detail": "가입되지 않은 계정입니다.",
+                      "instance": "/api/auth/withdrawal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "회원 탈퇴 불가": {
+                    "summary": "회원 탈퇴 불가",
+                    "value": {
+                      "errorCode": "CANNOT_WITHDRAW",
+                      "title": "회원 탈퇴 불가",
+                      "status": 409,
+                      "detail": "진행 중인 게임 세션이 있어 탈퇴할 수 없습니다.",
+                      "instance": "/api/auth/withdrawal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/auth/withdrawal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/auth/withdrawal"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/withdrawal/preview": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "웹 회원 탈퇴 전 계정 확인",
+        "description": "Firebase ID 토큰으로 탈퇴할 계정을 확인합니다. 회원가입을 하지 않고 JWT도 발급하지 않습니다.\n\n`inActiveGame` 이 `true` 면 대기 중이거나 진행 중인 게임이 있어 탈퇴할 수 없습니다.",
+        "operationId": "previewWithdrawal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "확인 성공",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawalPreviewResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "Firebase 인증 실패": {
+                    "summary": "Firebase 인증 실패",
+                    "value": {
+                      "errorCode": "INVALID_FIREBASE_TOKEN",
+                      "title": "Firebase 인증 실패",
+                      "status": 401,
+                      "detail": "유효하지 않은 Firebase 토큰입니다.",
+                      "instance": "/api/auth/withdrawal/preview"
+                    }
+                  },
+                  "Firebase 인증 만료": {
+                    "summary": "Firebase 인증 만료",
+                    "value": {
+                      "errorCode": "EXPIRED_FIREBASE_TOKEN",
+                      "title": "Firebase 인증 만료",
+                      "status": 401,
+                      "detail": "Firebase 토큰이 만료되었습니다. 다시 인증해주세요.",
+                      "instance": "/api/auth/withdrawal/preview"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "사용자 없음": {
+                    "summary": "사용자 없음",
+                    "value": {
+                      "errorCode": "WITHDRAWAL_USER_NOT_FOUND",
+                      "title": "사용자 없음",
+                      "status": 404,
+                      "detail": "가입되지 않은 계정입니다.",
+                      "instance": "/api/auth/withdrawal/preview"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "유효하지 않은 입력값": {
+                    "summary": "유효하지 않은 입력값",
+                    "value": {
+                      "errorCode": "INVALID_INPUT_VALUE",
+                      "title": "유효하지 않은 입력값",
+                      "status": 400,
+                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
+                      "instance": "/api/auth/withdrawal/preview"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "알 수 없는 오류": {
+                    "summary": "알 수 없는 오류",
+                    "value": {
+                      "errorCode": "INTERNAL_SERVER_ERROR",
+                      "title": "알 수 없는 오류",
+                      "status": 500,
+                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
+                      "instance": "/api/auth/withdrawal/preview"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/reissue": {
       "post": {
         "tags": [
@@ -5999,31 +6733,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                },
-                "examples": {
-                  "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)": {
-                    "description": "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)",
-                    "value": {
-                      "userId": 2,
-                      "nickname": "집요한괴도4053",
-                      "tokens": {
-                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njg0OTg2MTB9...",
-                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
-                      },
-                      "isNewUser": true,
-                      "requiresAgreement": true
-                    }
-                  }
-                }
-              }
-            }
-          },
           "200": {
             "description": "기존 회원 로그인 성공",
             "content": {
@@ -6043,6 +6752,31 @@
                       },
                       "isNewUser": false,
                       "requiresAgreement": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "신규 회원 가입 및 로그인 성공 (회원 리소스 생성)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "examples": {
+                  "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)": {
+                    "description": "신규 회원 가입 성공 예시 (신규 회원은 항상 필수 이용 약관에 동의를 하지 않은 상태를 갖는다)",
+                    "value": {
+                      "userId": 2,
+                      "nickname": "집요한괴도4053",
+                      "tokens": {
+                        "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njg0OTg2MTB9...",
+                        "refreshToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzY4NDk1MDEwLCJleHAiOjE3Njk3MDQ2MTB9..."
+                      },
+                      "isNewUser": true,
+                      "requiresAgreement": true
                     }
                   }
                 }
@@ -6583,163 +7317,6 @@
             }
           }
         }
-      }
-    },
-    "/api/games/{gameId}/lobby/ready": {
-      "patch": {
-        "tags": [
-          "Lobby"
-        ],
-        "summary": "로비 준비 상태 변경 (deprecated)",
-        "description": "준비 상태가 없어져 호출해도 아무것도 바뀌지 않고, 이벤트도 발행하지 않습니다.\n- 대기 상태의 게임·참가자 검증은 예전과 같아 응답 코드가 같습니다.\n- Deprecated: 구버전 앱 호환용으로만 남김, 다음 작업에서 삭제 예정\n",
-        "operationId": "updateReady",
-        "parameters": [
-          {
-            "name": "gameId",
-            "in": "path",
-            "description": "게임 ID",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReadyUpdateRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "204": {
-            "description": "성공 (아무것도 바뀌지 않음)"
-          },
-          "400": {
-            "description": "400 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "이미 시작된 게임": {
-                    "summary": "이미 시작된 게임",
-                    "value": {
-                      "errorCode": "GAME_ALREADY_STARTED",
-                      "title": "이미 시작된 게임",
-                      "status": 400,
-                      "detail": "이미 시작된 게임에는 참여할 수 없습니다.",
-                      "instance": "/api/games/{gameId}/lobby/ready"
-                    }
-                  },
-                  "로비 조작 불가": {
-                    "summary": "로비 조작 불가",
-                    "value": {
-                      "errorCode": "LOBBY_ACTION_NOT_ALLOWED",
-                      "title": "로비 조작 불가",
-                      "status": 400,
-                      "detail": "게임이 시작된 이후에는 로비 상태를 변경할 수 없습니다.",
-                      "instance": "/api/games/{gameId}/lobby/ready"
-                    }
-                  },
-                  "유효하지 않은 입력값": {
-                    "summary": "유효하지 않은 입력값",
-                    "value": {
-                      "errorCode": "INVALID_INPUT_VALUE",
-                      "title": "유효하지 않은 입력값",
-                      "status": 400,
-                      "detail": "입력값이 유효성 검사를 통과하지 못했습니다.",
-                      "instance": "/api/games/{gameId}/lobby/ready"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "404 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "참가자를 찾을 수 없음": {
-                    "summary": "참가자를 찾을 수 없음",
-                    "value": {
-                      "errorCode": "PARTICIPANT_NOT_FOUND",
-                      "title": "참가자를 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/{gameId}/lobby/ready"
-                    }
-                  },
-                  "게임을 찾을 수 없음": {
-                    "summary": "게임을 찾을 수 없음",
-                    "value": {
-                      "errorCode": "GAME_NOT_FOUND",
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
-                      "instance": "/api/games/{gameId}/lobby/ready"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "401 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증되지 않은 요청": {
-                    "summary": "인증되지 않은 요청",
-                    "value": {
-                      "errorCode": "UNAUTHENTICATED_REQUEST",
-                      "title": "인증되지 않은 요청",
-                      "status": 401,
-                      "detail": "로그인이 필요합니다.",
-                      "instance": "/api/games/{gameId}/lobby/ready"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "500 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "알 수 없는 오류": {
-                    "summary": "알 수 없는 오류",
-                    "value": {
-                      "errorCode": "INTERNAL_SERVER_ERROR",
-                      "title": "알 수 없는 오류",
-                      "status": 500,
-                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
-                      "instance": "/api/games/{gameId}/lobby/ready"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "deprecated": true
       }
     },
     "/api/community-posts/{postId}/status": {
@@ -7644,143 +8221,6 @@
             }
           }
         }
-      }
-    },
-    "/api/games/{gameId}/robbers/location": {
-      "get": {
-        "tags": [
-          "Location"
-        ],
-        "summary": "도둑 위치 조회 (deprecated)",
-        "description": "현재 게임에 참여 중인 도둑들의 마지막 위치를 조회합니다.\n\n- 가장 최근 도둑 위치 공개 시점의 위치를 기준으로 목록을 응답합니다.\n- JAILED 상태의 도둑은 목록에 포함되지 않습니다.\n- 위치를 한 번도 전송하지 않은 도둑은 목록에 포함되지 않습니다.\n\n- **Deprecated**: /api/games/{gameId}/state 로 대체됩니다.\n     (프론트로직 마이그레이션 되면 해당 API는 삭제 예정, 현재 까지는 호출 가능)\n",
-        "operationId": "getRobberLocations",
-        "parameters": [
-          {
-            "name": "gameId",
-            "in": "path",
-            "description": "게임 ID",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "조회 성공",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RobberLocationResponse"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "404 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "게임을 찾을 수 없음": {
-                    "summary": "게임을 찾을 수 없음",
-                    "value": {
-                      "errorCode": "GAME_NOT_FOUND",
-                      "title": "게임을 찾을 수 없음",
-                      "status": 404,
-                      "detail": "요청하신 게임 정보가 존재하지 않습니다.",
-                      "instance": "/api/games/{gameId}/robbers/location"
-                    }
-                  },
-                  "참가자를 찾을 수 없음": {
-                    "summary": "참가자를 찾을 수 없음",
-                    "value": {
-                      "errorCode": "PARTICIPANT_NOT_FOUND",
-                      "title": "참가자를 찾을 수 없음",
-                      "status": 404,
-                      "detail": "해당 게임에 참가하지 않은 사용자입니다.",
-                      "instance": "/api/games/{gameId}/robbers/location"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "400 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "게임 진행 중 아님": {
-                    "summary": "게임 진행 중 아님",
-                    "value": {
-                      "errorCode": "GAME_NOT_IN_PROGRESS",
-                      "title": "게임 진행 중 아님",
-                      "status": 400,
-                      "detail": "게임이 진행 중인 상태가 아닙니다.",
-                      "instance": "/api/games/{gameId}/robbers/location"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "401 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "인증되지 않은 요청": {
-                    "summary": "인증되지 않은 요청",
-                    "value": {
-                      "errorCode": "UNAUTHENTICATED_REQUEST",
-                      "title": "인증되지 않은 요청",
-                      "status": 401,
-                      "detail": "로그인이 필요합니다.",
-                      "instance": "/api/games/{gameId}/robbers/location"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "500 Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                },
-                "examples": {
-                  "알 수 없는 오류": {
-                    "summary": "알 수 없는 오류",
-                    "value": {
-                      "errorCode": "INTERNAL_SERVER_ERROR",
-                      "title": "알 수 없는 오류",
-                      "status": 500,
-                      "detail": "서버 내부에 알 수 없는 오류가 발생했습니다. 관리자에게 문의 하세요.",
-                      "instance": "/api/games/{gameId}/robbers/location"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "deprecated": true
       }
     },
     "/api/games/{gameId}/participants": {
@@ -9943,7 +10383,7 @@
             "example": 3
           },
           "maxParticipants": {
-            "maximum": 150,
+            "maximum": 50,
             "minimum": 2,
             "type": "integer",
             "description": "최대 참가 인원",
@@ -9963,6 +10403,15 @@
       "GameSettingsUpdateResponse": {
         "type": "object",
         "properties": {
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드",
+            "example": "COPS_AND_ROBBERS",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
+          },
           "roundDurationMinutes": {
             "type": "integer",
             "description": "라운드 시간(분)",
@@ -9998,8 +10447,6 @@
       },
       "CircleAreaRequest": {
         "required": [
-          "jailCenter",
-          "jailRadiusInMeters",
           "playgroundCenter",
           "playgroundRadiusInMeters"
         ],
@@ -10021,9 +10468,13 @@
           "jailRadiusInMeters": {
             "minimum": 5,
             "type": "integer",
-            "description": "감옥 반경(m)",
+            "description": "감옥 반경(m). 술래잡기에서는 보내지 않음",
             "format": "int32",
+            "nullable": true,
             "example": 100
+          },
+          "jailDataComplete": {
+            "type": "boolean"
           }
         },
         "description": "원형 구역 데이터 (CIRCLE 전용)"
@@ -10055,9 +10506,14 @@
             "format": "double",
             "example": 126.978
           }
-        }
+        },
+        "description": "감옥 꼭짓점 좌표 목록 (최소 3개). 술래잡기에서는 보내지 않음",
+        "nullable": true
       },
       "GameAreaRequest": {
+        "required": [
+          "areaType"
+        ],
         "type": "object",
         "properties": {
           "areaType": {
@@ -10074,31 +10530,35 @@
           "polygon": {
             "$ref": "#/components/schemas/PolygonAreaRequest"
           },
-          "playgroundCenter": {
-            "$ref": "#/components/schemas/CoordinatesRequest"
-          },
-          "playgroundRadiusInMeters": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "jailCenter": {
-            "$ref": "#/components/schemas/CoordinatesRequest"
-          },
-          "jailRadiusInMeters": {
-            "type": "integer",
-            "format": "int32"
-          },
           "areaDataConsistent": {
             "type": "boolean"
+          }
+        },
+        "description": "새 모드에 맞는 영역 설정 정보"
+      },
+      "GameModeUpdateRequest": {
+        "required": [
+          "area",
+          "gameMode"
+        ],
+        "type": "object",
+        "properties": {
+          "gameMode": {
+            "type": "string",
+            "description": "바꿀 게임 모드",
+            "example": "TAG",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
           },
-          "legacyAreaDataValid": {
-            "type": "boolean"
+          "area": {
+            "$ref": "#/components/schemas/GameAreaRequest"
           }
         }
       },
       "PolygonAreaRequest": {
         "required": [
-          "jailPolygon",
           "playgroundPolygon"
         ],
         "type": "object",
@@ -10116,7 +10576,8 @@
             "maxItems": 2147483647,
             "minItems": 3,
             "type": "array",
-            "description": "감옥 꼭짓점 좌표 목록 (최소 3개)",
+            "description": "감옥 꼭짓점 좌표 목록 (최소 3개). 술래잡기에서는 보내지 않음",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/CoordinatesRequest"
             }
@@ -10141,8 +10602,9 @@
           },
           "jailRadiusInMeters": {
             "type": "integer",
-            "description": "감옥 반경(m)",
+            "description": "감옥 반경(m). 술래잡기에서는 null",
             "format": "int32",
+            "nullable": true,
             "example": 100
           }
         },
@@ -10163,7 +10625,9 @@
             "format": "double",
             "example": 126.978
           }
-        }
+        },
+        "description": "감옥 꼭짓점 좌표 목록. 술래잡기에서는 null",
+        "nullable": true
       },
       "GameAreaUpdateResponse": {
         "type": "object",
@@ -10181,20 +10645,27 @@
           },
           "polygon": {
             "$ref": "#/components/schemas/PolygonAreaResponse"
+          }
+        },
+        "description": "영역 설정 정보"
+      },
+      "GameModeUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드",
+            "example": "TAG",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
           },
-          "playgroundCenter": {
-            "$ref": "#/components/schemas/Coordinates"
+          "settings": {
+            "$ref": "#/components/schemas/GameSettingsUpdateResponse"
           },
-          "playgroundRadiusInMeters": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "jailCenter": {
-            "$ref": "#/components/schemas/Coordinates"
-          },
-          "jailRadiusInMeters": {
-            "type": "integer",
-            "format": "int32"
+          "area": {
+            "$ref": "#/components/schemas/GameAreaUpdateResponse"
           }
         }
       },
@@ -10210,7 +10681,8 @@
           },
           "jailPolygon": {
             "type": "array",
-            "description": "감옥 꼭짓점 좌표 목록",
+            "description": "감옥 꼭짓점 좌표 목록. 술래잡기에서는 null",
+            "nullable": true,
             "items": {
               "$ref": "#/components/schemas/Coordinates"
             }
@@ -10728,6 +11200,16 @@
           },
           "settings": {
             "$ref": "#/components/schemas/GameSettingsRequest"
+          },
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드. 없으면 COPS_AND_ROBBERS",
+            "nullable": true,
+            "example": "COPS_AND_ROBBERS",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
           }
         }
       },
@@ -10749,6 +11231,15 @@
             "type": "string",
             "description": "게임 상태",
             "example": "WAITING"
+          },
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드",
+            "example": "COPS_AND_ROBBERS",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
           },
           "roundDurationMinutes": {
             "type": "integer",
@@ -10818,6 +11309,36 @@
           }
         }
       },
+      "RadioTokenResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "무전 서버 접속 주소",
+            "example": "wss://voice.copsnro66ers.site"
+          },
+          "room": {
+            "type": "string",
+            "description": "접속할 무전 방 이름",
+            "example": "dev-game-1-police"
+          },
+          "identity": {
+            "type": "string",
+            "description": "무전 방에서의 식별자. 참가자 ID 입니다",
+            "example": "101"
+          },
+          "token": {
+            "type": "string",
+            "description": "무전 서버 접속 토큰",
+            "example": "eyJhbGciOiJIUzI1NiJ9..."
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "토큰 만료 시각. 이 시각 전에 재발급받아야 합니다",
+            "example": "2026-11-09T21:30:00+09:00"
+          }
+        }
+      },
       "GameJoinRequest": {
         "required": [
           "inviteCode"
@@ -10850,6 +11371,15 @@
             "type": "boolean",
             "description": "이벤트 게임 여부 (true면 인게임 직접 입장)",
             "example": false
+          },
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드",
+            "example": "COPS_AND_ROBBERS",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
           }
         }
       },
@@ -11027,6 +11557,55 @@
             "type": "string",
             "description": "버그 내용",
             "example": "게임 시작 버튼을 누르면 앱이 꺼져요"
+          }
+        }
+      },
+      "WithdrawalRequest": {
+        "required": [
+          "idToken",
+          "socialPlatform"
+        ],
+        "type": "object",
+        "properties": {
+          "socialPlatform": {
+            "type": "string",
+            "description": "소셜 플랫폼",
+            "example": "APPLE",
+            "enum": [
+              "KAKAO",
+              "GOOGLE",
+              "APPLE"
+            ]
+          },
+          "idToken": {
+            "type": "string",
+            "description": "소셜 인증 ID 토큰",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "DeleteAccountResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "결과 메시지",
+            "example": "회원탈퇴가 완료되었습니다."
+          }
+        }
+      },
+      "WithdrawalPreviewResponse": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "description": "닉네임",
+            "example": "재빠른고양이3721"
+          },
+          "inActiveGame": {
+            "type": "boolean",
+            "description": "대기 중이거나 진행 중인 게임 참여 여부. true면 탈퇴할 수 없습니다.",
+            "example": false
           }
         }
       },
@@ -11247,19 +11826,6 @@
               "POLICE",
               "ROBBER"
             ]
-          }
-        }
-      },
-      "ReadyUpdateRequest": {
-        "required": [
-          "isReady"
-        ],
-        "type": "object",
-        "properties": {
-          "isReady": {
-            "type": "boolean",
-            "description": "준비 상태",
-            "example": true
           }
         }
       },
@@ -11578,12 +12144,30 @@
             "type": "boolean",
             "description": "이벤트 게임 여부",
             "example": false
+          },
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드",
+            "example": "COPS_AND_ROBBERS",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
           }
         }
       },
       "GameStateResponse": {
         "type": "object",
         "properties": {
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드",
+            "example": "COPS_AND_ROBBERS",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
+          },
           "robberLocations": {
             "type": "array",
             "description": "마지막 공개된 생존 도둑 위치 목록",
@@ -11657,34 +12241,6 @@
           }
         },
         "description": "마지막 공개된 생존 도둑 위치 목록"
-      },
-      "RobberLocationResponse": {
-        "type": "object",
-        "properties": {
-          "participantId": {
-            "type": "integer",
-            "description": "도둑 참가자 ID",
-            "format": "int64",
-            "example": 1
-          },
-          "nickname": {
-            "type": "string",
-            "description": "도둑 닉네임",
-            "example": "거북이"
-          },
-          "latitude": {
-            "type": "number",
-            "description": "위도",
-            "format": "double",
-            "example": 37.5665
-          },
-          "longitude": {
-            "type": "number",
-            "description": "경도",
-            "format": "double",
-            "example": 126.978
-          }
-        }
       },
       "GameParticipantListResponse": {
         "type": "object",
@@ -11778,12 +12334,6 @@
               "POLICE",
               "ROBBER"
             ]
-          },
-          "isReady": {
-            "type": "boolean",
-            "description": "준비 여부",
-            "example": true,
-            "deprecated": true
           }
         },
         "description": "로비 참가자 정보"
@@ -11804,26 +12354,21 @@
           },
           "polygon": {
             "$ref": "#/components/schemas/PolygonAreaResponse"
-          },
-          "playgroundCenter": {
-            "$ref": "#/components/schemas/Coordinates"
-          },
-          "playgroundRadiusInMeters": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "jailCenter": {
-            "$ref": "#/components/schemas/Coordinates"
-          },
-          "jailRadiusInMeters": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },
       "GameResultResponse": {
         "type": "object",
         "properties": {
+          "gameMode": {
+            "type": "string",
+            "description": "게임 모드",
+            "example": "COPS_AND_ROBBERS",
+            "enum": [
+              "COPS_AND_ROBBERS",
+              "TAG"
+            ]
+          },
           "winnerTeam": {
             "type": "string",
             "description": "승리 팀",
@@ -12335,16 +12880,6 @@
             "type": "string",
             "description": "좌표가 속한 국가 코드(ISO 3166-1 alpha-2). 목록 조회 필터에 그대로 사용한다.",
             "example": "KR"
-          }
-        }
-      },
-      "DeleteAccountResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "결과 메시지",
-            "example": "회원탈퇴가 완료되었습니다."
           }
         }
       },

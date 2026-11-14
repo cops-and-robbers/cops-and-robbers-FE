@@ -26,8 +26,10 @@ _$CircleAreaModelImpl _$$CircleAreaModelImplFromJson(
   ),
   playgroundRadiusInMeters: (json['playgroundRadiusInMeters'] as num)
       .toDouble(),
-  jailCenter: LatLngModel.fromJson(json['jailCenter'] as Map<String, dynamic>),
-  jailRadiusInMeters: (json['jailRadiusInMeters'] as num).toDouble(),
+  jailCenter: json['jailCenter'] == null
+      ? null
+      : LatLngModel.fromJson(json['jailCenter'] as Map<String, dynamic>),
+  jailRadiusInMeters: (json['jailRadiusInMeters'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$$CircleAreaModelImplToJson(
@@ -35,7 +37,7 @@ Map<String, dynamic> _$$CircleAreaModelImplToJson(
 ) => <String, dynamic>{
   'playgroundCenter': instance.playgroundCenter.toJson(),
   'playgroundRadiusInMeters': instance.playgroundRadiusInMeters,
-  'jailCenter': instance.jailCenter.toJson(),
+  'jailCenter': instance.jailCenter?.toJson(),
   'jailRadiusInMeters': instance.jailRadiusInMeters,
 };
 
@@ -45,8 +47,8 @@ _$PolygonAreaModelImpl _$$PolygonAreaModelImplFromJson(
   playgroundPolygon: (json['playgroundPolygon'] as List<dynamic>)
       .map((e) => LatLngModel.fromJson(e as Map<String, dynamic>))
       .toList(),
-  jailPolygon: (json['jailPolygon'] as List<dynamic>)
-      .map((e) => LatLngModel.fromJson(e as Map<String, dynamic>))
+  jailPolygon: (json['jailPolygon'] as List<dynamic>?)
+      ?.map((e) => LatLngModel.fromJson(e as Map<String, dynamic>))
       .toList(),
 );
 
@@ -56,7 +58,7 @@ Map<String, dynamic> _$$PolygonAreaModelImplToJson(
   'playgroundPolygon': instance.playgroundPolygon
       .map((e) => e.toJson())
       .toList(),
-  'jailPolygon': instance.jailPolygon.map((e) => e.toJson()).toList(),
+  'jailPolygon': instance.jailPolygon?.map((e) => e.toJson()).toList(),
 };
 
 _$GameAreaModelImpl _$$GameAreaModelImplFromJson(Map<String, dynamic> json) =>

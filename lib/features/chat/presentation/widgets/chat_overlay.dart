@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/chat_constants.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -29,6 +30,7 @@ class ChatOverlay extends ConsumerStatefulWidget {
     required this.previewInsets,
     required this.onOpen,
     this.isDarkMode = false,
+    required this.gameMode,
     super.key,
   });
 
@@ -39,6 +41,7 @@ class ChatOverlay extends ConsumerStatefulWidget {
   final EdgeInsets previewInsets;
   final VoidCallback onOpen;
   final bool isDarkMode;
+  final GameMode gameMode;
 
   @override
   ConsumerState<ChatOverlay> createState() => _ChatOverlayState();
@@ -249,6 +252,7 @@ class _ChatOverlayState extends ConsumerState<ChatOverlay> {
                                     myParticipantId: widget.myParticipantId,
                                     myTeam: widget.myTeam,
                                     isDarkMode: widget.isDarkMode,
+                                    gameMode: widget.gameMode,
                                     scope: page == 0
                                         ? ChatScope.all
                                         : ChatScope.team,

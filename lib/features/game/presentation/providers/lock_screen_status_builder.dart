@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/game_mode.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/services/background/lock_screen_status.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/reveal_schedule.dart';
@@ -15,6 +17,7 @@ LockScreenStatus buildLockScreenStatus({
   required int? totalRobbers,
   required bool isEventGame,
   required bool isRobberTeam,
+  required GameMode gameMode,
   required AppLocalizations l10n,
   DateTime? nextShrinkAt,
 }) {
@@ -36,7 +39,14 @@ LockScreenStatus buildLockScreenStatus({
     totalRobbers: showRobbers ? totalRobbers : null,
     title: l10n.appTitle,
     robbersText: showRobbers
-        ? l10n.lockScreenRemainingRobbers(aliveRobbers, totalRobbers)
+        ? byMode(
+            gameMode,
+            classic: l10n.lockScreenRemainingRobbers(
+              aliveRobbers,
+              totalRobbers,
+            ),
+            tag: l10n.lockScreenRemainingRobbersTag(aliveRobbers, totalRobbers),
+          )
         : null,
     revealText: nextReveal == null
         ? null
@@ -44,11 +54,15 @@ LockScreenStatus buildLockScreenStatus({
             DateFormat.Hm(l10n.localeName).format(nextReveal.toLocal()),
           ),
     remainingTimeLabel: l10n.lockScreenRemainingTime,
-    remainingRobbersLabel: l10n.fieldRemainingRobbers,
+    remainingRobbersLabel: byMode(
+      gameMode,
+      classic: l10n.fieldRemainingRobbers,
+      tag: l10n.fieldRemainingRobbersTag,
+    ),
     locationRevealLabel: l10n.lockScreenLocationReveal,
     gameOverLabel: l10n.lockScreenGameOver,
     isRobberTeam: isRobberTeam,
-    teamLabel: isRobberTeam ? l10n.gameRoleRobberLabel : l10n.gameRoleCopLabel,
+    teamLabel: roleLabel(l10n, gameMode, isPolice: !isRobberTeam),
     localeCode: l10n.localeName,
     nextShrinkAt: nextShrinkAt,
     shrinkText: nextShrinkAt == null

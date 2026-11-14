@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/game_mode.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -16,6 +18,7 @@ class LocationRevealCountdown extends StatelessWidget {
     this.intervalMinutes,
     this.shrinkRemaining,
     this.isDarkMode = false,
+    required this.gameMode,
   });
 
   /// 다음 위치 공개까지 남은 시간.
@@ -29,6 +32,7 @@ class LocationRevealCountdown extends StatelessWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+  final GameMode gameMode;
 
   String get _formatted {
     final remaining = remainingTime;
@@ -56,7 +60,11 @@ class LocationRevealCountdown extends StatelessWidget {
     return Text(
       // 앱바가 두 줄로 높아지지 않게 축소 시간은 같은 줄에 붙인다
       shrink == null
-          ? l10n.gameLocationRevealCountdown(_formatted)
+          ? byMode(
+              gameMode,
+              classic: l10n.gameLocationRevealCountdown(_formatted),
+              tag: l10n.gameLocationRevealCountdownTag(_formatted),
+            )
           : l10n.gameRevealShrinkCountdown(_formatted, _mmss(shrink)),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

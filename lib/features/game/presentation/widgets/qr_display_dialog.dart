@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../../../core/constants/game_mode.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/game_config.dart';
@@ -21,20 +23,27 @@ import '../../domain/qr_payload.dart';
 ///
 /// QR 데이터 형식: `{"pid": <participantId>, "exp": <만료시각 ms>}`
 class QrDisplayDialog extends StatelessWidget {
-  const QrDisplayDialog({required this.participantId, super.key});
+  const QrDisplayDialog({
+    required this.participantId,
+    required this.gameMode,
+    super.key,
+  });
 
   /// 도둑의 참가자 ID
   final int participantId;
+  final GameMode gameMode;
 
   /// 다이얼로그 표시. 닫힐 때 끝나는 Future — 열려 있는 동안 구역 축소 연출을 건너뛴다 (#668).
   static Future<void> show({
     required BuildContext context,
     required int participantId,
+    required GameMode gameMode,
   }) {
     return showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (_) => QrDisplayDialog(participantId: participantId),
+      builder: (_) =>
+          QrDisplayDialog(participantId: participantId, gameMode: gameMode),
     );
   }
 
@@ -85,7 +94,11 @@ class QrDisplayDialog extends StatelessWidget {
             SizedBox(height: AppSpacing.vertical20),
 
             Text(
-              l10n.gameQrDisplayMessage,
+              byMode(
+                gameMode,
+                classic: l10n.gameQrDisplayMessage,
+                tag: l10n.gameQrDisplayMessageTag,
+              ),
               style: AppTextStyles.paragraph_14.copyWith(
                 color: AppColors.black300,
               ),

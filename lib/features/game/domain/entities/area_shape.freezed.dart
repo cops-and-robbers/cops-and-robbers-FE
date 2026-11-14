@@ -542,8 +542,9 @@ abstract class PolygonShape extends AreaShape {
 
 /// @nodoc
 mixin _$GameAreaEntity {
-  AreaShape get playground => throw _privateConstructorUsedError;
-  AreaShape get jail => throw _privateConstructorUsedError;
+  AreaShape get playground =>
+      throw _privateConstructorUsedError; // null이면 감옥 없는 방(술래잡기)
+  AreaShape? get jail => throw _privateConstructorUsedError;
 
   /// Create a copy of GameAreaEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -559,10 +560,10 @@ abstract class $GameAreaEntityCopyWith<$Res> {
     $Res Function(GameAreaEntity) then,
   ) = _$GameAreaEntityCopyWithImpl<$Res, GameAreaEntity>;
   @useResult
-  $Res call({AreaShape playground, AreaShape jail});
+  $Res call({AreaShape playground, AreaShape? jail});
 
   $AreaShapeCopyWith<$Res> get playground;
-  $AreaShapeCopyWith<$Res> get jail;
+  $AreaShapeCopyWith<$Res>? get jail;
 }
 
 /// @nodoc
@@ -579,17 +580,17 @@ class _$GameAreaEntityCopyWithImpl<$Res, $Val extends GameAreaEntity>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? playground = null, Object? jail = null}) {
+  $Res call({Object? playground = null, Object? jail = freezed}) {
     return _then(
       _value.copyWith(
             playground: null == playground
                 ? _value.playground
                 : playground // ignore: cast_nullable_to_non_nullable
                       as AreaShape,
-            jail: null == jail
+            jail: freezed == jail
                 ? _value.jail
                 : jail // ignore: cast_nullable_to_non_nullable
-                      as AreaShape,
+                      as AreaShape?,
           )
           as $Val,
     );
@@ -609,8 +610,12 @@ class _$GameAreaEntityCopyWithImpl<$Res, $Val extends GameAreaEntity>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $AreaShapeCopyWith<$Res> get jail {
-    return $AreaShapeCopyWith<$Res>(_value.jail, (value) {
+  $AreaShapeCopyWith<$Res>? get jail {
+    if (_value.jail == null) {
+      return null;
+    }
+
+    return $AreaShapeCopyWith<$Res>(_value.jail!, (value) {
       return _then(_value.copyWith(jail: value) as $Val);
     });
   }
@@ -625,12 +630,12 @@ abstract class _$$GameAreaEntityImplCopyWith<$Res>
   ) = __$$GameAreaEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AreaShape playground, AreaShape jail});
+  $Res call({AreaShape playground, AreaShape? jail});
 
   @override
   $AreaShapeCopyWith<$Res> get playground;
   @override
-  $AreaShapeCopyWith<$Res> get jail;
+  $AreaShapeCopyWith<$Res>? get jail;
 }
 
 /// @nodoc
@@ -646,17 +651,17 @@ class __$$GameAreaEntityImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? playground = null, Object? jail = null}) {
+  $Res call({Object? playground = null, Object? jail = freezed}) {
     return _then(
       _$GameAreaEntityImpl(
         playground: null == playground
             ? _value.playground
             : playground // ignore: cast_nullable_to_non_nullable
                   as AreaShape,
-        jail: null == jail
+        jail: freezed == jail
             ? _value.jail
             : jail // ignore: cast_nullable_to_non_nullable
-                  as AreaShape,
+                  as AreaShape?,
       ),
     );
   }
@@ -665,12 +670,13 @@ class __$$GameAreaEntityImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$GameAreaEntityImpl implements _GameAreaEntity {
-  const _$GameAreaEntityImpl({required this.playground, required this.jail});
+  const _$GameAreaEntityImpl({required this.playground, this.jail});
 
   @override
   final AreaShape playground;
+  // null이면 감옥 없는 방(술래잡기)
   @override
-  final AreaShape jail;
+  final AreaShape? jail;
 
   @override
   String toString() {
@@ -705,13 +711,13 @@ class _$GameAreaEntityImpl implements _GameAreaEntity {
 abstract class _GameAreaEntity implements GameAreaEntity {
   const factory _GameAreaEntity({
     required final AreaShape playground,
-    required final AreaShape jail,
+    final AreaShape? jail,
   }) = _$GameAreaEntityImpl;
 
   @override
-  AreaShape get playground;
+  AreaShape get playground; // null이면 감옥 없는 방(술래잡기)
   @override
-  AreaShape get jail;
+  AreaShape? get jail;
 
   /// Create a copy of GameAreaEntity
   /// with the given fields replaced by the non-null parameter values.

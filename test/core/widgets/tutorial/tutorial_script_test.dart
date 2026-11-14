@@ -39,14 +39,82 @@ void main() {
     expect(classic.length, 10);
   });
 
-  test('tag_tutorial_ends_game_without_jail_when_caught', () {
+  test('tag_tutorial_shows_qr_and_scan_before_out_when_arrest_is_qr', () {
     final tag = tutorialScenes(TutorialMode.tag);
 
-    expect(tag.length, 6);
-    expect(tag, contains(TutorialScene.out));
+    expect(tag, [
+      TutorialScene.zoneIn,
+      TutorialScene.flat,
+      TutorialScene.chase,
+      TutorialScene.showQr,
+      TutorialScene.scan,
+      TutorialScene.out,
+      TutorialScene.shrink,
+      TutorialScene.community,
+    ]);
     expect(tag, isNot(contains(TutorialScene.jail)));
-    expect(tag, isNot(contains(TutorialScene.scan)));
   });
+
+  test('tag_chase_scene_shows_no_touch_callout_when_seeker_closes_in', () {
+    final stage = TutorialStage()..tag = true;
+    stage.beginScene();
+    playScene(TutorialScene.chase, stage);
+    _runUntilIdle(stage);
+
+    expect(stage.callout, isNull);
+  });
+
+  test('scan_scene_calls_arrest_callout_when_hider_qr_is_scanned_in_tag', () {
+    final tag = tutorialScenes(TutorialMode.tag);
+    final stage = TutorialStage()..tag = true;
+    for (final scene in tag.takeWhile((s) => s != TutorialScene.scan)) {
+      stage.beginScene();
+      playScene(scene, stage);
+      _runUntilIdle(stage);
+    }
+    stage.beginScene();
+    playScene(TutorialScene.scan, stage);
+    _runUntilIdle(stage);
+    stage.moveQr(0, 60);
+    _run(stage, 1500);
+
+    expect(stage.scanned, isTrue);
+    expect(stage.callout, TutorialCallout.arrest);
+  });
+
+  test(
+    'tag_out_scene_shows_result_without_second_catch_when_hider_was_scanned',
+    () {
+      final tag = tutorialScenes(TutorialMode.tag);
+      final stage = TutorialStage()..tag = true;
+      for (final scene in tag.takeWhile((s) => s != TutorialScene.scan)) {
+        stage.beginScene();
+        playScene(scene, stage);
+        _runUntilIdle(stage);
+      }
+      stage.beginScene();
+      playScene(TutorialScene.scan, stage);
+      _runUntilIdle(stage);
+      stage.moveQr(0, 60);
+      _run(stage, 1500);
+      _runUntilIdle(stage);
+
+      stage.beginScene();
+      playScene(TutorialScene.out, stage);
+      var seekerReappeared = false;
+      var calloutShown = false;
+      for (var i = 0; i < 400 && stage.timeline.isPlaying; i++) {
+        stage.update(16);
+        seekerReappeared |= stage.cop['op'] > .01;
+        calloutShown |= stage.q['fb'] > .01;
+      }
+
+      expect(seekerReappeared, isFalse);
+      expect(calloutShown, isFalse);
+      expect(stage.outed['op'], 1);
+      expect(stage.dark, isTrue);
+    },
+  );
 
   test('onboarding_mentions_no_role_scene_when_app_is_opened_first_time', () {
     expect(onboardingScenes, isNot(contains(TutorialScene.chase)));
