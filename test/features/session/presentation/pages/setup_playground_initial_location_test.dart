@@ -79,6 +79,8 @@ void main() {
       );
       await tester.tap(find.text('start'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('다음')); // 모드 선택
+      await tester.pumpAndSettle();
 
       expect(_visibleCenter(tester), _meeting);
       expect(

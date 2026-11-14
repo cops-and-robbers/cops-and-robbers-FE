@@ -8,10 +8,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
 import '../../../../core/constants/character_assets.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/game_result_reason.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/game_result_entity.dart';
@@ -31,8 +33,10 @@ class GameOverIntroModal extends StatefulWidget {
     required this.isDarkMode,
     required this.reason,
     required this.result,
+    required this.gameMode,
   });
 
+  final GameMode gameMode;
   final bool isDarkMode;
   final String? reason;
 
@@ -60,6 +64,7 @@ class GameOverIntroModal extends StatefulWidget {
     required bool isDarkMode,
     required String? reason,
     required Future<GameResultEntity>? result,
+    required GameMode gameMode,
   }) {
     return showGeneralDialog<void>(
       context: context,
@@ -72,6 +77,7 @@ class GameOverIntroModal extends StatefulWidget {
         isDarkMode: isDarkMode,
         reason: reason,
         result: result,
+        gameMode: gameMode,
       ),
     );
   }
@@ -253,7 +259,7 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
                     key: ValueKey(_step),
                     child: reveal == null
                         ? _buildCard(l10n)
-                        : _MvpStage(reveal: reveal),
+                        : _MvpStage(reveal: reveal, gameMode: widget.gameMode),
                   ),
                 ),
               ),
@@ -342,7 +348,11 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
                       ),
                       SizedBox(height: AppSpacing.vertical8),
                       Text(
-                        gameOverReasonMessage(l10n, widget.reason),
+                        gameOverReasonMessage(
+                          l10n,
+                          widget.reason,
+                          mode: widget.gameMode,
+                        ),
                         textAlign: TextAlign.center,
                         style: dark
                             ? AppTextStyles.paragraph_14_100.copyWith(
@@ -367,9 +377,10 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
 /// 가운데에 멈추면, 조명이 꺼지며 캐릭터가 납작하게 눌렸다 쭉 늘어나며 튀어나오고
 /// 무대(빛 원·글자)가 켜지며 양옆에서 색종이가 터진다.
 class _MvpStage extends StatefulWidget {
-  const _MvpStage({required this.reveal});
+  const _MvpStage({required this.reveal, required this.gameMode});
 
   final MvpReveal reveal;
+  final GameMode gameMode;
 
   // 연출 시간표(ms) — 앞 화면이 걷히는 동안 이미 어둡다.
   static const sweepStartMs = 300;
@@ -478,9 +489,15 @@ class _MvpStageState extends State<_MvpStage>
                           borderRadius: AppRadius.pill,
                         ),
                         child: Text(
-                          police
-                              ? l10n.labelPoliceTeamMvp
-                              : l10n.labelRobberTeamMvp,
+                          byMode(
+                            widget.gameMode,
+                            classic: police
+                                ? l10n.labelPoliceTeamMvp
+                                : l10n.labelRobberTeamMvp,
+                            tag: police
+                                ? l10n.labelPoliceTeamMvpTag
+                                : l10n.labelRobberTeamMvpTag,
+                          ),
                           style: AppTextStyles.subHeading_18.copyWith(
                             color: police ? AppColors.white : AppColors.black,
                           ),
@@ -521,9 +538,15 @@ class _MvpStageState extends State<_MvpStage>
                           ),
                           SizedBox(height: AppSpacing.vertical12),
                           Text(
-                            police
-                                ? l10n.mvpRevealPoliceSubtitle
-                                : l10n.mvpRevealRobberSubtitle,
+                            byMode(
+                              widget.gameMode,
+                              classic: police
+                                  ? l10n.mvpRevealPoliceSubtitle
+                                  : l10n.mvpRevealRobberSubtitle,
+                              tag: police
+                                  ? l10n.mvpRevealPoliceSubtitleTag
+                                  : l10n.mvpRevealRobberSubtitleTag,
+                            ),
                             style: AppTextStyles.label16Medium.copyWith(
                               color: police
                                   ? AppColors.black600

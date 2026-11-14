@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/session_remote_datasource.dart';
 import '../../data/models/game_create_request_model.dart';
@@ -77,6 +78,7 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
   /// 성공 시 state에 [CreateSessionResult]가 저장됩니다.
   /// 실패 시 state에 에러가 저장되며, Presentation에서 처리합니다.
   Future<void> createGame({
+    required GameMode gameMode,
     required GameAreaEntity area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
@@ -91,6 +93,7 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
       return await ref
           .read(sessionRepositoryProvider)
           .createGame(
+            gameMode: gameMode,
             area: area,
             roundDurationMinutes: roundDurationMinutes,
             locationRevealIntervalMinutes: locationRevealIntervalMinutes,
@@ -157,6 +160,24 @@ Future<void> changeTeam(
     TeamChangeRequest(targetTeam: targetTeam),
   );
   debugPrint('[Session] ✅ 팀 변경 성공: gameId=$gameId, targetTeam=$targetTeam');
+}
+
+/// 대기실 게임 모드 변경 (방장 전용)
+///
+/// 응답은 쓰지 않는다. 성공하면 설정·구역 캐시를 무효화해 새 모드 기준으로 다시 읽는다.
+@riverpod
+Future<void> updateGameMode(
+  Ref ref,
+  int gameId, {
+  required GameMode mode,
+  required GameAreaEntity area,
+}) async {
+  await ref
+      .read(sessionRepositoryProvider)
+      .updateGameMode(gameId, mode: mode, area: area);
+  ref.invalidate(fetchGameSettingsProvider(gameId));
+  ref.invalidate(fetchGameAreaProvider(gameId));
+  debugPrint('[Session] ✅ 게임 모드 변경 성공: gameId=$gameId, mode=${mode.toJson()}');
 }
 
 /// 게임 방 참여 기능

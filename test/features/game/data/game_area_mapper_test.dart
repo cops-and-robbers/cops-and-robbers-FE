@@ -121,5 +121,42 @@ void main() {
         expect(model.toEntity, throwsA(isA<ServerException>()));
       },
     );
+
+    test('maps_circle_json_without_jail_when_room_is_hide_and_seek', () {
+      // 술래잡기 방: 서버가 감옥 필드를 null로 내려준다
+      final model = GameAreaModel.fromJson({
+        'areaType': 'CIRCLE',
+        'circle': {
+          'playgroundCenter': {'latitude': 37.5665, 'longitude': 126.978},
+          'playgroundRadiusInMeters': 1000,
+          'jailCenter': null,
+          'jailRadiusInMeters': null,
+        },
+      });
+
+      final entity = model.toEntity();
+
+      expect(entity.jail, isNull);
+      expect(entity.playground, isA<CircleShape>());
+    });
+
+    test('maps_polygon_json_without_jail_when_room_is_hide_and_seek', () {
+      final model = GameAreaModel.fromJson({
+        'areaType': 'POLYGON',
+        'polygon': {
+          'playgroundPolygon': [
+            {'latitude': 37.5685, 'longitude': 126.976},
+            {'latitude': 37.5685, 'longitude': 126.980},
+            {'latitude': 37.5645, 'longitude': 126.978},
+          ],
+          'jailPolygon': null,
+        },
+      });
+
+      final entity = model.toEntity();
+
+      expect(entity.jail, isNull);
+      expect(entity.playground, isA<PolygonShape>());
+    });
   });
 }

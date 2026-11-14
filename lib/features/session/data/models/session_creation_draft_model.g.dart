@@ -9,6 +9,7 @@ part of 'session_creation_draft_model.dart';
 _$SessionCreationDraftModelImpl _$$SessionCreationDraftModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$SessionCreationDraftModelImpl(
+  gameMode: json['gameMode'] as String?,
   playgroundCenter: const LatLngConverter().fromJson(
     json['playgroundCenter'] as Map<String, dynamic>?,
   ),
@@ -37,6 +38,7 @@ _$SessionCreationDraftModelImpl _$$SessionCreationDraftModelImplFromJson(
 Map<String, dynamic> _$$SessionCreationDraftModelImplToJson(
   _$SessionCreationDraftModelImpl instance,
 ) => <String, dynamic>{
+  'gameMode': instance.gameMode,
   'playgroundCenter': const LatLngConverter().toJson(instance.playgroundCenter),
   'playgroundRadiusInMeters': instance.playgroundRadiusInMeters,
   'jailCenter': const LatLngConverter().toJson(instance.jailCenter),

@@ -23,6 +23,10 @@ GameCreateRequestModel _$GameCreateRequestModelFromJson(
 
 /// @nodoc
 mixin _$GameCreateRequestModel {
+  /// 게임 모드 (최상위 키, 서버 값 COPS_AND_ROBBERS / TAG)
+  @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+  GameMode get gameMode => throw _privateConstructorUsedError;
+
   /// 영역 설정 (areaType + circle/polygon)
   GameAreaRequestModel get area => throw _privateConstructorUsedError;
 
@@ -46,7 +50,12 @@ abstract class $GameCreateRequestModelCopyWith<$Res> {
     $Res Function(GameCreateRequestModel) then,
   ) = _$GameCreateRequestModelCopyWithImpl<$Res, GameCreateRequestModel>;
   @useResult
-  $Res call({GameAreaRequestModel area, GameSettingsRequestModel settings});
+  $Res call({
+    @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+    GameMode gameMode,
+    GameAreaRequestModel area,
+    GameSettingsRequestModel settings,
+  });
 
   $GameAreaRequestModelCopyWith<$Res> get area;
   $GameSettingsRequestModelCopyWith<$Res> get settings;
@@ -69,9 +78,17 @@ class _$GameCreateRequestModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? area = null, Object? settings = null}) {
+  $Res call({
+    Object? gameMode = null,
+    Object? area = null,
+    Object? settings = null,
+  }) {
     return _then(
       _value.copyWith(
+            gameMode: null == gameMode
+                ? _value.gameMode
+                : gameMode // ignore: cast_nullable_to_non_nullable
+                      as GameMode,
             area: null == area
                 ? _value.area
                 : area // ignore: cast_nullable_to_non_nullable
@@ -115,7 +132,12 @@ abstract class _$$GameCreateRequestModelImplCopyWith<$Res>
   ) = __$$GameCreateRequestModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({GameAreaRequestModel area, GameSettingsRequestModel settings});
+  $Res call({
+    @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+    GameMode gameMode,
+    GameAreaRequestModel area,
+    GameSettingsRequestModel settings,
+  });
 
   @override
   $GameAreaRequestModelCopyWith<$Res> get area;
@@ -137,9 +159,17 @@ class __$$GameCreateRequestModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? area = null, Object? settings = null}) {
+  $Res call({
+    Object? gameMode = null,
+    Object? area = null,
+    Object? settings = null,
+  }) {
     return _then(
       _$GameCreateRequestModelImpl(
+        gameMode: null == gameMode
+            ? _value.gameMode
+            : gameMode // ignore: cast_nullable_to_non_nullable
+                  as GameMode,
         area: null == area
             ? _value.area
             : area // ignore: cast_nullable_to_non_nullable
@@ -157,12 +187,19 @@ class __$$GameCreateRequestModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$GameCreateRequestModelImpl implements _GameCreateRequestModel {
   const _$GameCreateRequestModelImpl({
+    @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+    required this.gameMode,
     required this.area,
     required this.settings,
   });
 
   factory _$GameCreateRequestModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$GameCreateRequestModelImplFromJson(json);
+
+  /// 게임 모드 (최상위 키, 서버 값 COPS_AND_ROBBERS / TAG)
+  @override
+  @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+  final GameMode gameMode;
 
   /// 영역 설정 (areaType + circle/polygon)
   @override
@@ -174,7 +211,7 @@ class _$GameCreateRequestModelImpl implements _GameCreateRequestModel {
 
   @override
   String toString() {
-    return 'GameCreateRequestModel(area: $area, settings: $settings)';
+    return 'GameCreateRequestModel(gameMode: $gameMode, area: $area, settings: $settings)';
   }
 
   @override
@@ -182,6 +219,8 @@ class _$GameCreateRequestModelImpl implements _GameCreateRequestModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$GameCreateRequestModelImpl &&
+            (identical(other.gameMode, gameMode) ||
+                other.gameMode == gameMode) &&
             (identical(other.area, area) || other.area == area) &&
             (identical(other.settings, settings) ||
                 other.settings == settings));
@@ -189,7 +228,7 @@ class _$GameCreateRequestModelImpl implements _GameCreateRequestModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, area, settings);
+  int get hashCode => Object.hash(runtimeType, gameMode, area, settings);
 
   /// Create a copy of GameCreateRequestModel
   /// with the given fields replaced by the non-null parameter values.
@@ -211,12 +250,19 @@ class _$GameCreateRequestModelImpl implements _GameCreateRequestModel {
 
 abstract class _GameCreateRequestModel implements GameCreateRequestModel {
   const factory _GameCreateRequestModel({
+    @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+    required final GameMode gameMode,
     required final GameAreaRequestModel area,
     required final GameSettingsRequestModel settings,
   }) = _$GameCreateRequestModelImpl;
 
   factory _GameCreateRequestModel.fromJson(Map<String, dynamic> json) =
       _$GameCreateRequestModelImpl.fromJson;
+
+  /// 게임 모드 (최상위 키, 서버 값 COPS_AND_ROBBERS / TAG)
+  @override
+  @JsonKey(fromJson: GameMode.fromJson, toJson: gameModeToJson)
+  GameMode get gameMode;
 
   /// 영역 설정 (areaType + circle/polygon)
   @override
@@ -503,10 +549,13 @@ mixin _$CircleAreaRequestModel {
   int get playgroundRadiusInMeters => throw _privateConstructorUsedError;
 
   /// 감옥 중심 좌표
-  CoordinatesRequestModel get jailCenter => throw _privateConstructorUsedError;
+  // 술래잡기는 감옥 키를 아예 보내지 않는다 (BE #232: 보내면 거절)
+  @JsonKey(includeIfNull: false)
+  CoordinatesRequestModel? get jailCenter => throw _privateConstructorUsedError;
 
   /// 감옥 반경 (미터, 최소 5m, 정수)
-  int get jailRadiusInMeters => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
+  int? get jailRadiusInMeters => throw _privateConstructorUsedError;
 
   /// Serializes this CircleAreaRequestModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -528,12 +577,12 @@ abstract class $CircleAreaRequestModelCopyWith<$Res> {
   $Res call({
     CoordinatesRequestModel playgroundCenter,
     int playgroundRadiusInMeters,
-    CoordinatesRequestModel jailCenter,
-    int jailRadiusInMeters,
+    @JsonKey(includeIfNull: false) CoordinatesRequestModel? jailCenter,
+    @JsonKey(includeIfNull: false) int? jailRadiusInMeters,
   });
 
   $CoordinatesRequestModelCopyWith<$Res> get playgroundCenter;
-  $CoordinatesRequestModelCopyWith<$Res> get jailCenter;
+  $CoordinatesRequestModelCopyWith<$Res>? get jailCenter;
 }
 
 /// @nodoc
@@ -556,8 +605,8 @@ class _$CircleAreaRequestModelCopyWithImpl<
   $Res call({
     Object? playgroundCenter = null,
     Object? playgroundRadiusInMeters = null,
-    Object? jailCenter = null,
-    Object? jailRadiusInMeters = null,
+    Object? jailCenter = freezed,
+    Object? jailRadiusInMeters = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -569,14 +618,14 @@ class _$CircleAreaRequestModelCopyWithImpl<
                 ? _value.playgroundRadiusInMeters
                 : playgroundRadiusInMeters // ignore: cast_nullable_to_non_nullable
                       as int,
-            jailCenter: null == jailCenter
+            jailCenter: freezed == jailCenter
                 ? _value.jailCenter
                 : jailCenter // ignore: cast_nullable_to_non_nullable
-                      as CoordinatesRequestModel,
-            jailRadiusInMeters: null == jailRadiusInMeters
+                      as CoordinatesRequestModel?,
+            jailRadiusInMeters: freezed == jailRadiusInMeters
                 ? _value.jailRadiusInMeters
                 : jailRadiusInMeters // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as int?,
           )
           as $Val,
     );
@@ -598,8 +647,12 @@ class _$CircleAreaRequestModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $CoordinatesRequestModelCopyWith<$Res> get jailCenter {
-    return $CoordinatesRequestModelCopyWith<$Res>(_value.jailCenter, (value) {
+  $CoordinatesRequestModelCopyWith<$Res>? get jailCenter {
+    if (_value.jailCenter == null) {
+      return null;
+    }
+
+    return $CoordinatesRequestModelCopyWith<$Res>(_value.jailCenter!, (value) {
       return _then(_value.copyWith(jailCenter: value) as $Val);
     });
   }
@@ -617,14 +670,14 @@ abstract class _$$CircleAreaRequestModelImplCopyWith<$Res>
   $Res call({
     CoordinatesRequestModel playgroundCenter,
     int playgroundRadiusInMeters,
-    CoordinatesRequestModel jailCenter,
-    int jailRadiusInMeters,
+    @JsonKey(includeIfNull: false) CoordinatesRequestModel? jailCenter,
+    @JsonKey(includeIfNull: false) int? jailRadiusInMeters,
   });
 
   @override
   $CoordinatesRequestModelCopyWith<$Res> get playgroundCenter;
   @override
-  $CoordinatesRequestModelCopyWith<$Res> get jailCenter;
+  $CoordinatesRequestModelCopyWith<$Res>? get jailCenter;
 }
 
 /// @nodoc
@@ -644,8 +697,8 @@ class __$$CircleAreaRequestModelImplCopyWithImpl<$Res>
   $Res call({
     Object? playgroundCenter = null,
     Object? playgroundRadiusInMeters = null,
-    Object? jailCenter = null,
-    Object? jailRadiusInMeters = null,
+    Object? jailCenter = freezed,
+    Object? jailRadiusInMeters = freezed,
   }) {
     return _then(
       _$CircleAreaRequestModelImpl(
@@ -657,14 +710,14 @@ class __$$CircleAreaRequestModelImplCopyWithImpl<$Res>
             ? _value.playgroundRadiusInMeters
             : playgroundRadiusInMeters // ignore: cast_nullable_to_non_nullable
                   as int,
-        jailCenter: null == jailCenter
+        jailCenter: freezed == jailCenter
             ? _value.jailCenter
             : jailCenter // ignore: cast_nullable_to_non_nullable
-                  as CoordinatesRequestModel,
-        jailRadiusInMeters: null == jailRadiusInMeters
+                  as CoordinatesRequestModel?,
+        jailRadiusInMeters: freezed == jailRadiusInMeters
             ? _value.jailRadiusInMeters
             : jailRadiusInMeters // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as int?,
       ),
     );
   }
@@ -676,8 +729,8 @@ class _$CircleAreaRequestModelImpl implements _CircleAreaRequestModel {
   const _$CircleAreaRequestModelImpl({
     required this.playgroundCenter,
     required this.playgroundRadiusInMeters,
-    required this.jailCenter,
-    required this.jailRadiusInMeters,
+    @JsonKey(includeIfNull: false) this.jailCenter,
+    @JsonKey(includeIfNull: false) this.jailRadiusInMeters,
   });
 
   factory _$CircleAreaRequestModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -692,12 +745,15 @@ class _$CircleAreaRequestModelImpl implements _CircleAreaRequestModel {
   final int playgroundRadiusInMeters;
 
   /// 감옥 중심 좌표
+  // 술래잡기는 감옥 키를 아예 보내지 않는다 (BE #232: 보내면 거절)
   @override
-  final CoordinatesRequestModel jailCenter;
+  @JsonKey(includeIfNull: false)
+  final CoordinatesRequestModel? jailCenter;
 
   /// 감옥 반경 (미터, 최소 5m, 정수)
   @override
-  final int jailRadiusInMeters;
+  @JsonKey(includeIfNull: false)
+  final int? jailRadiusInMeters;
 
   @override
   String toString() {
@@ -754,8 +810,8 @@ abstract class _CircleAreaRequestModel implements CircleAreaRequestModel {
   const factory _CircleAreaRequestModel({
     required final CoordinatesRequestModel playgroundCenter,
     required final int playgroundRadiusInMeters,
-    required final CoordinatesRequestModel jailCenter,
-    required final int jailRadiusInMeters,
+    @JsonKey(includeIfNull: false) final CoordinatesRequestModel? jailCenter,
+    @JsonKey(includeIfNull: false) final int? jailRadiusInMeters,
   }) = _$CircleAreaRequestModelImpl;
 
   factory _CircleAreaRequestModel.fromJson(Map<String, dynamic> json) =
@@ -770,12 +826,15 @@ abstract class _CircleAreaRequestModel implements CircleAreaRequestModel {
   int get playgroundRadiusInMeters;
 
   /// 감옥 중심 좌표
+  // 술래잡기는 감옥 키를 아예 보내지 않는다 (BE #232: 보내면 거절)
   @override
-  CoordinatesRequestModel get jailCenter;
+  @JsonKey(includeIfNull: false)
+  CoordinatesRequestModel? get jailCenter;
 
   /// 감옥 반경 (미터, 최소 5m, 정수)
   @override
-  int get jailRadiusInMeters;
+  @JsonKey(includeIfNull: false)
+  int? get jailRadiusInMeters;
 
   /// Create a copy of CircleAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.
@@ -798,7 +857,8 @@ mixin _$PolygonAreaRequestModel {
       throw _privateConstructorUsedError;
 
   /// 감옥 꼭짓점 좌표 목록
-  List<CoordinatesRequestModel> get jailPolygon =>
+  @JsonKey(includeIfNull: false)
+  List<CoordinatesRequestModel>? get jailPolygon =>
       throw _privateConstructorUsedError;
 
   /// Serializes this PolygonAreaRequestModel to a JSON map.
@@ -820,7 +880,7 @@ abstract class $PolygonAreaRequestModelCopyWith<$Res> {
   @useResult
   $Res call({
     List<CoordinatesRequestModel> playgroundPolygon,
-    List<CoordinatesRequestModel> jailPolygon,
+    @JsonKey(includeIfNull: false) List<CoordinatesRequestModel>? jailPolygon,
   });
 }
 
@@ -841,17 +901,17 @@ class _$PolygonAreaRequestModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = null}) {
+  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = freezed}) {
     return _then(
       _value.copyWith(
             playgroundPolygon: null == playgroundPolygon
                 ? _value.playgroundPolygon
                 : playgroundPolygon // ignore: cast_nullable_to_non_nullable
                       as List<CoordinatesRequestModel>,
-            jailPolygon: null == jailPolygon
+            jailPolygon: freezed == jailPolygon
                 ? _value.jailPolygon
                 : jailPolygon // ignore: cast_nullable_to_non_nullable
-                      as List<CoordinatesRequestModel>,
+                      as List<CoordinatesRequestModel>?,
           )
           as $Val,
     );
@@ -869,7 +929,7 @@ abstract class _$$PolygonAreaRequestModelImplCopyWith<$Res>
   @useResult
   $Res call({
     List<CoordinatesRequestModel> playgroundPolygon,
-    List<CoordinatesRequestModel> jailPolygon,
+    @JsonKey(includeIfNull: false) List<CoordinatesRequestModel>? jailPolygon,
   });
 }
 
@@ -890,17 +950,17 @@ class __$$PolygonAreaRequestModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = null}) {
+  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = freezed}) {
     return _then(
       _$PolygonAreaRequestModelImpl(
         playgroundPolygon: null == playgroundPolygon
             ? _value._playgroundPolygon
             : playgroundPolygon // ignore: cast_nullable_to_non_nullable
                   as List<CoordinatesRequestModel>,
-        jailPolygon: null == jailPolygon
+        jailPolygon: freezed == jailPolygon
             ? _value._jailPolygon
             : jailPolygon // ignore: cast_nullable_to_non_nullable
-                  as List<CoordinatesRequestModel>,
+                  as List<CoordinatesRequestModel>?,
       ),
     );
   }
@@ -911,7 +971,8 @@ class __$$PolygonAreaRequestModelImplCopyWithImpl<$Res>
 class _$PolygonAreaRequestModelImpl implements _PolygonAreaRequestModel {
   const _$PolygonAreaRequestModelImpl({
     required final List<CoordinatesRequestModel> playgroundPolygon,
-    required final List<CoordinatesRequestModel> jailPolygon,
+    @JsonKey(includeIfNull: false)
+    final List<CoordinatesRequestModel>? jailPolygon,
   }) : _playgroundPolygon = playgroundPolygon,
        _jailPolygon = jailPolygon;
 
@@ -931,14 +992,17 @@ class _$PolygonAreaRequestModelImpl implements _PolygonAreaRequestModel {
   }
 
   /// 감옥 꼭짓점 좌표 목록
-  final List<CoordinatesRequestModel> _jailPolygon;
+  final List<CoordinatesRequestModel>? _jailPolygon;
 
   /// 감옥 꼭짓점 좌표 목록
   @override
-  List<CoordinatesRequestModel> get jailPolygon {
+  @JsonKey(includeIfNull: false)
+  List<CoordinatesRequestModel>? get jailPolygon {
+    final value = _jailPolygon;
+    if (value == null) return null;
     if (_jailPolygon is EqualUnmodifiableListView) return _jailPolygon;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_jailPolygon);
+    return EqualUnmodifiableListView(value);
   }
 
   @override
@@ -989,7 +1053,8 @@ class _$PolygonAreaRequestModelImpl implements _PolygonAreaRequestModel {
 abstract class _PolygonAreaRequestModel implements PolygonAreaRequestModel {
   const factory _PolygonAreaRequestModel({
     required final List<CoordinatesRequestModel> playgroundPolygon,
-    required final List<CoordinatesRequestModel> jailPolygon,
+    @JsonKey(includeIfNull: false)
+    final List<CoordinatesRequestModel>? jailPolygon,
   }) = _$PolygonAreaRequestModelImpl;
 
   factory _PolygonAreaRequestModel.fromJson(Map<String, dynamic> json) =
@@ -1001,7 +1066,8 @@ abstract class _PolygonAreaRequestModel implements PolygonAreaRequestModel {
 
   /// 감옥 꼭짓점 좌표 목록
   @override
-  List<CoordinatesRequestModel> get jailPolygon;
+  @JsonKey(includeIfNull: false)
+  List<CoordinatesRequestModel>? get jailPolygon;
 
   /// Create a copy of PolygonAreaRequestModel
   /// with the given fields replaced by the non-null parameter values.

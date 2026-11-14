@@ -97,6 +97,9 @@ class ApiEndpoints {
   /// 게임 영역 수정
   static String updateGameArea(int gameId) => '/api/games/$gameId/area';
 
+  /// 게임 모드 변경 (대기실, 방장)
+  static String updateGameMode(int gameId) => '/api/games/$gameId/mode';
+
   /// 인게임 참가자 목록 조회
   static String fetchGameParticipants(int gameId) =>
       '/api/games/$gameId/participants';

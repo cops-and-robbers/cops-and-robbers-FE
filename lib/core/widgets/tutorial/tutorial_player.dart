@@ -56,6 +56,7 @@ class TutorialPlayer extends StatefulWidget {
     required this.copyOf,
     required this.finishLabel,
     required this.onFinished,
+    this.mode = TutorialMode.classic,
     this.canSkip = true,
     this.tiltStream = deviceTiltStream,
     super.key,
@@ -68,6 +69,7 @@ class TutorialPlayer extends StatefulWidget {
 
   /// 마지막 장면을 넘기거나 건너뛰었을 때.
   final VoidCallback onFinished;
+  final TutorialMode mode;
   final bool canSkip;
   final Stream<Offset> Function() tiltStream;
 
@@ -90,6 +92,7 @@ class _TutorialPlayerState extends State<TutorialPlayer>
   void initState() {
     super.initState();
     _ticker = createTicker(_onTick);
+    _stage.tag = widget.mode == TutorialMode.tag;
     _stage.addListener(_onStageChanged);
     _load();
   }

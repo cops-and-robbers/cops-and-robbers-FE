@@ -1,4 +1,5 @@
 import 'package:clock/clock.dart';
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_timer_text.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: GameTimerText(
+              gameMode: GameMode.copsAndRobbers,
               startTime: now,
               totalDuration: const Duration(minutes: 90),
             ),
@@ -66,6 +68,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: GameTimerText(
+          gameMode: GameMode.copsAndRobbers,
           startTime: start,
           totalDuration: const Duration(minutes: 10),
           policeWaitMinutes: 1,
@@ -130,6 +133,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: GameTimerText(
+          gameMode: GameMode.copsAndRobbers,
           startTime: startTime,
           totalDuration: startTime == null ? null : const Duration(minutes: 10),
           policeWaitMinutes: wait,
@@ -164,6 +168,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: GameTimerText(
+              gameMode: GameMode.copsAndRobbers,
               startTime: DateTime(2026, 11, 8, 12),
               totalDuration: const Duration(minutes: 30),
               policeWaitMinutes: 5,
@@ -203,6 +208,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: GameTimerText(
+              gameMode: GameMode.copsAndRobbers,
               startTime: DateTime(2026, 11, 8, 12),
               totalDuration: const Duration(minutes: 30),
               policeWaitMinutes: 5,

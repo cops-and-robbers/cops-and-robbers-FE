@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/game_team.dart';
 
 part 'game_participant_provider.g.dart';
@@ -44,6 +45,9 @@ class GameParticipantInfo {
   /// 이벤트 게임 여부 (인게임 분기 단일 소스 — 도둑 ALIVE UI / 체포 / 결과)
   final bool isEventGame;
 
+  /// 게임 모드 — 대기방·인게임·튜토리얼이 읽는 단일 소스
+  final GameMode gameMode;
+
   /// 이 게임에서 구역 축소가 돌고 있는지 (#668). 게임 화면이 축소 시계를 만들 때 남기고,
   /// 잠금 화면 현황이 네트워크 없이 읽는다(DEC-0089).
   final bool shrinkEnabled;
@@ -61,6 +65,7 @@ class GameParticipantInfo {
     this.isHost = false,
     this.hostParticipantId,
     this.isEventGame = false,
+    this.gameMode = GameMode.copsAndRobbers,
     this.shrinkEnabled = false,
   });
 
@@ -77,6 +82,7 @@ class GameParticipantInfo {
     bool? isHost,
     int? hostParticipantId,
     bool? isEventGame,
+    GameMode? gameMode,
     bool? shrinkEnabled,
   }) {
     return GameParticipantInfo(
@@ -93,6 +99,7 @@ class GameParticipantInfo {
       isHost: isHost ?? this.isHost,
       hostParticipantId: hostParticipantId ?? this.hostParticipantId,
       isEventGame: isEventGame ?? this.isEventGame,
+      gameMode: gameMode ?? this.gameMode,
       shrinkEnabled: shrinkEnabled ?? this.shrinkEnabled,
     );
   }
@@ -117,6 +124,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? locationRevealIntervalMinutes,
     bool isHost = false,
     bool isEventGame = false,
+    GameMode gameMode = GameMode.copsAndRobbers,
   }) {
     state = GameParticipantInfo(
       gameId: gameId,
@@ -127,6 +135,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       locationRevealIntervalMinutes: locationRevealIntervalMinutes,
       isHost: isHost,
       isEventGame: isEventGame,
+      gameMode: gameMode,
     );
   }
 
@@ -171,6 +180,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? roundTimeMinutes,
     int? hostParticipantId,
     bool? isEventGame,
+    GameMode? gameMode,
   }) {
     if (state == null) return;
     state = state!.copyWith(
@@ -182,6 +192,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       roundTimeMinutes: roundTimeMinutes,
       hostParticipantId: hostParticipantId,
       isEventGame: isEventGame,
+      gameMode: gameMode,
     );
   }
 
@@ -204,6 +215,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? locationRevealIntervalMinutes,
     int? policeWaitMinutes,
     int? roundTimeMinutes,
+    GameMode? gameMode,
   }) {
     if (state == null) return;
     state = state!.copyWith(
@@ -211,7 +223,14 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       locationRevealIntervalMinutes: locationRevealIntervalMinutes,
       policeWaitMinutes: policeWaitMinutes,
       roundTimeMinutes: roundTimeMinutes,
+      gameMode: gameMode,
     );
+  }
+
+  /// 대기실 모드 변경 반영 (MODE_UPDATED 이벤트 시)
+  void setGameMode(GameMode gameMode) {
+    if (state == null) return;
+    state = state!.copyWith(gameMode: gameMode);
   }
 
   /// 정보 초기화 (게임 종료/퇴장 시)

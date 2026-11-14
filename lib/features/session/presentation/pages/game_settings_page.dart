@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/services/loading_message_service.dart';
@@ -17,12 +19,15 @@ import '../../../../router/route_paths.dart';
 import '../../../game/domain/entities/area_shape.dart';
 import '../../data/models/game_create_request_model.dart';
 import '../../data/models/game_settings_response.dart';
+import '../../domain/mode_change.dart';
 import '../../domain/shrink_area_save_plan.dart';
 import '../../domain/entities/session_settings.dart';
 import '../../../../core/theme/role_theme_provider.dart';
 import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import 'setup_prison_page.dart';
+import '../widgets/mode_row_card.dart';
+import '../widgets/mode_select_step.dart';
 import '../widgets/setting_list_card.dart';
 import '../widgets/shrink_toggle_card.dart';
 import '../../../game/domain/shrink_schedule.dart';
@@ -62,6 +67,12 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
     if (playground == null || !mounted) return;
 
+    // 술래잡기는 감옥이 없으니 플레이그라운드만 바꾼다
+    if (!_currentMode.usesJail) {
+      await _updateArea(currentArea, GameAreaEntity(playground: playground));
+      return;
+    }
+
     final currentJail = currentArea.jail;
     final initialJail =
         (playground is CircleShape && currentJail is CircleShape) ||
@@ -82,14 +93,65 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     );
   }
 
-  /// PUT /api/games/{gameId}/area 호출
+  GameMode get _currentMode =>
+      ref.read(gameParticipantNotifierProvider)?.gameMode ??
+      GameMode.copsAndRobbers;
+
+  /// 모드 행 탭 → 모드 선택 → (경찰과 도둑이면 감옥 그리기) → 저장
+  Future<void> _changeMode(GameAreaEntity currentArea) async {
+    final current = _currentMode;
+    final target = await showModalBottomSheet<GameMode>(
+      context: context,
+      backgroundColor: AppColors.white,
+      builder: (sheetContext) {
+        var selected = current;
+        return StatefulBuilder(
+          builder: (_, setSheetState) => SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * 0.5,
+            child: ModeSelectStep(
+              selected: selected,
+              onSelected: (m) => setSheetState(() => selected = m),
+              onNext: () => Navigator.of(sheetContext).pop(selected),
+            ),
+          ),
+        );
+      },
+    );
+    if (target == null || target == current || !mounted) return;
+
+    AreaShape? newJail;
+    if (target.usesJail) {
+      // 감옥 지도에서 뒤로 가면 변경을 취소한다
+      newJail = await GoRouter.of(context).pushNamed<AreaShape>(
+        RoutePaths.gameSettingsPrisonName,
+        pathParameters: {'sessionId': widget.sessionId},
+        extra: PrisonEditArgs(
+          playground: currentArea.playground,
+          initialJail: null,
+        ),
+      );
+      if (newJail == null || !mounted) return;
+    }
+    await _updateArea(
+      currentArea,
+      areaForMode(currentArea, target, newJail: newJail),
+      newMode: target,
+    );
+  }
+
+  /// PUT /api/games/{gameId}/area (모드 변경이면 PUT /mode) 호출
   ///
   /// 구역 축소가 켜져 있으면 서버가 각 요청을 저장된 다른 쪽 값과 대조하므로
   /// [planShrinkAreaSave]가 정한 순서로 설정과 구역을 함께 보낸다 (#668).
-  Future<void> _updateArea(GameAreaEntity oldArea, GameAreaEntity area) async {
+  Future<void> _updateArea(
+    GameAreaEntity oldArea,
+    GameAreaEntity area, {
+    GameMode? newMode,
+  }) async {
     final gameId = _gameId;
     if (gameId == null) return;
 
+    final oldMode = _currentMode;
     final loading = AppLoading.show(context, LoadingCategory.updateArea);
 
     try {
@@ -107,12 +169,30 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
             request: settings.toRequest(shrinkFinalRadiusInMeters: radius),
           ).future,
         ),
-        putArea: () =>
-            ref.read(updateGameAreaProvider(gameId, area: area).future),
+        putArea: () => newMode == null
+            ? ref.read(updateGameAreaProvider(gameId, area: area).future)
+            : ref.read(
+                updateGameModeProvider(
+                  gameId,
+                  mode: newMode,
+                  area: area,
+                ).future,
+              ),
         previousFinalRadius: settings.shrinkFinalRadiusInMeters,
-        putPreviousArea: () =>
-            ref.read(updateGameAreaProvider(gameId, area: oldArea).future),
+        putPreviousArea: () => newMode == null
+            ? ref.read(updateGameAreaProvider(gameId, area: oldArea).future)
+            : ref.read(
+                updateGameModeProvider(
+                  gameId,
+                  mode: oldMode,
+                  area: oldArea,
+                ).future,
+              ),
       );
+      // 로비 MODE_UPDATED 에코를 기다리지 않고 방장 화면을 바로 바꾼다
+      if (newMode != null) {
+        ref.read(gameParticipantNotifierProvider.notifier).setGameMode(newMode);
+      }
       await loading.close();
       debugPrint('[GameSettingsPage] ✅ 영역 수정 성공');
       if (plan.turnedOff && mounted) {
@@ -121,7 +201,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
           message: AppLocalizations.of(context).shrinkAutoOffSnackbar,
         );
       }
-    } on DioException catch (e) {
+    } on Object catch (e) {
+      // 모드 변경은 리포지토리가 DioException을 AppException으로 바꿔 던지고
+      // 영역·설정 provider는 raw DioException을 던진다. 둘 다 같은 경로로 처리한다.
+      if (e is! DioException && e is! AppException) rethrow;
       await loading.close();
       // 되돌리기까지 실패했을 수 있으니 서버 값을 다시 읽는다
       ref.invalidate(fetchGameSettingsProvider(gameId));
@@ -129,8 +212,10 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       // 백엔드 한국어 detail 대신 i18n 메시지 사용 (errorCode 기반)
-      final ex = DioExceptionHandler.handle(e);
-      final message = l10n.errorByException(ex);
+      final ex = e is AppException
+          ? e
+          : DioExceptionHandler.handle(e as DioException);
+      final message = l10n.errorByException(ex, mode: _currentMode);
       AppSnackbar.show(
         context,
         message: message,
@@ -192,7 +277,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
         context,
         message: AppLocalizations.of(
           context,
-        ).errorByException(DioExceptionHandler.handle(e)),
+        ).errorByException(DioExceptionHandler.handle(e), mode: _currentMode),
         backgroundColor: AppColors.red,
       );
     }
@@ -248,6 +333,14 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
                 final settings?,
                 final area?,
               )) ...[
+                ModeRowCard(
+                  mode: participantInfo?.gameMode ?? GameMode.copsAndRobbers,
+                  // 이벤트 게임은 술래잡기로 바꿀 수 없어 고를 것이 없다
+                  onTap: isHost && !(participantInfo?.isEventGame ?? false)
+                      ? () => _changeMode(area)
+                      : null,
+                ),
+                SizedBox(height: AppSpacing.vertical8),
                 _buildShrinkCard(
                   gameId,
                   settings,
@@ -343,6 +436,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
       settings: sessionSettings,
       onTap: isHost ? () => _navigateToEditSettings(settings) : null,
       isDarkMode: isDark,
+      gameMode: settings.gameMode,
     );
   }
 }

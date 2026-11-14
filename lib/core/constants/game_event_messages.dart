@@ -1,4 +1,6 @@
 import '../../l10n/app_localizations.dart';
+import '../i18n/role_names.dart';
+import 'game_mode.dart';
 
 /// 게임 이벤트 배너 및 시스템 채팅 메시지의 i18n 키 + 변환 헬퍼
 ///
@@ -52,19 +54,35 @@ String resolveGameEventMessage(
   AppLocalizations l10n,
   String key, [
   List<Object?>? args,
+  GameMode mode = GameMode.copsAndRobbers,
 ]) {
   switch (key) {
     case GameEventMessageKey.startGo:
       return l10n.gameEventStartGo;
     case GameEventMessageKey.policeMove:
-      return l10n.gameEventPoliceMove;
+      return byMode(
+        mode,
+        classic: l10n.gameEventPoliceMove,
+        tag: l10n.gameEventPoliceMoveTag,
+      );
     case GameEventMessageKey.locationReveal:
-      return l10n.gameEventLocationReveal;
+      return byMode(
+        mode,
+        classic: l10n.gameEventLocationReveal,
+        tag: l10n.gameEventLocationRevealTag,
+      );
     case GameEventMessageKey.forcedArrestNotice:
       return l10n.gameEventForcedArrestNotice(args![0] as String);
     case GameEventMessageKey.arrestNotice:
       // 호출부에서 [String, String] 보장 (game_event_provider._handleArrest)
-      return l10n.gameEventArrestNotice(args![0] as String, args[1] as String);
+      // 서버 FCM(술래잡기 "잡힘")과 같은 말로 맞춘다
+      final police = args![0] as String;
+      final robber = args[1] as String;
+      return byMode(
+        mode,
+        classic: l10n.gameEventArrestNotice(police, robber),
+        tag: l10n.gameEventArrestNoticeTag(police, robber),
+      );
     case GameEventMessageKey.escapeNotice:
       return l10n.gameEventEscapeNotice;
     case GameEventMessageKey.playerLeftNotice:

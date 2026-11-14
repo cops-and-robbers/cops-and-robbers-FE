@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/start/start_banners.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -43,7 +44,11 @@ void main() {
       var done = 0;
       await pumpOnPhone(
         tester,
-        RoleBanner(isPolice: true, onDone: () => done++),
+        RoleBanner(
+          gameMode: GameMode.copsAndRobbers,
+          isPolice: true,
+          onDone: () => done++,
+        ),
       );
       await advance(tester, const Duration(milliseconds: 1200));
       expect(find.text('내 역할'), findsOneWidget);
@@ -60,7 +65,14 @@ void main() {
   testWidgets('speed_lines_draw_from_opposite_sides_when_role_banner_enters', (
     tester,
   ) async {
-    await pumpOnPhone(tester, RoleBanner(isPolice: true, onDone: () {}));
+    await pumpOnPhone(
+      tester,
+      RoleBanner(
+        gameMode: GameMode.copsAndRobbers,
+        isPolice: true,
+        onDone: () {},
+      ),
+    );
     const topLine = ValueKey('roleSpeedLine0');
     const bottomLine = ValueKey('roleSpeedLine2');
     await advance(tester, const Duration(milliseconds: 450));
@@ -76,7 +88,14 @@ void main() {
   testWidgets('speed_lines_drift_slowly_then_leave_screen_while_banner_holds', (
     tester,
   ) async {
-    await pumpOnPhone(tester, RoleBanner(isPolice: true, onDone: () {}));
+    await pumpOnPhone(
+      tester,
+      RoleBanner(
+        gameMode: GameMode.copsAndRobbers,
+        isPolice: true,
+        onDone: () {},
+      ),
+    );
     const topLine = ValueKey('roleSpeedLine0');
     const bottomLine = ValueKey('roleSpeedLine2');
     double topX() => tester.getCenter(find.byKey(topLine)).dx;
@@ -97,7 +116,14 @@ void main() {
   testWidgets('character_overshoots_then_settles_when_role_banner_enters', (
     tester,
   ) async {
-    await pumpOnPhone(tester, RoleBanner(isPolice: true, onDone: () {}));
+    await pumpOnPhone(
+      tester,
+      RoleBanner(
+        gameMode: GameMode.copsAndRobbers,
+        isPolice: true,
+        onDone: () {},
+      ),
+    );
     double top() => tester.getTopLeft(find.byType(SvgPicture)).dy;
     final start = top();
     var highest = start;
@@ -120,7 +146,11 @@ void main() {
       (tester) async {
         await pumpOnPhone(
           tester,
-          RoleBanner(isPolice: isPolice, onDone: () {}),
+          RoleBanner(
+            gameMode: GameMode.copsAndRobbers,
+            isPolice: isPolice,
+            onDone: () {},
+          ),
         );
         await tester.pump(const Duration(milliseconds: 40));
         final top = tester.getTopLeft(find.byType(SvgPicture)).dy;
@@ -134,7 +164,14 @@ void main() {
   testWidgets(
     'character_rises_briefly_then_drops_off_screen_when_banner_leaves',
     (tester) async {
-      await pumpOnPhone(tester, RoleBanner(isPolice: true, onDone: () {}));
+      await pumpOnPhone(
+        tester,
+        RoleBanner(
+          gameMode: GameMode.copsAndRobbers,
+          isPolice: true,
+          onDone: () {},
+        ),
+      );
       double top() => tester.getTopLeft(find.byType(SvgPicture)).dy;
       await advance(tester, const Duration(milliseconds: 3200));
       const rest = 852 - 317.0;
@@ -157,7 +194,14 @@ void main() {
   testWidgets('police_title_colors_only_arrest_phrase_when_banner_shows', (
     tester,
   ) async {
-    await pumpOnPhone(tester, RoleBanner(isPolice: true, onDone: () {}));
+    await pumpOnPhone(
+      tester,
+      RoleBanner(
+        gameMode: GameMode.copsAndRobbers,
+        isPolice: true,
+        onDone: () {},
+      ),
+    );
     await advance(tester, const Duration(milliseconds: 1200));
     final spans =
         (tester.widget<Text>(find.text('모두 체포해요!')).textSpan! as TextSpan)
@@ -180,7 +224,14 @@ void main() {
   testWidgets('robber_role_banner_shows_robber_role_when_game_starts', (
     tester,
   ) async {
-    await pumpOnPhone(tester, RoleBanner(isPolice: false, onDone: () {}));
+    await pumpOnPhone(
+      tester,
+      RoleBanner(
+        gameMode: GameMode.copsAndRobbers,
+        isPolice: false,
+        onDone: () {},
+      ),
+    );
     await advance(tester, const Duration(milliseconds: 1200));
     expect(find.text('이번 판은 도둑이에요', findRichText: true), findsOneWidget);
     await advance(tester, const Duration(milliseconds: 3000));
@@ -190,7 +241,11 @@ void main() {
   testWidgets('english_role_banner_fits_when_phone_is_small', (tester) async {
     await pumpOnPhone(
       tester,
-      RoleBanner(isPolice: true, onDone: () {}),
+      RoleBanner(
+        gameMode: GameMode.copsAndRobbers,
+        isPolice: true,
+        onDone: () {},
+      ),
       size: const Size(360, 640),
       locale: const Locale('en'),
     );

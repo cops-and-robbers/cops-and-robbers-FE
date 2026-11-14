@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/services/storage/tutorial_prefs.dart';
 import 'package:cops_and_robbers/core/widgets/tutorial/tutorial_script.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/game_tutorial_page.dart';
@@ -18,8 +19,11 @@ GoRouter _router() => GoRouter(
       routes: [
         GoRoute(
           path: 'tutorial',
-          builder: (context, state) => const GameTutorialPage(
-            mode: TutorialMode.classic,
+          // 앱 라우터와 같은 규칙: 대기방이 넘긴 모드의 튜토리얼
+          builder: (context, state) => GameTutorialPage(
+            mode:
+                (state.extra as GameMode?)?.tutorialMode ??
+                TutorialMode.classic,
             tiltStream: _noTilt,
           ),
         ),
@@ -38,7 +42,7 @@ GoRouter _router() => GoRouter(
 
 Stream<Offset> _noTilt() => const Stream.empty();
 
-Future<GoRouter> _openTutorial(WidgetTester tester) async {
+Future<GoRouter> _openTutorial(WidgetTester tester, {GameMode? mode}) async {
   tester.view.physicalSize = const Size(393, 852) * 3;
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
@@ -55,7 +59,7 @@ Future<GoRouter> _openTutorial(WidgetTester tester) async {
     ),
   );
   await tester.pump();
-  router.push('/room/tutorial');
+  router.push('/room/tutorial', extra: mode);
   for (var i = 0; i < 20; i++) {
     await tester.pump(const Duration(milliseconds: 32));
   }
@@ -98,6 +102,21 @@ void main() {
       expect(await TutorialPrefs.seen(TutorialMode.classic), isTrue);
     },
   );
+
+  testWidgets('waiting_room_opens_tag_tutorial_when_room_is_hide_and_seek', (
+    tester,
+  ) async {
+    await _openTutorial(tester, mode: GameMode.hideAndSeek);
+    for (var t = 0; t < 7000; t += 32) {
+      await tester.pump(const Duration(milliseconds: 32));
+    }
+    await tester.tap(find.text('다음').last, warnIfMissed: false);
+    await _settle(tester);
+
+    expect(find.text('도망자의 실제 위치가 주기마다 표시돼요'), findsOneWidget);
+    expect(await TutorialPrefs.seen(TutorialMode.tag), isTrue);
+    expect(await TutorialPrefs.seen(TutorialMode.classic), isFalse);
+  });
 
   testWidgets('tutorial_hides_skip_when_player_watches_it_for_the_first_time', (
     tester,

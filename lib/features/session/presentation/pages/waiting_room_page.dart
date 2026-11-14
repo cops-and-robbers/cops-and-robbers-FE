@@ -9,7 +9,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/app_icons.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/loading/shimmer_participant_skeleton.dart';
 import '../../../../core/errors/app_exception.dart';
@@ -28,7 +30,6 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
 import '../../../../core/widgets/dividers/solid_divider.dart';
 import '../../../../core/services/storage/tutorial_prefs.dart';
-import '../../../../core/widgets/tutorial/tutorial_script.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/services/loading_message_service.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -115,6 +116,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
   /// true일 때는 _showReconnectModal이 막혀 재표시되지 않는다.
   /// ReconnectModal.then()의 재귀 호출이 우리 안내 다이얼로그를 우회하지 못하도록.
   bool _isHandlingNotParticipating = false;
+
+  bool _isExitingToForceUpdate = false;
 
   final TutorialAutoOpen _tutorialAutoOpen = TutorialAutoOpen();
 
@@ -386,6 +389,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       // await 후 위젯이 dispose됐을 수 있으므로 mounted로 이중 확인
       if (_isDisposed || !mounted || lobbyInfo == null) return;
 
+      // 이 앱이 모르는 모드의 방은 규칙을 그릴 수 없다 — 업데이트 안내로 보낸다
+      if (settings != null && !settings.gameMode.isSupported) {
+        _exitToForceUpdate();
+        return;
+      }
+
       // 재접속 시 inviteCode를 API에서 가져와 AppBar에 표시
       final fetchedCode = lobbyInfo.inviteCode;
       if (_inviteCode == null && fetchedCode != null) {
@@ -420,7 +429,12 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             '';
         ref
             .read(gameParticipantNotifierProvider.notifier)
-            .setGameInfo(gameId: gameId, nickname: myNickname, isHost: isHost);
+            .setGameInfo(
+              gameId: gameId,
+              nickname: myNickname,
+              isHost: isHost,
+              gameMode: settings?.gameMode ?? GameMode.copsAndRobbers,
+            );
       }
 
       ref
@@ -438,6 +452,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             // GET /games/{id} settings의 isEventGame(DB 필드) 기준. 미포함 시 false.
             isEventGame:
                 (settings?.isEventGame ?? false) || kEventGameDevOverride,
+            gameMode: settings?.gameMode,
           );
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정
@@ -541,7 +556,7 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       final l10n = AppLocalizations.of(context);
       AppSnackbar.show(
         context,
-        message: l10n.errorByException(ex),
+        message: l10n.errorByException(ex, mode: _roomMode),
         backgroundColor: AppColors.red,
       );
     }
@@ -654,7 +669,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     } on DioException catch (e) {
       if (!mounted) return;
       // 백엔드 영문 message 대신 errorCode 기반 i18n 메시지 사용
-      final message = l10n.errorByException(DioExceptionHandler.handle(e));
+      final message = l10n.errorByException(
+        DioExceptionHandler.handle(e),
+        mode: _roomMode,
+      );
       AppSnackbar.show(
         context,
         message: message,
@@ -935,6 +953,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             policeCount: participantsState.byTeam(GameTeam.police).length,
             robberCount: participantsState.byTeam(GameTeam.robber).length,
             isDarkMode: isDark,
+            gameMode:
+                ref.read(gameParticipantNotifierProvider)?.gameMode ??
+                GameMode.copsAndRobbers,
           );
         },
       ),
@@ -1024,18 +1045,37 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
     _goHomeClearingSession();
   }
 
+  /// 이 앱이 모르는 모드의 방 — 로비 연결을 끊고 업데이트 안내로 보낸다.
+  /// 입장 때 설정 조회와 대기 중 MODE_UPDATED 두 경로가 함께 부른다.
+  void _exitToForceUpdate() {
+    if (_isExitingToForceUpdate || _isDisposed || !mounted) return;
+    _isExitingToForceUpdate = true;
+    _lobbyEventSub?.close();
+    _lobbyEventSub = null;
+    ref.read(lobbyNotifierProvider.notifier).disconnectLobby();
+    context.go(RoutePaths.forceUpdate);
+  }
+
+  /// 현재 방의 모드. 서버 에러 문구의 술래·경찰 표기에 쓴다.
+  GameMode get _roomMode =>
+      ref.read(gameParticipantNotifierProvider)?.gameMode ??
+      GameMode.copsAndRobbers;
+
   /// 방에 처음 들어왔을 때 튜토리얼을 한 번 띄운다. 초대코드 창이 닫힌 뒤에 부른다.
   Future<void> _openTutorialOnce() async {
     if (_isDisposed || !mounted) return;
     final isEventGame =
         ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+    final mode =
+        ref.read(gameParticipantNotifierProvider)?.gameMode ??
+        GameMode.copsAndRobbers;
     final shouldOpen = await _tutorialAutoOpen.shouldOpen(
-      TutorialMode.classic,
+      mode.tutorialMode,
       isEventGame: isEventGame,
       isTopRoute: () => mounted && (ModalRoute.of(context)?.isCurrent ?? false),
     );
     if (!shouldOpen || _isDisposed || !mounted) return;
-    context.push(RoutePaths.gameTutorialWithId(widget.sessionId));
+    context.push(RoutePaths.gameTutorialWithId(widget.sessionId), extra: mode);
   }
 
   /// 앱바 ⓘ. 일반 게임은 튜토리얼을 다시 보여 주고, 이벤트 게임은 규칙 창을 유지한다.
@@ -1047,7 +1087,10 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       return;
     }
     _tutorialAutoOpen.markOpened();
-    context.push(RoutePaths.gameTutorialWithId(widget.sessionId));
+    context.push(
+      RoutePaths.gameTutorialWithId(widget.sessionId),
+      extra: participant.gameMode,
+    );
   }
 
   /// 게임 규칙 다이얼로그
@@ -1060,6 +1103,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       context,
       isDarkMode: isDark,
       locationRevealIntervalMinutes: interval,
+      gameMode:
+          ref.read(gameParticipantNotifierProvider)?.gameMode ??
+          GameMode.copsAndRobbers,
     );
   }
 
@@ -1134,13 +1180,27 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
       cancelText: l10n.buttonClose,
       confirmText: l10n.buttonShare,
       onConfirm: () {
-        shareInviteCode(code, l10n.shareInviteMessage(code));
+        shareInviteCode(
+          code,
+          byMode(
+            _roomMode,
+            classic: l10n.shareInviteMessage(code),
+            tag: l10n.shareInviteMessageTag(code),
+          ),
+        );
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    // 대기 중 방장이 이 앱이 모르는 모드로 바꾸면 규칙을 그릴 수 없다
+    ref.listen(gameParticipantNotifierProvider.select((i) => i?.gameMode), (
+      _,
+      mode,
+    ) {
+      if (mode != null && !mode.isSupported) _exitToForceUpdate();
+    });
     final participantsState = ref.watch(waitingRoomParticipantsProvider);
     final participantInfo = ref.watch(gameParticipantNotifierProvider);
     final isHost = participantInfo?.isHost ?? false;
@@ -1194,6 +1254,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
                             currentUserTeam: participantInfo?.team,
+                            gameMode:
+                                participantInfo?.gameMode ??
+                                GameMode.copsAndRobbers,
                             onAddSlotTap: () => _changeTeam(GameTeam.police),
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost
@@ -1227,6 +1290,9 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
                                 participantsState.hostParticipantId,
                             myParticipantId: participantInfo?.participantId,
                             currentUserTeam: participantInfo?.team,
+                            gameMode:
+                                participantInfo?.gameMode ??
+                                GameMode.copsAndRobbers,
                             onAddSlotTap: () => _changeTeam(GameTeam.robber),
                             // 방장만 다른 참가자 탭 시 강퇴 다이얼로그 표시
                             onMemberTap: isHost

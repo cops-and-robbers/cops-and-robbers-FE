@@ -12,6 +12,9 @@ _$JoinGameResponseImpl _$$JoinGameResponseImplFromJson(
   gameId: (json['gameId'] as num).toInt(),
   participantId: (json['participantId'] as num).toInt(),
   isEventGame: json['isEventGame'] as bool? ?? false,
+  gameMode: json['gameMode'] == null
+      ? GameMode.copsAndRobbers
+      : GameMode.fromJson(json['gameMode'] as String?),
 );
 
 Map<String, dynamic> _$$JoinGameResponseImplToJson(
@@ -20,4 +23,5 @@ Map<String, dynamic> _$$JoinGameResponseImplToJson(
   'gameId': instance.gameId,
   'participantId': instance.participantId,
   'isEventGame': instance.isEventGame,
+  'gameMode': _modeToJson(instance.gameMode),
 };

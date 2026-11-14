@@ -4,6 +4,7 @@ import 'package:retrofit/retrofit.dart';
 import '../../../../core/constants/api_endpoints.dart';
 import '../models/create_session_response.dart';
 import '../models/game_create_request_model.dart';
+import '../models/game_mode_update_request_model.dart';
 import '../models/game_settings_response.dart';
 import '../../../game/data/models/game_area_model.dart';
 import '../models/in_game_participants_response.dart';
@@ -162,6 +163,19 @@ abstract class SessionRemoteDataSource {
   Future<GameAreaModel> updateGameArea(
     @Path('gameId') int gameId,
     @Body() GameAreaRequestModel request,
+  );
+
+  /// 게임 모드 변경 (방장 전용, 대기실)
+  ///
+  /// 응답 본문(gameMode·settings·area)은 쓰지 않고, 호출 측이 캐시를 무효화해 다시 읽는다.
+  ///
+  /// - 200: 변경 성공
+  /// - 400: 감옥 규칙 위반 / 이벤트 게임은 술래잡기 불가 / 대기 중 아님
+  /// - 403: 방장만 변경 가능
+  @PUT('/api/games/{gameId}/mode')
+  Future<void> updateGameMode(
+    @Path('gameId') int gameId,
+    @Body() GameModeUpdateRequestModel request,
   );
 
   /// 멤버 강제 퇴장 (방장 전용)

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/services/background/lock_screen_status.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/lock_screen_status_builder.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -28,6 +29,7 @@ void main() {
     totalRobbers: total,
     isEventGame: isEventGame,
     isRobberTeam: isRobberTeam,
+    gameMode: GameMode.copsAndRobbers,
     l10n: l10n,
   );
 
@@ -126,6 +128,7 @@ void main() {
         totalRobbers: 5,
         isEventGame: false,
         isRobberTeam: false,
+        gameMode: GameMode.copsAndRobbers,
         nextShrinkAt: DateTime(2026, 9, 30, 10, 15),
         l10n: l10n,
       );

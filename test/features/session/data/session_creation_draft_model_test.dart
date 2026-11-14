@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart';
 import 'package:cops_and_robbers/features/session/data/models/session_creation_draft_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -40,4 +41,20 @@ void main() {
   test('legacy_draft_without_shrink_field_starts_with_shrink_off', () {
     expect(SessionCreationDraftModel.fromJson(const {}).shrinkEnabled, isFalse);
   });
+
+  test('draft_keeps_hide_and_seek_when_host_leaves_and_comes_back', () {
+    const draft = SessionCreationDraftModel(gameMode: 'TAG');
+    final restored = SessionCreationDraftModel.fromJson(draft.toJson());
+    expect(GameMode.fromJson(restored.gameMode), GameMode.hideAndSeek);
+  });
+
+  // 모드가 생기기 전 앱이 저장한 초안은 경찰과 도둑 방으로 이어진다
+  test(
+    'draft_restores_cops_and_robbers_when_saved_by_older_app_without_mode',
+    () {
+      final restored = SessionCreationDraftModel.fromJson(const {});
+      expect(restored.gameMode, isNull);
+      expect(GameMode.fromJson(restored.gameMode), GameMode.copsAndRobbers);
+    },
+  );
 }

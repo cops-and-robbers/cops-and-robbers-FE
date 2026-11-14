@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/buttons/keypad_cta_button.dart';
 import '../../../../core/widgets/inputs/number_pad.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -22,6 +24,7 @@ class BasicSettingsForm extends StatefulWidget {
     required this.initialPoliceWait,
     required this.editTarget,
     required this.onSubmit,
+    required this.gameMode,
   });
 
   final int initialParticipants;
@@ -34,6 +37,7 @@ class BasicSettingsForm extends StatefulWidget {
 
   /// 확인 버튼을 눌렀을 때
   final ValueChanged<GameSettingValues> onSubmit;
+  final GameMode gameMode;
 
   @override
   State<BasicSettingsForm> createState() => _BasicSettingsFormState();
@@ -111,13 +115,24 @@ class _BasicSettingsFormState extends State<BasicSettingsForm> {
 
   Widget _buildCard(AppLocalizations l10n, GameSettingField field) {
     final isActive = field == _values.active;
-    final hint = settingFieldHint(l10n, _values, field);
+    final hint = settingFieldHint(
+      l10n,
+      _values,
+      field,
+      gameMode: widget.gameMode,
+    );
     final isPolice = field == GameSettingField.policeWait;
 
     return SettingFieldCard(
-      label: settingFieldLabel(l10n, field),
+      label: settingFieldLabel(l10n, field, gameMode: widget.gameMode),
       value: '${_values[field]}${settingFieldUnit(l10n, field)}',
-      valuePrefix: isPolice ? l10n.gameSettingPoliceStartPrefix : null,
+      valuePrefix: isPolice
+          ? byMode(
+              widget.gameMode,
+              classic: l10n.gameSettingPoliceStartPrefix,
+              tag: l10n.gameSettingPoliceStartPrefixTag,
+            )
+          : null,
       valueSuffix: isPolice ? l10n.gameSettingPoliceStartSuffix : null,
       hint: hint?.$1,
       isHintWarning: hint?.$2 ?? false,

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_icons.dart';
+import '../core/constants/game_mode.dart';
 import '../core/constants/legal_doc.dart';
 import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
@@ -743,8 +744,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: RoutePaths.gameTutorialName,
             pageBuilder: (context, state) => buildSmoothFade(
               key: state.pageKey,
-              // 앱에 모드 값이 생기면 여기에 넘긴다(DEC-0127)
-              child: const GameTutorialPage(mode: TutorialMode.classic),
+              // 대기방이 방의 모드를 extra로 넘긴다. 없으면 경찰과 도둑 튜토리얼.
+              child: GameTutorialPage(
+                mode: switch (state.extra) {
+                  final GameMode m => m.tutorialMode,
+                  _ => TutorialMode.classic,
+                },
+              ),
             ),
           ),
           // 게임 설정 페이지

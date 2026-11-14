@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/game_mode.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -12,10 +14,15 @@ import '../../../../core/constants/text_styles.dart';
 /// 1분 미만 시 빨간색으로 전환, 0 이하 도달 시 자동 숨김.
 /// DateTime 기반 계산으로 백그라운드 복귀 시에도 정확한 시간 표시.
 class PoliceStartCountdown extends StatefulWidget {
-  const PoliceStartCountdown({super.key, required this.policeStartTime});
+  const PoliceStartCountdown({
+    super.key,
+    required this.policeStartTime,
+    required this.gameMode,
+  });
 
   /// 경찰이 움직이기 시작하는 시각 (gameStartTime + policeWaitMinutes)
   final DateTime policeStartTime;
+  final GameMode gameMode;
 
   @override
   State<PoliceStartCountdown> createState() => _PoliceStartCountdownState();
@@ -77,7 +84,15 @@ class _PoliceStartCountdownState extends State<PoliceStartCountdown>
     final isUrgent = _remaining.inSeconds < 60;
 
     return Text(
-      AppLocalizations.of(context).gamePoliceStartCountdown(_formatted),
+      byMode(
+        widget.gameMode,
+        classic: AppLocalizations.of(
+          context,
+        ).gamePoliceStartCountdown(_formatted),
+        tag: AppLocalizations.of(
+          context,
+        ).gamePoliceStartCountdownTag(_formatted),
+      ),
       style: AppTextStyles.robberLabel.copyWith(
         color: isUrgent ? AppColors.red : AppColors.green,
       ),

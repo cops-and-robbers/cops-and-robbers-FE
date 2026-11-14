@@ -8,6 +8,7 @@ import '../../../auth/presentation/providers/token_provider.dart';
 import '../../../session/presentation/providers/game_participant_provider.dart';
 import '../../../session/presentation/providers/session_provider.dart';
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/i18n/locale_provider.dart';
 import '../../../../core/services/vibration_service.dart';
@@ -308,6 +309,7 @@ class LobbyNotifier extends _$LobbyNotifier {
       ref.invalidate(fetchGameSettingsProvider(event.gameId));
 
       // 최신 설정을 fetch하여 gameParticipantNotifier도 동기화
+      // (모드는 늦게 도착한 GET이 MODE_UPDATED를 덮지 않도록 여기서 쓰지 않는다)
       ref
           .read(fetchGameSettingsProvider(event.gameId).future)
           .then((settings) {
@@ -330,6 +332,21 @@ class LobbyNotifier extends _$LobbyNotifier {
     if (event.type == LobbyEventType.areaUpdated) {
       debugPrint('[LobbyNotifier] 📍 게임 영역 변경 이벤트 수신');
       ref.invalidate(fetchGameAreaProvider(event.gameId));
+    }
+
+    // MODE_UPDATED 이벤트 → 설정·영역 캐시 무효화 + 참가자 모드 반영
+    // (모드가 바뀌면 감옥 유무와 설정 검증 기준이 같이 바뀐다)
+    if (event.type == LobbyEventType.modeUpdated) {
+      debugPrint('[LobbyNotifier] 🎭 게임 모드 변경 이벤트 수신');
+      ref.invalidate(fetchGameSettingsProvider(event.gameId));
+      ref.invalidate(fetchGameAreaProvider(event.gameId));
+      // gameMode 키가 없는 페이로드는 경찰과 도둑으로 되돌리지 않고 무시한다
+      final rawMode = event.data['gameMode'];
+      if (rawMode is String) {
+        ref
+            .read(gameParticipantNotifierProvider.notifier)
+            .setGameMode(GameMode.fromJson(rawMode));
+      }
     }
   }
 
@@ -449,7 +466,12 @@ class LobbyNotifier extends _$LobbyNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: errorInfo.errorCode != null
-            ? l10n.errorByCode(errorInfo.errorCode!)
+            ? l10n.errorByCode(
+                errorInfo.errorCode!,
+                mode:
+                    ref.read(gameParticipantNotifierProvider)?.gameMode ??
+                    GameMode.copsAndRobbers,
+              )
             : l10n.errorTemporaryRetry,
       );
       _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용

@@ -23,7 +23,10 @@ SessionCreationDraftModel _$SessionCreationDraftModelFromJson(
 
 /// @nodoc
 mixin _$SessionCreationDraftModel {
-  // ============================================
+  /// 게임 모드 서버 값(COPS_AND_ROBBERS / TAG). 모드 도입 전 초안에는 없어
+  /// null이며, 복원할 때 경찰과 도둑으로 본다.
+  String? get gameMode =>
+      throw _privateConstructorUsedError; // ============================================
   // 구역 정보 (1단계: 구역 설정)
   // ============================================
   /// 플레이그라운드 중심 좌표
@@ -85,6 +88,7 @@ abstract class $SessionCreationDraftModelCopyWith<$Res> {
   ) = _$SessionCreationDraftModelCopyWithImpl<$Res, SessionCreationDraftModel>;
   @useResult
   $Res call({
+    String? gameMode,
     @LatLngConverter() LatLng? playgroundCenter,
     double? playgroundRadiusInMeters,
     @LatLngConverter() LatLng? jailCenter,
@@ -118,6 +122,7 @@ class _$SessionCreationDraftModelCopyWithImpl<
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? gameMode = freezed,
     Object? playgroundCenter = freezed,
     Object? playgroundRadiusInMeters = freezed,
     Object? jailCenter = freezed,
@@ -133,6 +138,10 @@ class _$SessionCreationDraftModelCopyWithImpl<
   }) {
     return _then(
       _value.copyWith(
+            gameMode: freezed == gameMode
+                ? _value.gameMode
+                : gameMode // ignore: cast_nullable_to_non_nullable
+                      as String?,
             playgroundCenter: freezed == playgroundCenter
                 ? _value.playgroundCenter
                 : playgroundCenter // ignore: cast_nullable_to_non_nullable
@@ -197,6 +206,7 @@ abstract class _$$SessionCreationDraftModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
+    String? gameMode,
     @LatLngConverter() LatLng? playgroundCenter,
     double? playgroundRadiusInMeters,
     @LatLngConverter() LatLng? jailCenter,
@@ -230,6 +240,7 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? gameMode = freezed,
     Object? playgroundCenter = freezed,
     Object? playgroundRadiusInMeters = freezed,
     Object? jailCenter = freezed,
@@ -245,6 +256,10 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$SessionCreationDraftModelImpl(
+        gameMode: freezed == gameMode
+            ? _value.gameMode
+            : gameMode // ignore: cast_nullable_to_non_nullable
+                  as String?,
         playgroundCenter: freezed == playgroundCenter
             ? _value.playgroundCenter
             : playgroundCenter // ignore: cast_nullable_to_non_nullable
@@ -302,6 +317,7 @@ class __$$SessionCreationDraftModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
   const _$SessionCreationDraftModelImpl({
+    this.gameMode,
     @LatLngConverter() this.playgroundCenter,
     this.playgroundRadiusInMeters,
     @LatLngConverter() this.jailCenter,
@@ -320,6 +336,10 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
   factory _$SessionCreationDraftModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$SessionCreationDraftModelImplFromJson(json);
 
+  /// 게임 모드 서버 값(COPS_AND_ROBBERS / TAG). 모드 도입 전 초안에는 없어
+  /// null이며, 복원할 때 경찰과 도둑으로 본다.
+  @override
+  final String? gameMode;
   // ============================================
   // 구역 정보 (1단계: 구역 설정)
   // ============================================
@@ -401,7 +421,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
 
   @override
   String toString() {
-    return 'SessionCreationDraftModel(playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, areaType: $areaType, playgroundPinPoints: $playgroundPinPoints, jailPinPoints: $jailPinPoints, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, shrinkEnabled: $shrinkEnabled, maxParticipants: $maxParticipants)';
+    return 'SessionCreationDraftModel(gameMode: $gameMode, playgroundCenter: $playgroundCenter, playgroundRadiusInMeters: $playgroundRadiusInMeters, jailCenter: $jailCenter, jailRadiusInMeters: $jailRadiusInMeters, areaType: $areaType, playgroundPinPoints: $playgroundPinPoints, jailPinPoints: $jailPinPoints, roundDurationMinutes: $roundDurationMinutes, locationShareMinutes: $locationShareMinutes, policeWaitMinutes: $policeWaitMinutes, shrinkEnabled: $shrinkEnabled, maxParticipants: $maxParticipants)';
   }
 
   @override
@@ -409,6 +429,8 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SessionCreationDraftModelImpl &&
+            (identical(other.gameMode, gameMode) ||
+                other.gameMode == gameMode) &&
             (identical(other.playgroundCenter, playgroundCenter) ||
                 other.playgroundCenter == playgroundCenter) &&
             (identical(
@@ -446,6 +468,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    gameMode,
     playgroundCenter,
     playgroundRadiusInMeters,
     jailCenter,
@@ -479,6 +502,7 @@ class _$SessionCreationDraftModelImpl implements _SessionCreationDraftModel {
 
 abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
   const factory _SessionCreationDraftModel({
+    final String? gameMode,
     @LatLngConverter() final LatLng? playgroundCenter,
     final double? playgroundRadiusInMeters,
     @LatLngConverter() final LatLng? jailCenter,
@@ -496,7 +520,10 @@ abstract class _SessionCreationDraftModel implements SessionCreationDraftModel {
   factory _SessionCreationDraftModel.fromJson(Map<String, dynamic> json) =
       _$SessionCreationDraftModelImpl.fromJson;
 
-  // ============================================
+  /// 게임 모드 서버 값(COPS_AND_ROBBERS / TAG). 모드 도입 전 초안에는 없어
+  /// null이며, 복원할 때 경찰과 도둑으로 본다.
+  @override
+  String? get gameMode; // ============================================
   // 구역 정보 (1단계: 구역 설정)
   // ============================================
   /// 플레이그라운드 중심 좌표

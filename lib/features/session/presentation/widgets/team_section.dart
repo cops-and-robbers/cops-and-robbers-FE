@@ -4,8 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_icons.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../lobby/data/models/lobby_event_dto.dart';
 import 'participant_card.dart';
@@ -59,6 +61,7 @@ class TeamSection extends StatelessWidget {
     this.onMemberTap,
     this.isDarkMode = false,
     this.gameStatusByParticipantId,
+    required this.gameMode,
     super.key,
   });
 
@@ -104,6 +107,9 @@ class TeamSection extends StatelessWidget {
   /// 다크 모드 여부 (도둑팀 = 다크)
   final bool isDarkMode;
 
+  /// 팀 이름 표기에 쓰는 게임 모드
+  final GameMode gameMode;
+
   /// 게임방 컨텍스트에서 각 참가자의 상태(`"ALIVE"`/`"JAILED"`/`"POLICE_WAITING"`).
   ///
   /// null 이거나 특정 참가자 키가 없으면 해당 카드는 대기방 모드로 렌더링됨.
@@ -113,7 +119,7 @@ class TeamSection extends StatelessWidget {
   bool get _isPolice => GameTeam.isPolice(team);
 
   String _teamName(AppLocalizations l10n) =>
-      _isPolice ? l10n.gameTeamCop : l10n.gameTeamRobber;
+      teamName(l10n, gameMode, isPolice: _isPolice);
 
   String get _iconPath =>
       AppIcons.role(isPolice: _isPolice, isDark: isDarkMode);

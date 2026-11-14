@@ -400,7 +400,9 @@ class TutorialOverlays extends StatelessWidget {
       scale: .8 + .2 * stage.q['fb'],
       child: Text(
         stage.callout == TutorialCallout.arrest
-            ? l10n.tutorialCalloutArrest
+            ? (stage.tag
+                  ? l10n.tutorialCalloutArrestTag
+                  : l10n.tutorialCalloutArrest)
             : l10n.tutorialCalloutTouch,
         textAlign: TextAlign.center,
         style: AppTextStyles.semibold_28.copyWith(

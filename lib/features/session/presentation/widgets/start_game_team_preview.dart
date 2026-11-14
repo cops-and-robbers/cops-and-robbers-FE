@@ -4,9 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/character_assets.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 게임 시작 확인창 본문. 두 팀 캐릭터를 나란히 두고 아래에 인원을 적는다.
@@ -18,12 +20,14 @@ class StartGameTeamPreview extends StatelessWidget {
     required this.policeCount,
     required this.robberCount,
     this.isDarkMode = false,
+    required this.gameMode,
     super.key,
   });
 
   final int policeCount;
   final int robberCount;
   final bool isDarkMode;
+  final GameMode gameMode;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +36,11 @@ class StartGameTeamPreview extends StatelessWidget {
       children: [
         _TeamSide(
           team: GameTeam.police,
-          label: l10n.dialogStartGamePoliceCount(policeCount),
+          label: byMode(
+            gameMode,
+            classic: l10n.dialogStartGamePoliceCount(policeCount),
+            tag: l10n.dialogStartGamePoliceCountTag(policeCount),
+          ),
           isEmpty: policeCount == 0,
           isDarkMode: isDarkMode,
         ),
@@ -43,7 +51,11 @@ class StartGameTeamPreview extends StatelessWidget {
         ),
         _TeamSide(
           team: GameTeam.robber,
-          label: l10n.dialogStartGameRobberCount(robberCount),
+          label: byMode(
+            gameMode,
+            classic: l10n.dialogStartGameRobberCount(robberCount),
+            tag: l10n.dialogStartGameRobberCountTag(robberCount),
+          ),
           isEmpty: robberCount == 0,
           isDarkMode: isDarkMode,
         ),

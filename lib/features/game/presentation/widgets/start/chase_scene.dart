@@ -8,8 +8,10 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_icons.dart';
 import '../../../../../core/constants/app_shadows.dart';
 import '../../../../../core/constants/character_assets.dart';
+import '../../../../../core/constants/game_mode.dart';
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/constants/text_styles.dart';
+import '../../../../../core/i18n/role_names.dart';
 import '../../../../../core/services/vibration_service.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/start_flow.dart';
@@ -26,6 +28,7 @@ class ChaseScene extends StatefulWidget {
     super.key,
     required this.mode,
     required this.isPolice,
+    required this.gameMode,
     required this.gameStartTime,
     required this.policeWaitMinutes,
     required this.revealMinutes,
@@ -36,6 +39,7 @@ class ChaseScene extends StatefulWidget {
 
   final ChaseSceneMode mode;
   final bool isPolice;
+  final GameMode gameMode;
   final DateTime gameStartTime;
   final int policeWaitMinutes;
   final int revealMinutes;
@@ -182,6 +186,7 @@ class _ChaseSceneState extends State<ChaseScene> {
     final l10n = AppLocalizations.of(context);
     final rules = chaseSceneRules(
       l10n,
+      gameMode: widget.gameMode,
       mode: widget.mode,
       isPolice: _isPolice,
       revealMinutes: widget.revealMinutes,
@@ -316,7 +321,7 @@ class _ChaseSceneState extends State<ChaseScene> {
               ),
               SizedBox(width: AppSpacing.horizontal6),
               Text(
-                _isPolice ? l10n.gameTeamCop : l10n.gameTeamRobber,
+                teamName(l10n, widget.gameMode, isPolice: _isPolice),
                 style: AppTextStyles.heading_20.copyWith(color: _teamName),
               ),
             ],
@@ -329,7 +334,11 @@ class _ChaseSceneState extends State<ChaseScene> {
             child: Text(
               showsGameTime
                   ? l10n.startGameTimeLeftLabel
-                  : l10n.startWaitCountdownLabel,
+                  : byMode(
+                      widget.gameMode,
+                      classic: l10n.startWaitCountdownLabel,
+                      tag: l10n.startWaitCountdownLabelTag,
+                    ),
               style: AppTextStyles.label_16.copyWith(
                 color: _isPolice ? AppColors.black500 : AppColors.black200,
               ),
@@ -356,7 +365,15 @@ class _ChaseSceneState extends State<ChaseScene> {
         ),
         SizedBox(height: AppSpacing.vertical14),
         Text(
-          _isPolice ? l10n.startWaitPoliceTitle : l10n.startWaitRobberTitle,
+          byMode(
+            widget.gameMode,
+            classic: _isPolice
+                ? l10n.startWaitPoliceTitle
+                : l10n.startWaitRobberTitle,
+            tag: _isPolice
+                ? l10n.startWaitPoliceTitleTag
+                : l10n.startWaitRobberTitleTag,
+          ),
           style: AppTextStyles.subHeading_18.copyWith(
             color: _isPolice ? AppColors.black700 : AppColors.white,
           ),
@@ -393,7 +410,11 @@ class _ChaseSceneState extends State<ChaseScene> {
         20 * s -
         AppSpacing.horizontal6;
     final mission = _isPolice
-        ? l10n.startMissionPolice
+        ? byMode(
+            widget.gameMode,
+            classic: l10n.startMissionPolice,
+            tag: l10n.startMissionPoliceTag,
+          )
         : l10n.startMissionRobber;
     final rule = guide[ruleIndex];
     return Column(
@@ -407,9 +428,15 @@ class _ChaseSceneState extends State<ChaseScene> {
               : null,
           child: _labeled(
             s,
-            _isPolice
-                ? l10n.startMissionPoliceLabel
-                : l10n.startMissionRobberLabel,
+            byMode(
+              widget.gameMode,
+              classic: _isPolice
+                  ? l10n.startMissionPoliceLabel
+                  : l10n.startMissionRobberLabel,
+              tag: _isPolice
+                  ? l10n.startMissionPoliceLabelTag
+                  : l10n.startMissionRobberLabelTag,
+            ),
             mission,
             expanded: _missionExpanded,
             reduceMotion: reduceMotion,

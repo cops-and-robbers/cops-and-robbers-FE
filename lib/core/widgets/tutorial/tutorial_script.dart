@@ -36,12 +36,13 @@ List<TutorialScene> tutorialScenes(TutorialMode mode) => switch (mode) {
     TutorialScene.shrink,
     TutorialScene.community,
   ],
-  // 잡는 방법이 정해지지 않아(DEC-0119) 터치로 잡는다고 가정한 장면이다.
-  // 앱에 모드 값이 생기면 대기방에서 연결한다(DEC-0127).
+  // 술래잡기도 QR 스캔으로 잡는다. 감옥만 없어 스캔 뒤 바로 탈락(out)으로 간다.
   TutorialMode.tag => const [
     TutorialScene.zoneIn,
     TutorialScene.flat,
     TutorialScene.chase,
+    TutorialScene.showQr,
+    TutorialScene.scan,
     TutorialScene.out,
     TutorialScene.shrink,
     TutorialScene.community,
@@ -153,7 +154,8 @@ void _chase(TutorialStage s) {
     s.run['sh'] = 1;
     t.to(s.run, {'sh': 0}, 300);
     t.to(s.rob, {'sc': 2.6}, 120);
-    s.say(TutorialCallout.touch, 650);
+    // 술래잡기는 터치가 아니라 스캔(arrest)에서 잡히므로 터치 말풍선이 없다
+    if (!s.tag) s.say(TutorialCallout.touch, 650);
   });
   t.after(2270, () => t.to(s.rob, {'sc': 2.3}, 160));
 }
@@ -329,58 +331,45 @@ void _escape(TutorialStage s) {
   t.after(200, () => t.to(s.escape, {'p': 1}, 1500));
 }
 
-// 술래잡기: 감옥 없이 잡히면 끝. 터치되면 도망자 차례(다크)로 바뀌고 회색으로 빠진다.
+// 술래잡기: 잡는 장면은 스캔(scan)에서 이미 끝났다. 여기서는 감옥 없이 그 자리에서
+// 탈락(관전)으로 바뀌는 결과만 보여 주고, 다시 잡는 연출은 하지 않는다.
 void _out(TutorialStage s) {
   final t = s.timeline;
+  final x = s.rob['x'];
+  final y = s.rob['y'];
   t.to(s.q, {'hand': 0}, 200);
   t.to(s.view, {'dim': 1}, 500);
   t.to(s.rob, {'op': 0}, 150);
+  t.to(s.cop, {'op': 0}, 200);
   s.stopBlink();
   t.to(s.paw, {'op': 0}, 200);
   t.to(s.dot, {'op': 0}, 200);
+  // 스캔을 건너뛴 경우에도 잡힌 모습이 보이도록 도망자 자리에 둔다
+  s.caught['x'] = x;
+  s.caught['y'] = y;
+  s.caught['sc'] = 1;
+  t.to(s.caught, {'op': 1}, 200);
   t.to(s.cam, {
     'tilt': 0,
     'az': tutorialHeading,
     'persp': 1100,
     'scale': 2.1,
-    'cx': 40,
-    'cy': -40,
+    'cx': x,
+    'cy': y,
     'oy': .5,
   }, 900);
-  t.after(350, () {
-    s.rob['x'] = 88;
-    s.rob['y'] = -12;
-    s.rob['sc'] = .7;
-    t.to(s.rob, {'op': 1, 'sc': 1}, 300);
-    s.cop['x'] = -20;
-    s.cop['y'] = -85;
-    s.cop['sc'] = 1;
-    t.to(s.cop, {'op': 1}, 200);
-    t.to(s.cop, {'x': 48, 'y': -42}, 850);
-  });
-  t.after(1200, () {
-    t.to(s.rob, {'sc': 1.15}, 110);
-    s.say(TutorialCallout.touch, 650);
-  });
-  t.after(1320, () => t.to(s.rob, {'sc': 1}, 150));
-  t.after(1650, () {
-    final at = s.cameraFrame().project(s.rob['x'], s.rob['y']);
+  t.after(950, () {
+    final at = s.cameraFrame().project(x, y);
     s.setTheme(true, at.x, at.y - 40);
-    s.caught['x'] = s.rob['x'];
-    s.caught['y'] = s.rob['y'];
-    s.caught['sc'] = 1;
-    t.to(s.rob, {'op': 0}, 120);
-    t.to(s.caught, {'op': 1}, 120);
-    t.to(s.cop, {'op': 0}, 350);
   });
-  t.after(2600, () {
-    s.outed['x'] = s.caught['x'];
-    s.outed['y'] = s.caught['y'];
+  t.after(1700, () {
+    s.outed['x'] = x;
+    s.outed['y'] = y;
     s.outed['sc'] = 1;
     t.to(s.caught, {'op': 0}, 300);
     t.to(s.outed, {'op': 1}, 300);
   });
-  t.after(2950, () => t.to(s.outed, {'sc': .82}, 450));
+  t.after(2050, () => t.to(s.outed, {'sc': .82}, 450));
 }
 
 void _shrink(TutorialStage s, {required bool hasJail}) {
