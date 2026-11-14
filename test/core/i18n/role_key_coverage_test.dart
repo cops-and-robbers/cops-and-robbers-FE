@@ -73,6 +73,10 @@ const inGameRoleWordKeys = <String>[
   'errorCodeOnlyRobberCanBeArrested',
   'errorCodeAlreadyArrested',
   'errorCodePoliceWaitingTime',
+  // 무전 (3, main #697 병합분)
+  'errorCodeOnlyPoliceCanUseRadio',
+  'errorCodeRadioPoliceWaitingTime',
+  'radioSpeakerFallback',
   // 체포·수감 문구 (12)
   'gameEventArrestNotice',
   'gameRulesCopGoalSuffix',
@@ -96,7 +100,7 @@ Map<String, dynamic> _arb(String locale) =>
 
 void main() {
   test('every_in_game_role_key_has_tag_variant_in_all_locales', () {
-    expect(inGameRoleWordKeys.length, 72);
+    expect(inGameRoleWordKeys.length, 75);
     for (final locale in ['ko', 'en', 'ja']) {
       final arb = _arb(locale);
       final missing = [

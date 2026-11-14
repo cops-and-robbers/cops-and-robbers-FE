@@ -4903,11 +4903,23 @@ abstract class AppLocalizations {
   /// **'무전은 경찰만 쓸 수 있어요'**
   String get errorCodeOnlyPoliceCanUseRadio;
 
+  /// No description provided for @errorCodeOnlyPoliceCanUseRadioTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'무전은 술래만 쓸 수 있어요'**
+  String get errorCodeOnlyPoliceCanUseRadioTag;
+
   /// No description provided for @errorCodeRadioPoliceWaitingTime.
   ///
   /// In ko, this message translates to:
   /// **'경찰이 출동한 뒤에 쓸 수 있어요'**
   String get errorCodeRadioPoliceWaitingTime;
+
+  /// No description provided for @errorCodeRadioPoliceWaitingTimeTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'술래가 움직이기 시작한 뒤에 쓸 수 있어요'**
+  String get errorCodeRadioPoliceWaitingTimeTag;
 
   /// No description provided for @errorCodeGameNotActive.
   ///
@@ -5142,24 +5154,6 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이 게임 모드에는 감옥 구역이 없어요'**
   String get errorCodeJailAreaNotAllowed;
-
-  /// No description provided for @errorCodeOnlyPoliceCanUseRadio.
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰 팀만 무전을 쓸 수 있어요'**
-  String get errorCodeOnlyPoliceCanUseRadio;
-
-  /// No description provided for @errorCodeRadioNotAllowedInEventGame.
-  ///
-  /// In ko, this message translates to:
-  /// **'이벤트 게임에서는 무전을 쓸 수 없어요'**
-  String get errorCodeRadioNotAllowedInEventGame;
-
-  /// No description provided for @errorCodeRadioPoliceWaitingTime.
-  ///
-  /// In ko, this message translates to:
-  /// **'경찰은 대기 시간 동안 무전을 쓸 수 없어요'**
-  String get errorCodeRadioPoliceWaitingTime;
 
   /// No description provided for @errorCodeWithdrawalUserNotFound.
   ///
@@ -5952,6 +5946,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'경찰'**
   String get radioSpeakerFallback;
+
+  /// No description provided for @radioSpeakerFallbackTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'술래'**
+  String get radioSpeakerFallbackTag;
 
   /// 무전 마이크 권한 안내 다이얼로그 타이틀 (거부한 뒤 무전 버튼을 다시 눌렀을 때)
   ///

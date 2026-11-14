@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/radio/presentation/providers/radio_session_provider.dart';
 import 'package:cops_and_robbers/features/radio/presentation/widgets/radio_ptt_button.dart';
 import 'package:cops_and_robbers/features/radio/presentation/widgets/radio_speaker_pill.dart';
@@ -32,51 +33,55 @@ void main() {
 
   group('RadioPttButton', () {
     // 뛰다가 손가락이 버튼 밖으로 미끄러지면 포인터가 취소된다 — 마이크가 열린 채 남으면 안 된다
-    testWidgets('ptt_button_releases_when_finger_slides_off_and_pointer_cancels', (
-      tester,
-    ) async {
-      var pressed = 0, released = 0;
-      await _pump(
-        tester,
-        RadioPttButton(
-          state: const RadioSessionState(status: RadioStatus.ready),
-          onPress: () => pressed++,
-          onRelease: () => released++,
-          onBlockedTap: () {},
-        ),
-      );
-      final gesture = await tester.startGesture(
-        tester.getCenter(find.byType(RadioPttButton)),
-      );
-      await tester.pump();
-      await gesture.cancel();
-      await tester.pump();
-      expect(pressed, 1);
-      expect(released, 1);
-    });
-
-    testWidgets('ptt_button_calls_blocked_tap_instead_of_press_while_another_police_talks', (
-      tester,
-    ) async {
-      var pressed = 0, blocked = 0;
-      await _pump(
-        tester,
-        RadioPttButton(
-          state: const RadioSessionState(
-            status: RadioStatus.ready,
-            speakerIdentity: '102',
+    testWidgets(
+      'ptt_button_releases_when_finger_slides_off_and_pointer_cancels',
+      (tester) async {
+        var pressed = 0, released = 0;
+        await _pump(
+          tester,
+          RadioPttButton(
+            state: const RadioSessionState(status: RadioStatus.ready),
+            onPress: () => pressed++,
+            onRelease: () => released++,
+            onBlockedTap: () {},
           ),
-          onPress: () => pressed++,
-          onRelease: () {},
-          onBlockedTap: () => blocked++,
-        ),
-      );
-      await tester.tap(find.byType(RadioPttButton));
-      expect(pressed, 0);
-      expect(blocked, 1);
-    });
+        );
+        final gesture = await tester.startGesture(
+          tester.getCenter(find.byType(RadioPttButton)),
+        );
+        await tester.pump();
+        await gesture.cancel();
+        await tester.pump();
+        expect(pressed, 1);
+        expect(released, 1);
+      },
+    );
 
-    testWidgets('ptt_button_calls_blocked_tap_during_police_wait', (tester) async {
+    testWidgets(
+      'ptt_button_calls_blocked_tap_instead_of_press_while_another_police_talks',
+      (tester) async {
+        var pressed = 0, blocked = 0;
+        await _pump(
+          tester,
+          RadioPttButton(
+            state: const RadioSessionState(
+              status: RadioStatus.ready,
+              speakerIdentity: '102',
+            ),
+            onPress: () => pressed++,
+            onRelease: () {},
+            onBlockedTap: () => blocked++,
+          ),
+        );
+        await tester.tap(find.byType(RadioPttButton));
+        expect(pressed, 0);
+        expect(blocked, 1);
+      },
+    );
+
+    testWidgets('ptt_button_calls_blocked_tap_during_police_wait', (
+      tester,
+    ) async {
       var pressed = 0, blocked = 0;
       await _pump(
         tester,
@@ -93,7 +98,9 @@ void main() {
     });
 
     // 마이크를 거부한 경찰이 설정에서 허용하고 돌아와 다시 누른다 — 눌러야 다시 시도할 수 있다
-    testWidgets('ptt_button_passes_press_through_when_mic_was_denied', (tester) async {
+    testWidgets('ptt_button_passes_press_through_when_mic_was_denied', (
+      tester,
+    ) async {
       var pressed = 0, blocked = 0;
       await _pump(
         tester,
@@ -119,6 +126,7 @@ void main() {
           lookupAppLocalizations(const Locale('ko')),
           '102',
           nicknames,
+          mode: GameMode.copsAndRobbers,
         ),
         '상희 무전 중',
       );
@@ -127,6 +135,7 @@ void main() {
           lookupAppLocalizations(const Locale('en')),
           '102',
           {'102': 'Sanghee'},
+          mode: GameMode.copsAndRobbers,
         ),
         'Sanghee on radio',
       );
@@ -135,6 +144,7 @@ void main() {
           lookupAppLocalizations(const Locale('ja')),
           '102',
           {'102': 'サンヒ'},
+          mode: GameMode.copsAndRobbers,
         ),
         'サンヒ 無線中',
       );
@@ -147,10 +157,27 @@ void main() {
           lookupAppLocalizations(const Locale('ko')),
           '999',
           nicknames,
+          mode: GameMode.copsAndRobbers,
         ),
         '경찰 무전 중',
       );
     });
+
+    // 술래잡기에서도 술래 팀은 무전을 쓴다 — 서버 푸시와 같은 "술래"로 부른다
+    test(
+      'falls_back_to_seeker_label_when_identity_not_in_participants_in_hide_and_seek',
+      () {
+        expect(
+          radioSpeakerLabel(
+            lookupAppLocalizations(const Locale('ko')),
+            '999',
+            nicknames,
+            mode: GameMode.hideAndSeek,
+          ),
+          '술래 무전 중',
+        );
+      },
+    );
   });
 
   testWidgets('speaker_pill_keeps_one_line_when_nickname_is_long', (
@@ -163,6 +190,9 @@ void main() {
     expect(tester.takeException(), isNull);
     final text = tester.widget<Text>(find.textContaining('무전 중'));
     expect(text.maxLines, 1);
-    expect(tester.getSize(find.byType(RadioSpeakerPill)).width, lessThanOrEqualTo(300));
+    expect(
+      tester.getSize(find.byType(RadioSpeakerPill)).width,
+      lessThanOrEqualTo(300),
+    );
   });
 }

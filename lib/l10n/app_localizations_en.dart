@@ -2792,8 +2792,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeOnlyPoliceCanUseRadio => 'Only cops can use the radio';
 
   @override
+  String get errorCodeOnlyPoliceCanUseRadioTag =>
+      'Only Seekers can use the radio';
+
+  @override
   String get errorCodeRadioPoliceWaitingTime =>
       'Available after the cops move out';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTimeTag =>
+      'Available after the Seekers start moving';
 
   @override
   String get errorCodeGameNotActive =>
@@ -2940,18 +2948,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorCodeJailAreaNotAllowed => 'This game mode has no jail area';
-
-  @override
-  String get errorCodeOnlyPoliceCanUseRadio =>
-      'Only the police team can use the radio';
-
-  @override
-  String get errorCodeRadioNotAllowedInEventGame =>
-      'The radio isn\'t available in event games';
-
-  @override
-  String get errorCodeRadioPoliceWaitingTime =>
-      'The police can\'t use the radio during the wait time';
 
   @override
   String get errorCodeWithdrawalUserNotFound =>
@@ -3428,6 +3424,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get radioSpeakerFallback => 'A cop';
+
+  @override
+  String get radioSpeakerFallbackTag => 'A Seeker';
 
   @override
   String get dialogMicPermissionTitle => 'Microphone permission required';

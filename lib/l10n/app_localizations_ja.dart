@@ -2606,7 +2606,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeOnlyPoliceCanUseRadio => '無線は警察だけが使えます';
 
   @override
+  String get errorCodeOnlyPoliceCanUseRadioTag => '無線は鬼だけが使えます';
+
+  @override
   String get errorCodeRadioPoliceWaitingTime => '警察が出動した後に使えます';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTimeTag => '鬼が動き出した後に使えます';
 
   @override
   String get errorCodeGameNotActive => '待機中または進行中のゲームでのみ照会できます';
@@ -2727,15 +2733,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeJailAreaNotAllowed => 'このゲームモードには牢屋エリアがありません';
-
-  @override
-  String get errorCodeOnlyPoliceCanUseRadio => '警察チームのみ無線を使えます';
-
-  @override
-  String get errorCodeRadioNotAllowedInEventGame => 'イベントゲームでは無線を使えません';
-
-  @override
-  String get errorCodeRadioPoliceWaitingTime => '警察は待機時間中は無線を使えません';
 
   @override
   String get errorCodeWithdrawalUserNotFound => '登録されていないアカウントです';
@@ -3177,6 +3174,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get radioSpeakerFallback => '警察';
+
+  @override
+  String get radioSpeakerFallbackTag => '鬼';
 
   @override
   String get dialogMicPermissionTitle => 'マイクの権限が必要です';

@@ -3206,6 +3206,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     l10n,
                     radio.speakerIdentity!,
                     policeNicknames,
+                    mode: _gameMode,
                   ),
                 ),
               )
@@ -3549,7 +3550,11 @@ class _GamePageState extends ConsumerState<GamePage>
     if (status != RadioStatus.waitingPolice) return;
     AppSnackbar.show(
       context,
-      message: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTime,
+      message: byMode(
+        _gameMode,
+        classic: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTime,
+        tag: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTimeTag,
+      ),
       isDarkMode: _isDarkMode,
     );
   }

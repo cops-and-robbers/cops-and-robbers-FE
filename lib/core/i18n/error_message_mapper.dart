@@ -167,9 +167,17 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       case 'RADIO_NOT_ALLOWED_IN_EVENT_GAME':
         return errorCodeRadioNotAllowedInEventGame;
       case 'ONLY_POLICE_CAN_USE_RADIO':
-        return errorCodeOnlyPoliceCanUseRadio;
+        return byMode(
+          mode,
+          classic: errorCodeOnlyPoliceCanUseRadio,
+          tag: errorCodeOnlyPoliceCanUseRadioTag,
+        );
       case 'RADIO_POLICE_WAITING_TIME':
-        return errorCodeRadioPoliceWaitingTime;
+        return byMode(
+          mode,
+          classic: errorCodeRadioPoliceWaitingTime,
+          tag: errorCodeRadioPoliceWaitingTimeTag,
+        );
       case 'GAME_NOT_ACTIVE':
         return errorCodeGameNotActive;
       case 'GAME_NOT_WAITING':
@@ -263,12 +271,6 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorCodeJailAreaRequired;
       case 'JAIL_AREA_NOT_ALLOWED':
         return errorCodeJailAreaNotAllowed;
-      case 'ONLY_POLICE_CAN_USE_RADIO':
-        return errorCodeOnlyPoliceCanUseRadio;
-      case 'RADIO_NOT_ALLOWED_IN_EVENT_GAME':
-        return errorCodeRadioNotAllowedInEventGame;
-      case 'RADIO_POLICE_WAITING_TIME':
-        return errorCodeRadioPoliceWaitingTime;
       case 'WITHDRAWAL_USER_NOT_FOUND':
         return errorCodeWithdrawalUserNotFound;
       case 'NOT_JAILED':

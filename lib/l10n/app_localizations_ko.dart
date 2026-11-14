@@ -2604,7 +2604,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeOnlyPoliceCanUseRadio => '무전은 경찰만 쓸 수 있어요';
 
   @override
+  String get errorCodeOnlyPoliceCanUseRadioTag => '무전은 술래만 쓸 수 있어요';
+
+  @override
   String get errorCodeRadioPoliceWaitingTime => '경찰이 출동한 뒤에 쓸 수 있어요';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTimeTag => '술래가 움직이기 시작한 뒤에 쓸 수 있어요';
 
   @override
   String get errorCodeGameNotActive => '대기 중이거나 진행 중인 게임에서만 조회할 수 있어요';
@@ -2729,15 +2735,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeJailAreaNotAllowed => '이 게임 모드에는 감옥 구역이 없어요';
-
-  @override
-  String get errorCodeOnlyPoliceCanUseRadio => '경찰 팀만 무전을 쓸 수 있어요';
-
-  @override
-  String get errorCodeRadioNotAllowedInEventGame => '이벤트 게임에서는 무전을 쓸 수 없어요';
-
-  @override
-  String get errorCodeRadioPoliceWaitingTime => '경찰은 대기 시간 동안 무전을 쓸 수 없어요';
 
   @override
   String get errorCodeWithdrawalUserNotFound => '가입되지 않은 계정이에요';
@@ -3180,6 +3177,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get radioSpeakerFallback => '경찰';
+
+  @override
+  String get radioSpeakerFallbackTag => '술래';
 
   @override
   String get dialogMicPermissionTitle => '마이크 권한 필요';
