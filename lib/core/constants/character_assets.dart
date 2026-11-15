@@ -51,6 +51,11 @@ String mvpCharacterAssetPath({required String team}) =>
 String startRoleCharacterAssetPath({required String team}) =>
     'assets/characters/$team/start/default/role.svg';
 
+/// 게임 시작 대기 장면의 달아나는 캐릭터 SVG 경로. 모드 선택 카드의 술래잡기 그림도 이것을 쓴다.
+/// - [team] `'police'` | `'robber'`
+String startChaseCharacterAssetPath({required String team}) =>
+    'assets/characters/$team/start/default/chase.svg';
+
 /// 대기·설명 장면 배경 PNG(393×852). 경찰은 낮, 도둑은 밤 그림.
 String startWaitBackgroundAssetPath({required bool isNight}) =>
     'assets/backgrounds/start_wait/start_wait_${isNight ? 'night' : 'day'}.png';
