@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/character_assets.dart';
 import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
@@ -41,6 +44,11 @@ class ModeSelectStep extends StatelessWidget {
             child: Column(
               children: [
                 _ModeCard(
+                  // 잡히면 갇히는 모드라 철창 속 도둑을 보여 준다
+                  assetPath: characterAssetPath(
+                    team: 'robber',
+                    state: 'jailed',
+                  ),
                   title: modeName(l10n, GameMode.copsAndRobbers),
                   description: l10n.modeCardCopsAndRobbersDescription,
                   selected: selected == GameMode.copsAndRobbers,
@@ -48,6 +56,8 @@ class ModeSelectStep extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.vertical12),
                 _ModeCard(
+                  // 감옥 없이 쫓고 쫓기는 모드라 달아나는 도둑을 보여 준다
+                  assetPath: startChaseCharacterAssetPath(team: 'robber'),
                   title: modeName(l10n, GameMode.hideAndSeek),
                   description: l10n.modeCardHideAndSeekDescription,
                   selected: selected == GameMode.hideAndSeek,
@@ -71,12 +81,15 @@ class ModeSelectStep extends StatelessWidget {
 
 class _ModeCard extends StatelessWidget {
   const _ModeCard({
+    required this.assetPath,
     required this.title,
     required this.description,
     required this.selected,
     required this.onTap,
   });
 
+  /// 카드 왼쪽 캐릭터 그림. 모드를 글보다 먼저 알아보게 하는 장식이라 읽어 주지 않는다
+  final String assetPath;
   final String title;
   final String description;
   final bool selected;
@@ -90,7 +103,7 @@ class _ModeCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.horizontal24,
+          horizontal: AppSpacing.horizontal20,
           vertical: AppSpacing.vertical20,
         ),
         decoration: BoxDecoration(
@@ -102,18 +115,39 @@ class _ModeCard extends StatelessWidget {
             width: selected ? 2 : 1,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              title,
-              style: AppTextStyles.label_16.copyWith(color: AppColors.black),
+            // 그림마다 가로세로 비율이 달라(철창 140×116, 달아나는 쥐 248×243) 칸을 고정해야
+            // 두 카드의 제목이 같은 줄에서 시작한다
+            SizedBox.square(
+              dimension: 64.w,
+              child: SvgPicture.asset(
+                assetPath,
+                fit: BoxFit.contain,
+                excludeFromSemantics: true,
+              ),
             ),
-            SizedBox(height: AppSpacing.vertical8),
-            Text(
-              description,
-              style: AppTextStyles.paragraph_14_100.copyWith(
-                color: AppColors.black600,
+            SizedBox(width: AppSpacing.horizontal16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.subHeading_18.copyWith(
+                      color: AppColors.black,
+                    ),
+                  ),
+                  // 그림 옆이라 글 칸이 좁아 영어·일본어 설명은 두 줄이 된다.
+                  // 줄 간격 140% 스타일을 써서 두 줄이 붙지 않게 하고, 그만큼 위 간격을 줄인다
+                  SizedBox(height: AppSpacing.vertical4),
+                  Text(
+                    description,
+                    style: AppTextStyles.paragraph_14.copyWith(
+                      color: AppColors.black600,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
