@@ -12,9 +12,11 @@ import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/fcm/firebase_messaging_service.dart';
 import '../../../../core/constants/game_event_messages.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/game_team.dart';
 import '../../../../core/i18n/error_message_mapper.dart';
 import '../../../../core/i18n/locale_provider.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../domain/zone_warning_flow.dart';
@@ -762,19 +764,27 @@ class GameEventNotifier extends _$GameEventNotifier {
   String _localizeGameEvent(String key, [List<Object?>? args]) {
     final locale = ref.read(appLocaleProvider).locale;
     final l10n = lookupAppLocalizations(locale);
-    return resolveGameEventMessage(l10n, key, args);
+    return resolveGameEventMessage(l10n, key, args, _gameMode);
   }
+
+  GameMode get _gameMode =>
+      ref.read(gameParticipantNotifierProvider)?.gameMode ??
+      GameMode.copsAndRobbers;
 
   /// 닉네임 누락 시 사용하는 "경찰" 라벨 i18n
   String _localizePoliceLabel() {
     final locale = ref.read(appLocaleProvider).locale;
-    return lookupAppLocalizations(locale).gameRoleCopLabel;
+    return roleLabel(lookupAppLocalizations(locale), _gameMode, isPolice: true);
   }
 
   /// 닉네임 누락 시 사용하는 "도둑" 라벨 i18n
   String _localizeRobberLabel() {
     final locale = ref.read(appLocaleProvider).locale;
-    return lookupAppLocalizations(locale).gameRoleRobberLabel;
+    return roleLabel(
+      lookupAppLocalizations(locale),
+      _gameMode,
+      isPolice: false,
+    );
   }
 
   /// 배너를 5초 후 자동 해제하는 타이머 시작
@@ -1312,7 +1322,7 @@ class GameEventNotifier extends _$GameEventNotifier {
       state = state.copyWith(
         connectionState: StompConnectionState.error,
         errorMessage: errorInfo.errorCode != null
-            ? l10n.errorByCode(errorInfo.errorCode!)
+            ? l10n.errorByCode(errorInfo.errorCode!, mode: _gameMode)
             : l10n.errorTemporaryRetry,
       );
       _isHandlingError = false; // 비-인증 에러: WebSocket 종료 후 재연결 허용

@@ -9,4 +9,7 @@ abstract final class AppSounds {
   /// 끝 0.3초를 줄였다(실기기로 들어 보고 정한 길이). 두 값을 바꾸면 이 파일도 다시
   /// 자른다. 원본: OpenGameArt "Sirens and Alarm Noise"(aquinn, CC0)
   static const String siren = 'assets/sounds/siren.mp3';
+
+  /// 무전 삑 0.12초 — 다른 경찰이 말을 시작하고 끝낼 때(#697). 1.2kHz 사인파 임시 음원(ffmpeg 생성)
+  static const String radioBeep = 'assets/sounds/radio_beep.mp3';
 }

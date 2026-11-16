@@ -1,3 +1,4 @@
+import '../../../../core/constants/game_mode.dart';
 import '../../../game/domain/entities/area_shape.dart';
 import '../entities/create_session_result.dart';
 import '../entities/game_join_result.dart';
@@ -17,6 +18,7 @@ abstract class SessionRepository {
   /// - [AuthException]: 인증 실패 (401)
   /// - [ServerException]: 이미 활성 게임 참여 중 (409) 또는 서버 오류
   Future<CreateSessionResult> createGame({
+    required GameMode gameMode,
     required GameAreaEntity area,
     required int roundDurationMinutes,
     required int locationRevealIntervalMinutes,
@@ -25,6 +27,20 @@ abstract class SessionRepository {
 
     /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
     int? shrinkFinalRadiusInMeters,
+  });
+
+  /// 대기실 게임 모드 변경 (방장 전용)
+  ///
+  /// 새 모드에 맞는 구역 전체를 함께 보낸다. [GameMode.unknown]은 요청 전에 거절한다.
+  ///
+  /// Throws:
+  /// - [ArgumentError]: [mode]가 unknown
+  /// - [ValidationException]: 감옥 규칙 위반 등 (400)
+  /// - [ServerException]: 방장 아님(403) 또는 서버 오류
+  Future<void> updateGameMode(
+    int gameId, {
+    required GameMode mode,
+    required GameAreaEntity area,
   });
 
   /// 초대 코드로 게임 방 참여

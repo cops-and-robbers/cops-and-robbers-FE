@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_icons.dart';
 import 'core/constants/game_config.dart';
+import 'core/constants/game_mode.dart';
 import 'core/constants/spacing_and_radius.dart';
 import 'core/constants/text_styles.dart';
 import 'core/network/websocket/stomp_connection.dart';
@@ -252,6 +253,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
                 AppButton(
                   text: label,
                   onPressed: () => GameOverIntroModal.show(
+                    gameMode: GameMode.copsAndRobbers,
                     context: context,
                     isDarkMode: dark,
                     reason: 'TIME_OVER',
@@ -730,6 +732,7 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
             ),
           ],
           child: GameOverResultDialog(
+            gameMode: GameMode.copsAndRobbers,
             isDarkMode: isDarkMode,
             myTeam: myTeam,
             winnerTeam: winnerTeam,
@@ -783,12 +786,17 @@ class _TestWidgetPageState extends State<TestWidgetPage> {
               gameId: gameId,
               onDone: close,
             ),
-            'role' => RoleBanner(isPolice: isPolice, onDone: close),
+            'role' => RoleBanner(
+              gameMode: GameMode.copsAndRobbers,
+              isPolice: isPolice,
+              onDone: close,
+            ),
             'dispatch' => DispatchCountdown(
               releaseAt: DateTime.now().add(dispatchOverlayLead),
               onDone: close,
             ),
             _ => ChaseScene(
+              gameMode: GameMode.copsAndRobbers,
               mode: switch (kind) {
                 'wait' => ChaseSceneMode.policeWait,
                 'explainer' => ChaseSceneMode.robberExplainer,
@@ -960,6 +968,7 @@ class _StartFlowPreviewState extends State<_StartFlowPreview> {
               key: ValueKey(mode),
               revealFromBand: _intro.showRoleBanner,
               child: ChaseScene(
+                gameMode: GameMode.copsAndRobbers,
                 mode: mode,
                 isPolice: widget.isPolice,
                 gameStartTime: _start,
@@ -972,6 +981,7 @@ class _StartFlowPreviewState extends State<_StartFlowPreview> {
         if (_intro.showRoleBanner)
           Positioned.fill(
             child: RoleBanner(
+              gameMode: GameMode.copsAndRobbers,
               isPolice: widget.isPolice,
               onRevealNext: _intro.roleBannerLeaving,
               onDone: _intro.roleBannerDone,

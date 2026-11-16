@@ -349,5 +349,31 @@ void main() {
     test('lock_screen_hides_shrink_after_final_area', () {
       expect(next(DateTime(2026, 11, 8, 12, 25)), isNull);
     });
+
+    group('감옥 없는 방(술래잡기)', () {
+      test(
+        'shrink_final_center_is_playground_center_when_room_has_no_jail',
+        () {
+          final at = shrinkClockFor(
+            area: GameAreaEntity(playground: circle(center, 1000)),
+            finalRadius: 200,
+            start: DateTime(2026, 11, 8, 12),
+            roundDurationMinutes: 30,
+            policeWaitMinutes: 5,
+          );
+          // 라운드 끝에는 원이 플레이그라운드 중심에 그대로 모인다
+          final last = at!(DateTime(2026, 11, 8, 12, 30)).current;
+          expect(last.center, center);
+          expect(last.radiusInMeters, 200);
+        },
+      );
+
+      test('shrink_lock_is_none_for_300m_circle_when_room_has_no_jail', () {
+        expect(
+          shrinkLockFor(GameAreaEntity(playground: circle(center, 300))),
+          ShrinkLock.none,
+        );
+      });
+    });
   });
 }

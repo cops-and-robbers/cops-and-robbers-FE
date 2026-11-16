@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_icons.dart';
+import '../core/constants/game_mode.dart';
 import '../core/constants/legal_doc.dart';
 import '../core/constants/game_team.dart';
 import '../core/constants/spacing_and_radius.dart';
@@ -30,6 +31,7 @@ import '../features/session/presentation/pages/game_tutorial_page.dart';
 import '../features/auth/presentation/pages/nickname_setup_page.dart';
 import '../features/auth/presentation/pages/agreement_page.dart';
 import '../features/session/presentation/pages/home_page.dart';
+import '../features/session/presentation/pages/mode_change_page.dart';
 import '../features/community/domain/entities/community_post_entity.dart';
 import '../features/community/presentation/pages/community_chat_notice_edit_page.dart';
 import '../features/community/presentation/pages/community_chat_notice_page.dart';
@@ -743,8 +745,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: RoutePaths.gameTutorialName,
             pageBuilder: (context, state) => buildSmoothFade(
               key: state.pageKey,
-              // 앱에 모드 값이 생기면 여기에 넘긴다(DEC-0127)
-              child: const GameTutorialPage(mode: TutorialMode.classic),
+              // 대기방이 방의 모드를 extra로 넘긴다. 없으면 경찰과 도둑 튜토리얼.
+              child: GameTutorialPage(
+                mode: switch (state.extra) {
+                  final GameMode m => m.tutorialMode,
+                  _ => TutorialMode.classic,
+                },
+              ),
             ),
           ),
           // 게임 설정 페이지
@@ -817,6 +824,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                       editArgs: state.extra as PrisonEditArgs?,
                       // 대기방에서 진행 중인 게임의 구역을 고치는 경로 — 역할 테마 적용
                       isInGameEdit: true,
+                    ),
+                    isForward: true,
+                  );
+                },
+              ),
+              // 모드 변경 페이지 — 고른 모드를 pop 값으로 돌려준다
+              GoRoute(
+                path: 'mode',
+                name: RoutePaths.gameSettingsModeName,
+                pageBuilder: (context, state) {
+                  return buildDirectionalSlide(
+                    key: state.pageKey,
+                    child: ModeChangePage(
+                      // extra 누락(딥링크 등)이면 경찰과 도둑에서 시작한다
+                      current: switch (state.extra) {
+                        final GameMode m => m,
+                        _ => GameMode.copsAndRobbers,
+                      },
                     ),
                     isForward: true,
                   );

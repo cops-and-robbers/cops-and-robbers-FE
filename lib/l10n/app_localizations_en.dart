@@ -468,6 +468,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while creating the waiting room';
 
   @override
+  String get errorGameModeUpdateUnexpected =>
+      'An unexpected error occurred while changing the game mode';
+
+  @override
   String get errorActiveGameFetchUnexpected =>
       'An unexpected error occurred while looking up the game in progress';
 
@@ -492,7 +496,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String gameSettingPoliceStartDelayTag(int minutes) {
+    return '$minutes min after Hiders start';
+  }
+
+  @override
   String get pageGameSettingsEditTitle => 'Edit settings';
+
+  @override
+  String get pageModeChangeTitle => 'Change mode';
 
   @override
   String get buttonSaving => 'Saving...';
@@ -1135,6 +1147,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Filled in with recommended values. Tap only what you want to change';
 
   @override
+  String get modeSelectTitle => 'Which mode do you want to play?';
+
+  @override
+  String get modeSelectHint => 'Each mode has different rules';
+
+  @override
+  String get modeCardCopsAndRobbersDescription =>
+      'Caught players are locked in jail';
+
+  @override
+  String get modeCardHideAndSeekDescription =>
+      'No jail, getting caught ends it right away';
+
+  @override
+  String get confirmRowMode => 'Mode';
+
+  @override
   String get buttonNext => 'Next';
 
   @override
@@ -1235,8 +1264,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String dialogStartGamePoliceCountTag(int count) {
+    return 'Seekers: $count';
+  }
+
+  @override
   String dialogStartGameRobberCount(int count) {
     return 'Robbers: $count';
+  }
+
+  @override
+  String dialogStartGameRobberCountTag(int count) {
+    return 'Hiders: $count';
   }
 
   @override
@@ -1254,10 +1293,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'The Cops win by catching all Robbers and';
 
   @override
+  String get gameRulesCopGoalPrefixTag =>
+      'The Seekers win by finding all Hiders and';
+
+  @override
   String get gameRulesCopGoalSuffix => 'arresting them,';
 
   @override
+  String get gameRulesCopGoalSuffixTag => 'catching them,';
+
+  @override
   String get gameRulesRobberGoalPrefix => '\nand the Robbers win by';
+
+  @override
+  String get gameRulesRobberGoalPrefixTag => '\nand the Hiders win by';
 
   @override
   String get gameRulesRobberGoalCondition =>
@@ -1270,12 +1319,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRulesLocationShareLine1 => 'The Robbers\' locations are';
 
   @override
+  String get gameRulesLocationShareLine1Tag => 'The Hiders\' locations are';
+
+  @override
   String gameRulesLocationShareLine2(int minutes) {
     return 'shared with the Cops team every $minutes min';
   }
 
   @override
+  String gameRulesLocationShareLine2Tag(int minutes) {
+    return 'shared with the Seekers every $minutes min';
+  }
+
+  @override
   String get gameRulesLocationShareLine3 => '';
+
+  @override
+  String get gameRulesLocationShareLine3Tag => '';
 
   @override
   String get gameRulesZoneRuleLine1 =>
@@ -1300,10 +1360,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startTitlePolice => 'Find the Robbers,\narrest them all!';
 
   @override
+  String get startTitlePoliceTag => 'Find the Hiders,\ncatch them all!';
+
+  @override
   String get startTitleRobber => 'Dodge the Cops,\nrun until the end!';
 
   @override
+  String get startTitleRobberTag => 'Dodge the Seekers,\nhide until the end!';
+
+  @override
   String get startTitlePoliceAccent => 'arrest them all!';
+
+  @override
+  String get startTitlePoliceAccentTag => 'catch them all!';
 
   @override
   String get startTitleRobberAccent => 'run until the end!';
@@ -1317,23 +1386,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startWaitCountdownLabel => 'Cops move out in';
 
   @override
+  String get startWaitCountdownLabelTag => 'Seekers move out in';
+
+  @override
   String get startGameTimeLeftLabel => 'Game time left';
 
   @override
   String get startWaitPoliceTitle => 'The Robbers are getting away!';
 
   @override
+  String get startWaitPoliceTitleTag => 'The Hiders are hiding!';
+
+  @override
   String get startWaitRobberTitle => 'Get away from the Cops!';
+
+  @override
+  String get startWaitRobberTitleTag => 'Get away from the Seekers!';
 
   @override
   String get startMissionPoliceLabel => 'Cop team mission';
 
   @override
+  String get startMissionPoliceLabelTag => 'Seeker team mission';
+
+  @override
   String get startMissionRobberLabel => 'Robber team mission';
+
+  @override
+  String get startMissionRobberLabelTag => 'Hider team mission';
 
   @override
   String get startMissionPolice =>
       'Find the Robbers and arrest them all with QR';
+
+  @override
+  String get startMissionPoliceTag =>
+      'Find the Hiders and catch them all with QR';
 
   @override
   String get startMissionRobber =>
@@ -1354,11 +1442,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startRuleQrArrest => 'Scan a Robber\'s QR to arrest them';
 
   @override
+  String get startRuleQrArrestTag => 'Scan a Hider\'s QR to catch them';
+
+  @override
   String get startRulePing => 'Long-press the map to drop a ping for your team';
 
   @override
   String startRuleRobberReveal(int minutes) {
     return 'Robber locations are revealed to the Cops every $minutes min';
+  }
+
+  @override
+  String startRuleRobberRevealTag(int minutes) {
+    return 'Hider locations are revealed to the Seekers every $minutes min';
   }
 
   @override
@@ -1368,8 +1464,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startRuleQrCaught => 'You\'re caught when the Cops scan your QR';
 
   @override
+  String get startRuleQrCaughtTag =>
+      'You\'re caught when the Seekers scan your QR';
+
+  @override
   String startRuleMyReveal(int minutes) {
     return 'Your location is revealed to the Cops every $minutes min';
+  }
+
+  @override
+  String startRuleMyRevealTag(int minutes) {
+    return 'Your location is revealed to the Seekers every $minutes min';
   }
 
   @override
@@ -1381,8 +1486,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cops win by arresting every Robber, Robbers win by lasting until time runs out';
 
   @override
+  String get startRuleWinTag =>
+      'Seekers win by catching every Hider, Hiders win by lasting until time runs out';
+
+  @override
   String startRuleTeamReveal(int minutes) {
     return 'Robber locations are shared with the Cops every $minutes min';
+  }
+
+  @override
+  String startRuleTeamRevealTag(int minutes) {
+    return 'Hider locations are shared with the Seekers every $minutes min';
   }
 
   @override
@@ -1410,7 +1524,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'The Robbers\' locations will not be shared!';
 
   @override
+  String get gameSettingNoLocationShareWarningTag =>
+      'The Hiders\' locations will not be shared!';
+
+  @override
   String get gameSettingPoliceStartPrefix => 'After Robbers start,';
+
+  @override
+  String get gameSettingPoliceStartPrefixTag => 'After Hiders start,';
 
   @override
   String get gameSettingPoliceStartSuffix => 'later';
@@ -1430,6 +1551,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get warnPoliceWaitMin => 'Cop start time must be at least 1 minute';
+
+  @override
+  String get warnPoliceWaitMinTag =>
+      'Seeker start time must be at least 1 minute';
 
   @override
   String get dialogQuitCreationTitle => 'Stop creating the room?';
@@ -1457,7 +1582,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldLocationShareInterval => 'Robber location share interval';
 
   @override
+  String get fieldLocationShareIntervalTag => 'Hider location share interval';
+
+  @override
   String get fieldPoliceDispatchTime => 'Cop start time';
+
+  @override
+  String get fieldPoliceDispatchTimeTag => 'Seeker start time';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -1640,10 +1771,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRobberOnTheRunBanner => 'Robbers are running away!';
 
   @override
+  String get gameRobberOnTheRunBannerTag => 'Hiders are hiding!';
+
+  @override
   String get gameOverBannerTitle => 'Game over!';
 
   @override
   String get gameOverReasonAllArrested => 'All Robbers have been arrested!';
+
+  @override
+  String get gameOverReasonAllArrestedTag => 'All Hiders have been caught!';
 
   @override
   String get gameOverReasonTimeUp => 'The time limit has expired!';
@@ -1652,7 +1789,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameOverReasonPoliceForfeited => 'All Cops have left the game!';
 
   @override
+  String get gameOverReasonPoliceForfeitedTag =>
+      'All Seekers have left the game!';
+
+  @override
   String get gameOverReasonRobberForfeited => 'All Robbers have left the game!';
+
+  @override
+  String get gameOverReasonRobberForfeitedTag =>
+      'All Hiders have left the game!';
 
   @override
   String get gameOverFallbackMessage => 'The game has ended';
@@ -1662,6 +1807,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameTeamRobber => 'Robber team';
+
+  @override
+  String get gameTeamSeeker => 'Seeker team';
+
+  @override
+  String get gameTeamHider => 'Hider team';
 
   @override
   String get gameResultWin => 'Win';
@@ -1681,11 +1832,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRoleRobberLabel => 'Robber';
 
   @override
+  String get gameRoleSeekerLabel => 'Seeker';
+
+  @override
+  String get gameRoleHiderLabel => 'Hider';
+
+  @override
+  String get gameModeCopsAndRobbers => 'Cops and Robbers';
+
+  @override
+  String get gameModeHideAndSeek => 'Hide and Seek';
+
+  @override
   String get errorCannotArrestDuringWait =>
       'Cannot arrest Robbers during the Cops waiting time';
 
   @override
+  String get errorCannotArrestDuringWaitTag =>
+      'Cannot catch Hiders during the Seekers\' waiting time';
+
+  @override
   String get qrScannerWantedRobberTitle => 'Scan the Robber\'s wanted QR code';
+
+  @override
+  String get qrScannerWantedRobberTitleTag => 'Scan the Hider\'s QR code';
 
   @override
   String get errorExpiredQr =>
@@ -1695,11 +1865,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorAlreadyArrested => 'This Robber has already been arrested';
 
   @override
+  String get errorAlreadyArrestedTag => 'This Hider has already been caught';
+
+  @override
   String get gameArrestOverlayTitle => 'You have been arrested!';
 
   @override
   String get gameArrestOverlayMessage =>
       'Enter the jail, then leave it to jailbreak automatically\nUse the button below if automatic jailbreak does not work';
+
+  @override
+  String get gameArrestOverlayTitleTag => 'You\'ve been caught';
+
+  @override
+  String get gameArrestOverlayMessageTag => 'You can watch until the game ends';
 
   @override
   String get gameArrestOverlayEscapeCompleteButton => 'Jailbreak';
@@ -1714,7 +1893,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelArrestCount => 'Arrest count';
 
   @override
+  String get labelArrestCountTag => 'Catch count';
+
+  @override
   String get fieldRemainingRobbers => 'Remaining Robbers';
+
+  @override
+  String get fieldRemainingRobbersTag => 'Remaining Hiders';
 
   @override
   String get fieldGamePlaytime => 'Game playtime';
@@ -1757,7 +1942,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelMyArrestCount => 'My arrests';
 
   @override
+  String get labelMyArrestCountTag => 'My catches';
+
+  @override
   String get labelTeamArrestShare => 'Team arrest share';
+
+  @override
+  String get labelTeamArrestShareTag => 'Team catch contribution';
 
   @override
   String get labelMyArrestedCount => 'Times caught';
@@ -1775,7 +1966,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelPoliceTeamMvp => 'Cops team MVP';
 
   @override
+  String get labelPoliceTeamMvpTag => 'Seeker team MVP';
+
+  @override
   String get labelRobberTeamMvp => 'Robber team MVP';
+
+  @override
+  String get labelRobberTeamMvpTag => 'Hider team MVP';
 
   @override
   String get mvpRevealTapToContinue => 'Tap the screen to see the next result';
@@ -1787,7 +1984,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mvpRevealPoliceSubtitle => 'Top player on the Cops team';
 
   @override
+  String get mvpRevealPoliceSubtitleTag => 'Top player on the Seeker team';
+
+  @override
   String get mvpRevealRobberSubtitle => 'Top player on the Robber team';
+
+  @override
+  String get mvpRevealRobberSubtitleTag => 'Top player on the Hider team';
 
   @override
   String get statusAlive => 'Alive';
@@ -1796,8 +1999,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusJailed => 'Jailed';
 
   @override
+  String get statusJailedTag => 'Caught';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return 'Until next Robber location reveal: $formatted';
+  }
+
+  @override
+  String gameLocationRevealCountdownTag(String formatted) {
+    return 'Until next Hider location reveal: $formatted';
   }
 
   @override
@@ -1806,6 +2017,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String lockScreenRemainingRobbers(int alive, int total) {
     return 'Robbers left $alive/$total';
+  }
+
+  @override
+  String lockScreenRemainingRobbersTag(int alive, int total) {
+    return 'Hiders left $alive/$total';
   }
 
   @override
@@ -1831,6 +2047,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogArrestConfirmTitle => 'Have you arrested this player?';
 
   @override
+  String get dialogArrestConfirmTitleTag => 'Have you caught this player?';
+
+  @override
   String get buttonYes => 'Yes';
 
   @override
@@ -1854,10 +2073,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String gamePoliceStartCountdownTag(String formatted) {
+    return 'Until Seekers start: $formatted';
+  }
+
+  @override
   String get gameQrDisplayTitle => 'Wanted QR code';
 
   @override
   String get gameQrDisplayMessage => 'Please show the QR code to the Cops';
+
+  @override
+  String get gameQrDisplayMessageTag => 'Please show the QR code to the Seeker';
 
   @override
   String get buttonClose => 'Close';
@@ -1947,6 +2174,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameChatAllHint => 'Both cops and robbers can see these messages';
+
+  @override
+  String get gameChatAllHintTag =>
+      'Both Seekers and Hiders can see these messages';
 
   @override
   String get buttonGoToLatestMessage => 'Go to the latest message';
@@ -2363,11 +2594,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameEventPoliceMove => 'Cops are on the move!  Robbers, run!';
 
   @override
+  String get gameEventPoliceMoveTag =>
+      'Seekers are on the move!  Hiders, hide!';
+
+  @override
   String get gameEventLocationReveal => 'Robbers\' locations are now revealed!';
+
+  @override
+  String get gameEventLocationRevealTag =>
+      'Hiders\' locations are now revealed!';
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
     return '@icon_police [$policeNickname] arrested @icon_robber [$robberNickname]!';
+  }
+
+  @override
+  String gameEventArrestNoticeTag(
+    String policeNickname,
+    String robberNickname,
+  ) {
+    return '@icon_police [$policeNickname] caught @icon_robber [$robberNickname]!';
   }
 
   @override
@@ -2403,6 +2650,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String shareInviteMessage(String inviteCode) {
     return 'You\'ve been invited to a Cops and Robbers room! Code: $inviteCode';
+  }
+
+  @override
+  String shareInviteMessageTag(String inviteCode) {
+    return 'You\'ve been invited to a Hide and Seek room! Code: $inviteCode';
   }
 
   @override
@@ -2536,6 +2788,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorCodeGameNotInProgress => 'The game is not in progress';
 
   @override
+  String get errorCodeRadioNotAllowedInEventGame =>
+      'Radio isn\'t available in event games';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadio => 'Only cops can use the radio';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadioTag =>
+      'Only Seekers can use the radio';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTime =>
+      'Available after the cops move out';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTimeTag =>
+      'Available after the Seekers start moving';
+
+  @override
   String get errorCodeGameNotActive =>
       'Can only be viewed in a waiting or in-progress game';
 
@@ -2550,6 +2821,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeInvalidPoliceWaitTime =>
       'Police wait time must be shorter than the round time';
+
+  @override
+  String get errorCodeInvalidPoliceWaitTimeTag =>
+      'Seeker wait time must be shorter than the round time';
 
   @override
   String get errorCodeInviteCodeGenerationFailed =>
@@ -2605,25 +2880,48 @@ class AppLocalizationsEn extends AppLocalizations {
       'To start the game, the police and robber teams each need at least one player';
 
   @override
+  String get errorCodeInvalidTeamCompositionTag =>
+      'To start the game, the Seeker and Hider teams each need at least one player';
+
+  @override
   String get errorCodeNotRobberTeam => 'Only the robber team can send location';
+
+  @override
+  String get errorCodeNotRobberTeamTag =>
+      'Only the Hider team can send location';
 
   @override
   String get errorCodeParticipantGameMismatch =>
       'The police and robber are in different games';
 
   @override
+  String get errorCodeParticipantGameMismatchTag =>
+      'The Seeker and Hider are in different games';
+
+  @override
   String get errorCodeOnlyPoliceCanArrest =>
       'Only the police team can arrest robbers';
+
+  @override
+  String get errorCodeOnlyPoliceCanArrestTag =>
+      'Only the Seeker team can catch Hiders';
 
   @override
   String get errorCodeOnlyRobberCanBeArrested =>
       'Only the robber team can be arrested';
 
   @override
+  String get errorCodeOnlyRobberCanBeArrestedTag =>
+      'Only the Hider team can be caught';
+
+  @override
   String get errorCodeOnlyRobberCanEscape => 'Only the robber team can escape';
 
   @override
   String get errorCodeAlreadyArrested => 'This robber is already jailed';
+
+  @override
+  String get errorCodeAlreadyArrestedTag => 'This Hider is already caught';
 
   @override
   String get errorCodeNotJailed => 'You can only escape from jail';
@@ -2639,6 +2937,24 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodeForceArrestNotAllowedInEventGame =>
       'Not available in event games';
+
+  @override
+  String get errorCodeEscapeNotAllowedInMode =>
+      'Jailbreak isn\'t available in this game mode';
+
+  @override
+  String get errorCodeEventGameNotSupportedInMode =>
+      'This game mode can\'t be used for event games';
+
+  @override
+  String get errorCodeJailAreaRequired => 'This game mode needs a jail area';
+
+  @override
+  String get errorCodeJailAreaNotAllowed => 'This game mode has no jail area';
+
+  @override
+  String get errorCodeWithdrawalUserNotFound =>
+      'This account isn\'t registered';
 
   @override
   String get shrinkAutoOffSnackbar =>
@@ -2695,6 +3011,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorCodePoliceWaitingTime =>
       'Police can\'t arrest robbers during the wait time';
+
+  @override
+  String get errorCodePoliceWaitingTimeTag =>
+      'Seekers can\'t catch Hiders during the wait time';
 
   @override
   String get errorCodeCannotKickYourself => 'The host can\'t kick themselves';
@@ -2838,8 +3158,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String pingChatFoundRobberTag(String cell) {
+    return 'Spotted a Hider at $cell';
+  }
+
+  @override
   String pingChatSuspectRobber(String cell) {
     return 'A robber may be at $cell';
+  }
+
+  @override
+  String pingChatSuspectRobberTag(String cell) {
+    return 'A Hider may be at $cell';
   }
 
   @override
@@ -2848,8 +3178,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String pingChatFoundCopsTag(String cell) {
+    return 'Spotted a Seeker at $cell';
+  }
+
+  @override
   String pingChatSuspectCops(String cell) {
     return 'Cops may be at $cell';
+  }
+
+  @override
+  String pingChatSuspectCopsTag(String cell) {
+    return 'A Seeker may be at $cell';
   }
 
   @override
@@ -2876,6 +3216,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorEventArrestRequestFailed =>
       'Failed to send arrest request. Please try again';
+
+  @override
+  String get errorEventArrestRequestFailedTag =>
+      'Failed to send catch request. Please try again';
 
   @override
   String get gameEventResultTitle => 'Investigation Closed';
@@ -2929,6 +3273,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameMenuArrest => 'Arrest';
 
   @override
+  String get gameMenuArrestTag => 'Catch';
+
+  @override
   String get gameMenuMyQr => 'My QR';
 
   @override
@@ -2962,20 +3309,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialChaseBodyTag =>
-      'Hiders are caught when a Seeker tags them';
+      'Hiders are caught when a Seeker scans their QR';
 
   @override
   String get tutorialShowQrTitle => 'Tagged? Show your QR';
 
   @override
+  String get tutorialShowQrTitleTag => 'Show your QR when a Seeker comes';
+
+  @override
   String get tutorialShowQrBody => 'Robbers tap My QR in the menu';
+
+  @override
+  String get tutorialShowQrBodyTag => 'Hiders tap My QR in the menu';
 
   @override
   String get tutorialScanTitle => 'Scan the QR to arrest';
 
   @override
+  String get tutorialScanTitleTag => 'Scan the QR to catch';
+
+  @override
   String get tutorialScanBody =>
       'Robbers are arrested when a Cop scans their QR';
+
+  @override
+  String get tutorialScanBodyTag =>
+      'A Hider is caught when a Seeker scans their QR';
 
   @override
   String get tutorialJailTitle => 'Caught? Off to Jail';
@@ -3024,6 +3384,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tutorialCalloutArrest => 'Arrested!';
 
   @override
+  String get tutorialCalloutArrestTag => 'Caught!';
+
+  @override
   String get onboardingRunTitle => 'A game you really run';
 
   @override
@@ -3056,4 +3419,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingRecordBody =>
       'See your route and distance when the game ends';
+
+  @override
+  String radioSpeaking(String nickname) {
+    return '$nickname on radio';
+  }
+
+  @override
+  String get radioSpeakerFallback => 'A cop';
+
+  @override
+  String get radioSpeakerFallbackTag => 'A Seeker';
+
+  @override
+  String get dialogMicPermissionTitle => 'Microphone permission required';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      'Microphone permission is required to talk on the radio\nPlease allow microphone permission in settings';
+
+  @override
+  String get radioPttLabel => 'Radio';
 }

@@ -8,4 +8,5 @@
     <string name="fgs_channel_description">ケイドロのゲームが進行中であることを示す通知</string>
     <string name="fgs_notification_title">ケイドロ</string>
     <string name="fgs_notification_text">ゲームが進行中です</string>
+    <string name="radio_notification_text">警察無線に接続中</string>
 </resources>

@@ -45,6 +45,10 @@ mixin _$GameSettingsResponse {
   /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
   int? get shrinkFinalRadiusInMeters => throw _privateConstructorUsedError;
 
+  /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
+  @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+  GameMode get gameMode => throw _privateConstructorUsedError;
+
   /// Serializes this GameSettingsResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -70,6 +74,8 @@ abstract class $GameSettingsResponseCopyWith<$Res> {
     String? gameStartTime,
     bool isEventGame,
     int? shrinkFinalRadiusInMeters,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    GameMode gameMode,
   });
 }
 
@@ -98,6 +104,7 @@ class _$GameSettingsResponseCopyWithImpl<
     Object? gameStartTime = freezed,
     Object? isEventGame = null,
     Object? shrinkFinalRadiusInMeters = freezed,
+    Object? gameMode = null,
   }) {
     return _then(
       _value.copyWith(
@@ -129,6 +136,10 @@ class _$GameSettingsResponseCopyWithImpl<
                 ? _value.shrinkFinalRadiusInMeters
                 : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
                       as int?,
+            gameMode: null == gameMode
+                ? _value.gameMode
+                : gameMode // ignore: cast_nullable_to_non_nullable
+                      as GameMode,
           )
           as $Val,
     );
@@ -152,6 +163,8 @@ abstract class _$$GameSettingsResponseImplCopyWith<$Res>
     String? gameStartTime,
     bool isEventGame,
     int? shrinkFinalRadiusInMeters,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    GameMode gameMode,
   });
 }
 
@@ -176,6 +189,7 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
     Object? gameStartTime = freezed,
     Object? isEventGame = null,
     Object? shrinkFinalRadiusInMeters = freezed,
+    Object? gameMode = null,
   }) {
     return _then(
       _$GameSettingsResponseImpl(
@@ -207,6 +221,10 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
             ? _value.shrinkFinalRadiusInMeters
             : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
                   as int?,
+        gameMode: null == gameMode
+            ? _value.gameMode
+            : gameMode // ignore: cast_nullable_to_non_nullable
+                  as GameMode,
       ),
     );
   }
@@ -223,6 +241,8 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     this.gameStartTime,
     this.isEventGame = false,
     this.shrinkFinalRadiusInMeters,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    this.gameMode = GameMode.copsAndRobbers,
   });
 
   factory _$GameSettingsResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -260,9 +280,14 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
   @override
   final int? shrinkFinalRadiusInMeters;
 
+  /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
+  @override
+  @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+  final GameMode gameMode;
+
   @override
   String toString() {
-    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, gameStartTime: $gameStartTime, isEventGame: $isEventGame, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters)';
+    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, gameStartTime: $gameStartTime, isEventGame: $isEventGame, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters, gameMode: $gameMode)';
   }
 
   @override
@@ -290,7 +315,9 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
                   other.shrinkFinalRadiusInMeters,
                   shrinkFinalRadiusInMeters,
                 ) ||
-                other.shrinkFinalRadiusInMeters == shrinkFinalRadiusInMeters));
+                other.shrinkFinalRadiusInMeters == shrinkFinalRadiusInMeters) &&
+            (identical(other.gameMode, gameMode) ||
+                other.gameMode == gameMode));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -304,6 +331,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     gameStartTime,
     isEventGame,
     shrinkFinalRadiusInMeters,
+    gameMode,
   );
 
   /// Create a copy of GameSettingsResponse
@@ -333,6 +361,8 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
     final String? gameStartTime,
     final bool isEventGame,
     final int? shrinkFinalRadiusInMeters,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    final GameMode gameMode,
   }) = _$GameSettingsResponseImpl;
 
   factory _GameSettingsResponse.fromJson(Map<String, dynamic> json) =
@@ -368,6 +398,11 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
   /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
   @override
   int? get shrinkFinalRadiusInMeters;
+
+  /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
+  @override
+  @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+  GameMode get gameMode;
 
   /// Create a copy of GameSettingsResponse
   /// with the given fields replaced by the non-null parameter values.

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/game/domain/entities/game_result_entity.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/game_over_intro_modal.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
@@ -36,6 +37,7 @@ Future<void> openModal(
           builder: (context) => Scaffold(
             body: TextButton(
               onPressed: () => GameOverIntroModal.show(
+                gameMode: GameMode.copsAndRobbers,
                 context: context,
                 isDarkMode: isDarkMode,
                 reason: 'TIME_OVER',

@@ -1,4 +1,5 @@
 // test/features/game/presentation/widgets/start/chase_scene_test.dart
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:clock/clock.dart';
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/core/services/vibration_service.dart';
@@ -45,6 +46,7 @@ Future<void> pumpScene(
             ).copyWith(disableAnimations: disableAnimations),
             child: Scaffold(
               body: ChaseScene(
+                gameMode: GameMode.copsAndRobbers,
                 mode: mode,
                 isPolice: isPolice,
                 gameStartTime: clock.now().subtract(elapsed),
@@ -310,6 +312,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: ChaseScene(
+            gameMode: GameMode.copsAndRobbers,
             mode: ChaseSceneMode.rulesReplay,
             isPolice: false,
             gameStartTime: clock.now().subtract(const Duration(minutes: 2)),

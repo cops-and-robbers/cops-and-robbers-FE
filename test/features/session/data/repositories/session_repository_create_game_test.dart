@@ -1,9 +1,11 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/errors/app_exception.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_area_model.dart';
 import 'package:cops_and_robbers/features/game/domain/entities/area_shape.dart';
 import 'package:cops_and_robbers/features/session/data/datasources/session_remote_datasource.dart';
 import 'package:cops_and_robbers/features/session/data/models/create_session_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/game_create_request_model.dart';
+import 'package:cops_and_robbers/features/session/data/models/game_mode_update_request_model.dart';
 import 'package:cops_and_robbers/features/session/data/models/game_settings_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/in_game_participants_response.dart';
 import 'package:cops_and_robbers/features/session/data/models/join_game_request.dart';
@@ -22,6 +24,7 @@ class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
   CreateSessionResponse? responseToReturn;
   Object? errorToThrow;
   GameCreateRequestModel? lastRequest;
+  GameModeUpdateRequestModel? lastModeRequest;
 
   @override
   Future<CreateSessionResponse> createGame(
@@ -74,6 +77,15 @@ class _FakeSessionRemoteDataSource implements SessionRemoteDataSource {
   ) => throw UnimplementedError();
 
   @override
+  Future<void> updateGameMode(
+    int gameId,
+    GameModeUpdateRequestModel request,
+  ) async {
+    if (errorToThrow != null) throw errorToThrow!;
+    lastModeRequest = request;
+  }
+
+  @override
   Future<void> kickMember(int gameId, int participantId) =>
       throw UnimplementedError();
 
@@ -100,7 +112,9 @@ DioException _dioError(int statusCode) => DioException(
 Future<dynamic> _callCreateGame(
   SessionRepositoryImpl repo, {
   int? shrinkFinalRadiusInMeters,
+  GameMode gameMode = GameMode.copsAndRobbers,
 }) => repo.createGame(
+  gameMode: gameMode,
   area: const GameAreaEntity(
     playground: AreaShape.circle(
       center: GeoPoint(latitude: 37.5, longitude: 127.0),
@@ -131,6 +145,43 @@ CreateSessionResponse _createSessionResponse() =>
     });
 
 void main() {
+  group('SessionRepositoryImpl.updateGameMode', () {
+    const area = GameAreaEntity(
+      playground: AreaShape.circle(
+        center: GeoPoint(latitude: 37.5, longitude: 127.0),
+        radiusInMeters: 500,
+      ),
+    );
+
+    test(
+      'update_game_mode_rejects_unknown_mode_before_request_when_mode_is_unknown',
+      () async {
+        // 구버전 앱이 모르는 모드의 방 — 서버가 모르는 값을 보내면 안 된다
+        final fake = _FakeSessionRemoteDataSource();
+        final repo = SessionRepositoryImpl(fake);
+
+        await expectLater(
+          repo.updateGameMode(1, mode: GameMode.unknown, area: area),
+          throwsArgumentError,
+        );
+        expect(fake.lastModeRequest, isNull);
+      },
+    );
+
+    test(
+      'update_game_mode_sends_tag_request_when_host_picks_hide_and_seek',
+      () async {
+        final fake = _FakeSessionRemoteDataSource();
+        final repo = SessionRepositoryImpl(fake);
+
+        await repo.updateGameMode(1, mode: GameMode.hideAndSeek, area: area);
+
+        expect(fake.lastModeRequest?.gameMode, GameMode.hideAndSeek);
+        expect(fake.lastModeRequest?.area, area.toRequestModel());
+      },
+    );
+  });
+
   group('SessionRepositoryImpl.createGame', () {
     test('shrink_on_room_sends_final_radius_in_create_request', () async {
       // 500m 구역·감옥 50m에서 구역 축소를 켜고 만든 방 (#668)
@@ -152,6 +203,35 @@ void main() {
 
       expect(fake.lastRequest?.settings.shrinkFinalRadiusInMeters, isNull);
     });
+
+    test(
+      'hide_and_seek_is_sent_when_host_creates_hide_and_seek_room',
+      () async {
+        final fake = _FakeSessionRemoteDataSource()
+          ..responseToReturn = _createSessionResponse();
+        final repo = SessionRepositoryImpl(fake);
+
+        await _callCreateGame(repo, gameMode: GameMode.hideAndSeek);
+
+        expect(fake.lastRequest?.gameMode, GameMode.hideAndSeek);
+      },
+    );
+
+    test(
+      'unknown_mode_is_never_sent_when_app_does_not_know_the_mode',
+      () async {
+        final fake = _FakeSessionRemoteDataSource()
+          ..responseToReturn = _createSessionResponse();
+        final repo = SessionRepositoryImpl(fake);
+
+        await expectLater(
+          _callCreateGame(repo, gameMode: GameMode.unknown),
+          throwsArgumentError,
+        );
+        expect(fake.lastRequest, isNull);
+      },
+    );
+
     test('circle_area_is_mapped_to_request_when_game_is_created', () async {
       final fake = _FakeSessionRemoteDataSource()
         ..responseToReturn = _createSessionResponse();

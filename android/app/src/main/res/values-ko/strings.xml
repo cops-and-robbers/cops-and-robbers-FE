@@ -8,4 +8,5 @@
     <string name="fgs_channel_description">경찰과 도둑 게임 진행 중 표시 알림</string>
     <string name="fgs_notification_title">경찰과 도둑</string>
     <string name="fgs_notification_text">게임이 진행 중입니다</string>
+    <string name="radio_notification_text">경찰 무전 연결됨</string>
 </resources>

@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:clock/clock.dart';
+import 'package:cops_and_robbers/features/radio/presentation/widgets/radio_ptt_button.dart';
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/core/constants/app_icons.dart';
 import 'package:cops_and_robbers/core/constants/map_styles.dart';
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/widgets/navigation/app_top_bar.dart';
 import 'package:cops_and_robbers/core/widgets/buttons/previous_button.dart';
 import 'package:cops_and_robbers/features/chat/presentation/providers/chat_notification_provider.dart';
@@ -1079,9 +1081,12 @@ void main() {
           textScale: variant.scale,
         );
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-        final chatButton = find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
-        );
+        // 무전 켜진 경찰은 채팅 버튼 자리를 무전 버튼이 쓴다 — 미리보기는 그 버튼 위에 뜬다 (#697)
+        final chatButton = variant.team == 'POLICE'
+            ? find.byType(RadioPttButton)
+            : find.byWidgetPredicate(
+                (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+              );
         final message = ChatMessageDto(
           id: 'preview-1',
           gameId: 1,
@@ -1476,11 +1481,21 @@ void main() {
         locale: Locale(variant.locale),
         textScale: variant.scale,
       );
-      await tester.tap(
-        find.byWidgetPredicate(
-          (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
-        ),
-      );
+      if (variant.team == 'POLICE') {
+        // 무전 켜진 경찰은 채팅이 + 메뉴 맨 끝에 있다 (#697)
+        await tapFloatingMenuItem(
+          tester,
+          AppLocalizations.of(
+            tester.element(find.byType(GamePage)),
+          ).gameChatTitle,
+        );
+      } else {
+        await tester.tap(
+          find.byWidgetPredicate(
+            (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+          ),
+        );
+      }
       await tester.pump();
       final l10n = AppLocalizations.of(
         tester.element(find.byType(CommunityMessageInput)),
@@ -2199,6 +2214,45 @@ void main() {
       },
     );
   }
+
+  testWidgets(
+    'auto_escape_never_requests_when_caught_hider_leaves_area_without_jail',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        // 술래잡기 방: 잡힘(JAILED) 상태지만 감옥 구역이 없다
+        container.read(gameParticipantNotifierProvider.notifier)
+          ..setGameInfo(
+            gameId: 1,
+            participantId: 5,
+            nickname: '도둑',
+            team: 'ROBBER',
+            gameMode: GameMode.hideAndSeek,
+          )
+          ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
+          ..setGameStartTime(
+            DateTime.now()
+                .subtract(const Duration(minutes: 1))
+                .toUtc()
+                .toIso8601String(),
+          );
+        game.area = const GameAreaModel(
+          areaType: GameAreaType.circle,
+          circle: CircleAreaModel(
+            playgroundCenter: LatLngModel(latitude: 37.5665, longitude: 126.9780),
+            playgroundRadiusInMeters: 500,
+          ),
+        );
+        await mount(tester);
+        await sendPosition(tester, inside: true);
+        await tester.pump(const Duration(seconds: 1));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(seconds: 3));
+        await sendPosition(tester, inside: false);
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(game.escapes, 0);
+      });
+    },
+  );
 
   testWidgets(
     'jailed_state_is_restored_when_paused_reconnect_retries_without_a_frame',

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/game_mode.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -16,6 +18,7 @@ class GameRulesContent extends StatelessWidget {
   const GameRulesContent({
     this.locationRevealIntervalMinutes,
     this.isDarkMode = false,
+    required this.gameMode,
     super.key,
   });
 
@@ -24,12 +27,14 @@ class GameRulesContent extends StatelessWidget {
 
   /// 다크 모드 여부
   final bool isDarkMode;
+  final GameMode gameMode;
 
   /// 게임 규칙 다이얼로그를 다크모드 포함하여 표시
   static void showAsDialog(
     BuildContext context, {
     bool isDarkMode = false,
     int? locationRevealIntervalMinutes,
+    required GameMode gameMode,
   }) {
     final l10n = AppLocalizations.of(context);
     AppDialog.show(
@@ -44,6 +49,7 @@ class GameRulesContent extends StatelessWidget {
       customContent: GameRulesContent(
         locationRevealIntervalMinutes: locationRevealIntervalMinutes,
         isDarkMode: isDarkMode,
+        gameMode: gameMode,
       ),
       confirmText: l10n.buttonConfirm,
     );
@@ -90,9 +96,27 @@ class GameRulesContent extends StatelessWidget {
   InlineSpan _rule1(AppLocalizations l10n) {
     return TextSpan(
       children: [
-        TextSpan(text: l10n.gameRulesCopGoalPrefix),
-        _highlight(l10n.gameRulesCopGoalSuffix),
-        TextSpan(text: l10n.gameRulesRobberGoalPrefix),
+        TextSpan(
+          text: byMode(
+            gameMode,
+            classic: l10n.gameRulesCopGoalPrefix,
+            tag: l10n.gameRulesCopGoalPrefixTag,
+          ),
+        ),
+        _highlight(
+          byMode(
+            gameMode,
+            classic: l10n.gameRulesCopGoalSuffix,
+            tag: l10n.gameRulesCopGoalSuffixTag,
+          ),
+        ),
+        TextSpan(
+          text: byMode(
+            gameMode,
+            classic: l10n.gameRulesRobberGoalPrefix,
+            tag: l10n.gameRulesRobberGoalPrefixTag,
+          ),
+        ),
         _highlight(l10n.gameRulesRobberGoalCondition),
         TextSpan(text: l10n.gameRulesWinSuffix),
       ],
@@ -103,9 +127,27 @@ class GameRulesContent extends StatelessWidget {
     final minutes = locationRevealIntervalMinutes ?? 5;
     return TextSpan(
       children: [
-        TextSpan(text: l10n.gameRulesLocationShareLine1),
-        _highlight(l10n.gameRulesLocationShareLine2(minutes)),
-        TextSpan(text: l10n.gameRulesLocationShareLine3),
+        TextSpan(
+          text: byMode(
+            gameMode,
+            classic: l10n.gameRulesLocationShareLine1,
+            tag: l10n.gameRulesLocationShareLine1Tag,
+          ),
+        ),
+        _highlight(
+          byMode(
+            gameMode,
+            classic: l10n.gameRulesLocationShareLine2(minutes),
+            tag: l10n.gameRulesLocationShareLine2Tag(minutes),
+          ),
+        ),
+        TextSpan(
+          text: byMode(
+            gameMode,
+            classic: l10n.gameRulesLocationShareLine3,
+            tag: l10n.gameRulesLocationShareLine3Tag,
+          ),
+        ),
       ],
     );
   }

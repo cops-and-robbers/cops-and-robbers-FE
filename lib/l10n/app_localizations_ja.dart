@@ -419,6 +419,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorGameRoomCreateUnexpected => '待機室の作成中に予期せぬエラーが発生しました';
 
   @override
+  String get errorGameModeUpdateUnexpected => 'ゲームモードの変更中に予期せぬエラーが発生しました';
+
+  @override
   String get errorActiveGameFetchUnexpected => '参加中のゲームの照会中に予期せぬエラーが発生しました';
 
   @override
@@ -442,7 +445,15 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String gameSettingPoliceStartDelayTag(int minutes) {
+    return '隠れる人のスタートから $minutes分後';
+  }
+
+  @override
   String get pageGameSettingsEditTitle => '設定の編集';
+
+  @override
+  String get pageModeChangeTitle => 'モード変更';
 
   @override
   String get buttonSaving => '保存中...';
@@ -1065,6 +1076,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sessionCreationStepReviewHint => 'おすすめの値を入れました。変えたい項目だけタップしてください';
 
   @override
+  String get modeSelectTitle => 'どのモードで遊びますか？';
+
+  @override
+  String get modeSelectHint => 'モードごとにルールが違います';
+
+  @override
+  String get modeCardCopsAndRobbersDescription => '捕まると牢屋に入れられます';
+
+  @override
+  String get modeCardHideAndSeekDescription => '牢屋なし、捕まったらすぐ終わりです';
+
+  @override
+  String get confirmRowMode => 'モード';
+
+  @override
   String get buttonNext => '次へ';
 
   @override
@@ -1156,8 +1182,18 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String dialogStartGamePoliceCountTag(int count) {
+    return '鬼$count人';
+  }
+
+  @override
   String dialogStartGameRobberCount(int count) {
     return '泥棒$count人';
+  }
+
+  @override
+  String dialogStartGameRobberCountTag(int count) {
+    return '隠れる人$count人';
   }
 
   @override
@@ -1173,10 +1209,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameRulesCopGoalPrefix => '警察はすべての泥棒を捕まえて';
 
   @override
+  String get gameRulesCopGoalPrefixTag => '鬼はすべての隠れる人を見つけて';
+
+  @override
   String get gameRulesCopGoalSuffix => '逮捕すれば、';
 
   @override
+  String get gameRulesCopGoalSuffixTag => '捕まえれば、';
+
+  @override
   String get gameRulesRobberGoalPrefix => '\n泥棒は';
+
+  @override
+  String get gameRulesRobberGoalPrefixTag => '\n隠れる人は';
 
   @override
   String get gameRulesRobberGoalCondition => '制限時間が終了するまで逃げ切れば';
@@ -1188,12 +1233,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameRulesLocationShareLine1 => '泥棒チームの位置は';
 
   @override
+  String get gameRulesLocationShareLine1Tag => '隠れる人チームの位置は';
+
+  @override
   String gameRulesLocationShareLine2(int minutes) {
     return '$minutes分ごとに警察チームに共有されます';
   }
 
   @override
+  String gameRulesLocationShareLine2Tag(int minutes) {
+    return '$minutes分ごとに鬼チームに共有されます';
+  }
+
+  @override
   String get gameRulesLocationShareLine3 => '';
+
+  @override
+  String get gameRulesLocationShareLine3Tag => '';
 
   @override
   String get gameRulesZoneRuleLine1 => '指定されたゲームエリアから外に出てはいけません';
@@ -1217,10 +1273,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startTitlePolice => '泥棒を見つけて\n全員逮捕しよう!';
 
   @override
+  String get startTitlePoliceTag => '隠れる人を見つけて\n全員捕まえよう!';
+
+  @override
   String get startTitleRobber => '警察をかわして\n最後まで逃げ切ろう!';
 
   @override
+  String get startTitleRobberTag => '鬼をかわして\n最後まで逃げ切ろう!';
+
+  @override
   String get startTitlePoliceAccent => '全員逮捕しよう!';
+
+  @override
+  String get startTitlePoliceAccentTag => '全員捕まえよう!';
 
   @override
   String get startTitleRobberAccent => '最後まで逃げ切ろう!';
@@ -1234,22 +1299,40 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startWaitCountdownLabel => '警察出動まで';
 
   @override
+  String get startWaitCountdownLabelTag => '鬼の出動まで';
+
+  @override
   String get startGameTimeLeftLabel => '残りゲーム時間';
 
   @override
   String get startWaitPoliceTitle => '泥棒が逃げています！';
 
   @override
+  String get startWaitPoliceTitleTag => '隠れる人が隠れています！';
+
+  @override
   String get startWaitRobberTitle => '警察から離れましょう！';
+
+  @override
+  String get startWaitRobberTitleTag => '鬼から離れましょう！';
 
   @override
   String get startMissionPoliceLabel => '警察チームのミッション';
 
   @override
+  String get startMissionPoliceLabelTag => '鬼チームのミッション';
+
+  @override
   String get startMissionRobberLabel => '泥棒チームのミッション';
 
   @override
+  String get startMissionRobberLabelTag => '隠れる人チームのミッション';
+
+  @override
   String get startMissionPolice => '泥棒を見つけてQRで全員逮捕しましょう';
+
+  @override
+  String get startMissionPoliceTag => '隠れる人を見つけてQRで全員捕まえましょう';
 
   @override
   String get startMissionRobber => 'ゲームが終わるまで捕まらずに逃げ切りましょう';
@@ -1269,11 +1352,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startRuleQrArrest => '泥棒のQRをスキャンすると逮捕できます';
 
   @override
+  String get startRuleQrArrestTag => '隠れる人のQRをスキャンすると捕まえられます';
+
+  @override
   String get startRulePing => '地図を長押しするとピンで味方に知らせられます';
 
   @override
   String startRuleRobberReveal(int minutes) {
     return '泥棒の位置は$minutes分ごとに警察に公開されます';
+  }
+
+  @override
+  String startRuleRobberRevealTag(int minutes) {
+    return '隠れる人の位置は$minutes分ごとに鬼に公開されます';
   }
 
   @override
@@ -1283,8 +1374,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startRuleQrCaught => '警察にQRをスキャンされると捕まります';
 
   @override
+  String get startRuleQrCaughtTag => '鬼にQRをスキャンされると捕まります';
+
+  @override
   String startRuleMyReveal(int minutes) {
     return 'あなたの位置は$minutes分ごとに警察に公開されます';
+  }
+
+  @override
+  String startRuleMyRevealTag(int minutes) {
+    return 'あなたの位置は$minutes分ごとに鬼に公開されます';
   }
 
   @override
@@ -1294,8 +1393,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get startRuleWin => '警察は泥棒を全員逮捕すれば、泥棒は制限時間まで逃げ切れば勝ちです';
 
   @override
+  String get startRuleWinTag => '鬼は隠れる人を全員捕まえれば、隠れる人は制限時間まで逃げ切れば勝ちです';
+
+  @override
   String startRuleTeamReveal(int minutes) {
     return '泥棒チームの位置は$minutes分ごとに警察チームに共有されます';
+  }
+
+  @override
+  String startRuleTeamRevealTag(int minutes) {
+    return '隠れる人チームの位置は$minutes分ごとに鬼チームに共有されます';
   }
 
   @override
@@ -1320,7 +1427,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameSettingNoLocationShareWarning => '泥棒の位置が公開されません！';
 
   @override
+  String get gameSettingNoLocationShareWarningTag => '隠れる人の位置が公開されません！';
+
+  @override
   String get gameSettingPoliceStartPrefix => '泥棒スタートから';
+
+  @override
+  String get gameSettingPoliceStartPrefixTag => '隠れる人のスタートから';
 
   @override
   String get gameSettingPoliceStartSuffix => '後';
@@ -1338,6 +1451,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get warnPoliceWaitMin => '警察スタート時間は1分から設定できます';
+
+  @override
+  String get warnPoliceWaitMinTag => '鬼のスタート時間は1分から設定できます';
 
   @override
   String get dialogQuitCreationTitle => 'ルーム作成をやめますか？';
@@ -1364,7 +1480,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fieldLocationShareInterval => '泥棒の位置公開間隔';
 
   @override
+  String get fieldLocationShareIntervalTag => '隠れる人の位置公開間隔';
+
+  @override
   String get fieldPoliceDispatchTime => '警察スタート時間';
+
+  @override
+  String get fieldPoliceDispatchTimeTag => '鬼のスタート時間';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -1531,10 +1653,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameRobberOnTheRunBanner => '泥棒が逃走しています！';
 
   @override
+  String get gameRobberOnTheRunBannerTag => '隠れる人が隠れています！';
+
+  @override
   String get gameOverBannerTitle => 'ゲーム終了！';
 
   @override
   String get gameOverReasonAllArrested => '泥棒が全員逮捕されました！';
+
+  @override
+  String get gameOverReasonAllArrestedTag => '隠れる人が全員捕まりました！';
 
   @override
   String get gameOverReasonTimeUp => '制限時間が終了しました！';
@@ -1543,7 +1671,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameOverReasonPoliceForfeited => '警察が全員退場しました！';
 
   @override
+  String get gameOverReasonPoliceForfeitedTag => '鬼が全員退場しました！';
+
+  @override
   String get gameOverReasonRobberForfeited => '泥棒が全員退場しました！';
+
+  @override
+  String get gameOverReasonRobberForfeitedTag => '隠れる人が全員退場しました！';
 
   @override
   String get gameOverFallbackMessage => 'ゲームが終了しました';
@@ -1553,6 +1687,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get gameTeamRobber => '泥棒チーム';
+
+  @override
+  String get gameTeamSeeker => '鬼チーム';
+
+  @override
+  String get gameTeamHider => '隠れる人チーム';
 
   @override
   String get gameResultWin => '勝利';
@@ -1572,10 +1712,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameRoleRobberLabel => '泥棒';
 
   @override
+  String get gameRoleSeekerLabel => '鬼';
+
+  @override
+  String get gameRoleHiderLabel => '隠れる人';
+
+  @override
+  String get gameModeCopsAndRobbers => '警察と泥棒';
+
+  @override
+  String get gameModeHideAndSeek => 'かくれんぼ';
+
+  @override
   String get errorCannotArrestDuringWait => '警察の待機時間中は泥棒を逮捕できません';
 
   @override
+  String get errorCannotArrestDuringWaitTag => '鬼の待機時間中は隠れる人を捕まえられません';
+
+  @override
   String get qrScannerWantedRobberTitle => '泥棒の指名手配QRをスキャンしてください';
+
+  @override
+  String get qrScannerWantedRobberTitleTag => '隠れる人のQRをスキャンしてください';
 
   @override
   String get errorExpiredQr => '有効期限切れのQRです。QRの更新をリクエストしてください';
@@ -1584,11 +1742,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorAlreadyArrested => 'すでに逮捕された泥棒です';
 
   @override
+  String get errorAlreadyArrestedTag => 'すでに捕まった隠れる人です';
+
+  @override
   String get gameArrestOverlayTitle => '逮捕されました！';
 
   @override
   String get gameArrestOverlayMessage =>
       '牢屋に入ってから外に出ると自動で脱獄します\n自動脱獄が動作しない場合は下のボタンを押してください';
+
+  @override
+  String get gameArrestOverlayTitleTag => '捕まりました';
+
+  @override
+  String get gameArrestOverlayMessageTag => 'ゲームが終わるまで見守れます';
 
   @override
   String get gameArrestOverlayEscapeCompleteButton => '脱獄する';
@@ -1603,7 +1770,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelArrestCount => '逮捕回数';
 
   @override
+  String get labelArrestCountTag => '捕まえた回数';
+
+  @override
   String get fieldRemainingRobbers => '残りの泥棒';
+
+  @override
+  String get fieldRemainingRobbersTag => '残りの隠れる人';
 
   @override
   String get fieldGamePlaytime => 'ゲーム進行時間';
@@ -1645,7 +1818,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelMyArrestCount => '私の逮捕回数';
 
   @override
+  String get labelMyArrestCountTag => '私が捕まえた回数';
+
+  @override
   String get labelTeamArrestShare => 'チーム逮捕貢献度';
+
+  @override
+  String get labelTeamArrestShareTag => 'チーム捕獲貢献度';
 
   @override
   String get labelMyArrestedCount => '捕まった回数';
@@ -1663,7 +1842,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get labelPoliceTeamMvp => '警察チームMVP';
 
   @override
+  String get labelPoliceTeamMvpTag => '鬼チームMVP';
+
+  @override
   String get labelRobberTeamMvp => '泥棒チームMVP';
+
+  @override
+  String get labelRobberTeamMvpTag => '隠れる人チームMVP';
 
   @override
   String get mvpRevealTapToContinue => '画面をタップして次の結果を見る';
@@ -1675,7 +1860,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mvpRevealPoliceSubtitle => '警察チームで一番の活躍';
 
   @override
+  String get mvpRevealPoliceSubtitleTag => '鬼チームで一番の活躍';
+
+  @override
   String get mvpRevealRobberSubtitle => '泥棒チームで一番の活躍';
+
+  @override
+  String get mvpRevealRobberSubtitleTag => '隠れる人チームで一番の活躍';
 
   @override
   String get statusAlive => '生存';
@@ -1684,8 +1875,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get statusJailed => '収監中';
 
   @override
+  String get statusJailedTag => '捕まった';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '次の泥棒の位置公開まで $formatted';
+  }
+
+  @override
+  String gameLocationRevealCountdownTag(String formatted) {
+    return '次の隠れる人の位置公開まで $formatted';
   }
 
   @override
@@ -1694,6 +1893,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String lockScreenRemainingRobbers(int alive, int total) {
     return '残りの泥棒 $alive/$total';
+  }
+
+  @override
+  String lockScreenRemainingRobbersTag(int alive, int total) {
+    return '残りの隠れる人 $alive/$total';
   }
 
   @override
@@ -1719,6 +1923,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogArrestConfirmTitle => '該当のプレイヤーを逮捕しましたか';
 
   @override
+  String get dialogArrestConfirmTitleTag => '該当のプレイヤーを捕まえましたか';
+
+  @override
   String get buttonYes => 'はい';
 
   @override
@@ -1741,10 +1948,18 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String gamePoliceStartCountdownTag(String formatted) {
+    return '鬼の開始まで $formatted';
+  }
+
+  @override
   String get gameQrDisplayTitle => '指名手配QR';
 
   @override
   String get gameQrDisplayMessage => '警察にQRコードを見せてください';
+
+  @override
+  String get gameQrDisplayMessageTag => '鬼にQRコードを見せてください';
 
   @override
   String get buttonClose => '閉じる';
@@ -1833,6 +2048,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get gameChatAllHint => '警察と泥棒の全員にメッセージが表示されます';
+
+  @override
+  String get gameChatAllHintTag => '鬼と隠れる人の全員にメッセージが表示されます';
 
   @override
   String get buttonGoToLatestMessage => '最新のメッセージへ移動';
@@ -2214,11 +2432,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameEventPoliceMove => '警察出動!  泥棒は逃げて!';
 
   @override
+  String get gameEventPoliceMoveTag => '鬼が動き出した!  隠れる人は隠れて!';
+
+  @override
   String get gameEventLocationReveal => '現在の泥棒の位置が公開されます!';
+
+  @override
+  String get gameEventLocationRevealTag => '隠れる人の位置が公開されます!';
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
     return '@icon_police [$policeNickname]が@icon_robber [$robberNickname]を逮捕しました!';
+  }
+
+  @override
+  String gameEventArrestNoticeTag(
+    String policeNickname,
+    String robberNickname,
+  ) {
+    return '@icon_police [$policeNickname]が@icon_robber [$robberNickname]を捕まえました!';
   }
 
   @override
@@ -2252,6 +2484,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String shareInviteMessage(String inviteCode) {
     return 'ケイドロの部屋に招待されました！招待コード: $inviteCode';
+  }
+
+  @override
+  String shareInviteMessageTag(String inviteCode) {
+    return 'かくれんぼの部屋に招待されました！招待コード: $inviteCode';
   }
 
   @override
@@ -2366,6 +2603,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeGameNotInProgress => 'ゲームが進行中の状態ではありません';
 
   @override
+  String get errorCodeRadioNotAllowedInEventGame => 'イベントゲームでは無線を使えません';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadio => '無線は警察だけが使えます';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadioTag => '無線は鬼だけが使えます';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTime => '警察が出動した後に使えます';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTimeTag => '鬼が動き出した後に使えます';
+
+  @override
   String get errorCodeGameNotActive => '待機中または進行中のゲームでのみ照会できます';
 
   @override
@@ -2376,6 +2628,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeInvalidPoliceWaitTime => '警察の待機時間はラウンド時間より短くしてください';
+
+  @override
+  String get errorCodeInvalidPoliceWaitTimeTag => '鬼の待機時間はラウンド時間より短くしてください';
 
   @override
   String get errorCodeInviteCodeGenerationFailed =>
@@ -2422,22 +2677,41 @@ class AppLocalizationsJa extends AppLocalizations {
       'ゲームを開始するには、警察と泥棒チームにそれぞれ1名以上の参加者が必要です';
 
   @override
+  String get errorCodeInvalidTeamCompositionTag =>
+      'ゲームを開始するには、鬼と隠れる人チームにそれぞれ1名以上の参加者が必要です';
+
+  @override
   String get errorCodeNotRobberTeam => '泥棒チームのみ位置を送信できます';
+
+  @override
+  String get errorCodeNotRobberTeamTag => '隠れる人チームのみ位置を送信できます';
 
   @override
   String get errorCodeParticipantGameMismatch => '警察と泥棒が異なるゲームに参加しています';
 
   @override
+  String get errorCodeParticipantGameMismatchTag => '鬼と隠れる人が異なるゲームに参加しています';
+
+  @override
   String get errorCodeOnlyPoliceCanArrest => '警察チームのみ泥棒を逮捕できます';
 
   @override
+  String get errorCodeOnlyPoliceCanArrestTag => '鬼チームのみ隠れる人を捕まえられます';
+
+  @override
   String get errorCodeOnlyRobberCanBeArrested => '泥棒チームのみ逮捕されます';
+
+  @override
+  String get errorCodeOnlyRobberCanBeArrestedTag => '隠れる人チームのみ捕まります';
 
   @override
   String get errorCodeOnlyRobberCanEscape => '泥棒チームのみ脱獄できます';
 
   @override
   String get errorCodeAlreadyArrested => 'すでに収監されている泥棒です';
+
+  @override
+  String get errorCodeAlreadyArrestedTag => 'すでに捕まっている隠れる人です';
 
   @override
   String get errorCodeNotJailed => '収監中のみ脱獄できます';
@@ -2450,6 +2724,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodeForceArrestNotAllowedInEventGame => 'イベントゲームでは使えません';
+
+  @override
+  String get errorCodeEscapeNotAllowedInMode => 'このゲームモードでは脱獄できません';
+
+  @override
+  String get errorCodeEventGameNotSupportedInMode => 'このゲームモードはイベントゲームにできません';
+
+  @override
+  String get errorCodeJailAreaRequired => 'このゲームモードでは牢屋エリアの設定が必要です';
+
+  @override
+  String get errorCodeJailAreaNotAllowed => 'このゲームモードには牢屋エリアがありません';
+
+  @override
+  String get errorCodeWithdrawalUserNotFound => '登録されていないアカウントです';
 
   @override
   String get shrinkAutoOffSnackbar => 'エリアが小さくなったため、エリア縮小をオフにしました';
@@ -2502,6 +2791,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorCodePoliceWaitingTime => '警察は待機時間中、泥棒を逮捕できません';
+
+  @override
+  String get errorCodePoliceWaitingTimeTag => '鬼は待機時間中、隠れる人を捕まえられません';
 
   @override
   String get errorCodeCannotKickYourself => 'ホストは自分自身を追放することはできません';
@@ -2631,8 +2923,18 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String pingChatFoundRobberTag(String cell) {
+    return '$cellで隠れる人を見かけました';
+  }
+
+  @override
   String pingChatSuspectRobber(String cell) {
     return '$cellに泥棒がいるかもしれません';
+  }
+
+  @override
+  String pingChatSuspectRobberTag(String cell) {
+    return '$cellに隠れる人がいるかもしれません';
   }
 
   @override
@@ -2641,8 +2943,18 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String pingChatFoundCopsTag(String cell) {
+    return '$cellで鬼を見かけました';
+  }
+
+  @override
   String pingChatSuspectCops(String cell) {
     return '$cellに警察がいるかもしれません';
+  }
+
+  @override
+  String pingChatSuspectCopsTag(String cell) {
+    return '$cellに鬼がいるかもしれません';
   }
 
   @override
@@ -2667,6 +2979,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorEventArrestRequestFailed => '逮捕リクエストの送信に失敗しました。もう一度お試しください';
+
+  @override
+  String get errorEventArrestRequestFailedTag =>
+      '捕獲リクエストの送信に失敗しました。もう一度お試しください';
 
   @override
   String get gameEventResultTitle => '捜査終了';
@@ -2719,6 +3035,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gameMenuArrest => '逮捕';
 
   @override
+  String get gameMenuArrestTag => '捕まえる';
+
+  @override
   String get gameMenuMyQr => 'マイQR';
 
   @override
@@ -2737,7 +3056,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tutorialMapBodyClassic => '泥棒の実際の位置が一定時間ごとに表示されます';
 
   @override
-  String get tutorialMapBodyTag => '逃げる人の実際の位置が一定時間ごとに表示されます';
+  String get tutorialMapBodyTag => '隠れる人の実際の位置が一定時間ごとに表示されます';
 
   @override
   String get tutorialChaseTitleClassic => '警察は捕まえ、泥棒は逃げます';
@@ -2746,22 +3065,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tutorialChaseBodyClassic => '警察は泥棒を追いかけて実際にタッチします';
 
   @override
-  String get tutorialChaseTitleTag => '鬼は捕まえ、逃げる人は隠れます';
+  String get tutorialChaseTitleTag => '鬼は捕まえ、隠れる人は隠れます';
 
   @override
-  String get tutorialChaseBodyTag => '鬼が追いかけてタッチすると捕まります';
+  String get tutorialChaseBodyTag => '鬼が追いかけてQRをスキャンすると捕まります';
 
   @override
   String get tutorialShowQrTitle => 'タッチされたらQRを見せます';
 
   @override
+  String get tutorialShowQrTitleTag => '鬼が来たらQRを見せます';
+
+  @override
   String get tutorialShowQrBody => '泥棒はメニューのマイQRを押します';
+
+  @override
+  String get tutorialShowQrBodyTag => '隠れる人はメニューから自分のQRをタップします';
 
   @override
   String get tutorialScanTitle => 'QRをスキャンすると逮捕です';
 
   @override
+  String get tutorialScanTitleTag => 'QRをスキャンすると捕まります';
+
+  @override
   String get tutorialScanBody => '警察が泥棒のQRをスキャンすると逮捕されます';
+
+  @override
+  String get tutorialScanBodyTag => '鬼が隠れる人のQRをスキャンすると捕まります';
 
   @override
   String get tutorialJailTitle => '捕まると牢屋に行きます';
@@ -2807,6 +3138,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tutorialCalloutArrest => '逮捕!';
 
   @override
+  String get tutorialCalloutArrestTag => '捕まえた!';
+
+  @override
   String get onboardingRunTitle => '外で本当に走るゲームです';
 
   @override
@@ -2835,4 +3169,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get onboardingRecordBody => 'ゲームが終わると移動経路と距離を見られます';
+
+  @override
+  String radioSpeaking(String nickname) {
+    return '$nickname 無線中';
+  }
+
+  @override
+  String get radioSpeakerFallback => '警察';
+
+  @override
+  String get radioSpeakerFallbackTag => '鬼';
+
+  @override
+  String get dialogMicPermissionTitle => 'マイクの権限が必要です';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      '無線で話すにはマイクの権限が必要です\n設定でマイクの権限を許可してください';
+
+  @override
+  String get radioPttLabel => '無線';
 }

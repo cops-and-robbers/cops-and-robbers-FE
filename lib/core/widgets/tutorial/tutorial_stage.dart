@@ -163,6 +163,8 @@ class TutorialStage extends ChangeNotifier {
     centered: true,
   );
 
+  /// 술래잡기 튜토리얼인지. 터치 대신 QR로 잡는 장면과 문구가 달라진다.
+  bool tag = false;
   bool dark = false;
   bool escaping = false;
   bool scanned = false;

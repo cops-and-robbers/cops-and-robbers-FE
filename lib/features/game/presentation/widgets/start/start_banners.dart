@@ -6,8 +6,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/character_assets.dart';
+import '../../../../../core/constants/game_mode.dart';
 import '../../../../../core/constants/spacing_and_radius.dart';
 import '../../../../../core/constants/text_styles.dart';
+import '../../../../../core/i18n/role_names.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'stripe_banner.dart';
 
@@ -19,11 +21,13 @@ class RoleBanner extends StatelessWidget {
   const RoleBanner({
     super.key,
     required this.isPolice,
+    required this.gameMode,
     required this.onDone,
     this.onRevealNext,
   });
 
   final bool isPolice;
+  final GameMode gameMode;
   final VoidCallback onDone;
   final VoidCallback? onRevealNext;
 
@@ -72,7 +76,7 @@ class RoleBanner extends StatelessWidget {
                 left: 30.w,
                 right: AppSpacing.horizontal20,
                 top: centerY + (273 - 426).w,
-                child: _RoleBannerText(isPolice: isPolice),
+                child: _RoleBannerText(isPolice: isPolice, gameMode: gameMode),
               ),
             ],
           );
@@ -347,20 +351,28 @@ class _SpeedLineState extends State<_SpeedLine>
 }
 
 class _RoleBannerText extends StatelessWidget {
-  const _RoleBannerText({required this.isPolice});
+  const _RoleBannerText({required this.isPolice, required this.gameMode});
 
   final bool isPolice;
+  final GameMode gameMode;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final accent = isPolice ? AppColors.blue : AppColors.green;
-    final role = isPolice ? l10n.gameRoleCopLabel : l10n.gameRoleRobberLabel;
+    final role = roleLabel(l10n, gameMode, isPolice: isPolice);
     final onBand = isPolice ? AppColors.black800 : AppColors.white;
-    final title = (isPolice ? l10n.startTitlePolice : l10n.startTitleRobber)
-        .split('\n');
+    final title = byMode(
+      gameMode,
+      classic: isPolice ? l10n.startTitlePolice : l10n.startTitleRobber,
+      tag: isPolice ? l10n.startTitlePoliceTag : l10n.startTitleRobberTag,
+    ).split('\n');
     final titleAccent = isPolice
-        ? l10n.startTitlePoliceAccent
+        ? byMode(
+            gameMode,
+            classic: l10n.startTitlePoliceAccent,
+            tag: l10n.startTitlePoliceAccentTag,
+          )
         : l10n.startTitleRobberAccent;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

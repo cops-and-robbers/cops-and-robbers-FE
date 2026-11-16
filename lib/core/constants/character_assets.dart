@@ -13,6 +13,12 @@ String characterAssetPath({required String team, String state = 'default'}) {
   return 'assets/characters/$team/default/$state.svg';
 }
 
+/// 잡힌 도망자(도둑 팀) 캐릭터. 술래잡기 전용 잡힘 그림이 아직 없어 두 모드 모두 철창 그림(jailed)을 쓴다.
+///
+/// ponytail: 잡힘 전용 에셋이 나오면 [usesJail]이 false인 쪽만 그 그림으로 바꾼다.
+String caughtRobberAssetPath({required bool usesJail}) =>
+    characterAssetPath(team: 'robber', state: 'jailed');
+
 /// 게임 결과 화면 캐릭터 SVG 경로를 생성한다.
 ///
 /// 반환 경로: `assets/characters/{team}/result/default/{result}_{part}.svg`
@@ -44,6 +50,11 @@ String mvpCharacterAssetPath({required String team}) =>
 /// - [team] `'police'` | `'robber'`
 String startRoleCharacterAssetPath({required String team}) =>
     'assets/characters/$team/start/default/role.svg';
+
+/// 게임 시작 대기 장면의 달아나는 캐릭터 SVG 경로. 모드 선택 카드의 술래잡기 그림도 이것을 쓴다.
+/// - [team] `'police'` | `'robber'`
+String startChaseCharacterAssetPath({required String team}) =>
+    'assets/characters/$team/start/default/chase.svg';
 
 /// 대기·설명 장면 배경 PNG(393×852). 경찰은 낮, 도둑은 밤 그림.
 String startWaitBackgroundAssetPath({required bool isNight}) =>

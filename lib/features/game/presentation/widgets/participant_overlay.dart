@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/game_mode.dart';
+import '../../../../core/i18n/role_names.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/network/api_error_response.dart';
@@ -148,11 +150,16 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
 
     final gameEventState = ref.read(gameEventNotifierProvider);
     final participantInfo = ref.read(gameParticipantNotifierProvider);
+    final mode = participantInfo?.gameMode ?? GameMode.copsAndRobbers;
 
     if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).errorCannotArrestDuringWait,
+        message: byMode(
+          mode,
+          classic: AppLocalizations.of(context).errorCannotArrestDuringWait,
+          tag: AppLocalizations.of(context).errorCannotArrestDuringWaitTag,
+        ),
       );
       return;
     }
@@ -172,7 +179,11 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     final l10n = AppLocalizations.of(context);
     GameActionModal.show(
       context: context,
-      title: l10n.dialogArrestConfirmTitle,
+      title: byMode(
+        mode,
+        classic: l10n.dialogArrestConfirmTitle,
+        tag: l10n.dialogArrestConfirmTitleTag,
+      ),
       message: '',
       confirmLabel: l10n.buttonYes,
       nickname: member.nickname,
@@ -192,6 +203,12 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
     } else {
       // 도둑 역할: 본인 카드 + JAILED 상태일 때만 탈옥
       if (member.participantId != widget.myParticipantId) return;
+      // 감옥 없는 모드는 탈옥이 없다 (서버도 거절)
+      if (!(ref.read(gameParticipantNotifierProvider)?.gameMode ??
+              GameMode.copsAndRobbers)
+          .usesJail) {
+        return;
+      }
       if (!_isRobberJailedNow(member.participantId)) return;
 
       // 모달 닫힘 시 채팅 입력 TextField로 포커스가 복원되어
@@ -222,6 +239,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
   Widget build(BuildContext context) {
     final gameInfo = ref.watch(gameParticipantNotifierProvider);
     final hostParticipantId = gameInfo?.hostParticipantId;
+    final gameMode = gameInfo?.gameMode ?? GameMode.copsAndRobbers;
 
     // 게임 이벤트 상태 구독 (체포/탈옥 상태 반영용)
     final gameEventState = ref.watch(gameEventNotifierProvider);
@@ -304,6 +322,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               badge: const SizedBox.shrink(),
               isDarkMode: widget.isDarkMode,
               gameStatusByParticipantId: gameStatusMap,
+              gameMode: gameMode,
             ),
             SolidDivider(
               color: widget.isDarkMode
@@ -325,6 +344,7 @@ class _ParticipantOverlayState extends ConsumerState<ParticipantOverlay> {
               onMemberTap: _onRobberTeamCardTap,
               isDarkMode: widget.isDarkMode,
               gameStatusByParticipantId: gameStatusMap,
+              gameMode: gameMode,
             ),
           ],
         ),

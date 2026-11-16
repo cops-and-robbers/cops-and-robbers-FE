@@ -30,6 +30,10 @@ mixin _$JoinGameResponse {
   /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false)
   bool get isEventGame => throw _privateConstructorUsedError;
 
+  /// 게임 모드 (BE #232). 키가 없으면 경찰과 도둑, 모르는 값은 unknown
+  @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+  GameMode get gameMode => throw _privateConstructorUsedError;
+
   /// Serializes this JoinGameResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -47,7 +51,13 @@ abstract class $JoinGameResponseCopyWith<$Res> {
     $Res Function(JoinGameResponse) then,
   ) = _$JoinGameResponseCopyWithImpl<$Res, JoinGameResponse>;
   @useResult
-  $Res call({int gameId, int participantId, bool isEventGame});
+  $Res call({
+    int gameId,
+    int participantId,
+    bool isEventGame,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    GameMode gameMode,
+  });
 }
 
 /// @nodoc
@@ -68,6 +78,7 @@ class _$JoinGameResponseCopyWithImpl<$Res, $Val extends JoinGameResponse>
     Object? gameId = null,
     Object? participantId = null,
     Object? isEventGame = null,
+    Object? gameMode = null,
   }) {
     return _then(
       _value.copyWith(
@@ -83,6 +94,10 @@ class _$JoinGameResponseCopyWithImpl<$Res, $Val extends JoinGameResponse>
                 ? _value.isEventGame
                 : isEventGame // ignore: cast_nullable_to_non_nullable
                       as bool,
+            gameMode: null == gameMode
+                ? _value.gameMode
+                : gameMode // ignore: cast_nullable_to_non_nullable
+                      as GameMode,
           )
           as $Val,
     );
@@ -98,7 +113,13 @@ abstract class _$$JoinGameResponseImplCopyWith<$Res>
   ) = __$$JoinGameResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int gameId, int participantId, bool isEventGame});
+  $Res call({
+    int gameId,
+    int participantId,
+    bool isEventGame,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    GameMode gameMode,
+  });
 }
 
 /// @nodoc
@@ -118,6 +139,7 @@ class __$$JoinGameResponseImplCopyWithImpl<$Res>
     Object? gameId = null,
     Object? participantId = null,
     Object? isEventGame = null,
+    Object? gameMode = null,
   }) {
     return _then(
       _$JoinGameResponseImpl(
@@ -133,6 +155,10 @@ class __$$JoinGameResponseImplCopyWithImpl<$Res>
             ? _value.isEventGame
             : isEventGame // ignore: cast_nullable_to_non_nullable
                   as bool,
+        gameMode: null == gameMode
+            ? _value.gameMode
+            : gameMode // ignore: cast_nullable_to_non_nullable
+                  as GameMode,
       ),
     );
   }
@@ -145,6 +171,8 @@ class _$JoinGameResponseImpl implements _JoinGameResponse {
     required this.gameId,
     required this.participantId,
     this.isEventGame = false,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    this.gameMode = GameMode.copsAndRobbers,
   });
 
   factory _$JoinGameResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -163,9 +191,14 @@ class _$JoinGameResponseImpl implements _JoinGameResponse {
   @JsonKey()
   final bool isEventGame;
 
+  /// 게임 모드 (BE #232). 키가 없으면 경찰과 도둑, 모르는 값은 unknown
+  @override
+  @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+  final GameMode gameMode;
+
   @override
   String toString() {
-    return 'JoinGameResponse(gameId: $gameId, participantId: $participantId, isEventGame: $isEventGame)';
+    return 'JoinGameResponse(gameId: $gameId, participantId: $participantId, isEventGame: $isEventGame, gameMode: $gameMode)';
   }
 
   @override
@@ -177,13 +210,15 @@ class _$JoinGameResponseImpl implements _JoinGameResponse {
             (identical(other.participantId, participantId) ||
                 other.participantId == participantId) &&
             (identical(other.isEventGame, isEventGame) ||
-                other.isEventGame == isEventGame));
+                other.isEventGame == isEventGame) &&
+            (identical(other.gameMode, gameMode) ||
+                other.gameMode == gameMode));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, gameId, participantId, isEventGame);
+      Object.hash(runtimeType, gameId, participantId, isEventGame, gameMode);
 
   /// Create a copy of JoinGameResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -207,6 +242,8 @@ abstract class _JoinGameResponse implements JoinGameResponse {
     required final int gameId,
     required final int participantId,
     final bool isEventGame,
+    @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+    final GameMode gameMode,
   }) = _$JoinGameResponseImpl;
 
   factory _JoinGameResponse.fromJson(Map<String, dynamic> json) =
@@ -223,6 +260,11 @@ abstract class _JoinGameResponse implements JoinGameResponse {
   /// 이벤트 게임 여부 (백엔드 신규 필드, 미포함 시 false)
   @override
   bool get isEventGame;
+
+  /// 게임 모드 (BE #232). 키가 없으면 경찰과 도둑, 모르는 값은 unknown
+  @override
+  @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
+  GameMode get gameMode;
 
   /// Create a copy of JoinGameResponse
   /// with the given fields replaced by the non-null parameter values.

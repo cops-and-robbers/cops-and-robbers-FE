@@ -32,7 +32,7 @@ void main() {
       v.activate(GameSettingField.participants);
       v.inputDigit(1);
       v.inputDigit(5); // 15
-      v.inputDigit(5); // 155 > 150 → 무시
+      v.inputDigit(5); // 155 > 50 → 무시
       expect(v[GameSettingField.participants], 15);
     });
 
@@ -42,7 +42,7 @@ void main() {
       v.inputDigit(1);
       v.inputDigit(6); // 16
       expect(v.lastInputExceededMax, isFalse);
-      v.inputDigit(0); // 160 > 150 → 거절
+      v.inputDigit(0); // 160 > 50 → 거절
       expect(v.lastInputExceededMax, isTrue);
       v.backspace(); // 1 → 수용 동작이 표식을 지운다
       expect(v.lastInputExceededMax, isFalse);
@@ -51,11 +51,10 @@ void main() {
     test('quick_add_at_max_flags_rejection', () {
       final v = _defaults();
       v.activate(GameSettingField.participants);
-      v.inputDigit(1);
       v.inputDigit(4);
-      v.inputDigit(5); // 145
-      v.quickAdd(20); // 150 에서 멈춤
-      expect(v[GameSettingField.participants], 150);
+      v.inputDigit(5); // 45
+      v.quickAdd(20); // 50 에서 멈춤
+      expect(v[GameSettingField.participants], 50);
       expect(v.lastInputExceededMax, isFalse);
       v.quickAdd(5); // 이미 상한
       expect(v.lastInputExceededMax, isTrue);
@@ -100,11 +99,10 @@ void main() {
     test('stops_at_max', () {
       final v = _defaults();
       v.activate(GameSettingField.participants);
-      v.inputDigit(1);
       v.inputDigit(4);
-      v.inputDigit(0); // 140
-      v.quickAdd(20); // 160 → 150 에서 멈춤
-      expect(v[GameSettingField.participants], 150);
+      v.inputDigit(0); // 40
+      v.quickAdd(20); // 60 → 50 에서 멈춤
+      expect(v[GameSettingField.participants], 50);
     });
   });
 
@@ -161,7 +159,7 @@ void main() {
   test('spec_matches_server_constraints', () {
     // GameSettingsRequest 의 @Min/@Max 와 같아야 한다
     expect(GameSettingField.participants.min, 2);
-    expect(GameSettingField.participants.max, 150);
+    expect(GameSettingField.participants.max, 50);
     expect(GameSettingField.roundDuration.min, 10);
     expect(GameSettingField.roundDuration.max, 180);
     expect(GameSettingField.locationShare.min, 0);

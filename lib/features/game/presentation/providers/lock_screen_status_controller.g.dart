@@ -7,7 +7,7 @@ part of 'lock_screen_status_controller.dart';
 // **************************************************************************
 
 String _$lockScreenStatusControllerHash() =>
-    r'0a8977be5c4b9f92d8347c9eb440120e6e9a450b';
+    r'5323e99ade00e70f0e6153459d18558528bb1a45';
 
 /// 게임 상태를 잠금 화면 현황으로 바꿔 BackgroundService에 보낸다.
 ///

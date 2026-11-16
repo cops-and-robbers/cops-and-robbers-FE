@@ -73,5 +73,19 @@ void main() {
       expect(find.text('플레이그라운드'), findsOneWidget);
       expect(find.text('감옥'), findsOneWidget);
     });
+
+    testWidgets('zone_card_hides_jail_row_when_room_has_no_jail', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const GameAreaEntity(
+          playground: AreaShape.circle(center: _origin, radiusInMeters: 523),
+        ),
+      );
+
+      expect(find.text('플레이그라운드'), findsOneWidget);
+      expect(find.text('감옥'), findsNothing);
+    });
   });
 }

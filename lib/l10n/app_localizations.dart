@@ -886,6 +886,12 @@ abstract class AppLocalizations {
   /// **'게임 방 생성 중 예기치 않은 오류가 생겼어요'**
   String get errorGameRoomCreateUnexpected;
 
+  /// No description provided for @errorGameModeUpdateUnexpected.
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 모드를 바꾸는 중 예기치 않은 오류가 생겼어요'**
+  String get errorGameModeUpdateUnexpected;
+
   /// 참여 중인 게임 조회 실패 시 표시되는 예외 메시지
   ///
   /// In ko, this message translates to:
@@ -916,11 +922,23 @@ abstract class AppLocalizations {
   /// **'도둑 시작 후 {minutes}분 뒤'**
   String gameSettingPoliceStartDelay(int minutes);
 
+  /// 술래잡기용 — 게임 설정 — 경찰 출동 시작 지연 시간 표기
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 시작 후 {minutes}분 뒤'**
+  String gameSettingPoliceStartDelayTag(int minutes);
+
   /// 게임 설정 수정 페이지 타이틀
   ///
   /// In ko, this message translates to:
   /// **'설정 수정'**
   String get pageGameSettingsEditTitle;
+
+  /// 대기실 게임 설정에서 모드를 바꾸는 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'모드 변경'**
+  String get pageModeChangeTitle;
 
   /// 저장 진행 중 버튼 라벨
   ///
@@ -2042,6 +2060,36 @@ abstract class AppLocalizations {
   /// **'추천값으로 채워 뒀어요. 바꿀 항목만 눌러요'**
   String get sessionCreationStepReviewHint;
 
+  /// 방 생성 — 모드 선택 단계 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'어떤 모드로 할까요?'**
+  String get modeSelectTitle;
+
+  /// 방 생성 — 모드 선택 단계 보조 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'모드마다 규칙이 달라요'**
+  String get modeSelectHint;
+
+  /// 방 생성 — 경찰과 도둑 모드 카드 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'잡히면 감옥에 갇혀요'**
+  String get modeCardCopsAndRobbersDescription;
+
+  /// 방 생성 — 술래잡기 모드 카드 설명
+  ///
+  /// In ko, this message translates to:
+  /// **'감옥 없이 잡히면 바로 끝나요'**
+  String get modeCardHideAndSeekDescription;
+
+  /// 방 생성 최종 확인 — 모드 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'모드'**
+  String get confirmRowMode;
+
   /// 공통 — 다음 단계 버튼
   ///
   /// In ko, this message translates to:
@@ -2210,11 +2258,23 @@ abstract class AppLocalizations {
   /// **'경찰 {count}명'**
   String dialogStartGamePoliceCount(int count);
 
+  /// 술래잡기용 — 대기실 — 시작 확인창 경찰 캐릭터 아래 인원 (#661)
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 {count}명'**
+  String dialogStartGamePoliceCountTag(int count);
+
   /// 대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)
   ///
   /// In ko, this message translates to:
   /// **'도둑 {count}명'**
   String dialogStartGameRobberCount(int count);
+
+  /// 술래잡기용 — 대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 {count}명'**
+  String dialogStartGameRobberCountTag(int count);
 
   /// 구역 미리보기 페이지 타이틀
   ///
@@ -2240,17 +2300,35 @@ abstract class AppLocalizations {
   /// **'경찰은 모든 도둑을 잡아서'**
   String get gameRulesCopGoalPrefix;
 
+  /// 술래잡기용 — 게임 규칙 — 경찰 승리 조건 도입부
+  ///
+  /// In ko, this message translates to:
+  /// **'술래는 모든 도망자를 찾아서'**
+  String get gameRulesCopGoalPrefixTag;
+
   /// 게임 규칙 — 경찰 승리 조건 강조부
   ///
   /// In ko, this message translates to:
   /// **'체포하면,'**
   String get gameRulesCopGoalSuffix;
 
+  /// 술래잡기용 — 게임 규칙 — 경찰 승리 조건 강조부
+  ///
+  /// In ko, this message translates to:
+  /// **'잡으면,'**
+  String get gameRulesCopGoalSuffixTag;
+
   /// 게임 규칙 — 도둑 승리 조건 도입부 (개행 포함)
   ///
   /// In ko, this message translates to:
   /// **'\n도둑은'**
   String get gameRulesRobberGoalPrefix;
+
+  /// 술래잡기용 — 게임 규칙 — 도둑 승리 조건 도입부 (개행 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'\n도망자는'**
+  String get gameRulesRobberGoalPrefixTag;
 
   /// 게임 규칙 — 도둑 승리 조건 본문
   ///
@@ -2270,17 +2348,35 @@ abstract class AppLocalizations {
   /// **'도둑팀의 위치는'**
   String get gameRulesLocationShareLine1;
 
+  /// 술래잡기용 — 게임 규칙 — 위치 공유 1줄 (한국어 어순 1행)
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자팀의 위치는'**
+  String get gameRulesLocationShareLine1Tag;
+
   /// 게임 규칙 — 위치 공유 2줄 (주기 강조)
   ///
   /// In ko, this message translates to:
   /// **'{minutes}분마다'**
   String gameRulesLocationShareLine2(int minutes);
 
+  /// 술래잡기용 — 게임 규칙 — 위치 공유 2줄 (주기 강조)
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분마다'**
+  String gameRulesLocationShareLine2Tag(int minutes);
+
   /// 게임 규칙 — 위치 공유 3줄 (한국어 어순 종결)
   ///
   /// In ko, this message translates to:
   /// **'경찰팀에게 공유돼요'**
   String get gameRulesLocationShareLine3;
+
+  /// 술래잡기용 — 게임 규칙 — 위치 공유 3줄 (한국어 어순 종결)
+  ///
+  /// In ko, this message translates to:
+  /// **'술래팀에게 공유돼요'**
+  String get gameRulesLocationShareLine3Tag;
 
   /// 게임 규칙 — 구역 이탈 금지 1줄
   ///
@@ -2324,17 +2420,35 @@ abstract class AppLocalizations {
   /// **'도둑을 찾아\n모두 체포해요!'**
   String get startTitlePolice;
 
+  /// 술래잡기용 — 경찰 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자를 찾아\n모두 잡아요!'**
+  String get startTitlePoliceTag;
+
   /// 도둑 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다
   ///
   /// In ko, this message translates to:
   /// **'경찰을 피해\n끝까지 도망쳐요!'**
   String get startTitleRobber;
 
+  /// 술래잡기용 — 도둑 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다
+  ///
+  /// In ko, this message translates to:
+  /// **'술래를 피해\n끝까지 숨어요!'**
+  String get startTitleRobberTag;
+
   /// 경찰 제목에서 강조색으로 칠할 부분. startTitlePolice 안의 글자와 똑같아야 한다
   ///
   /// In ko, this message translates to:
   /// **'체포해요!'**
   String get startTitlePoliceAccent;
+
+  /// 술래잡기용 — 경찰 제목에서 강조색으로 칠할 부분. startTitlePolice 안의 글자와 똑같아야 한다
+  ///
+  /// In ko, this message translates to:
+  /// **'잡아요!'**
+  String get startTitlePoliceAccentTag;
 
   /// 도둑 제목에서 강조색으로 칠할 부분. startTitleRobber 안의 글자와 똑같아야 한다
   ///
@@ -2354,6 +2468,12 @@ abstract class AppLocalizations {
   /// **'경찰 출동까지'**
   String get startWaitCountdownLabel;
 
+  /// 술래잡기용 — 대기·설명 화면 큰 남은 시간 위 라벨 (경찰·도둑 공통)
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 출동까지'**
+  String get startWaitCountdownLabelTag;
+
   /// 출동 뒤 규칙 다시 보기에서 카운트다운 자리의 남은 게임 시간 위 라벨
   ///
   /// In ko, this message translates to:
@@ -2366,11 +2486,23 @@ abstract class AppLocalizations {
   /// **'도둑이 도망치는 중이에요!'**
   String get startWaitPoliceTitle;
 
+  /// 술래잡기용 — 경찰 대기 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자가 숨는 중이에요!'**
+  String get startWaitPoliceTitleTag;
+
   /// 도둑 설명 화면 제목
   ///
   /// In ko, this message translates to:
   /// **'경찰에게서 멀어지세요!'**
   String get startWaitRobberTitle;
+
+  /// 술래잡기용 — 도둑 설명 화면 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'술래에게서 멀어지세요!'**
+  String get startWaitRobberTitleTag;
 
   /// 대기·설명 장면 미션 카드 라벨 (경찰)
   ///
@@ -2378,17 +2510,35 @@ abstract class AppLocalizations {
   /// **'경찰 팀 미션'**
   String get startMissionPoliceLabel;
 
+  /// 술래잡기용 — 대기·설명 장면 미션 카드 라벨 (경찰)
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 팀 미션'**
+  String get startMissionPoliceLabelTag;
+
   /// 대기·설명 장면 미션 카드 라벨 (도둑)
   ///
   /// In ko, this message translates to:
   /// **'도둑 팀 미션'**
   String get startMissionRobberLabel;
 
+  /// 술래잡기용 — 대기·설명 장면 미션 카드 라벨 (도둑)
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 팀 미션'**
+  String get startMissionRobberLabelTag;
+
   /// 대기·설명 장면 미션 카드 본문 (경찰)
   ///
   /// In ko, this message translates to:
   /// **'도둑을 찾아 QR로 모두 체포하세요'**
   String get startMissionPolice;
+
+  /// 술래잡기용 — 대기·설명 장면 미션 카드 본문 (경찰)
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자를 찾아 QR로 모두 잡아요'**
+  String get startMissionPoliceTag;
 
   /// 대기·설명 장면 미션 카드 본문 (도둑)
   ///
@@ -2420,6 +2570,12 @@ abstract class AppLocalizations {
   /// **'도둑의 QR을 스캔하면 체포돼요'**
   String get startRuleQrArrest;
 
+  /// 술래잡기용 — 규칙 — 경찰 QR 체포
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자의 QR을 스캔하면 잡아요'**
+  String get startRuleQrArrestTag;
+
   /// 규칙 — 핑(같은 팀에만 보임)
   ///
   /// In ko, this message translates to:
@@ -2431,6 +2587,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'도둑 위치는 {minutes}분마다 경찰에게 공개돼요'**
   String startRuleRobberReveal(int minutes);
+
+  /// 술래잡기용 — 규칙(경찰 시점) — 도둑 위치 주기 공개, minutes = 방 설정
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 위치는 {minutes}분마다 술래에게 공개돼요'**
+  String startRuleRobberRevealTag(int minutes);
 
   /// 규칙 — 구역 이탈 시 화면 잠김
   ///
@@ -2444,11 +2606,23 @@ abstract class AppLocalizations {
   /// **'경찰이 내 QR을 스캔하면 잡혀요'**
   String get startRuleQrCaught;
 
+  /// 술래잡기용 — 규칙(도둑 시점) — QR 스캔되면 잡힘
+  ///
+  /// In ko, this message translates to:
+  /// **'술래가 내 QR을 스캔하면 잡혀요'**
+  String get startRuleQrCaughtTag;
+
   /// 규칙(도둑 시점) — 내 위치 주기 공개
   ///
   /// In ko, this message translates to:
   /// **'내 위치는 {minutes}분마다 경찰에게 공개돼요'**
   String startRuleMyReveal(int minutes);
+
+  /// 술래잡기용 — 규칙(도둑 시점) — 내 위치 주기 공개
+  ///
+  /// In ko, this message translates to:
+  /// **'내 위치는 {minutes}분마다 술래에게 공개돼요'**
+  String startRuleMyRevealTag(int minutes);
 
   /// 규칙(도둑 시점) — 탈옥. 3초는 JailEscapeDetector.minOutsideDuration
   ///
@@ -2462,11 +2636,23 @@ abstract class AppLocalizations {
   /// **'경찰은 모든 도둑을 체포하면, 도둑은 제한 시간이 끝날 때까지 버티면 승리해요'**
   String get startRuleWin;
 
+  /// 술래잡기용 — 규칙 다시 보기 1 — 승리 조건
+  ///
+  /// In ko, this message translates to:
+  /// **'술래는 모든 도망자를 잡으면, 도망자는 제한 시간이 끝날 때까지 버티면 승리해요'**
+  String get startRuleWinTag;
+
   /// 규칙 다시 보기 2 — 위치 공유 주기
   ///
   /// In ko, this message translates to:
   /// **'도둑팀의 위치는 {minutes}분마다 경찰팀에게 공유돼요'**
   String startRuleTeamReveal(int minutes);
+
+  /// 술래잡기용 — 규칙 다시 보기 2 — 위치 공유 주기
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자팀의 위치는 {minutes}분마다 술래팀에게 공유돼요'**
+  String startRuleTeamRevealTag(int minutes);
 
   /// 규칙 다시 보기 3 — 구역
   ///
@@ -2510,11 +2696,23 @@ abstract class AppLocalizations {
   /// **'도둑의 위치가 공유되지 않아요!'**
   String get gameSettingNoLocationShareWarning;
 
+  /// 술래잡기용 — 게임 설정 — 위치 공유 비활성 경고
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자의 위치가 공유되지 않아요!'**
+  String get gameSettingNoLocationShareWarningTag;
+
   /// 게임 설정 — 경찰 출동 시간 prefix
   ///
   /// In ko, this message translates to:
   /// **'도둑 시작 후'**
   String get gameSettingPoliceStartPrefix;
+
+  /// 술래잡기용 — 게임 설정 — 경찰 출동 시간 prefix
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 시작 후'**
+  String get gameSettingPoliceStartPrefixTag;
 
   /// 게임 설정 — 경찰 출동 시간 suffix
   ///
@@ -2545,6 +2743,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'경찰 시작 시간은 1분부터 설정할 수 있어요'**
   String get warnPoliceWaitMin;
+
+  /// 술래잡기용 — 방 생성 — 경찰 시작 시간 하한 경고
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 시작 시간은 1분부터 설정할 수 있어요'**
+  String get warnPoliceWaitMinTag;
 
   /// 방 생성 — 구역을 그리다 나갈 때 확인 타이틀
   ///
@@ -2594,11 +2798,23 @@ abstract class AppLocalizations {
   /// **'도둑 위치 공유 간격'**
   String get fieldLocationShareInterval;
 
+  /// 술래잡기용 — 게임 설정 — 위치 공유 간격 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 위치 공유 간격'**
+  String get fieldLocationShareIntervalTag;
+
   /// 게임 설정 — 경찰 출동 시간 라벨
   ///
   /// In ko, this message translates to:
   /// **'경찰 시작 시간'**
   String get fieldPoliceDispatchTime;
+
+  /// 술래잡기용 — 게임 설정 — 경찰 출동 시간 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 시작 시간'**
+  String get fieldPoliceDispatchTimeTag;
 
   /// 팀 섹션 — 현재 인원수 표기
   ///
@@ -2918,6 +3134,12 @@ abstract class AppLocalizations {
   /// **'도둑이 도망치는 중이에요!'**
   String get gameRobberOnTheRunBanner;
 
+  /// 술래잡기용 — 게임 시작 후 도둑 도주 시작 알림 배너
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자가 숨는 중이에요!'**
+  String get gameRobberOnTheRunBannerTag;
+
   /// 게임 종료 시 화면 상단에 표시되는 배너 타이틀
   ///
   /// In ko, this message translates to:
@@ -2929,6 +3151,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'도둑이 모두 체포됐어요!'**
   String get gameOverReasonAllArrested;
+
+  /// 술래잡기용 — 게임 종료 사유 — 도둑 전원 체포로 종료
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자가 모두 잡혔어요!'**
+  String get gameOverReasonAllArrestedTag;
 
   /// 게임 종료 사유 — 제한 시간 만료
   ///
@@ -2942,11 +3170,23 @@ abstract class AppLocalizations {
   /// **'경찰이 모두 퇴장했어요!'**
   String get gameOverReasonPoliceForfeited;
 
+  /// 술래잡기용 — 게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리
+  ///
+  /// In ko, this message translates to:
+  /// **'술래가 모두 퇴장했어요!'**
+  String get gameOverReasonPoliceForfeitedTag;
+
   /// 게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리
   ///
   /// In ko, this message translates to:
   /// **'도둑이 모두 퇴장했어요!'**
   String get gameOverReasonRobberForfeited;
+
+  /// 술래잡기용 — 게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자가 모두 퇴장했어요!'**
+  String get gameOverReasonRobberForfeitedTag;
 
   /// GAME_OVER 소켓 이벤트 유실 등으로 승패/통계 정보를 복구할 수 없을 때 표시하는 중립 종료 메시지
   ///
@@ -2965,6 +3205,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'도둑팀'**
   String get gameTeamRobber;
+
+  /// 술래잡기 술래 팀 라벨 (팀명, 임시 이름)
+  ///
+  /// In ko, this message translates to:
+  /// **'술래팀'**
+  String get gameTeamSeeker;
+
+  /// 술래잡기 도망자 팀 라벨 (팀명, 임시 이름)
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자팀'**
+  String get gameTeamHider;
 
   /// 게임 결과 — 승리
   ///
@@ -2996,17 +3248,53 @@ abstract class AppLocalizations {
   /// **'도둑'**
   String get gameRoleRobberLabel;
 
+  /// 술래잡기 술래 역할 단일 라벨 (임시 이름)
+  ///
+  /// In ko, this message translates to:
+  /// **'술래'**
+  String get gameRoleSeekerLabel;
+
+  /// 술래잡기 도망자 역할 단일 라벨 (임시 이름)
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자'**
+  String get gameRoleHiderLabel;
+
+  /// 게임 모드 이름 — 경찰과 도둑
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰과 도둑'**
+  String get gameModeCopsAndRobbers;
+
+  /// 게임 모드 이름 — 술래잡기
+  ///
+  /// In ko, this message translates to:
+  /// **'술래잡기'**
+  String get gameModeHideAndSeek;
+
   /// 체포 실패 — 경찰 대기 시간 중
   ///
   /// In ko, this message translates to:
   /// **'경찰 대기 시간 중에는 도둑을 체포할 수 없어요'**
   String get errorCannotArrestDuringWait;
 
+  /// 술래잡기용 — 체포 실패 — 경찰 대기 시간 중
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 대기 시간 중에는 도망자를 잡을 수 없어요'**
+  String get errorCannotArrestDuringWaitTag;
+
   /// 도둑 수배 QR 스캐너 페이지 타이틀
   ///
   /// In ko, this message translates to:
   /// **'도둑의 수배 QR을 스캔하세요'**
   String get qrScannerWantedRobberTitle;
+
+  /// 술래잡기용 — 도둑 수배 QR 스캐너 페이지 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자의 QR을 스캔하세요'**
+  String get qrScannerWantedRobberTitleTag;
 
   /// QR 스캔 실패 — QR 만료
   ///
@@ -3020,6 +3308,12 @@ abstract class AppLocalizations {
   /// **'이미 체포된 도둑이에요'**
   String get errorAlreadyArrested;
 
+  /// 술래잡기용 — 체포 실패 — 이미 체포된 도둑
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 잡힌 도망자예요'**
+  String get errorAlreadyArrestedTag;
+
   /// 체포된 도둑에게 표시되는 잠금 오버레이 타이틀
   ///
   /// In ko, this message translates to:
@@ -3031,6 +3325,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'감옥에 들어갔다가 벗어나면 자동으로 탈옥해요\n자동 탈옥이 안 되면 아래 버튼을 눌러 주세요'**
   String get gameArrestOverlayMessage;
+
+  /// 술래잡기에서 잡힌 도망자에게 보이는 관전 오버레이 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'잡혔어요'**
+  String get gameArrestOverlayTitleTag;
+
+  /// 술래잡기에서 잡힌 도망자에게 보이는 관전 오버레이 본문 (탈출 없음)
+  ///
+  /// In ko, this message translates to:
+  /// **'게임이 끝날 때까지 지켜볼 수 있어요'**
+  String get gameArrestOverlayMessageTag;
 
   /// 자동 탈옥 실패에 대비한 수동 탈옥 버튼
   ///
@@ -3056,11 +3362,23 @@ abstract class AppLocalizations {
   /// **'체포 횟수'**
   String get labelArrestCount;
 
+  /// 술래잡기용 — 게임 종료 결과 다이얼로그의 체포 횟수 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'잡은 횟수'**
+  String get labelArrestCountTag;
+
   /// 게임 종료 결과 — 남은 도둑 라벨
   ///
   /// In ko, this message translates to:
   /// **'남은 도둑'**
   String get fieldRemainingRobbers;
+
+  /// 술래잡기용 — 게임 종료 결과 — 남은 도둑 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 도망자'**
+  String get fieldRemainingRobbersTag;
 
   /// 게임 종료 결과 — 게임 진행 시간 라벨
   ///
@@ -3140,11 +3458,23 @@ abstract class AppLocalizations {
   /// **'내 체포 횟수'**
   String get labelMyArrestCount;
 
+  /// 술래잡기용 — 게임 종료 결과 개인 탭 — 경찰 본인이 체포한 횟수. 전체 탭의 팀 합계(labelArrestCount)와 구분
+  ///
+  /// In ko, this message translates to:
+  /// **'내가 잡은 횟수'**
+  String get labelMyArrestCountTag;
+
   /// 게임 종료 결과 개인 탭 — 내 체포 ÷ 팀 총 체포 (정수 %)
   ///
   /// In ko, this message translates to:
   /// **'팀 체포 기여도'**
   String get labelTeamArrestShare;
+
+  /// 술래잡기용 — 게임 종료 결과 개인 탭 — 내 체포 ÷ 팀 총 체포 (정수 %)
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 잡기 기여도'**
+  String get labelTeamArrestShareTag;
 
   /// 게임 종료 결과 개인 탭 — 도둑 본인이 잡힌 횟수
   ///
@@ -3176,11 +3506,23 @@ abstract class AppLocalizations {
   /// **'경찰 팀 MVP'**
   String get labelPoliceTeamMvp;
 
+  /// 술래잡기용 — MVP 공개 화면 — 경찰 팀 MVP 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 팀 MVP'**
+  String get labelPoliceTeamMvpTag;
+
   /// MVP 공개 화면 — 도둑 팀 MVP 라벨
   ///
   /// In ko, this message translates to:
   /// **'도둑 팀 MVP'**
   String get labelRobberTeamMvp;
+
+  /// 술래잡기용 — MVP 공개 화면 — 도둑 팀 MVP 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 팀 MVP'**
+  String get labelRobberTeamMvpTag;
 
   /// MVP 공개 화면 하단 바 — 등장 연출이 끝난 뒤에만 보이는 안내
   ///
@@ -3200,11 +3542,23 @@ abstract class AppLocalizations {
   /// **'경찰 팀 최고의 활약'**
   String get mvpRevealPoliceSubtitle;
 
+  /// 술래잡기용 — MVP 공개 화면 — 경찰 MVP 닉네임 아래 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 팀 최고의 활약'**
+  String get mvpRevealPoliceSubtitleTag;
+
   /// MVP 공개 화면 — 도둑 MVP 닉네임 아래 문구
   ///
   /// In ko, this message translates to:
   /// **'도둑 팀 최고의 활약'**
   String get mvpRevealRobberSubtitle;
+
+  /// 술래잡기용 — MVP 공개 화면 — 도둑 MVP 닉네임 아래 문구
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 팀 최고의 활약'**
+  String get mvpRevealRobberSubtitleTag;
 
   /// 게임 종료 결과 — 종료 시점 상태 값 ALIVE
   ///
@@ -3218,11 +3572,23 @@ abstract class AppLocalizations {
   /// **'수감'**
   String get statusJailed;
 
+  /// 술래잡기용 — 게임 종료 결과 — 종료 시점 상태 값 JAILED (용어집: 수감됨/Jailed/收監中)
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힘'**
+  String get statusJailedTag;
+
   /// 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)
   ///
   /// In ko, this message translates to:
   /// **'다음 도둑 위치 공개까지 {formatted}'**
   String gameLocationRevealCountdown(String formatted);
+
+  /// 술래잡기용 — 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 도망자 위치 공개까지 {formatted}'**
+  String gameLocationRevealCountdownTag(String formatted);
 
   /// 잠금 화면 게임 현황 — 게임 남은 시간 라벨 (iOS Live Activity)
   ///
@@ -3235,6 +3601,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'남은 도둑 {alive}/{total}'**
   String lockScreenRemainingRobbers(int alive, int total);
+
+  /// 술래잡기용 — 잠금 화면 게임 현황 — Android 알림 본문의 도주 중 도둑 수 / 전체 도둑 수
+  ///
+  /// In ko, this message translates to:
+  /// **'남은 도망자 {alive}/{total}'**
+  String lockScreenRemainingRobbersTag(int alive, int total);
 
   /// 잠금 화면 게임 현황 — Android 알림 본문의 다음 위치 공개 시각 (time은 HH:mm)
   ///
@@ -3272,6 +3644,12 @@ abstract class AppLocalizations {
   /// **'해당 플레이어를 체포하셨나요?'**
   String get dialogArrestConfirmTitle;
 
+  /// 술래잡기용 — 참가자 체포 확인 다이얼로그 타이틀
+  ///
+  /// In ko, this message translates to:
+  /// **'해당 플레이어를 잡으셨나요?'**
+  String get dialogArrestConfirmTitleTag;
+
   /// 공통 — 긍정 응답 버튼
   ///
   /// In ko, this message translates to:
@@ -3308,6 +3686,12 @@ abstract class AppLocalizations {
   /// **'경찰 시작까지 {formatted}'**
   String gamePoliceStartCountdown(String formatted);
 
+  /// 술래잡기용 — 경찰 출동 시작까지 남은 시간 카운트다운 (mm:ss 포함)
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 시작까지 {formatted}'**
+  String gamePoliceStartCountdownTag(String formatted);
+
   /// 도둑 수배 QR 다이얼로그 타이틀
   ///
   /// In ko, this message translates to:
@@ -3319,6 +3703,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'경찰에게 QR을 보여주세요'**
   String get gameQrDisplayMessage;
+
+  /// 술래잡기용 — 도둑 수배 QR 다이얼로그 안내 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'술래에게 QR을 보여주세요'**
+  String get gameQrDisplayMessageTag;
 
   /// 공통 — 닫기 버튼
   ///
@@ -3481,6 +3871,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'경찰과 도둑 모두에게 메시지가 보여요'**
   String get gameChatAllHint;
+
+  /// 술래잡기용 — gameChatAllHint
+  ///
+  /// In ko, this message translates to:
+  /// **'술래와 도망자 모두에게 메시지가 보여요'**
+  String get gameChatAllHintTag;
 
   /// 채팅 화면에서 최신 메시지로 스크롤 이동하는 버튼 라벨
   ///
@@ -4201,17 +4597,35 @@ abstract class AppLocalizations {
   /// **'경찰 출동!  도둑은 도망치세요!'**
   String get gameEventPoliceMove;
 
+  /// 술래잡기용 — 경찰 출동 확정
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 이동 시작!  도망자는 숨으세요!'**
+  String get gameEventPoliceMoveTag;
+
   /// 도둑 위치 공개 안내
   ///
   /// In ko, this message translates to:
   /// **'현재 도둑의 위치가 공개돼요!'**
   String get gameEventLocationReveal;
 
+  /// 술래잡기용 — 도둑 위치 공개 안내
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 위치 공개!'**
+  String get gameEventLocationRevealTag;
+
   /// 체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환
   ///
   /// In ko, this message translates to:
   /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했어요!'**
   String gameEventArrestNotice(String policeNickname, String robberNickname);
+
+  /// 술래잡기용 — 체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환
+  ///
+  /// In ko, this message translates to:
+  /// **'@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 잡았어요!'**
+  String gameEventArrestNoticeTag(String policeNickname, String robberNickname);
 
   /// 탈옥 공지
   ///
@@ -4266,6 +4680,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'친구가 경찰과도둑 방에 초대했어요! 초대 코드 {inviteCode}'**
   String shareInviteMessage(String inviteCode);
+
+  /// 술래잡기용 — 카톡 등 공유 시 본문 (URL 은 별도로 append)
+  ///
+  /// In ko, this message translates to:
+  /// **'친구가 술래잡기 방에 초대했어요! 초대 코드 {inviteCode}'**
+  String shareInviteMessageTag(String inviteCode);
 
   /// No description provided for @errorCodeMissingRequestPart.
   ///
@@ -4477,6 +4897,36 @@ abstract class AppLocalizations {
   /// **'게임이 진행 중인 상태가 아니에요'**
   String get errorCodeGameNotInProgress;
 
+  /// No description provided for @errorCodeRadioNotAllowedInEventGame.
+  ///
+  /// In ko, this message translates to:
+  /// **'이벤트 게임에서는 무전을 쓸 수 없어요'**
+  String get errorCodeRadioNotAllowedInEventGame;
+
+  /// No description provided for @errorCodeOnlyPoliceCanUseRadio.
+  ///
+  /// In ko, this message translates to:
+  /// **'무전은 경찰만 쓸 수 있어요'**
+  String get errorCodeOnlyPoliceCanUseRadio;
+
+  /// No description provided for @errorCodeOnlyPoliceCanUseRadioTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'무전은 술래만 쓸 수 있어요'**
+  String get errorCodeOnlyPoliceCanUseRadioTag;
+
+  /// No description provided for @errorCodeRadioPoliceWaitingTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰이 출동한 뒤에 쓸 수 있어요'**
+  String get errorCodeRadioPoliceWaitingTime;
+
+  /// No description provided for @errorCodeRadioPoliceWaitingTimeTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'술래가 움직이기 시작한 뒤에 쓸 수 있어요'**
+  String get errorCodeRadioPoliceWaitingTimeTag;
+
   /// No description provided for @errorCodeGameNotActive.
   ///
   /// In ko, this message translates to:
@@ -4500,6 +4950,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'경찰 대기 시간은 라운드 시간보다 짧아야 해요'**
   String get errorCodeInvalidPoliceWaitTime;
+
+  /// 술래잡기용 — errorCodeInvalidPoliceWaitTime
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 대기 시간은 라운드 시간보다 짧아야 해요'**
+  String get errorCodeInvalidPoliceWaitTimeTag;
 
   /// No description provided for @errorCodeInviteCodeGenerationFailed.
   ///
@@ -4585,11 +5041,23 @@ abstract class AppLocalizations {
   /// **'게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요'**
   String get errorCodeInvalidTeamComposition;
 
+  /// 술래잡기용 — errorCodeInvalidTeamComposition
+  ///
+  /// In ko, this message translates to:
+  /// **'게임을 시작하려면 술래와 도망자 팀에 각각 최소 1명 이상의 참가자가 필요해요'**
+  String get errorCodeInvalidTeamCompositionTag;
+
   /// No description provided for @errorCodeNotRobberTeam.
   ///
   /// In ko, this message translates to:
   /// **'도둑 팀만 위치를 전송할 수 있어요'**
   String get errorCodeNotRobberTeam;
+
+  /// 술래잡기용 — errorCodeNotRobberTeam
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 팀만 위치를 전송할 수 있어요'**
+  String get errorCodeNotRobberTeamTag;
 
   /// No description provided for @errorCodeParticipantGameMismatch.
   ///
@@ -4597,17 +5065,35 @@ abstract class AppLocalizations {
   /// **'경찰과 도둑이 서로 다른 게임에 참여하고 있어요'**
   String get errorCodeParticipantGameMismatch;
 
+  /// 술래잡기용 — errorCodeParticipantGameMismatch
+  ///
+  /// In ko, this message translates to:
+  /// **'술래와 도망자가 서로 다른 게임에 참여하고 있어요'**
+  String get errorCodeParticipantGameMismatchTag;
+
   /// No description provided for @errorCodeOnlyPoliceCanArrest.
   ///
   /// In ko, this message translates to:
   /// **'경찰 팀만 도둑을 체포할 수 있어요'**
   String get errorCodeOnlyPoliceCanArrest;
 
+  /// 술래잡기용 — errorCodeOnlyPoliceCanArrest
+  ///
+  /// In ko, this message translates to:
+  /// **'술래 팀만 도망자를 잡을 수 있어요'**
+  String get errorCodeOnlyPoliceCanArrestTag;
+
   /// No description provided for @errorCodeOnlyRobberCanBeArrested.
   ///
   /// In ko, this message translates to:
   /// **'도둑 팀만 체포될 수 있어요'**
   String get errorCodeOnlyRobberCanBeArrested;
+
+  /// 술래잡기용 — errorCodeOnlyRobberCanBeArrested
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자 팀만 잡힐 수 있어요'**
+  String get errorCodeOnlyRobberCanBeArrestedTag;
 
   /// No description provided for @errorCodeOnlyRobberCanEscape.
   ///
@@ -4620,6 +5106,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이미 수감된 도둑이에요'**
   String get errorCodeAlreadyArrested;
+
+  /// 술래잡기용 — errorCodeAlreadyArrested
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 잡힌 도망자예요'**
+  String get errorCodeAlreadyArrestedTag;
 
   /// No description provided for @errorCodeNotJailed.
   ///
@@ -4644,6 +5136,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'이벤트 게임에서는 쓸 수 없어요'**
   String get errorCodeForceArrestNotAllowedInEventGame;
+
+  /// No description provided for @errorCodeEscapeNotAllowedInMode.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 게임 모드에서는 탈옥할 수 없어요'**
+  String get errorCodeEscapeNotAllowedInMode;
+
+  /// No description provided for @errorCodeEventGameNotSupportedInMode.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 게임 모드는 이벤트 게임으로 만들 수 없어요'**
+  String get errorCodeEventGameNotSupportedInMode;
+
+  /// No description provided for @errorCodeJailAreaRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 게임 모드는 감옥 구역을 정해야 해요'**
+  String get errorCodeJailAreaRequired;
+
+  /// No description provided for @errorCodeJailAreaNotAllowed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 게임 모드에는 감옥 구역이 없어요'**
+  String get errorCodeJailAreaNotAllowed;
+
+  /// No description provided for @errorCodeWithdrawalUserNotFound.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입되지 않은 계정이에요'**
+  String get errorCodeWithdrawalUserNotFound;
 
   /// No description provided for @shrinkAutoOffSnackbar.
   ///
@@ -4728,6 +5250,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'경찰은 대기 시간 동안 도둑을 체포할 수 없어요'**
   String get errorCodePoliceWaitingTime;
+
+  /// 술래잡기용 — errorCodePoliceWaitingTime
+  ///
+  /// In ko, this message translates to:
+  /// **'술래는 대기 시간 동안 도망자를 잡을 수 없어요'**
+  String get errorCodePoliceWaitingTimeTag;
 
   /// No description provided for @errorCodeCannotKickYourself.
   ///
@@ -4969,11 +5497,23 @@ abstract class AppLocalizations {
   /// **'{cell}에서 도둑을 봤어요'**
   String pingChatFoundRobber(String cell);
 
+  /// 술래잡기용 — 격자를 켠 경찰이 발견 핑을 찍을 때 팀 채팅에 자동으로 올라가는 말 — 보낸 사람 이름으로 나감 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에서 도망자를 봤어요'**
+  String pingChatFoundRobberTag(String cell);
+
   /// 격자를 켠 경찰이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)
   ///
   /// In ko, this message translates to:
   /// **'{cell}에 도둑이 있는 것 같아요'**
   String pingChatSuspectRobber(String cell);
+
+  /// 술래잡기용 — 격자를 켠 경찰이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에 도망자가 있는 것 같아요'**
+  String pingChatSuspectRobberTag(String cell);
 
   /// 격자를 켠 도둑이 발견 핑을 찍을 때 팀 채팅 자동 문구 (#636)
   ///
@@ -4981,11 +5521,23 @@ abstract class AppLocalizations {
   /// **'{cell}에서 경찰을 봤어요'**
   String pingChatFoundCops(String cell);
 
+  /// 술래잡기용 — 격자를 켠 도둑이 발견 핑을 찍을 때 팀 채팅 자동 문구 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에서 술래를 봤어요'**
+  String pingChatFoundCopsTag(String cell);
+
   /// 격자를 켠 도둑이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)
   ///
   /// In ko, this message translates to:
   /// **'{cell}에 경찰이 있는 것 같아요'**
   String pingChatSuspectCops(String cell);
+
+  /// 술래잡기용 — 격자를 켠 도둑이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)
+  ///
+  /// In ko, this message translates to:
+  /// **'{cell}에 술래가 있는 것 같아요'**
+  String pingChatSuspectCopsTag(String cell);
 
   /// 인게임 중도 퇴장 확인 다이얼로그 타이틀
   ///
@@ -5028,6 +5580,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'체포 요청 전송에 실패했어요. 다시 시도해 주세요'**
   String get errorEventArrestRequestFailed;
+
+  /// 술래잡기용 — errorEventArrestRequestFailed
+  ///
+  /// In ko, this message translates to:
+  /// **'잡기 요청 전송에 실패했어요. 다시 시도해 주세요'**
+  String get errorEventArrestRequestFailedTag;
 
   /// No description provided for @gameEventResultTitle.
   ///
@@ -5113,6 +5671,12 @@ abstract class AppLocalizations {
   /// **'체포'**
   String get gameMenuArrest;
 
+  /// 술래잡기용 — 플로팅 메뉴 항목: 경찰의 QR 스캔
+  ///
+  /// In ko, this message translates to:
+  /// **'잡기'**
+  String get gameMenuArrestTag;
+
   /// 플로팅 메뉴 항목: 도둑의 QR 보여 주기
   ///
   /// In ko, this message translates to:
@@ -5176,7 +5740,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialChaseBodyTag.
   ///
   /// In ko, this message translates to:
-  /// **'술래가 쫓아가 터치하면 잡혀요'**
+  /// **'술래가 쫓아가 QR을 스캔하면 잡혀요'**
   String get tutorialChaseBodyTag;
 
   /// No description provided for @tutorialShowQrTitle.
@@ -5185,11 +5749,23 @@ abstract class AppLocalizations {
   /// **'터치되면 QR을 보여줘요'**
   String get tutorialShowQrTitle;
 
+  /// 술래잡기용 — tutorialShowQrTitle
+  ///
+  /// In ko, this message translates to:
+  /// **'술래가 오면 QR을 보여줘요'**
+  String get tutorialShowQrTitleTag;
+
   /// No description provided for @tutorialShowQrBody.
   ///
   /// In ko, this message translates to:
   /// **'도둑은 메뉴에서 내 QR을 눌러요'**
   String get tutorialShowQrBody;
+
+  /// 술래잡기용 — tutorialShowQrBody
+  ///
+  /// In ko, this message translates to:
+  /// **'도망자는 메뉴에서 내 QR을 눌러요'**
+  String get tutorialShowQrBodyTag;
 
   /// No description provided for @tutorialScanTitle.
   ///
@@ -5197,11 +5773,23 @@ abstract class AppLocalizations {
   /// **'QR을 찍으면 체포돼요'**
   String get tutorialScanTitle;
 
+  /// 술래잡기용 — tutorialScanTitle
+  ///
+  /// In ko, this message translates to:
+  /// **'QR을 찍으면 잡혀요'**
+  String get tutorialScanTitleTag;
+
   /// No description provided for @tutorialScanBody.
   ///
   /// In ko, this message translates to:
   /// **'경찰이 도둑의 QR을 스캔하면 체포돼요'**
   String get tutorialScanBody;
+
+  /// 술래잡기용 — tutorialScanBody
+  ///
+  /// In ko, this message translates to:
+  /// **'술래가 도망자의 QR을 스캔하면 잡혀요'**
+  String get tutorialScanBodyTag;
 
   /// No description provided for @tutorialJailTitle.
   ///
@@ -5287,6 +5875,12 @@ abstract class AppLocalizations {
   /// **'체포!'**
   String get tutorialCalloutArrest;
 
+  /// 술래잡기용 — tutorialCalloutArrest
+  ///
+  /// In ko, this message translates to:
+  /// **'잡았다!'**
+  String get tutorialCalloutArrestTag;
+
   /// No description provided for @onboardingRunTitle.
   ///
   /// In ko, this message translates to:
@@ -5346,6 +5940,42 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'게임이 끝나면 이동 경로와 거리를 볼 수 있어요'**
   String get onboardingRecordBody;
+
+  /// 다른 경찰이 무전 버튼을 누르고 말하는 동안 무전 버튼 위 파란 알약 — 채팅 말풍선과 헷갈리지 않게 '무전'을 넣었다 (#697)
+  ///
+  /// In ko, this message translates to:
+  /// **'{nickname} 무전 중'**
+  String radioSpeaking(String nickname);
+
+  /// 참가자 목록에 아직 없는 경찰이 말할 때 이름 대신 쓰는 말 (radioSpeaking의 nickname 자리)
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰'**
+  String get radioSpeakerFallback;
+
+  /// No description provided for @radioSpeakerFallbackTag.
+  ///
+  /// In ko, this message translates to:
+  /// **'술래'**
+  String get radioSpeakerFallbackTag;
+
+  /// 무전 마이크 권한 안내 다이얼로그 타이틀 (거부한 뒤 무전 버튼을 다시 눌렀을 때)
+  ///
+  /// In ko, this message translates to:
+  /// **'마이크 권한 필요'**
+  String get dialogMicPermissionTitle;
+
+  /// 무전 마이크 권한 안내 다이얼로그 본문
+  ///
+  /// In ko, this message translates to:
+  /// **'무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요'**
+  String get dialogMicPermissionMessage;
+
+  /// No description provided for @radioPttLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'무전'**
+  String get radioPttLabel;
 }
 
 class _AppLocalizationsDelegate

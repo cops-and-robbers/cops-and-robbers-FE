@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/game/presentation/providers/game_event_provider.dart';
 import 'package:cops_and_robbers/features/game/presentation/widgets/participant_overlay.dart';
 import 'package:cops_and_robbers/features/session/data/models/in_game_participants_response.dart';
@@ -129,6 +130,28 @@ void main() {
       },
     );
 
+    testWidgets(
+      'caught_hider_tapping_own_card_opens_no_escape_dialog_when_playing_hide_and_seek',
+      (tester) async {
+        await _pumpOverlay(
+          tester,
+          initialGameEventState: const GameEventState(
+            arrestedParticipantIds: {2},
+          ),
+          fetchParticipants: () async => _participants,
+          myTeam: 'ROBBER',
+          myParticipantId: 2,
+          gameMode: GameMode.hideAndSeek,
+        );
+        await tester.pump();
+
+        await tester.tap(find.text('도둑'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('탈옥할까요?'), findsNothing);
+      },
+    );
+
     testWidgets('does_not_open_escape_dialog_when_escape_already_applied', (
       tester,
     ) async {
@@ -151,6 +174,14 @@ void main() {
     });
   });
 }
+
+GameParticipantInfo _gameInfoFor(GameMode mode) => GameParticipantInfo(
+  gameId: 1,
+  team: 'POLICE',
+  nickname: '경찰',
+  participantId: 1,
+  gameMode: mode,
+);
 
 const _gameInfo = GameParticipantInfo(
   gameId: 1,
@@ -179,6 +210,7 @@ Future<void> _pumpOverlay(
   void Function(_TestGameEventNotifier notifier)? onGameEventNotifierReady,
   String myTeam = 'POLICE',
   int myParticipantId = 1,
+  GameMode gameMode = GameMode.copsAndRobbers,
 }) async {
   final gameEventNotifier = _TestGameEventNotifier(initialGameEventState);
   onGameEventNotifierReady?.call(gameEventNotifier);
@@ -187,7 +219,7 @@ Future<void> _pumpOverlay(
     ProviderScope(
       overrides: [
         gameParticipantNotifierProvider.overrideWith(
-          () => _TestGameParticipantNotifier(_gameInfo),
+          () => _TestGameParticipantNotifier(_gameInfoFor(gameMode)),
         ),
         gameEventNotifierProvider.overrideWith(() => gameEventNotifier),
         fetchGameParticipantsProvider(

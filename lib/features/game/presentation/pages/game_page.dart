@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:app_settings/app_settings.dart';
 import 'package:clock/clock.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -66,6 +67,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/services/fcm/local_notifications_service.dart';
 import '../../domain/ping_chat_policy.dart';
 import '../../domain/game_menu_entries.dart';
+import '../../../radio/domain/radio_rules.dart';
+import '../../../radio/presentation/providers/radio_session_provider.dart';
+import '../../../radio/presentation/widgets/radio_ptt_button.dart';
+import '../../../radio/presentation/widgets/radio_speaker_pill.dart';
 import '../../domain/zone_grid.dart';
 import '../helpers/game_over_guard.dart';
 import '../helpers/zone_exit_reconnect_policy.dart';
@@ -105,8 +110,11 @@ import '../widgets/start/dispatch_countdown.dart';
 import '../widgets/start/chase_scene_rules.dart';
 import '../widgets/start/start_banners.dart';
 import 'package:cops_and_robbers/core/constants/game_config.dart';
+import 'package:cops_and_robbers/core/constants/game_event_messages.dart';
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/core/constants/game_status.dart';
 import 'package:cops_and_robbers/core/constants/game_team.dart';
+import 'package:cops_and_robbers/core/i18n/role_names.dart';
 import 'package:cops_and_robbers/core/constants/participant_status.dart';
 import '../../../../core/constants/dev_flags.dart';
 import '../widgets/event_arrest_success_dialog.dart';
@@ -177,6 +185,9 @@ class _GamePageState extends ConsumerState<GamePage>
   /// keepAlive provider이므로 게임 화면 dispose 이후에도 인스턴스 유효.
   /// initState에서 동기 할당 (post-frame 이전 dispose 시 LateInitializationError 방지)
   late final BackgroundService _backgroundService;
+
+  /// 무전을 시작한 경우만 — dispose 중에는 ref를 못 써서 잡아 둔다
+  RadioSession? _radioSession;
 
   /// dispose 이후 ref 무효화 대비, 사전에 저장한 내 기록 notifier.
   late final PlayerGameRecordNotifier _recordNotifier;
@@ -304,6 +315,16 @@ class _GamePageState extends ConsumerState<GamePage>
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => GameTeam.isRobber(widget.team);
 
+  /// 무전 켜진 일반 게임의 경찰만 오른쪽 아래 채팅 자리에 무전 버튼을 둔다 (#697)
+  bool get _hasRadio =>
+      !widget.isDummy &&
+      radioAvailable(
+        isPolice: GameTeam.isPolice(widget.team),
+        isEventGame:
+            ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false,
+        isRadioEnabled: kRadioEnabledDefault,
+      );
+
   @override
   void initState() {
     super.initState();
@@ -344,7 +365,13 @@ class _GamePageState extends ConsumerState<GamePage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 누른 채 전화가 오거나 앱이 내려가면 손을 뗀 것으로 본다 — 열린 마이크가 남으면 안 된다
+    if (state != AppLifecycleState.resumed && _hasRadio) {
+      ref.read(radioSessionProvider(_gameId).notifier).onAppPaused();
+    }
     if (state == AppLifecycleState.resumed) {
+      // 백그라운드에서 출동 시각이 지나 미뤄 둔 무전 입장을 지금 한다
+      _radioSession?.onAppResumed();
       _checkLocationPermissionOnResume();
       // 일시정지 동안 지나간 축소는 연출 없이 지금 차수로 다시 그린다 (DEC-0149)
       _shrinkController?.recompute(animate: false);
@@ -512,6 +539,7 @@ class _GamePageState extends ConsumerState<GamePage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _radioSession?.shutdown();
     _gameStateSyncRetryTimer?.cancel();
     _policeReleaseTimer?.cancel();
     _dispatchCountdownTimer?.cancel();
@@ -546,6 +574,7 @@ class _GamePageState extends ConsumerState<GamePage>
   }
 
   /// 게임 시작 흐름을 정한다. 이벤트 게임은 예전 경찰 대기 팝업 그대로.
+  /// 무전 켜진 경찰은 여기서 출동 시각까지 무전 입장을 걸어 둔다.
   void _startIntro() {
     // 위치 권한을 다시 허용하면 _initGameConnections가 한 번 더 돈다 — 흐름은 한 번만 만든다
     if (widget.isDummy || _intro != null) return;
@@ -564,6 +593,12 @@ class _GamePageState extends ConsumerState<GamePage>
     )!;
     _introStartTime = start;
     _policeReleaseAt = releaseAt;
+    if (_hasRadio) {
+      // 출동 전이면 그 시각까지 기다렸다가 무전 방에 들어간다
+      final session = ref.read(radioSessionProvider(_gameId).notifier);
+      _radioSession = session;
+      session.start(policeReleaseAt: releaseAt);
+    }
     _introWaitMinutes = wait;
     _introRevealMinutes = info?.locationRevealIntervalMinutes ?? 5;
     final intro = StartIntroController(
@@ -719,7 +754,11 @@ class _GamePageState extends ConsumerState<GamePage>
       autoCloseDuration: remaining,
       content: CountdownTimerContent(
         duration: remaining,
-        subtitle: AppLocalizations.of(context).gameRobberOnTheRunBanner,
+        subtitle: byMode(
+          _gameMode,
+          classic: AppLocalizations.of(context).gameRobberOnTheRunBanner,
+          tag: AppLocalizations.of(context).gameRobberOnTheRunBannerTag,
+        ),
       ),
     );
   }
@@ -753,6 +792,7 @@ class _GamePageState extends ConsumerState<GamePage>
               team: widget.team,
               participantId: widget.participantId,
               isEventGame: isEvent,
+              gameMode: settings.gameMode,
             );
       }
 
@@ -766,6 +806,7 @@ class _GamePageState extends ConsumerState<GamePage>
             policeWaitMinutes: settings.policeWaitMinutes,
             roundTimeMinutes: settings.roundDurationMinutes,
             isEventGame: isEvent,
+            gameMode: settings.gameMode,
           );
 
       if (!mounted) return;
@@ -1204,11 +1245,13 @@ class _GamePageState extends ConsumerState<GamePage>
         );
     if (!isJailed) return;
     final area = ref.read(gameAreaProvider(_gameId)).valueOrNull;
-    if (area == null) return;
+    // 감옥 없는 방(술래잡기)은 자동 탈옥 판정 대상이 아니다
+    final jail = area?.jail;
+    if (area == null || jail == null) return;
 
     final detector = _jailEscapeDetector ??= JailEscapeDetector();
     final shouldEscape = detector.update(
-      jail: area.jail,
+      jail: jail,
       point: GeoPoint(latitude: pos.latitude, longitude: pos.longitude),
       accuracyInMeters: pos.accuracy,
       receivedAt: clock.now(),
@@ -1473,10 +1516,26 @@ class _GamePageState extends ConsumerState<GamePage>
 
     final l10n = AppLocalizations.of(context);
     final message = switch ((type, GameTeam.isPolice(widget.team))) {
-      (PingType.found, true) => l10n.pingChatFoundRobber(cell),
-      (PingType.suspect, true) => l10n.pingChatSuspectRobber(cell),
-      (PingType.found, false) => l10n.pingChatFoundCops(cell),
-      (PingType.suspect, false) => l10n.pingChatSuspectCops(cell),
+      (PingType.found, true) => byMode(
+        _gameMode,
+        classic: l10n.pingChatFoundRobber(cell),
+        tag: l10n.pingChatFoundRobberTag(cell),
+      ),
+      (PingType.suspect, true) => byMode(
+        _gameMode,
+        classic: l10n.pingChatSuspectRobber(cell),
+        tag: l10n.pingChatSuspectRobberTag(cell),
+      ),
+      (PingType.found, false) => byMode(
+        _gameMode,
+        classic: l10n.pingChatFoundCops(cell),
+        tag: l10n.pingChatFoundCopsTag(cell),
+      ),
+      (PingType.suspect, false) => byMode(
+        _gameMode,
+        classic: l10n.pingChatSuspectCops(cell),
+        tag: l10n.pingChatSuspectCopsTag(cell),
+      ),
     };
     _chatNotifier?.sendMessage(
       gameId: _gameId,
@@ -1500,6 +1559,7 @@ class _GamePageState extends ConsumerState<GamePage>
         context,
         isDarkMode: _isDarkMode,
         locationRevealIntervalMinutes: info?.locationRevealIntervalMinutes,
+        gameMode: _gameMode,
       );
       return;
     }
@@ -1511,6 +1571,7 @@ class _GamePageState extends ConsumerState<GamePage>
       transitionBuilder: DialogAnimation.buildTransition,
       pageBuilder: (dialogContext, _, _) => ChaseScene(
         mode: ChaseSceneMode.rulesReplay,
+        gameMode: _gameMode,
         isPolice: GameTeam.isPolice(widget.team),
         gameStartTime: start,
         policeWaitMinutes: info?.policeWaitMinutes ?? 0,
@@ -2324,6 +2385,7 @@ class _GamePageState extends ConsumerState<GamePage>
     await GameOverIntroModal.show(
       context: context,
       isDarkMode: _isDarkMode,
+      gameMode: _gameMode,
       reason: reason,
       result: gameResultId == null || isEventGame
           ? null
@@ -2370,6 +2432,7 @@ class _GamePageState extends ConsumerState<GamePage>
     await GameOverResultDialog.show(
       context: context,
       isDarkMode: _isDarkMode,
+      gameMode: _gameMode,
       myTeam: widget.team,
       winnerTeam: winnerTeam,
       gameResultId: gameResultId,
@@ -2394,6 +2457,11 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
+  /// 이 게임의 모드 — 역할 표기 단일 소스(GameParticipantInfo)
+  GameMode get _gameMode =>
+      ref.read(gameParticipantNotifierProvider)?.gameMode ??
+      GameMode.copsAndRobbers;
+
   /// `gameResultId`가 없을 때 기존 AppDialog 기반 최소 결과 다이얼로그 표시 (방어 로직)
   Future<void> _showFallbackResultDialog(
     String? winnerTeam,
@@ -2403,9 +2471,11 @@ class _GamePageState extends ConsumerState<GamePage>
     final hasWinnerTeam =
         GameTeam.isPolice(winnerTeam) || GameTeam.isRobber(winnerTeam);
     final isWin = hasWinnerTeam && winnerTeam == widget.team;
-    final winnerTeamLabel = GameTeam.isPolice(winnerTeam)
-        ? l10n.gameTeamCop
-        : l10n.gameTeamRobber;
+    final winnerTeamLabel = teamName(
+      l10n,
+      _gameMode,
+      isPolice: GameTeam.isPolice(winnerTeam),
+    );
 
     await AppDialog.show(
       context: context,
@@ -2615,6 +2685,7 @@ class _GamePageState extends ConsumerState<GamePage>
       if (_isLeaving) return;
       if (!(prev?.isGameOver ?? false) && next.isGameOver) {
         _policeReleaseTimer?.cancel();
+        if (_hasRadio) ref.read(radioSessionProvider(_gameId).notifier).stop();
         // 결과 화면 밑에서 뜨면 못 본 안내가 본 것으로 저장된다 — 다음 게임에서 띄운다
         _rulesHintTimer?.cancel();
         _intro?.gameOver();
@@ -2633,7 +2704,12 @@ class _GamePageState extends ConsumerState<GamePage>
             .read(chatNotifierProvider.notifier)
             .addSystemMessage(
               gameId: _gameId,
-              message: AppLocalizations.of(context).gameEventPoliceMove,
+              message: resolveGameEventMessage(
+                AppLocalizations.of(context),
+                GameEventMessageKey.policeMove,
+                null,
+                _gameMode,
+              ),
             );
         _onPoliceReleased();
       }
@@ -2648,7 +2724,12 @@ class _GamePageState extends ConsumerState<GamePage>
               .read(chatNotifierProvider.notifier)
               .addSystemMessage(
                 gameId: _gameId,
-                message: AppLocalizations.of(context).gameEventLocationReveal,
+                message: resolveGameEventMessage(
+                  AppLocalizations.of(context),
+                  GameEventMessageKey.locationReveal,
+                  null,
+                  _gameMode,
+                ),
               );
         }
       },
@@ -2669,7 +2750,8 @@ class _GamePageState extends ConsumerState<GamePage>
         if (count > _lastHandledArrestCount) {
           _lastHandledArrestCount = count;
           final l10n = AppLocalizations.of(context);
-          final robber = robberNick ?? l10n.gameRoleRobberLabel;
+          final robber =
+              robberNick ?? roleLabel(l10n, _gameMode, isPolice: false);
           ref
               .read(chatNotifierProvider.notifier)
               .addSystemMessage(
@@ -2677,9 +2759,15 @@ class _GamePageState extends ConsumerState<GamePage>
                 // 구역 밖 강제 체포는 잡은 경찰이 없다 (#668)
                 message: forced
                     ? l10n.gameEventForcedArrestNotice(robber)
-                    : l10n.gameEventArrestNotice(
-                        policeNick ?? l10n.gameRoleCopLabel,
-                        robber,
+                    : resolveGameEventMessage(
+                        l10n,
+                        GameEventMessageKey.arrestNotice,
+                        [
+                          policeNick ??
+                              roleLabel(l10n, _gameMode, isPolice: true),
+                          robber,
+                        ],
+                        _gameMode,
                       ),
               );
         }
@@ -2701,7 +2789,11 @@ class _GamePageState extends ConsumerState<GamePage>
           evidence: ref.read(eventEvidenceNotifierProvider),
           robberNickname:
               s.lastMyArrestNickname ??
-              AppLocalizations.of(context).gameRoleRobberLabel,
+              roleLabel(
+                AppLocalizations.of(context),
+                _gameMode,
+                isPolice: false,
+              ),
         );
       }
     });
@@ -2873,12 +2965,23 @@ class _GamePageState extends ConsumerState<GamePage>
         .centroid;
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
     final actionButtonBottom = 38.h + bottomInset;
+    final hasRadio = _hasRadio;
+    // autoDispose — 화면이 지켜보는 동안만 무전 방에 머문다
+    final radio = hasRadio
+        ? ref.watch(radioSessionProvider(_gameId))
+        : const RadioSessionState();
+    final showsRadioPill = hasRadio && radio.speakerIdentity != null;
+    // 알약이 뜰 때만 지켜보면 autoDispose라 화자가 바뀔 때마다 참가자 목록을 다시 받는다
+    final policeNicknames = hasRadio
+        ? _policeNicknames()
+        : const <String, String>{};
     final menuEntries = gameMenuEntries(
       isPolice: GameTeam.isPolice(widget.team),
       isArrested: isArrestedNow,
       isZoneExitActive: _isZoneExitWarningActive,
       isEventGame: isEventGame,
       isMapVisible: sceneMode == null,
+      hasRadioButton: hasRadio,
     );
     // 지도는 가운데 아래, 대기·설명 장면은 시안대로 오른쪽 아래에서 위로 펼친다.
     // 참가자 목록에서는 지도로 돌아갈 버튼이 필요해 오른쪽 버튼 열을 유지한다.
@@ -2937,7 +3040,7 @@ class _GamePageState extends ConsumerState<GamePage>
             ),
 
             /// index 0b: 수감 중 전면 철창 — 지도 바로 위, 버튼·패널 아래 (if/else로 개수 고정)
-            if (isArrestedNow)
+            if (isArrestedNow && _gameMode.usesJail)
               const JailBarsOverlay()
             else
               const SizedBox.shrink(),
@@ -3001,6 +3104,7 @@ class _GamePageState extends ConsumerState<GamePage>
                       revealFromBand: intro!.showRoleBanner,
                       child: ChaseScene(
                         mode: sceneMode,
+                        gameMode: _gameMode,
                         isPolice: GameTeam.isPolice(widget.team),
                         gameStartTime: _introStartTime!,
                         policeWaitMinutes: _introWaitMinutes,
@@ -3030,6 +3134,7 @@ class _GamePageState extends ConsumerState<GamePage>
                     alignment: Alignment.topCenter,
                     child: PoliceStartCountdown(
                       policeStartTime: policeStartTime,
+                      gameMode: _gameMode,
                     ),
                   ),
                 ),
@@ -3069,6 +3174,11 @@ class _GamePageState extends ConsumerState<GamePage>
                     _buildQrButton(isArrestedNow: isArrestedNow),
                     SizedBox(height: AppSpacing.vertical8),
                     _buildChatButton(),
+                    // 참가자 목록에서는 메뉴가 없어 채팅을 남기고, 엄지 자리(맨 아래)에 무전
+                    if (hasRadio) ...[
+                      SizedBox(height: AppSpacing.vertical8),
+                      _buildRadioButton(radio),
+                    ],
                   ],
                 ),
               )
@@ -3076,7 +3186,29 @@ class _GamePageState extends ConsumerState<GamePage>
               Positioned(
                 right: 20.w,
                 bottom: actionButtonBottom,
-                child: Column(children: [_buildChatButton()]),
+                // 무전 켜진 경찰은 채팅 자리를 무전이 쓰고 채팅은 메뉴로 간다 (#697)
+                child: Column(
+                  children: [
+                    hasRadio ? _buildRadioButton(radio) : _buildChatButton(),
+                  ],
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+
+            /// index 5a: 다른 경찰이 무전 중 — 무전 버튼 바로 위 파란 알약 (if/else로 개수 고정)
+            if (showsRadioPill && !sceneShown)
+              Positioned(
+                right: 20.w,
+                bottom: actionButtonBottom + 56.w + AppSpacing.vertical8,
+                child: RadioSpeakerPill(
+                  label: radioSpeakerLabel(
+                    l10n,
+                    radio.speakerIdentity!,
+                    policeNicknames,
+                    mode: _gameMode,
+                  ),
+                ),
               )
             else
               const SizedBox.shrink(),
@@ -3142,6 +3274,7 @@ class _GamePageState extends ConsumerState<GamePage>
               ArrestLockOverlay(
                 gameId: _gameId,
                 myParticipantId: widget.participantId,
+                gameMode: _gameMode,
                 onClose: () => setState(() => _showArrestInfo = false),
               )
             else
@@ -3185,13 +3318,19 @@ class _GamePageState extends ConsumerState<GamePage>
               myParticipantId: widget.participantId,
               myTeam: widget.team,
               isDarkMode: _isDarkMode,
+              gameMode: _gameMode,
               visible: _showChat,
               previewInsets: showsFloatingMenu
                   // 가운데 플로팅 버튼과 겹치지 않게 채팅 버튼 바로 위에 띄운다.
                   ? EdgeInsets.only(
                       left: AppSpacing.horizontal20,
                       right: AppSpacing.horizontal20,
-                      bottom: actionButtonBottom + 56.w + AppSpacing.vertical8,
+                      bottom:
+                          actionButtonBottom +
+                          56.w +
+                          AppSpacing.vertical8 +
+                          // 무전 알약이 떠 있으면 그 위로 쌓는다
+                          (showsRadioPill ? 36.h + AppSpacing.vertical8 : 0),
                     )
                   // 양쪽 하단 버튼(56)과 버튼 사이 여백을 비우고, 바닥은 채팅
                   // 버튼 세로 중앙(반 칸 위)에 맞춰 화면 가장자리에서 띄운다.
@@ -3313,6 +3452,7 @@ class _GamePageState extends ConsumerState<GamePage>
               Positioned.fill(
                 child: RoleBanner(
                   key: const ValueKey('roleBanner'),
+                  gameMode: _gameMode,
                   isPolice: GameTeam.isPolice(widget.team),
                   onRevealNext: intro.roleBannerLeaving,
                   onDone: intro.roleBannerDone,
@@ -3386,6 +3526,62 @@ class _GamePageState extends ConsumerState<GamePage>
     _closePingCard();
   }
 
+  Widget _buildRadioButton(RadioSessionState radio) {
+    final session = ref.read(radioSessionProvider(_gameId).notifier);
+    return RadioPttButton(
+      state: radio,
+      onPress: () async {
+        final wasDenied = radio.status == RadioStatus.micDenied;
+        await session.press();
+        // 거부한 채 다시 눌렀는데 또 안 됐다 — OS가 팝업을 더 안 띄우니 설정으로 안내한다
+        if (!mounted || !wasDenied) return;
+        if (ref.read(radioSessionProvider(_gameId)).status ==
+            RadioStatus.micDenied) {
+          _showMicPermissionDialog();
+        }
+      },
+      onRelease: session.release,
+      onBlockedTap: () => _explainBlockedRadio(radio.status),
+    );
+  }
+
+  /// 무전이 안 눌리는 이유 — 다른 경찰이 말하는 중이면 알약이 이미 보여서 따로 알리지 않는다
+  void _explainBlockedRadio(RadioStatus status) {
+    if (status != RadioStatus.waitingPolice) return;
+    AppSnackbar.show(
+      context,
+      message: byMode(
+        _gameMode,
+        classic: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTime,
+        tag: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTimeTag,
+      ),
+      isDarkMode: _isDarkMode,
+    );
+  }
+
+  void _showMicPermissionDialog() {
+    final l10n = AppLocalizations.of(context);
+    AppDialog.show(
+      context: context,
+      title: l10n.dialogMicPermissionTitle,
+      message: l10n.dialogMicPermissionMessage,
+      confirmText: l10n.buttonGoToSettings,
+      cancelText: l10n.buttonClose,
+      onConfirm: () => AppSettings.openAppSettings(),
+    );
+  }
+
+  /// 무전 identity(참가자 ID 문자열) → 닉네임. 목록을 못 받았으면 빈 맵(알약은 "경찰"로)
+  Map<String, String> _policeNicknames() {
+    final police =
+        ref.watch(fetchGameParticipantsProvider(_gameId)).valueOrNull?.police ??
+        const [];
+    return {
+      for (final participant in police)
+        participant.participantId.toString(): participant.nickname,
+    };
+  }
+
   Widget _buildChatButton() {
     final unreadCount = ref.watch(
       chatNotifierProvider.select(
@@ -3454,7 +3650,11 @@ class _GamePageState extends ConsumerState<GamePage>
         onTap: unlessZoneExit(() => setState(() => _showParticipants = true)),
       ),
       GameMenuEntry.arrest => GameFabMenuItem(
-        label: l10n.gameMenuArrest,
+        label: byMode(
+          _gameMode,
+          classic: l10n.gameMenuArrest,
+          tag: l10n.gameMenuArrestTag,
+        ),
         icon: AppIcons.qrScan,
         iconColor: accent,
         onTap: unlessZoneExit(_openQrScanner),
@@ -3466,11 +3666,12 @@ class _GamePageState extends ConsumerState<GamePage>
         onTap: unlessZoneExit(_showMyQrCode),
       ),
       GameMenuEntry.jailed => GameFabMenuItem(
-        label: l10n.statusJailed,
-        icon: characterAssetPath(
-          team: GameTeam.toLowerKey(GameTeam.robber),
-          state: 'jailed',
+        label: byMode(
+          _gameMode,
+          classic: l10n.statusJailed,
+          tag: l10n.statusJailedTag,
         ),
+        icon: caughtRobberAssetPath(usesJail: _gameMode.usesJail),
         onTap: unlessZoneExit(() => setState(() => _showArrestInfo = true)),
       ),
       GameMenuEntry.evidenceBoard => GameFabMenuItem(
@@ -3496,12 +3697,11 @@ class _GamePageState extends ConsumerState<GamePage>
     if (isArrestedNow) {
       return Semantics(
         button: true,
-        label: AppLocalizations.of(context).gameArrestOverlayTitle,
+        label: _gameMode.usesJail
+            ? AppLocalizations.of(context).gameArrestOverlayTitle
+            : AppLocalizations.of(context).gameArrestOverlayTitleTag,
         child: SvgIconButton(
-          assetPath: characterAssetPath(
-            team: GameTeam.toLowerKey(GameTeam.robber),
-            state: 'jailed',
-          ),
+          assetPath: caughtRobberAssetPath(usesJail: _gameMode.usesJail),
           onPressed: () => setState(() => _showArrestInfo = true),
           backgroundColor: _isDarkMode ? AppColors.black : null,
           isDarkMode: _isDarkMode,
@@ -3529,7 +3729,11 @@ class _GamePageState extends ConsumerState<GamePage>
     if (!gameEventState.canPoliceArrest(participantInfo: participantInfo)) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).errorCannotArrestDuringWait,
+        message: byMode(
+          _gameMode,
+          classic: AppLocalizations.of(context).errorCannotArrestDuringWait,
+          tag: AppLocalizations.of(context).errorCannotArrestDuringWaitTag,
+        ),
       );
       return;
     }
@@ -3542,7 +3746,11 @@ class _GamePageState extends ConsumerState<GamePage>
         context,
         MaterialPageRoute(
           builder: (_) => QrScannerPage<QrPayload>(
-            title: AppLocalizations.of(context).qrScannerWantedRobberTitle,
+            title: byMode(
+              _gameMode,
+              classic: AppLocalizations.of(context).qrScannerWantedRobberTitle,
+              tag: AppLocalizations.of(context).qrScannerWantedRobberTitleTag,
+            ),
             onParse: QrPayload.tryParse,
           ),
         ),
@@ -3573,7 +3781,11 @@ class _GamePageState extends ConsumerState<GamePage>
           .contains(participantId)) {
         AppSnackbar.show(
           context,
-          message: AppLocalizations.of(context).errorAlreadyArrested,
+          message: byMode(
+            _gameMode,
+            classic: AppLocalizations.of(context).errorAlreadyArrested,
+            tag: AppLocalizations.of(context).errorAlreadyArrestedTag,
+          ),
         );
         return;
       }
@@ -3584,7 +3796,11 @@ class _GamePageState extends ConsumerState<GamePage>
       if (!ok && mounted) {
         AppSnackbar.show(
           context,
-          message: AppLocalizations.of(context).errorEventArrestRequestFailed,
+          message: byMode(
+            _gameMode,
+            classic: AppLocalizations.of(context).errorEventArrestRequestFailed,
+            tag: AppLocalizations.of(context).errorEventArrestRequestFailedTag,
+          ),
         );
       }
       return;
@@ -3603,7 +3819,11 @@ class _GamePageState extends ConsumerState<GamePage>
         !escapedIds.contains(participantId)) {
       AppSnackbar.show(
         context,
-        message: AppLocalizations.of(context).errorAlreadyArrested,
+        message: byMode(
+          _gameMode,
+          classic: AppLocalizations.of(context).errorAlreadyArrested,
+          tag: AppLocalizations.of(context).errorAlreadyArrestedTag,
+        ),
       );
       return;
     }
@@ -3621,6 +3841,7 @@ class _GamePageState extends ConsumerState<GamePage>
       await QrDisplayDialog.show(
         context: context,
         participantId: widget.participantId,
+        gameMode: _gameMode,
       );
     } finally {
       _isQrOpen = false;
@@ -3685,6 +3906,7 @@ class _GamePageState extends ConsumerState<GamePage>
         totalDuration: totalDuration,
         policeWaitMinutes: participantInfo?.policeWaitMinutes,
         locationRevealIntervalMinutes: interval,
+        gameMode: _gameMode,
         nextShrinkAt: _shrinkAt == null
             ? null
             : (now) => _shrinkAt!(now).nextAt,

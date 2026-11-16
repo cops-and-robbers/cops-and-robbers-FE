@@ -193,8 +193,8 @@ CircleAreaModel _$CircleAreaModelFromJson(Map<String, dynamic> json) {
 mixin _$CircleAreaModel {
   LatLngModel get playgroundCenter => throw _privateConstructorUsedError;
   double get playgroundRadiusInMeters => throw _privateConstructorUsedError;
-  LatLngModel get jailCenter => throw _privateConstructorUsedError;
-  double get jailRadiusInMeters => throw _privateConstructorUsedError;
+  LatLngModel? get jailCenter => throw _privateConstructorUsedError;
+  double? get jailRadiusInMeters => throw _privateConstructorUsedError;
 
   /// Serializes this CircleAreaModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -216,12 +216,12 @@ abstract class $CircleAreaModelCopyWith<$Res> {
   $Res call({
     LatLngModel playgroundCenter,
     double playgroundRadiusInMeters,
-    LatLngModel jailCenter,
-    double jailRadiusInMeters,
+    LatLngModel? jailCenter,
+    double? jailRadiusInMeters,
   });
 
   $LatLngModelCopyWith<$Res> get playgroundCenter;
-  $LatLngModelCopyWith<$Res> get jailCenter;
+  $LatLngModelCopyWith<$Res>? get jailCenter;
 }
 
 /// @nodoc
@@ -241,8 +241,8 @@ class _$CircleAreaModelCopyWithImpl<$Res, $Val extends CircleAreaModel>
   $Res call({
     Object? playgroundCenter = null,
     Object? playgroundRadiusInMeters = null,
-    Object? jailCenter = null,
-    Object? jailRadiusInMeters = null,
+    Object? jailCenter = freezed,
+    Object? jailRadiusInMeters = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -254,14 +254,14 @@ class _$CircleAreaModelCopyWithImpl<$Res, $Val extends CircleAreaModel>
                 ? _value.playgroundRadiusInMeters
                 : playgroundRadiusInMeters // ignore: cast_nullable_to_non_nullable
                       as double,
-            jailCenter: null == jailCenter
+            jailCenter: freezed == jailCenter
                 ? _value.jailCenter
                 : jailCenter // ignore: cast_nullable_to_non_nullable
-                      as LatLngModel,
-            jailRadiusInMeters: null == jailRadiusInMeters
+                      as LatLngModel?,
+            jailRadiusInMeters: freezed == jailRadiusInMeters
                 ? _value.jailRadiusInMeters
                 : jailRadiusInMeters // ignore: cast_nullable_to_non_nullable
-                      as double,
+                      as double?,
           )
           as $Val,
     );
@@ -281,8 +281,12 @@ class _$CircleAreaModelCopyWithImpl<$Res, $Val extends CircleAreaModel>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $LatLngModelCopyWith<$Res> get jailCenter {
-    return $LatLngModelCopyWith<$Res>(_value.jailCenter, (value) {
+  $LatLngModelCopyWith<$Res>? get jailCenter {
+    if (_value.jailCenter == null) {
+      return null;
+    }
+
+    return $LatLngModelCopyWith<$Res>(_value.jailCenter!, (value) {
       return _then(_value.copyWith(jailCenter: value) as $Val);
     });
   }
@@ -300,14 +304,14 @@ abstract class _$$CircleAreaModelImplCopyWith<$Res>
   $Res call({
     LatLngModel playgroundCenter,
     double playgroundRadiusInMeters,
-    LatLngModel jailCenter,
-    double jailRadiusInMeters,
+    LatLngModel? jailCenter,
+    double? jailRadiusInMeters,
   });
 
   @override
   $LatLngModelCopyWith<$Res> get playgroundCenter;
   @override
-  $LatLngModelCopyWith<$Res> get jailCenter;
+  $LatLngModelCopyWith<$Res>? get jailCenter;
 }
 
 /// @nodoc
@@ -326,8 +330,8 @@ class __$$CircleAreaModelImplCopyWithImpl<$Res>
   $Res call({
     Object? playgroundCenter = null,
     Object? playgroundRadiusInMeters = null,
-    Object? jailCenter = null,
-    Object? jailRadiusInMeters = null,
+    Object? jailCenter = freezed,
+    Object? jailRadiusInMeters = freezed,
   }) {
     return _then(
       _$CircleAreaModelImpl(
@@ -339,14 +343,14 @@ class __$$CircleAreaModelImplCopyWithImpl<$Res>
             ? _value.playgroundRadiusInMeters
             : playgroundRadiusInMeters // ignore: cast_nullable_to_non_nullable
                   as double,
-        jailCenter: null == jailCenter
+        jailCenter: freezed == jailCenter
             ? _value.jailCenter
             : jailCenter // ignore: cast_nullable_to_non_nullable
-                  as LatLngModel,
-        jailRadiusInMeters: null == jailRadiusInMeters
+                  as LatLngModel?,
+        jailRadiusInMeters: freezed == jailRadiusInMeters
             ? _value.jailRadiusInMeters
             : jailRadiusInMeters // ignore: cast_nullable_to_non_nullable
-                  as double,
+                  as double?,
       ),
     );
   }
@@ -358,8 +362,8 @@ class _$CircleAreaModelImpl implements _CircleAreaModel {
   const _$CircleAreaModelImpl({
     required this.playgroundCenter,
     required this.playgroundRadiusInMeters,
-    required this.jailCenter,
-    required this.jailRadiusInMeters,
+    this.jailCenter,
+    this.jailRadiusInMeters,
   });
 
   factory _$CircleAreaModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -370,9 +374,9 @@ class _$CircleAreaModelImpl implements _CircleAreaModel {
   @override
   final double playgroundRadiusInMeters;
   @override
-  final LatLngModel jailCenter;
+  final LatLngModel? jailCenter;
   @override
-  final double jailRadiusInMeters;
+  final double? jailRadiusInMeters;
 
   @override
   String toString() {
@@ -428,8 +432,8 @@ abstract class _CircleAreaModel implements CircleAreaModel {
   const factory _CircleAreaModel({
     required final LatLngModel playgroundCenter,
     required final double playgroundRadiusInMeters,
-    required final LatLngModel jailCenter,
-    required final double jailRadiusInMeters,
+    final LatLngModel? jailCenter,
+    final double? jailRadiusInMeters,
   }) = _$CircleAreaModelImpl;
 
   factory _CircleAreaModel.fromJson(Map<String, dynamic> json) =
@@ -440,9 +444,9 @@ abstract class _CircleAreaModel implements CircleAreaModel {
   @override
   double get playgroundRadiusInMeters;
   @override
-  LatLngModel get jailCenter;
+  LatLngModel? get jailCenter;
   @override
-  double get jailRadiusInMeters;
+  double? get jailRadiusInMeters;
 
   /// Create a copy of CircleAreaModel
   /// with the given fields replaced by the non-null parameter values.
@@ -459,7 +463,7 @@ PolygonAreaModel _$PolygonAreaModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$PolygonAreaModel {
   List<LatLngModel> get playgroundPolygon => throw _privateConstructorUsedError;
-  List<LatLngModel> get jailPolygon => throw _privateConstructorUsedError;
+  List<LatLngModel>? get jailPolygon => throw _privateConstructorUsedError;
 
   /// Serializes this PolygonAreaModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -480,7 +484,7 @@ abstract class $PolygonAreaModelCopyWith<$Res> {
   @useResult
   $Res call({
     List<LatLngModel> playgroundPolygon,
-    List<LatLngModel> jailPolygon,
+    List<LatLngModel>? jailPolygon,
   });
 }
 
@@ -498,17 +502,17 @@ class _$PolygonAreaModelCopyWithImpl<$Res, $Val extends PolygonAreaModel>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = null}) {
+  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = freezed}) {
     return _then(
       _value.copyWith(
             playgroundPolygon: null == playgroundPolygon
                 ? _value.playgroundPolygon
                 : playgroundPolygon // ignore: cast_nullable_to_non_nullable
                       as List<LatLngModel>,
-            jailPolygon: null == jailPolygon
+            jailPolygon: freezed == jailPolygon
                 ? _value.jailPolygon
                 : jailPolygon // ignore: cast_nullable_to_non_nullable
-                      as List<LatLngModel>,
+                      as List<LatLngModel>?,
           )
           as $Val,
     );
@@ -526,7 +530,7 @@ abstract class _$$PolygonAreaModelImplCopyWith<$Res>
   @useResult
   $Res call({
     List<LatLngModel> playgroundPolygon,
-    List<LatLngModel> jailPolygon,
+    List<LatLngModel>? jailPolygon,
   });
 }
 
@@ -543,17 +547,17 @@ class __$$PolygonAreaModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = null}) {
+  $Res call({Object? playgroundPolygon = null, Object? jailPolygon = freezed}) {
     return _then(
       _$PolygonAreaModelImpl(
         playgroundPolygon: null == playgroundPolygon
             ? _value._playgroundPolygon
             : playgroundPolygon // ignore: cast_nullable_to_non_nullable
                   as List<LatLngModel>,
-        jailPolygon: null == jailPolygon
+        jailPolygon: freezed == jailPolygon
             ? _value._jailPolygon
             : jailPolygon // ignore: cast_nullable_to_non_nullable
-                  as List<LatLngModel>,
+                  as List<LatLngModel>?,
       ),
     );
   }
@@ -564,7 +568,7 @@ class __$$PolygonAreaModelImplCopyWithImpl<$Res>
 class _$PolygonAreaModelImpl implements _PolygonAreaModel {
   const _$PolygonAreaModelImpl({
     required final List<LatLngModel> playgroundPolygon,
-    required final List<LatLngModel> jailPolygon,
+    final List<LatLngModel>? jailPolygon,
   }) : _playgroundPolygon = playgroundPolygon,
        _jailPolygon = jailPolygon;
 
@@ -580,12 +584,14 @@ class _$PolygonAreaModelImpl implements _PolygonAreaModel {
     return EqualUnmodifiableListView(_playgroundPolygon);
   }
 
-  final List<LatLngModel> _jailPolygon;
+  final List<LatLngModel>? _jailPolygon;
   @override
-  List<LatLngModel> get jailPolygon {
+  List<LatLngModel>? get jailPolygon {
+    final value = _jailPolygon;
+    if (value == null) return null;
     if (_jailPolygon is EqualUnmodifiableListView) return _jailPolygon;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_jailPolygon);
+    return EqualUnmodifiableListView(value);
   }
 
   @override
@@ -636,7 +642,7 @@ class _$PolygonAreaModelImpl implements _PolygonAreaModel {
 abstract class _PolygonAreaModel implements PolygonAreaModel {
   const factory _PolygonAreaModel({
     required final List<LatLngModel> playgroundPolygon,
-    required final List<LatLngModel> jailPolygon,
+    final List<LatLngModel>? jailPolygon,
   }) = _$PolygonAreaModelImpl;
 
   factory _PolygonAreaModel.fromJson(Map<String, dynamic> json) =
@@ -645,7 +651,7 @@ abstract class _PolygonAreaModel implements PolygonAreaModel {
   @override
   List<LatLngModel> get playgroundPolygon;
   @override
-  List<LatLngModel> get jailPolygon;
+  List<LatLngModel>? get jailPolygon;
 
   /// Create a copy of PolygonAreaModel
   /// with the given fields replaced by the non-null parameter values.

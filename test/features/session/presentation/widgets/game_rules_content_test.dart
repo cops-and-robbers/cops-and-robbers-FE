@@ -1,3 +1,4 @@
+import 'package:cops_and_robbers/core/constants/game_mode.dart';
 import 'package:cops_and_robbers/features/session/presentation/widgets/game_rules_content.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,10 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
-            body: GameRulesContent(locationRevealIntervalMinutes: 3),
+            body: GameRulesContent(
+              locationRevealIntervalMinutes: 3,
+              gameMode: GameMode.copsAndRobbers,
+            ),
           ),
         ),
       ),

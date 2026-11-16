@@ -31,6 +31,10 @@ part 'session_creation_draft_model.g.dart';
 @freezed
 class SessionCreationDraftModel with _$SessionCreationDraftModel {
   const factory SessionCreationDraftModel({
+    /// 게임 모드 서버 값(COPS_AND_ROBBERS / TAG). 모드 도입 전 초안에는 없어
+    /// null이며, 복원할 때 경찰과 도둑으로 본다.
+    String? gameMode,
+
     // ============================================
     // 구역 정보 (1단계: 구역 설정)
     // ============================================

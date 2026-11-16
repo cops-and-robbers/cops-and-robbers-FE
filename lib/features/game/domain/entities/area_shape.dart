@@ -127,7 +127,8 @@ class AreaShape with _$AreaShape {
 class GameAreaEntity with _$GameAreaEntity {
   const factory GameAreaEntity({
     required AreaShape playground,
-    required AreaShape jail,
+    // null이면 감옥 없는 방(술래잡기)
+    AreaShape? jail,
   }) = _GameAreaEntity;
 }
 

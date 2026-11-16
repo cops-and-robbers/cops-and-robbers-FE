@@ -417,6 +417,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorGameRoomCreateUnexpected => '게임 방 생성 중 예기치 않은 오류가 생겼어요';
 
   @override
+  String get errorGameModeUpdateUnexpected => '게임 모드를 바꾸는 중 예기치 않은 오류가 생겼어요';
+
+  @override
   String get errorActiveGameFetchUnexpected => '참여 중인 게임 조회 중 예기치 않은 오류가 생겼어요';
 
   @override
@@ -440,7 +443,15 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String gameSettingPoliceStartDelayTag(int minutes) {
+    return '도망자 시작 후 $minutes분 뒤';
+  }
+
+  @override
   String get pageGameSettingsEditTitle => '설정 수정';
+
+  @override
+  String get pageModeChangeTitle => '모드 변경';
 
   @override
   String get buttonSaving => '저장 중...';
@@ -1064,6 +1075,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionCreationStepReviewHint => '추천값으로 채워 뒀어요. 바꿀 항목만 눌러요';
 
   @override
+  String get modeSelectTitle => '어떤 모드로 할까요?';
+
+  @override
+  String get modeSelectHint => '모드마다 규칙이 달라요';
+
+  @override
+  String get modeCardCopsAndRobbersDescription => '잡히면 감옥에 갇혀요';
+
+  @override
+  String get modeCardHideAndSeekDescription => '감옥 없이 잡히면 바로 끝나요';
+
+  @override
+  String get confirmRowMode => '모드';
+
+  @override
   String get buttonNext => '다음';
 
   @override
@@ -1155,8 +1181,18 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String dialogStartGamePoliceCountTag(int count) {
+    return '술래 $count명';
+  }
+
+  @override
   String dialogStartGameRobberCount(int count) {
     return '도둑 $count명';
+  }
+
+  @override
+  String dialogStartGameRobberCountTag(int count) {
+    return '도망자 $count명';
   }
 
   @override
@@ -1172,10 +1208,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameRulesCopGoalPrefix => '경찰은 모든 도둑을 잡아서';
 
   @override
+  String get gameRulesCopGoalPrefixTag => '술래는 모든 도망자를 찾아서';
+
+  @override
   String get gameRulesCopGoalSuffix => '체포하면,';
 
   @override
+  String get gameRulesCopGoalSuffixTag => '잡으면,';
+
+  @override
   String get gameRulesRobberGoalPrefix => '\n도둑은';
+
+  @override
+  String get gameRulesRobberGoalPrefixTag => '\n도망자는';
 
   @override
   String get gameRulesRobberGoalCondition => '제한 시간이 끝날 때까지 버티면';
@@ -1187,12 +1232,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameRulesLocationShareLine1 => '도둑팀의 위치는';
 
   @override
+  String get gameRulesLocationShareLine1Tag => '도망자팀의 위치는';
+
+  @override
   String gameRulesLocationShareLine2(int minutes) {
     return '$minutes분마다';
   }
 
   @override
+  String gameRulesLocationShareLine2Tag(int minutes) {
+    return '$minutes분마다';
+  }
+
+  @override
   String get gameRulesLocationShareLine3 => '경찰팀에게 공유돼요';
+
+  @override
+  String get gameRulesLocationShareLine3Tag => '술래팀에게 공유돼요';
 
   @override
   String get gameRulesZoneRuleLine1 => '지정된 게임 구역에서 벗어나면 안 돼요';
@@ -1216,10 +1272,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startTitlePolice => '도둑을 찾아\n모두 체포해요!';
 
   @override
+  String get startTitlePoliceTag => '도망자를 찾아\n모두 잡아요!';
+
+  @override
   String get startTitleRobber => '경찰을 피해\n끝까지 도망쳐요!';
 
   @override
+  String get startTitleRobberTag => '술래를 피해\n끝까지 숨어요!';
+
+  @override
   String get startTitlePoliceAccent => '체포해요!';
+
+  @override
+  String get startTitlePoliceAccentTag => '잡아요!';
 
   @override
   String get startTitleRobberAccent => '도망쳐요!';
@@ -1233,22 +1298,40 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startWaitCountdownLabel => '경찰 출동까지';
 
   @override
+  String get startWaitCountdownLabelTag => '술래 출동까지';
+
+  @override
   String get startGameTimeLeftLabel => '남은 게임 시간';
 
   @override
   String get startWaitPoliceTitle => '도둑이 도망치는 중이에요!';
 
   @override
+  String get startWaitPoliceTitleTag => '도망자가 숨는 중이에요!';
+
+  @override
   String get startWaitRobberTitle => '경찰에게서 멀어지세요!';
+
+  @override
+  String get startWaitRobberTitleTag => '술래에게서 멀어지세요!';
 
   @override
   String get startMissionPoliceLabel => '경찰 팀 미션';
 
   @override
+  String get startMissionPoliceLabelTag => '술래 팀 미션';
+
+  @override
   String get startMissionRobberLabel => '도둑 팀 미션';
 
   @override
+  String get startMissionRobberLabelTag => '도망자 팀 미션';
+
+  @override
   String get startMissionPolice => '도둑을 찾아 QR로 모두 체포하세요';
+
+  @override
+  String get startMissionPoliceTag => '도망자를 찾아 QR로 모두 잡아요';
 
   @override
   String get startMissionRobber => '게임이 끝날 때까지 잡히지 말고 도망치세요';
@@ -1268,11 +1351,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRuleQrArrest => '도둑의 QR을 스캔하면 체포돼요';
 
   @override
+  String get startRuleQrArrestTag => '도망자의 QR을 스캔하면 잡아요';
+
+  @override
   String get startRulePing => '지도를 길게 누르면 핑을 찍어 우리 팀에 알릴 수 있어요';
 
   @override
   String startRuleRobberReveal(int minutes) {
     return '도둑 위치는 $minutes분마다 경찰에게 공개돼요';
+  }
+
+  @override
+  String startRuleRobberRevealTag(int minutes) {
+    return '도망자 위치는 $minutes분마다 술래에게 공개돼요';
   }
 
   @override
@@ -1282,8 +1373,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRuleQrCaught => '경찰이 내 QR을 스캔하면 잡혀요';
 
   @override
+  String get startRuleQrCaughtTag => '술래가 내 QR을 스캔하면 잡혀요';
+
+  @override
   String startRuleMyReveal(int minutes) {
     return '내 위치는 $minutes분마다 경찰에게 공개돼요';
+  }
+
+  @override
+  String startRuleMyRevealTag(int minutes) {
+    return '내 위치는 $minutes분마다 술래에게 공개돼요';
   }
 
   @override
@@ -1293,8 +1392,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get startRuleWin => '경찰은 모든 도둑을 체포하면, 도둑은 제한 시간이 끝날 때까지 버티면 승리해요';
 
   @override
+  String get startRuleWinTag => '술래는 모든 도망자를 잡으면, 도망자는 제한 시간이 끝날 때까지 버티면 승리해요';
+
+  @override
   String startRuleTeamReveal(int minutes) {
     return '도둑팀의 위치는 $minutes분마다 경찰팀에게 공유돼요';
+  }
+
+  @override
+  String startRuleTeamRevealTag(int minutes) {
+    return '도망자팀의 위치는 $minutes분마다 술래팀에게 공유돼요';
   }
 
   @override
@@ -1319,7 +1426,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameSettingNoLocationShareWarning => '도둑의 위치가 공유되지 않아요!';
 
   @override
+  String get gameSettingNoLocationShareWarningTag => '도망자의 위치가 공유되지 않아요!';
+
+  @override
   String get gameSettingPoliceStartPrefix => '도둑 시작 후';
+
+  @override
+  String get gameSettingPoliceStartPrefixTag => '도망자 시작 후';
 
   @override
   String get gameSettingPoliceStartSuffix => '뒤';
@@ -1337,6 +1450,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get warnPoliceWaitMin => '경찰 시작 시간은 1분부터 설정할 수 있어요';
+
+  @override
+  String get warnPoliceWaitMinTag => '술래 시작 시간은 1분부터 설정할 수 있어요';
 
   @override
   String get dialogQuitCreationTitle => '방 만들기를 그만할까요?';
@@ -1363,7 +1479,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldLocationShareInterval => '도둑 위치 공유 간격';
 
   @override
+  String get fieldLocationShareIntervalTag => '도망자 위치 공유 간격';
+
+  @override
   String get fieldPoliceDispatchTime => '경찰 시작 시간';
+
+  @override
+  String get fieldPoliceDispatchTimeTag => '술래 시작 시간';
 
   @override
   String teamSectionCurrentCount(int count) {
@@ -1531,10 +1653,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameRobberOnTheRunBanner => '도둑이 도망치는 중이에요!';
 
   @override
+  String get gameRobberOnTheRunBannerTag => '도망자가 숨는 중이에요!';
+
+  @override
   String get gameOverBannerTitle => '게임 종료!';
 
   @override
   String get gameOverReasonAllArrested => '도둑이 모두 체포됐어요!';
+
+  @override
+  String get gameOverReasonAllArrestedTag => '도망자가 모두 잡혔어요!';
 
   @override
   String get gameOverReasonTimeUp => '제한 시간이 끝났어요!';
@@ -1543,7 +1671,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameOverReasonPoliceForfeited => '경찰이 모두 퇴장했어요!';
 
   @override
+  String get gameOverReasonPoliceForfeitedTag => '술래가 모두 퇴장했어요!';
+
+  @override
   String get gameOverReasonRobberForfeited => '도둑이 모두 퇴장했어요!';
+
+  @override
+  String get gameOverReasonRobberForfeitedTag => '도망자가 모두 퇴장했어요!';
 
   @override
   String get gameOverFallbackMessage => '게임이 끝났어요';
@@ -1553,6 +1687,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameTeamRobber => '도둑팀';
+
+  @override
+  String get gameTeamSeeker => '술래팀';
+
+  @override
+  String get gameTeamHider => '도망자팀';
 
   @override
   String get gameResultWin => '승리';
@@ -1572,10 +1712,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameRoleRobberLabel => '도둑';
 
   @override
+  String get gameRoleSeekerLabel => '술래';
+
+  @override
+  String get gameRoleHiderLabel => '도망자';
+
+  @override
+  String get gameModeCopsAndRobbers => '경찰과 도둑';
+
+  @override
+  String get gameModeHideAndSeek => '술래잡기';
+
+  @override
   String get errorCannotArrestDuringWait => '경찰 대기 시간 중에는 도둑을 체포할 수 없어요';
 
   @override
+  String get errorCannotArrestDuringWaitTag => '술래 대기 시간 중에는 도망자를 잡을 수 없어요';
+
+  @override
   String get qrScannerWantedRobberTitle => '도둑의 수배 QR을 스캔하세요';
+
+  @override
+  String get qrScannerWantedRobberTitleTag => '도망자의 QR을 스캔하세요';
 
   @override
   String get errorExpiredQr => '만료된 QR이에요. QR 새로고침을 요청하세요';
@@ -1584,11 +1742,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorAlreadyArrested => '이미 체포된 도둑이에요';
 
   @override
+  String get errorAlreadyArrestedTag => '이미 잡힌 도망자예요';
+
+  @override
   String get gameArrestOverlayTitle => '체포되었어요!';
 
   @override
   String get gameArrestOverlayMessage =>
       '감옥에 들어갔다가 벗어나면 자동으로 탈옥해요\n자동 탈옥이 안 되면 아래 버튼을 눌러 주세요';
+
+  @override
+  String get gameArrestOverlayTitleTag => '잡혔어요';
+
+  @override
+  String get gameArrestOverlayMessageTag => '게임이 끝날 때까지 지켜볼 수 있어요';
 
   @override
   String get gameArrestOverlayEscapeCompleteButton => '탈옥하기';
@@ -1603,7 +1770,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelArrestCount => '체포 횟수';
 
   @override
+  String get labelArrestCountTag => '잡은 횟수';
+
+  @override
   String get fieldRemainingRobbers => '남은 도둑';
+
+  @override
+  String get fieldRemainingRobbersTag => '남은 도망자';
 
   @override
   String get fieldGamePlaytime => '게임 진행 시간';
@@ -1645,7 +1818,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelMyArrestCount => '내 체포 횟수';
 
   @override
+  String get labelMyArrestCountTag => '내가 잡은 횟수';
+
+  @override
   String get labelTeamArrestShare => '팀 체포 기여도';
+
+  @override
+  String get labelTeamArrestShareTag => '팀 잡기 기여도';
 
   @override
   String get labelMyArrestedCount => '잡힌 횟수';
@@ -1663,7 +1842,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get labelPoliceTeamMvp => '경찰 팀 MVP';
 
   @override
+  String get labelPoliceTeamMvpTag => '술래 팀 MVP';
+
+  @override
   String get labelRobberTeamMvp => '도둑 팀 MVP';
+
+  @override
+  String get labelRobberTeamMvpTag => '도망자 팀 MVP';
 
   @override
   String get mvpRevealTapToContinue => '화면을 누르면 다음 결과로 넘어가요';
@@ -1675,7 +1860,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mvpRevealPoliceSubtitle => '경찰 팀 최고의 활약';
 
   @override
+  String get mvpRevealPoliceSubtitleTag => '술래 팀 최고의 활약';
+
+  @override
   String get mvpRevealRobberSubtitle => '도둑 팀 최고의 활약';
+
+  @override
+  String get mvpRevealRobberSubtitleTag => '도망자 팀 최고의 활약';
 
   @override
   String get statusAlive => '생존';
@@ -1684,8 +1875,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get statusJailed => '수감';
 
   @override
+  String get statusJailedTag => '잡힘';
+
+  @override
   String gameLocationRevealCountdown(String formatted) {
     return '다음 도둑 위치 공개까지 $formatted';
+  }
+
+  @override
+  String gameLocationRevealCountdownTag(String formatted) {
+    return '다음 도망자 위치 공개까지 $formatted';
   }
 
   @override
@@ -1694,6 +1893,11 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String lockScreenRemainingRobbers(int alive, int total) {
     return '남은 도둑 $alive/$total';
+  }
+
+  @override
+  String lockScreenRemainingRobbersTag(int alive, int total) {
+    return '남은 도망자 $alive/$total';
   }
 
   @override
@@ -1719,6 +1923,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dialogArrestConfirmTitle => '해당 플레이어를 체포하셨나요?';
 
   @override
+  String get dialogArrestConfirmTitleTag => '해당 플레이어를 잡으셨나요?';
+
+  @override
   String get buttonYes => '네';
 
   @override
@@ -1741,10 +1948,18 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String gamePoliceStartCountdownTag(String formatted) {
+    return '술래 시작까지 $formatted';
+  }
+
+  @override
   String get gameQrDisplayTitle => '수배 QR';
 
   @override
   String get gameQrDisplayMessage => '경찰에게 QR을 보여주세요';
+
+  @override
+  String get gameQrDisplayMessageTag => '술래에게 QR을 보여주세요';
 
   @override
   String get buttonClose => '닫기';
@@ -1834,6 +2049,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get gameChatAllHint => '경찰과 도둑 모두에게 메시지가 보여요';
+
+  @override
+  String get gameChatAllHintTag => '술래와 도망자 모두에게 메시지가 보여요';
 
   @override
   String get buttonGoToLatestMessage => '최신 메시지로 이동';
@@ -2218,11 +2436,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameEventPoliceMove => '경찰 출동!  도둑은 도망치세요!';
 
   @override
+  String get gameEventPoliceMoveTag => '술래 이동 시작!  도망자는 숨으세요!';
+
+  @override
   String get gameEventLocationReveal => '현재 도둑의 위치가 공개돼요!';
+
+  @override
+  String get gameEventLocationRevealTag => '도망자 위치 공개!';
 
   @override
   String gameEventArrestNotice(String policeNickname, String robberNickname) {
     return '@icon_police [$policeNickname]님이 @icon_robber [$robberNickname]님을 체포했어요!';
+  }
+
+  @override
+  String gameEventArrestNoticeTag(
+    String policeNickname,
+    String robberNickname,
+  ) {
+    return '@icon_police [$policeNickname]님이 @icon_robber [$robberNickname]님을 잡았어요!';
   }
 
   @override
@@ -2256,6 +2488,11 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String shareInviteMessage(String inviteCode) {
     return '친구가 경찰과도둑 방에 초대했어요! 초대 코드 $inviteCode';
+  }
+
+  @override
+  String shareInviteMessageTag(String inviteCode) {
+    return '친구가 술래잡기 방에 초대했어요! 초대 코드 $inviteCode';
   }
 
   @override
@@ -2364,6 +2601,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeGameNotInProgress => '게임이 진행 중인 상태가 아니에요';
 
   @override
+  String get errorCodeRadioNotAllowedInEventGame => '이벤트 게임에서는 무전을 쓸 수 없어요';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadio => '무전은 경찰만 쓸 수 있어요';
+
+  @override
+  String get errorCodeOnlyPoliceCanUseRadioTag => '무전은 술래만 쓸 수 있어요';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTime => '경찰이 출동한 뒤에 쓸 수 있어요';
+
+  @override
+  String get errorCodeRadioPoliceWaitingTimeTag => '술래가 움직이기 시작한 뒤에 쓸 수 있어요';
+
+  @override
   String get errorCodeGameNotActive => '대기 중이거나 진행 중인 게임에서만 조회할 수 있어요';
 
   @override
@@ -2374,6 +2626,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeInvalidPoliceWaitTime => '경찰 대기 시간은 라운드 시간보다 짧아야 해요';
+
+  @override
+  String get errorCodeInvalidPoliceWaitTimeTag => '술래 대기 시간은 라운드 시간보다 짧아야 해요';
 
   @override
   String get errorCodeInviteCodeGenerationFailed =>
@@ -2421,22 +2676,42 @@ class AppLocalizationsKo extends AppLocalizations {
       '게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요';
 
   @override
+  String get errorCodeInvalidTeamCompositionTag =>
+      '게임을 시작하려면 술래와 도망자 팀에 각각 최소 1명 이상의 참가자가 필요해요';
+
+  @override
   String get errorCodeNotRobberTeam => '도둑 팀만 위치를 전송할 수 있어요';
+
+  @override
+  String get errorCodeNotRobberTeamTag => '도망자 팀만 위치를 전송할 수 있어요';
 
   @override
   String get errorCodeParticipantGameMismatch => '경찰과 도둑이 서로 다른 게임에 참여하고 있어요';
 
   @override
+  String get errorCodeParticipantGameMismatchTag =>
+      '술래와 도망자가 서로 다른 게임에 참여하고 있어요';
+
+  @override
   String get errorCodeOnlyPoliceCanArrest => '경찰 팀만 도둑을 체포할 수 있어요';
 
   @override
+  String get errorCodeOnlyPoliceCanArrestTag => '술래 팀만 도망자를 잡을 수 있어요';
+
+  @override
   String get errorCodeOnlyRobberCanBeArrested => '도둑 팀만 체포될 수 있어요';
+
+  @override
+  String get errorCodeOnlyRobberCanBeArrestedTag => '도망자 팀만 잡힐 수 있어요';
 
   @override
   String get errorCodeOnlyRobberCanEscape => '도둑 팀만 탈옥할 수 있어요';
 
   @override
   String get errorCodeAlreadyArrested => '이미 수감된 도둑이에요';
+
+  @override
+  String get errorCodeAlreadyArrestedTag => '이미 잡힌 도망자예요';
 
   @override
   String get errorCodeNotJailed => '수감된 상태에서만 탈옥할 수 있어요';
@@ -2450,6 +2725,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodeForceArrestNotAllowedInEventGame => '이벤트 게임에서는 쓸 수 없어요';
+
+  @override
+  String get errorCodeEscapeNotAllowedInMode => '이 게임 모드에서는 탈옥할 수 없어요';
+
+  @override
+  String get errorCodeEventGameNotSupportedInMode =>
+      '이 게임 모드는 이벤트 게임으로 만들 수 없어요';
+
+  @override
+  String get errorCodeJailAreaRequired => '이 게임 모드는 감옥 구역을 정해야 해요';
+
+  @override
+  String get errorCodeJailAreaNotAllowed => '이 게임 모드에는 감옥 구역이 없어요';
+
+  @override
+  String get errorCodeWithdrawalUserNotFound => '가입되지 않은 계정이에요';
 
   @override
   String get shrinkAutoOffSnackbar => '구역이 작아져서 구역 축소를 껐어요';
@@ -2502,6 +2793,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorCodePoliceWaitingTime => '경찰은 대기 시간 동안 도둑을 체포할 수 없어요';
+
+  @override
+  String get errorCodePoliceWaitingTimeTag => '술래는 대기 시간 동안 도망자를 잡을 수 없어요';
 
   @override
   String get errorCodeCannotKickYourself => '방장은 자기 자신을 강퇴할 수 없어요';
@@ -2631,8 +2925,18 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String pingChatFoundRobberTag(String cell) {
+    return '$cell에서 도망자를 봤어요';
+  }
+
+  @override
   String pingChatSuspectRobber(String cell) {
     return '$cell에 도둑이 있는 것 같아요';
+  }
+
+  @override
+  String pingChatSuspectRobberTag(String cell) {
+    return '$cell에 도망자가 있는 것 같아요';
   }
 
   @override
@@ -2641,8 +2945,18 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String pingChatFoundCopsTag(String cell) {
+    return '$cell에서 술래를 봤어요';
+  }
+
+  @override
   String pingChatSuspectCops(String cell) {
     return '$cell에 경찰이 있는 것 같아요';
+  }
+
+  @override
+  String pingChatSuspectCopsTag(String cell) {
+    return '$cell에 술래가 있는 것 같아요';
   }
 
   @override
@@ -2667,6 +2981,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorEventArrestRequestFailed => '체포 요청 전송에 실패했어요. 다시 시도해 주세요';
+
+  @override
+  String get errorEventArrestRequestFailedTag => '잡기 요청 전송에 실패했어요. 다시 시도해 주세요';
 
   @override
   String get gameEventResultTitle => '수사 종료';
@@ -2719,6 +3036,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gameMenuArrest => '체포';
 
   @override
+  String get gameMenuArrestTag => '잡기';
+
+  @override
   String get gameMenuMyQr => '내 QR';
 
   @override
@@ -2749,19 +3069,31 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tutorialChaseTitleTag => '술래는 잡고, 도망자는 숨어요';
 
   @override
-  String get tutorialChaseBodyTag => '술래가 쫓아가 터치하면 잡혀요';
+  String get tutorialChaseBodyTag => '술래가 쫓아가 QR을 스캔하면 잡혀요';
 
   @override
   String get tutorialShowQrTitle => '터치되면 QR을 보여줘요';
 
   @override
+  String get tutorialShowQrTitleTag => '술래가 오면 QR을 보여줘요';
+
+  @override
   String get tutorialShowQrBody => '도둑은 메뉴에서 내 QR을 눌러요';
+
+  @override
+  String get tutorialShowQrBodyTag => '도망자는 메뉴에서 내 QR을 눌러요';
 
   @override
   String get tutorialScanTitle => 'QR을 찍으면 체포돼요';
 
   @override
+  String get tutorialScanTitleTag => 'QR을 찍으면 잡혀요';
+
+  @override
   String get tutorialScanBody => '경찰이 도둑의 QR을 스캔하면 체포돼요';
+
+  @override
+  String get tutorialScanBodyTag => '술래가 도망자의 QR을 스캔하면 잡혀요';
 
   @override
   String get tutorialJailTitle => '잡히면 감옥으로 가요';
@@ -2809,6 +3141,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tutorialCalloutArrest => '체포!';
 
   @override
+  String get tutorialCalloutArrestTag => '잡았다!';
+
+  @override
   String get onboardingRunTitle => '밖에서 진짜로 뛰는 게임이에요';
 
   @override
@@ -2837,4 +3172,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get onboardingRecordBody => '게임이 끝나면 이동 경로와 거리를 볼 수 있어요';
+
+  @override
+  String radioSpeaking(String nickname) {
+    return '$nickname 무전 중';
+  }
+
+  @override
+  String get radioSpeakerFallback => '경찰';
+
+  @override
+  String get radioSpeakerFallbackTag => '술래';
+
+  @override
+  String get dialogMicPermissionTitle => '마이크 권한 필요';
+
+  @override
+  String get dialogMicPermissionMessage =>
+      '무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요';
+
+  @override
+  String get radioPttLabel => '무전';
 }

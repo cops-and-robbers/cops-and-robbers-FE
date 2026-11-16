@@ -43,6 +43,7 @@ class _GameTutorialPageState extends State<GameTutorialPage> {
   Widget build(BuildContext context) {
     return TutorialPlayer(
       scenes: tutorialScenes(widget.mode),
+      mode: widget.mode,
       copyOf: _copy,
       finishLabel: (l10n) => l10n.buttonConfirm,
       onFinished: () {
@@ -74,14 +75,17 @@ class _GameTutorialPageState extends State<GameTutorialPage> {
                 l10n.tutorialChaseTitleClassic,
                 l10n.tutorialChaseBodyClassic,
               ),
-      TutorialScene.showQr => TutorialCopy(
-        l10n.tutorialShowQrTitle,
-        l10n.tutorialShowQrBody,
-      ),
-      TutorialScene.scan => TutorialCopy(
-        l10n.tutorialScanTitle,
-        l10n.tutorialScanBody,
-      ),
+      TutorialScene.showQr =>
+        isTag
+            ? TutorialCopy(
+                l10n.tutorialShowQrTitleTag,
+                l10n.tutorialShowQrBodyTag,
+              )
+            : TutorialCopy(l10n.tutorialShowQrTitle, l10n.tutorialShowQrBody),
+      TutorialScene.scan =>
+        isTag
+            ? TutorialCopy(l10n.tutorialScanTitleTag, l10n.tutorialScanBodyTag)
+            : TutorialCopy(l10n.tutorialScanTitle, l10n.tutorialScanBody),
       TutorialScene.jail => TutorialCopy(
         l10n.tutorialJailTitle,
         l10n.tutorialJailBody,

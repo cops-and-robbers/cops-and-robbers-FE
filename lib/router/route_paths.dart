@@ -206,6 +206,10 @@ class RoutePaths {
   static const String gameSettingsPrison =
       '/waiting-room/:sessionId/game-settings/edit-prison';
 
+  /// 게임 모드 변경 화면
+  static const String gameSettingsMode =
+      '/waiting-room/:sessionId/game-settings/mode';
+
   // ============================================================================
   // Note: 게임 종료 결과 화면 (F3.4)
   // ============================================================================
@@ -301,6 +305,7 @@ class RoutePaths {
   static const String gameSettingsEditName = 'gameSettingsEdit';
   static const String gameSettingsPlaygroundName = 'gameSettingsPlayground';
   static const String gameSettingsPrisonName = 'gameSettingsPrison';
+  static const String gameSettingsModeName = 'gameSettingsMode';
   static const String gameSettingsZonePreviewName = 'gameSettingsZonePreview';
   static const String maintenanceName = 'maintenance';
   static const String forceUpdateName = 'forceUpdate';

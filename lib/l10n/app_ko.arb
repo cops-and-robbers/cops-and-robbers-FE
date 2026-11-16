@@ -190,6 +190,7 @@
   "@errorGameRoomCreateUnexpected": {
     "description": "게임 방 생성 중 예외가 발생했을 때 표시되는 메시지"
   },
+  "errorGameModeUpdateUnexpected": "게임 모드를 바꾸는 중 예기치 않은 오류가 생겼어요",
   "errorActiveGameFetchUnexpected": "참여 중인 게임 조회 중 예기치 않은 오류가 생겼어요",
   "@errorActiveGameFetchUnexpected": {
     "description": "참여 중인 게임 조회 실패 시 표시되는 예외 메시지"
@@ -230,9 +231,22 @@
       }
     }
   },
+  "gameSettingPoliceStartDelayTag": "도망자 시작 후 {minutes}분 뒤",
+  "@gameSettingPoliceStartDelayTag": {
+    "description": "술래잡기용 — 게임 설정 — 경찰 출동 시작 지연 시간 표기",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "pageGameSettingsEditTitle": "설정 수정",
   "@pageGameSettingsEditTitle": {
     "description": "게임 설정 수정 페이지 타이틀"
+  },
+  "pageModeChangeTitle": "모드 변경",
+  "@pageModeChangeTitle": {
+    "description": "대기실 게임 설정에서 모드를 바꾸는 페이지 타이틀"
   },
   "buttonSaving": "저장 중...",
   "@buttonSaving": {
@@ -882,6 +896,26 @@
   "@sessionCreationStepReviewHint": {
     "description": "방 생성 — 리뷰 단계 보조 설명"
   },
+  "modeSelectTitle": "어떤 모드로 할까요?",
+  "@modeSelectTitle": {
+    "description": "방 생성 — 모드 선택 단계 제목"
+  },
+  "modeSelectHint": "모드마다 규칙이 달라요",
+  "@modeSelectHint": {
+    "description": "방 생성 — 모드 선택 단계 보조 설명"
+  },
+  "modeCardCopsAndRobbersDescription": "잡히면 감옥에 갇혀요",
+  "@modeCardCopsAndRobbersDescription": {
+    "description": "방 생성 — 경찰과 도둑 모드 카드 설명"
+  },
+  "modeCardHideAndSeekDescription": "감옥 없이 잡히면 바로 끝나요",
+  "@modeCardHideAndSeekDescription": {
+    "description": "방 생성 — 술래잡기 모드 카드 설명"
+  },
+  "confirmRowMode": "모드",
+  "@confirmRowMode": {
+    "description": "방 생성 최종 확인 — 모드 행 라벨"
+  },
   "buttonNext": "다음",
   "@buttonNext": {
     "description": "공통 — 다음 단계 버튼"
@@ -1009,9 +1043,27 @@
       }
     }
   },
+  "dialogStartGamePoliceCountTag": "술래 {count}명",
+  "@dialogStartGamePoliceCountTag": {
+    "description": "술래잡기용 — 대기실 — 시작 확인창 경찰 캐릭터 아래 인원 (#661)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dialogStartGameRobberCount": "도둑 {count}명",
   "@dialogStartGameRobberCount": {
     "description": "대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dialogStartGameRobberCountTag": "도망자 {count}명",
+  "@dialogStartGameRobberCountTag": {
+    "description": "술래잡기용 — 대기실 — 시작 확인창 도둑 캐릭터 아래 인원 (#661)",
     "placeholders": {
       "count": {
         "type": "int"
@@ -1034,13 +1086,25 @@
   "@gameRulesCopGoalPrefix": {
     "description": "게임 규칙 — 경찰 승리 조건 도입부"
   },
+  "gameRulesCopGoalPrefixTag": "술래는 모든 도망자를 찾아서",
+  "@gameRulesCopGoalPrefixTag": {
+    "description": "술래잡기용 — 게임 규칙 — 경찰 승리 조건 도입부"
+  },
   "gameRulesCopGoalSuffix": "체포하면,",
   "@gameRulesCopGoalSuffix": {
     "description": "게임 규칙 — 경찰 승리 조건 강조부"
   },
+  "gameRulesCopGoalSuffixTag": "잡으면,",
+  "@gameRulesCopGoalSuffixTag": {
+    "description": "술래잡기용 — 게임 규칙 — 경찰 승리 조건 강조부"
+  },
   "gameRulesRobberGoalPrefix": "\n도둑은",
   "@gameRulesRobberGoalPrefix": {
     "description": "게임 규칙 — 도둑 승리 조건 도입부 (개행 포함)"
+  },
+  "gameRulesRobberGoalPrefixTag": "\n도망자는",
+  "@gameRulesRobberGoalPrefixTag": {
+    "description": "술래잡기용 — 게임 규칙 — 도둑 승리 조건 도입부 (개행 포함)"
   },
   "gameRulesRobberGoalCondition": "제한 시간이 끝날 때까지 버티면",
   "@gameRulesRobberGoalCondition": {
@@ -1054,6 +1118,10 @@
   "@gameRulesLocationShareLine1": {
     "description": "게임 규칙 — 위치 공유 1줄 (한국어 어순 1행)"
   },
+  "gameRulesLocationShareLine1Tag": "도망자팀의 위치는",
+  "@gameRulesLocationShareLine1Tag": {
+    "description": "술래잡기용 — 게임 규칙 — 위치 공유 1줄 (한국어 어순 1행)"
+  },
   "gameRulesLocationShareLine2": "{minutes}분마다",
   "@gameRulesLocationShareLine2": {
     "description": "게임 규칙 — 위치 공유 2줄 (주기 강조)",
@@ -1063,9 +1131,22 @@
       }
     }
   },
+  "gameRulesLocationShareLine2Tag": "{minutes}분마다",
+  "@gameRulesLocationShareLine2Tag": {
+    "description": "술래잡기용 — 게임 규칙 — 위치 공유 2줄 (주기 강조)",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "gameRulesLocationShareLine3": "경찰팀에게 공유돼요",
   "@gameRulesLocationShareLine3": {
     "description": "게임 규칙 — 위치 공유 3줄 (한국어 어순 종결)"
+  },
+  "gameRulesLocationShareLine3Tag": "술래팀에게 공유돼요",
+  "@gameRulesLocationShareLine3Tag": {
+    "description": "술래잡기용 — 게임 규칙 — 위치 공유 3줄 (한국어 어순 종결)"
   },
   "gameRulesZoneRuleLine1": "지정된 게임 구역에서 벗어나면 안 돼요",
   "@gameRulesZoneRuleLine1": {
@@ -1095,13 +1176,25 @@
   "@startTitlePolice": {
     "description": "경찰 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다"
   },
+  "startTitlePoliceTag": "도망자를 찾아\n모두 잡아요!",
+  "@startTitlePoliceTag": {
+    "description": "술래잡기용 — 경찰 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다"
+  },
   "startTitleRobber": "경찰을 피해\n끝까지 도망쳐요!",
   "@startTitleRobber": {
     "description": "도둑 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다"
   },
+  "startTitleRobberTag": "술래를 피해\n끝까지 숨어요!",
+  "@startTitleRobberTag": {
+    "description": "술래잡기용 — 도둑 역할 배너 제목. 줄바꿈 위치 그대로 두 줄로 보인다"
+  },
   "startTitlePoliceAccent": "체포해요!",
   "@startTitlePoliceAccent": {
     "description": "경찰 제목에서 강조색으로 칠할 부분. startTitlePolice 안의 글자와 똑같아야 한다"
+  },
+  "startTitlePoliceAccentTag": "잡아요!",
+  "@startTitlePoliceAccentTag": {
+    "description": "술래잡기용 — 경찰 제목에서 강조색으로 칠할 부분. startTitlePolice 안의 글자와 똑같아야 한다"
   },
   "startTitleRobberAccent": "도망쳐요!",
   "@startTitleRobberAccent": {
@@ -1120,6 +1213,10 @@
   "@startWaitCountdownLabel": {
     "description": "대기·설명 화면 큰 남은 시간 위 라벨 (경찰·도둑 공통)"
   },
+  "startWaitCountdownLabelTag": "술래 출동까지",
+  "@startWaitCountdownLabelTag": {
+    "description": "술래잡기용 — 대기·설명 화면 큰 남은 시간 위 라벨 (경찰·도둑 공통)"
+  },
   "startGameTimeLeftLabel": "남은 게임 시간",
   "@startGameTimeLeftLabel": {
     "description": "출동 뒤 규칙 다시 보기에서 카운트다운 자리의 남은 게임 시간 위 라벨"
@@ -1128,21 +1225,41 @@
   "@startWaitPoliceTitle": {
     "description": "경찰 대기 화면 제목"
   },
+  "startWaitPoliceTitleTag": "도망자가 숨는 중이에요!",
+  "@startWaitPoliceTitleTag": {
+    "description": "술래잡기용 — 경찰 대기 화면 제목"
+  },
   "startWaitRobberTitle": "경찰에게서 멀어지세요!",
   "@startWaitRobberTitle": {
     "description": "도둑 설명 화면 제목"
+  },
+  "startWaitRobberTitleTag": "술래에게서 멀어지세요!",
+  "@startWaitRobberTitleTag": {
+    "description": "술래잡기용 — 도둑 설명 화면 제목"
   },
   "startMissionPoliceLabel": "경찰 팀 미션",
   "@startMissionPoliceLabel": {
     "description": "대기·설명 장면 미션 카드 라벨 (경찰)"
   },
+  "startMissionPoliceLabelTag": "술래 팀 미션",
+  "@startMissionPoliceLabelTag": {
+    "description": "술래잡기용 — 대기·설명 장면 미션 카드 라벨 (경찰)"
+  },
   "startMissionRobberLabel": "도둑 팀 미션",
   "@startMissionRobberLabel": {
     "description": "대기·설명 장면 미션 카드 라벨 (도둑)"
   },
+  "startMissionRobberLabelTag": "도망자 팀 미션",
+  "@startMissionRobberLabelTag": {
+    "description": "술래잡기용 — 대기·설명 장면 미션 카드 라벨 (도둑)"
+  },
   "startMissionPolice": "도둑을 찾아 QR로 모두 체포하세요",
   "@startMissionPolice": {
     "description": "대기·설명 장면 미션 카드 본문 (경찰)"
+  },
+  "startMissionPoliceTag": "도망자를 찾아 QR로 모두 잡아요",
+  "@startMissionPoliceTag": {
+    "description": "술래잡기용 — 대기·설명 장면 미션 카드 본문 (경찰)"
   },
   "startMissionRobber": "게임이 끝날 때까지 잡히지 말고 도망치세요",
   "@startMissionRobber": {
@@ -1168,6 +1285,10 @@
   "@startRuleQrArrest": {
     "description": "규칙 — 경찰 QR 체포"
   },
+  "startRuleQrArrestTag": "도망자의 QR을 스캔하면 잡아요",
+  "@startRuleQrArrestTag": {
+    "description": "술래잡기용 — 규칙 — 경찰 QR 체포"
+  },
   "startRulePing": "지도를 길게 누르면 핑을 찍어 우리 팀에 알릴 수 있어요",
   "@startRulePing": {
     "description": "규칙 — 핑(같은 팀에만 보임)"
@@ -1179,6 +1300,15 @@
       "minutes": {"type": "int"}
     }
   },
+  "startRuleRobberRevealTag": "도망자 위치는 {minutes}분마다 술래에게 공개돼요",
+  "@startRuleRobberRevealTag": {
+    "description": "술래잡기용 — 규칙(경찰 시점) — 도둑 위치 주기 공개, minutes = 방 설정",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "startRuleZoneLock": "구역 밖으로 나가면 화면이 잠겨요",
   "@startRuleZoneLock": {
     "description": "규칙 — 구역 이탈 시 화면 잠김"
@@ -1187,11 +1317,24 @@
   "@startRuleQrCaught": {
     "description": "규칙(도둑 시점) — QR 스캔되면 잡힘"
   },
+  "startRuleQrCaughtTag": "술래가 내 QR을 스캔하면 잡혀요",
+  "@startRuleQrCaughtTag": {
+    "description": "술래잡기용 — 규칙(도둑 시점) — QR 스캔되면 잡힘"
+  },
   "startRuleMyReveal": "내 위치는 {minutes}분마다 경찰에게 공개돼요",
   "@startRuleMyReveal": {
     "description": "규칙(도둑 시점) — 내 위치 주기 공개",
     "placeholders": {
       "minutes": {"type": "int"}
+    }
+  },
+  "startRuleMyRevealTag": "내 위치는 {minutes}분마다 술래에게 공개돼요",
+  "@startRuleMyRevealTag": {
+    "description": "술래잡기용 — 규칙(도둑 시점) — 내 위치 주기 공개",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "startRuleJailbreak": "잡히면 감옥에 들어갔다가 밖으로 나가 3초가 지나면 탈옥돼요",
@@ -1202,11 +1345,24 @@
   "@startRuleWin": {
     "description": "규칙 다시 보기 1 — 승리 조건"
   },
+  "startRuleWinTag": "술래는 모든 도망자를 잡으면, 도망자는 제한 시간이 끝날 때까지 버티면 승리해요",
+  "@startRuleWinTag": {
+    "description": "술래잡기용 — 규칙 다시 보기 1 — 승리 조건"
+  },
   "startRuleTeamReveal": "도둑팀의 위치는 {minutes}분마다 경찰팀에게 공유돼요",
   "@startRuleTeamReveal": {
     "description": "규칙 다시 보기 2 — 위치 공유 주기",
     "placeholders": {
       "minutes": {"type": "int"}
+    }
+  },
+  "startRuleTeamRevealTag": "도망자팀의 위치는 {minutes}분마다 술래팀에게 공유돼요",
+  "@startRuleTeamRevealTag": {
+    "description": "술래잡기용 — 규칙 다시 보기 2 — 위치 공유 주기",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "startRuleZone": "지정된 게임 구역에서 벗어나면 안 돼요. 구역 밖으로 나가면 화면이 잠겨요",
@@ -1237,9 +1393,17 @@
   "@gameSettingNoLocationShareWarning": {
     "description": "게임 설정 — 위치 공유 비활성 경고"
   },
+  "gameSettingNoLocationShareWarningTag": "도망자의 위치가 공유되지 않아요!",
+  "@gameSettingNoLocationShareWarningTag": {
+    "description": "술래잡기용 — 게임 설정 — 위치 공유 비활성 경고"
+  },
   "gameSettingPoliceStartPrefix": "도둑 시작 후",
   "@gameSettingPoliceStartPrefix": {
     "description": "게임 설정 — 경찰 출동 시간 prefix"
+  },
+  "gameSettingPoliceStartPrefixTag": "도망자 시작 후",
+  "@gameSettingPoliceStartPrefixTag": {
+    "description": "술래잡기용 — 게임 설정 — 경찰 출동 시간 prefix"
   },
   "gameSettingPoliceStartSuffix": "뒤",
   "@gameSettingPoliceStartSuffix": {
@@ -1265,6 +1429,10 @@
   "warnPoliceWaitMin": "경찰 시작 시간은 1분부터 설정할 수 있어요",
   "@warnPoliceWaitMin": {
     "description": "방 생성 — 경찰 시작 시간 하한 경고"
+  },
+  "warnPoliceWaitMinTag": "술래 시작 시간은 1분부터 설정할 수 있어요",
+  "@warnPoliceWaitMinTag": {
+    "description": "술래잡기용 — 방 생성 — 경찰 시작 시간 하한 경고"
   },
   "dialogQuitCreationTitle": "방 만들기를 그만할까요?",
   "@dialogQuitCreationTitle": {
@@ -1298,9 +1466,17 @@
   "@fieldLocationShareInterval": {
     "description": "게임 설정 — 위치 공유 간격 라벨"
   },
+  "fieldLocationShareIntervalTag": "도망자 위치 공유 간격",
+  "@fieldLocationShareIntervalTag": {
+    "description": "술래잡기용 — 게임 설정 — 위치 공유 간격 라벨"
+  },
   "fieldPoliceDispatchTime": "경찰 시작 시간",
   "@fieldPoliceDispatchTime": {
     "description": "게임 설정 — 경찰 출동 시간 라벨"
+  },
+  "fieldPoliceDispatchTimeTag": "술래 시작 시간",
+  "@fieldPoliceDispatchTimeTag": {
+    "description": "술래잡기용 — 게임 설정 — 경찰 출동 시간 라벨"
   },
   "teamSectionCurrentCount": "현재 인원 {count}명",
   "@teamSectionCurrentCount": {
@@ -1524,6 +1700,10 @@
   "@gameRobberOnTheRunBanner": {
     "description": "게임 시작 후 도둑 도주 시작 알림 배너"
   },
+  "gameRobberOnTheRunBannerTag": "도망자가 숨는 중이에요!",
+  "@gameRobberOnTheRunBannerTag": {
+    "description": "술래잡기용 — 게임 시작 후 도둑 도주 시작 알림 배너"
+  },
   "gameOverBannerTitle": "게임 종료!",
   "@gameOverBannerTitle": {
     "description": "게임 종료 시 화면 상단에 표시되는 배너 타이틀"
@@ -1531,6 +1711,10 @@
   "gameOverReasonAllArrested": "도둑이 모두 체포됐어요!",
   "@gameOverReasonAllArrested": {
     "description": "게임 종료 사유 — 도둑 전원 체포로 종료"
+  },
+  "gameOverReasonAllArrestedTag": "도망자가 모두 잡혔어요!",
+  "@gameOverReasonAllArrestedTag": {
+    "description": "술래잡기용 — 게임 종료 사유 — 도둑 전원 체포로 종료"
   },
   "gameOverReasonTimeUp": "제한 시간이 끝났어요!",
   "@gameOverReasonTimeUp": {
@@ -1540,9 +1724,17 @@
   "@gameOverReasonPoliceForfeited": {
     "description": "게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리"
   },
+  "gameOverReasonPoliceForfeitedTag": "술래가 모두 퇴장했어요!",
+  "@gameOverReasonPoliceForfeitedTag": {
+    "description": "술래잡기용 — 게임 종료 사유 — 경찰 전원 퇴장(몰수)으로 도둑 승리"
+  },
   "gameOverReasonRobberForfeited": "도둑이 모두 퇴장했어요!",
   "@gameOverReasonRobberForfeited": {
     "description": "게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리"
+  },
+  "gameOverReasonRobberForfeitedTag": "도망자가 모두 퇴장했어요!",
+  "@gameOverReasonRobberForfeitedTag": {
+    "description": "술래잡기용 — 게임 종료 사유 — 도둑 전원 퇴장(몰수)으로 경찰 승리"
   },
   "gameOverFallbackMessage": "게임이 끝났어요",
   "@gameOverFallbackMessage": {
@@ -1555,6 +1747,14 @@
   "gameTeamRobber": "도둑팀",
   "@gameTeamRobber": {
     "description": "도둑 팀 라벨 (팀명)"
+  },
+  "gameTeamSeeker": "술래팀",
+  "@gameTeamSeeker": {
+    "description": "술래잡기 술래 팀 라벨 (팀명, 임시 이름)"
+  },
+  "gameTeamHider": "도망자팀",
+  "@gameTeamHider": {
+    "description": "술래잡기 도망자 팀 라벨 (팀명, 임시 이름)"
   },
   "gameResultWin": "승리",
   "@gameResultWin": {
@@ -1576,13 +1776,37 @@
   "@gameRoleRobberLabel": {
     "description": "도둑 역할 단일 라벨 (닉네임 누락 시 fallback 포함)"
   },
+  "gameRoleSeekerLabel": "술래",
+  "@gameRoleSeekerLabel": {
+    "description": "술래잡기 술래 역할 단일 라벨 (임시 이름)"
+  },
+  "gameRoleHiderLabel": "도망자",
+  "@gameRoleHiderLabel": {
+    "description": "술래잡기 도망자 역할 단일 라벨 (임시 이름)"
+  },
+  "gameModeCopsAndRobbers": "경찰과 도둑",
+  "@gameModeCopsAndRobbers": {
+    "description": "게임 모드 이름 — 경찰과 도둑"
+  },
+  "gameModeHideAndSeek": "술래잡기",
+  "@gameModeHideAndSeek": {
+    "description": "게임 모드 이름 — 술래잡기"
+  },
   "errorCannotArrestDuringWait": "경찰 대기 시간 중에는 도둑을 체포할 수 없어요",
   "@errorCannotArrestDuringWait": {
     "description": "체포 실패 — 경찰 대기 시간 중"
   },
+  "errorCannotArrestDuringWaitTag": "술래 대기 시간 중에는 도망자를 잡을 수 없어요",
+  "@errorCannotArrestDuringWaitTag": {
+    "description": "술래잡기용 — 체포 실패 — 경찰 대기 시간 중"
+  },
   "qrScannerWantedRobberTitle": "도둑의 수배 QR을 스캔하세요",
   "@qrScannerWantedRobberTitle": {
     "description": "도둑 수배 QR 스캐너 페이지 타이틀"
+  },
+  "qrScannerWantedRobberTitleTag": "도망자의 QR을 스캔하세요",
+  "@qrScannerWantedRobberTitleTag": {
+    "description": "술래잡기용 — 도둑 수배 QR 스캐너 페이지 타이틀"
   },
   "errorExpiredQr": "만료된 QR이에요. QR 새로고침을 요청하세요",
   "@errorExpiredQr": {
@@ -1592,6 +1816,10 @@
   "@errorAlreadyArrested": {
     "description": "체포 실패 — 이미 체포된 도둑"
   },
+  "errorAlreadyArrestedTag": "이미 잡힌 도망자예요",
+  "@errorAlreadyArrestedTag": {
+    "description": "술래잡기용 — 체포 실패 — 이미 체포된 도둑"
+  },
   "gameArrestOverlayTitle": "체포되었어요!",
   "@gameArrestOverlayTitle": {
     "description": "체포된 도둑에게 표시되는 잠금 오버레이 타이틀"
@@ -1599,6 +1827,14 @@
   "gameArrestOverlayMessage": "감옥에 들어갔다가 벗어나면 자동으로 탈옥해요\n자동 탈옥이 안 되면 아래 버튼을 눌러 주세요",
   "@gameArrestOverlayMessage": {
     "description": "체포 잠금 오버레이 안내 본문"
+  },
+  "gameArrestOverlayTitleTag": "잡혔어요",
+  "@gameArrestOverlayTitleTag": {
+    "description": "술래잡기에서 잡힌 도망자에게 보이는 관전 오버레이 타이틀"
+  },
+  "gameArrestOverlayMessageTag": "게임이 끝날 때까지 지켜볼 수 있어요",
+  "@gameArrestOverlayMessageTag": {
+    "description": "술래잡기에서 잡힌 도망자에게 보이는 관전 오버레이 본문 (탈출 없음)"
   },
   "gameArrestOverlayEscapeCompleteButton": "탈옥하기",
   "@gameArrestOverlayEscapeCompleteButton": {
@@ -1616,9 +1852,17 @@
   "@labelArrestCount": {
     "description": "게임 종료 결과 다이얼로그의 체포 횟수 라벨"
   },
+  "labelArrestCountTag": "잡은 횟수",
+  "@labelArrestCountTag": {
+    "description": "술래잡기용 — 게임 종료 결과 다이얼로그의 체포 횟수 라벨"
+  },
   "fieldRemainingRobbers": "남은 도둑",
   "@fieldRemainingRobbers": {
     "description": "게임 종료 결과 — 남은 도둑 라벨"
+  },
+  "fieldRemainingRobbersTag": "남은 도망자",
+  "@fieldRemainingRobbersTag": {
+    "description": "술래잡기용 — 게임 종료 결과 — 남은 도둑 라벨"
   },
   "fieldGamePlaytime": "게임 진행 시간",
   "@fieldGamePlaytime": {
@@ -1672,9 +1916,17 @@
   "@labelMyArrestCount": {
     "description": "게임 종료 결과 개인 탭 — 경찰 본인이 체포한 횟수. 전체 탭의 팀 합계(labelArrestCount)와 구분"
   },
+  "labelMyArrestCountTag": "내가 잡은 횟수",
+  "@labelMyArrestCountTag": {
+    "description": "술래잡기용 — 게임 종료 결과 개인 탭 — 경찰 본인이 체포한 횟수. 전체 탭의 팀 합계(labelArrestCount)와 구분"
+  },
   "labelTeamArrestShare": "팀 체포 기여도",
   "@labelTeamArrestShare": {
     "description": "게임 종료 결과 개인 탭 — 내 체포 ÷ 팀 총 체포 (정수 %)"
+  },
+  "labelTeamArrestShareTag": "팀 잡기 기여도",
+  "@labelTeamArrestShareTag": {
+    "description": "술래잡기용 — 게임 종료 결과 개인 탭 — 내 체포 ÷ 팀 총 체포 (정수 %)"
   },
   "labelMyArrestedCount": "잡힌 횟수",
   "@labelMyArrestedCount": {
@@ -1696,9 +1948,17 @@
   "@labelPoliceTeamMvp": {
     "description": "MVP 공개 화면 — 경찰 팀 MVP 라벨"
   },
+  "labelPoliceTeamMvpTag": "술래 팀 MVP",
+  "@labelPoliceTeamMvpTag": {
+    "description": "술래잡기용 — MVP 공개 화면 — 경찰 팀 MVP 라벨"
+  },
   "labelRobberTeamMvp": "도둑 팀 MVP",
   "@labelRobberTeamMvp": {
     "description": "MVP 공개 화면 — 도둑 팀 MVP 라벨"
+  },
+  "labelRobberTeamMvpTag": "도망자 팀 MVP",
+  "@labelRobberTeamMvpTag": {
+    "description": "술래잡기용 — MVP 공개 화면 — 도둑 팀 MVP 라벨"
   },
   "mvpRevealTapToContinue": "화면을 누르면 다음 결과로 넘어가요",
   "@mvpRevealTapToContinue": {
@@ -1712,9 +1972,17 @@
   "@mvpRevealPoliceSubtitle": {
     "description": "MVP 공개 화면 — 경찰 MVP 닉네임 아래 문구"
   },
+  "mvpRevealPoliceSubtitleTag": "술래 팀 최고의 활약",
+  "@mvpRevealPoliceSubtitleTag": {
+    "description": "술래잡기용 — MVP 공개 화면 — 경찰 MVP 닉네임 아래 문구"
+  },
   "mvpRevealRobberSubtitle": "도둑 팀 최고의 활약",
   "@mvpRevealRobberSubtitle": {
     "description": "MVP 공개 화면 — 도둑 MVP 닉네임 아래 문구"
+  },
+  "mvpRevealRobberSubtitleTag": "도망자 팀 최고의 활약",
+  "@mvpRevealRobberSubtitleTag": {
+    "description": "술래잡기용 — MVP 공개 화면 — 도둑 MVP 닉네임 아래 문구"
   },
   "statusAlive": "생존",
   "@statusAlive": {
@@ -1724,9 +1992,22 @@
   "@statusJailed": {
     "description": "게임 종료 결과 — 종료 시점 상태 값 JAILED (용어집: 수감됨/Jailed/收監中)"
   },
+  "statusJailedTag": "잡힘",
+  "@statusJailedTag": {
+    "description": "술래잡기용 — 게임 종료 결과 — 종료 시점 상태 값 JAILED (용어집: 수감됨/Jailed/收監中)"
+  },
   "gameLocationRevealCountdown": "다음 도둑 위치 공개까지 {formatted}",
   "@gameLocationRevealCountdown": {
     "description": "다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)",
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
+  "gameLocationRevealCountdownTag": "다음 도망자 위치 공개까지 {formatted}",
+  "@gameLocationRevealCountdownTag": {
+    "description": "술래잡기용 — 다음 도둑 위치 공개까지 남은 시간 카운트다운 (mm:ss 포함)",
     "placeholders": {
       "formatted": {
         "type": "String"
@@ -1740,6 +2021,18 @@
   "lockScreenRemainingRobbers": "남은 도둑 {alive}/{total}",
   "@lockScreenRemainingRobbers": {
     "description": "잠금 화면 게임 현황 — Android 알림 본문의 도주 중 도둑 수 / 전체 도둑 수",
+    "placeholders": {
+      "alive": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "lockScreenRemainingRobbersTag": "남은 도망자 {alive}/{total}",
+  "@lockScreenRemainingRobbersTag": {
+    "description": "술래잡기용 — 잠금 화면 게임 현황 — Android 알림 본문의 도주 중 도둑 수 / 전체 도둑 수",
     "placeholders": {
       "alive": {
         "type": "int"
@@ -1778,6 +2071,10 @@
   "@dialogArrestConfirmTitle": {
     "description": "참가자 체포 확인 다이얼로그 타이틀"
   },
+  "dialogArrestConfirmTitleTag": "해당 플레이어를 잡으셨나요?",
+  "@dialogArrestConfirmTitleTag": {
+    "description": "술래잡기용 — 참가자 체포 확인 다이얼로그 타이틀"
+  },
   "buttonYes": "네",
   "@buttonYes": {
     "description": "공통 — 긍정 응답 버튼"
@@ -1812,6 +2109,15 @@
       }
     }
   },
+  "gamePoliceStartCountdownTag": "술래 시작까지 {formatted}",
+  "@gamePoliceStartCountdownTag": {
+    "description": "술래잡기용 — 경찰 출동 시작까지 남은 시간 카운트다운 (mm:ss 포함)",
+    "placeholders": {
+      "formatted": {
+        "type": "String"
+      }
+    }
+  },
   "gameQrDisplayTitle": "수배 QR",
   "@gameQrDisplayTitle": {
     "description": "도둑 수배 QR 다이얼로그 타이틀"
@@ -1819,6 +2125,10 @@
   "gameQrDisplayMessage": "경찰에게 QR을 보여주세요",
   "@gameQrDisplayMessage": {
     "description": "도둑 수배 QR 다이얼로그 안내 본문"
+  },
+  "gameQrDisplayMessageTag": "술래에게 QR을 보여주세요",
+  "@gameQrDisplayMessageTag": {
+    "description": "술래잡기용 — 도둑 수배 QR 다이얼로그 안내 본문"
   },
   "buttonClose": "닫기",
   "@buttonClose": {
@@ -1922,6 +2232,10 @@
   "gameChatBackToMap": "지도 보기",
   "gameChatTeamHint": "팀원에게만 메시지가 보여요",
   "gameChatAllHint": "경찰과 도둑 모두에게 메시지가 보여요",
+  "gameChatAllHintTag": "술래와 도망자 모두에게 메시지가 보여요",
+  "@gameChatAllHintTag": {
+    "description": "술래잡기용 — gameChatAllHint"
+  },
   "@chatMessageListEmpty": {
     "description": "채팅 메시지 리스트 — 메시지 0건 빈 상태 안내"
   },
@@ -2422,13 +2736,33 @@
   "@gameEventPoliceMove": {
     "description": "경찰 출동 확정"
   },
+  "gameEventPoliceMoveTag": "술래 이동 시작!  도망자는 숨으세요!",
+  "@gameEventPoliceMoveTag": {
+    "description": "술래잡기용 — 경찰 출동 확정"
+  },
   "gameEventLocationReveal": "현재 도둑의 위치가 공개돼요!",
   "@gameEventLocationReveal": {
     "description": "도둑 위치 공개 안내"
   },
+  "gameEventLocationRevealTag": "도망자 위치 공개!",
+  "@gameEventLocationRevealTag": {
+    "description": "술래잡기용 — 도둑 위치 공개 안내"
+  },
   "gameEventArrestNotice": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 체포했어요!",
   "@gameEventArrestNotice": {
     "description": "체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환",
+    "placeholders": {
+      "policeNickname": {
+        "type": "String"
+      },
+      "robberNickname": {
+        "type": "String"
+      }
+    }
+  },
+  "gameEventArrestNoticeTag": "@icon_police [{policeNickname}]님이 @icon_robber [{robberNickname}]님을 잡았어요!",
+  "@gameEventArrestNoticeTag": {
+    "description": "술래잡기용 — 체포 공지 — @icon_police/@icon_robber 마커는 채팅 버블에서 SVG로 치환",
     "placeholders": {
       "policeNickname": {
         "type": "String"
@@ -2488,6 +2822,15 @@
       }
     }
   },
+  "shareInviteMessageTag": "친구가 술래잡기 방에 초대했어요! 초대 코드 {inviteCode}",
+  "@shareInviteMessageTag": {
+    "description": "술래잡기용 — 카톡 등 공유 시 본문 (URL 은 별도로 append)",
+    "placeholders": {
+      "inviteCode": {
+        "type": "String"
+      }
+    }
+  },
   "errorCodeMissingRequestPart": "요청에 필요한 파트가 누락됐어요",
   "errorCodeInvalidRequestBody": "요청 본문의 형식이 잘못됐어요",
   "errorCodeInvalidQueryParameter": "쿼리 파라미터의 형식이 잘못됐어요",
@@ -2529,10 +2872,19 @@
   "errorCodeRequiredTermsNotAgreed": "필수 약관은 모두 동의해야 해요",
   "errorCodeGameNotFound": "요청하신 게임 정보가 존재하지 않아요",
   "errorCodeGameNotInProgress": "게임이 진행 중인 상태가 아니에요",
+  "errorCodeRadioNotAllowedInEventGame": "이벤트 게임에서는 무전을 쓸 수 없어요",
+  "errorCodeOnlyPoliceCanUseRadio": "무전은 경찰만 쓸 수 있어요",
+  "errorCodeOnlyPoliceCanUseRadioTag": "무전은 술래만 쓸 수 있어요",
+  "errorCodeRadioPoliceWaitingTime": "경찰이 출동한 뒤에 쓸 수 있어요",
+  "errorCodeRadioPoliceWaitingTimeTag": "술래가 움직이기 시작한 뒤에 쓸 수 있어요",
   "errorCodeGameNotActive": "대기 중이거나 진행 중인 게임에서만 조회할 수 있어요",
   "errorCodeGameNotWaiting": "대기 중인 게임에서만 설정을 변경할 수 있어요",
   "errorCodeInvalidLocationInterval": "위치 공개 주기는 라운드 시간보다 짧아야 해요",
   "errorCodeInvalidPoliceWaitTime": "경찰 대기 시간은 라운드 시간보다 짧아야 해요",
+  "errorCodeInvalidPoliceWaitTimeTag": "술래 대기 시간은 라운드 시간보다 짧아야 해요",
+  "@errorCodeInvalidPoliceWaitTimeTag": {
+    "description": "술래잡기용 — errorCodeInvalidPoliceWaitTime"
+  },
   "errorCodeInviteCodeGenerationFailed": "초대 코드 생성에 실패했어요. 잠시 후 다시 시도해주세요",
   "errorCodeInvalidJailRadius": "감옥의 반지름이 플레이그라운드의 반지름보다 크거나 같을 수 없어요",
   "errorCodeJailOutsidePlayground": "감옥은 플레이그라운드 내부에 완전히 포함되어야 해요",
@@ -2547,16 +2899,45 @@
   "errorCodeLobbyActionNotAllowed": "게임이 시작된 이후에는 로비 상태를 변경할 수 없어요",
   "errorCodeNotHost": "방장만 할 수 있어요",
   "errorCodeInvalidTeamComposition": "게임을 시작하려면 경찰과 도둑 팀에 각각 최소 1명 이상의 참가자가 필요해요",
+  "errorCodeInvalidTeamCompositionTag": "게임을 시작하려면 술래와 도망자 팀에 각각 최소 1명 이상의 참가자가 필요해요",
+  "@errorCodeInvalidTeamCompositionTag": {
+    "description": "술래잡기용 — errorCodeInvalidTeamComposition"
+  },
   "errorCodeNotRobberTeam": "도둑 팀만 위치를 전송할 수 있어요",
+  "errorCodeNotRobberTeamTag": "도망자 팀만 위치를 전송할 수 있어요",
+  "@errorCodeNotRobberTeamTag": {
+    "description": "술래잡기용 — errorCodeNotRobberTeam"
+  },
   "errorCodeParticipantGameMismatch": "경찰과 도둑이 서로 다른 게임에 참여하고 있어요",
+  "errorCodeParticipantGameMismatchTag": "술래와 도망자가 서로 다른 게임에 참여하고 있어요",
+  "@errorCodeParticipantGameMismatchTag": {
+    "description": "술래잡기용 — errorCodeParticipantGameMismatch"
+  },
   "errorCodeOnlyPoliceCanArrest": "경찰 팀만 도둑을 체포할 수 있어요",
+  "errorCodeOnlyPoliceCanArrestTag": "술래 팀만 도망자를 잡을 수 있어요",
+  "@errorCodeOnlyPoliceCanArrestTag": {
+    "description": "술래잡기용 — errorCodeOnlyPoliceCanArrest"
+  },
   "errorCodeOnlyRobberCanBeArrested": "도둑 팀만 체포될 수 있어요",
+  "errorCodeOnlyRobberCanBeArrestedTag": "도망자 팀만 잡힐 수 있어요",
+  "@errorCodeOnlyRobberCanBeArrestedTag": {
+    "description": "술래잡기용 — errorCodeOnlyRobberCanBeArrested"
+  },
   "errorCodeOnlyRobberCanEscape": "도둑 팀만 탈옥할 수 있어요",
   "errorCodeAlreadyArrested": "이미 수감된 도둑이에요",
+  "errorCodeAlreadyArrestedTag": "이미 잡힌 도망자예요",
+  "@errorCodeAlreadyArrestedTag": {
+    "description": "술래잡기용 — errorCodeAlreadyArrested"
+  },
   "errorCodeNotJailed": "수감된 상태에서만 탈옥할 수 있어요",
   "errorCodeShrinkRequiresCircleArea": "구역 축소는 원형 구역에서만 쓸 수 있어요",
   "errorCodeInvalidShrinkFinalRadius": "구역 축소 반경이 맞지 않아요. 구역을 다시 확인해 주세요",
   "errorCodeForceArrestNotAllowedInEventGame": "이벤트 게임에서는 쓸 수 없어요",
+  "errorCodeEscapeNotAllowedInMode": "이 게임 모드에서는 탈옥할 수 없어요",
+  "errorCodeEventGameNotSupportedInMode": "이 게임 모드는 이벤트 게임으로 만들 수 없어요",
+  "errorCodeJailAreaRequired": "이 게임 모드는 감옥 구역을 정해야 해요",
+  "errorCodeJailAreaNotAllowed": "이 게임 모드에는 감옥 구역이 없어요",
+  "errorCodeWithdrawalUserNotFound": "가입되지 않은 계정이에요",
   "shrinkAutoOffSnackbar": "구역이 작아져서 구역 축소를 껐어요",
   "shrinkTitle": "구역 축소",
   "shrinkDescOff": "구역이 점점 줄어들어요",
@@ -2605,6 +2986,10 @@
     }
   },
   "errorCodePoliceWaitingTime": "경찰은 대기 시간 동안 도둑을 체포할 수 없어요",
+  "errorCodePoliceWaitingTimeTag": "술래는 대기 시간 동안 도망자를 잡을 수 없어요",
+  "@errorCodePoliceWaitingTimeTag": {
+    "description": "술래잡기용 — errorCodePoliceWaitingTime"
+  },
   "errorCodeCannotKickYourself": "방장은 자기 자신을 강퇴할 수 없어요",
   "errorCodeNoticeNotFound": "해당 공지사항을 찾을 수 없어요",
   "errorCodeNoticeTranslationInvalid": "공지 번역 정보가 올바르지 않아요",
@@ -2694,9 +3079,29 @@
       }
     }
   },
+  "pingChatFoundRobberTag": "{cell}에서 도망자를 봤어요",
+  "@pingChatFoundRobberTag": {
+    "description": "술래잡기용 — 격자를 켠 경찰이 발견 핑을 찍을 때 팀 채팅에 자동으로 올라가는 말 — 보낸 사람 이름으로 나감 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
+  },
   "pingChatSuspectRobber": "{cell}에 도둑이 있는 것 같아요",
   "@pingChatSuspectRobber": {
     "description": "격자를 켠 경찰이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
+  },
+  "pingChatSuspectRobberTag": "{cell}에 도망자가 있는 것 같아요",
+  "@pingChatSuspectRobberTag": {
+    "description": "술래잡기용 — 격자를 켠 경찰이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
     "placeholders": {
       "cell": {
         "type": "String",
@@ -2714,9 +3119,29 @@
       }
     }
   },
+  "pingChatFoundCopsTag": "{cell}에서 술래를 봤어요",
+  "@pingChatFoundCopsTag": {
+    "description": "술래잡기용 — 격자를 켠 도둑이 발견 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
+  },
   "pingChatSuspectCops": "{cell}에 경찰이 있는 것 같아요",
   "@pingChatSuspectCops": {
     "description": "격자를 켠 도둑이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
+    "placeholders": {
+      "cell": {
+        "type": "String",
+        "example": "C3"
+      }
+    }
+  },
+  "pingChatSuspectCopsTag": "{cell}에 술래가 있는 것 같아요",
+  "@pingChatSuspectCopsTag": {
+    "description": "술래잡기용 — 격자를 켠 도둑이 의심 핑을 찍을 때 팀 채팅 자동 문구 (#636)",
     "placeholders": {
       "cell": {
         "type": "String",
@@ -2744,6 +3169,10 @@
   },
   "gameEventArrestSuccessConfirm": "확인",
   "errorEventArrestRequestFailed": "체포 요청 전송에 실패했어요. 다시 시도해 주세요",
+  "errorEventArrestRequestFailedTag": "잡기 요청 전송에 실패했어요. 다시 시도해 주세요",
+  "@errorEventArrestRequestFailedTag": {
+    "description": "술래잡기용 — errorEventArrestRequestFailed"
+  },
   "gameEventResultTitle": "수사 종료",
   "gameEventProgressTitle": "검거 현황",
   "@gameEventProgressTitle": {
@@ -2798,6 +3227,10 @@
   "@gameMenuArrest": {
     "description": "플로팅 메뉴 항목: 경찰의 QR 스캔"
   },
+  "gameMenuArrestTag": "잡기",
+  "@gameMenuArrestTag": {
+    "description": "술래잡기용 — 플로팅 메뉴 항목: 경찰의 QR 스캔"
+  },
   "gameMenuMyQr": "내 QR",
   "@gameMenuMyQr": {
     "description": "플로팅 메뉴 항목: 도둑의 QR 보여 주기"
@@ -2814,11 +3247,27 @@
   "tutorialChaseTitleClassic": "경찰은 잡고, 도둑은 도망쳐요",
   "tutorialChaseBodyClassic": "경찰은 도둑을 쫓아가 실제로 터치해요",
   "tutorialChaseTitleTag": "술래는 잡고, 도망자는 숨어요",
-  "tutorialChaseBodyTag": "술래가 쫓아가 터치하면 잡혀요",
+  "tutorialChaseBodyTag": "술래가 쫓아가 QR을 스캔하면 잡혀요",
   "tutorialShowQrTitle": "터치되면 QR을 보여줘요",
+  "tutorialShowQrTitleTag": "술래가 오면 QR을 보여줘요",
+  "@tutorialShowQrTitleTag": {
+    "description": "술래잡기용 — tutorialShowQrTitle"
+  },
   "tutorialShowQrBody": "도둑은 메뉴에서 내 QR을 눌러요",
+  "tutorialShowQrBodyTag": "도망자는 메뉴에서 내 QR을 눌러요",
+  "@tutorialShowQrBodyTag": {
+    "description": "술래잡기용 — tutorialShowQrBody"
+  },
   "tutorialScanTitle": "QR을 찍으면 체포돼요",
+  "tutorialScanTitleTag": "QR을 찍으면 잡혀요",
+  "@tutorialScanTitleTag": {
+    "description": "술래잡기용 — tutorialScanTitle"
+  },
   "tutorialScanBody": "경찰이 도둑의 QR을 스캔하면 체포돼요",
+  "tutorialScanBodyTag": "술래가 도망자의 QR을 스캔하면 잡혀요",
+  "@tutorialScanBodyTag": {
+    "description": "술래잡기용 — tutorialScanBody"
+  },
   "tutorialJailTitle": "잡히면 감옥으로 가요",
   "tutorialJailBody": "잡힌 도둑은 감옥으로 이동해야 해요",
   "tutorialRescueTitle": "동료가 터치하면 풀려나요",
@@ -2833,6 +3282,10 @@
   "tutorialFinishTitle": "이제 시작하러 가볼까요?",
   "tutorialCalloutTouch": "터치!",
   "tutorialCalloutArrest": "체포!",
+  "tutorialCalloutArrestTag": "잡았다!",
+  "@tutorialCalloutArrestTag": {
+    "description": "술래잡기용 — tutorialCalloutArrest"
+  },
   "onboardingRunTitle": "밖에서 진짜로 뛰는 게임이에요",
   "onboardingRunBody": "우리 동네가 플레이그라운드가 돼요",
   "onboardingPickTitle": "뛸 구역은 직접 정해요",
@@ -2842,5 +3295,27 @@
   "onboardingGuideTitle": "앱이 게임을 진행해요",
   "onboardingGuideBody": "남은 시간도, 구역 이탈도 앱이 알려줘요",
   "onboardingRecordTitle": "달린 기록도 남아요",
-  "onboardingRecordBody": "게임이 끝나면 이동 경로와 거리를 볼 수 있어요"
+  "onboardingRecordBody": "게임이 끝나면 이동 경로와 거리를 볼 수 있어요",
+  "radioSpeaking": "{nickname} 무전 중",
+  "@radioSpeaking": {
+    "description": "다른 경찰이 무전 버튼을 누르고 말하는 동안 무전 버튼 위 파란 알약 — 채팅 말풍선과 헷갈리지 않게 '무전'을 넣었다 (#697)",
+    "placeholders": {
+      "nickname": {
+        "type": "String",
+        "example": "상희"
+      }
+    }
+  },
+  "@radioSpeakerFallback": {"description": "참가자 목록에 아직 없는 경찰이 말할 때 이름 대신 쓰는 말 (radioSpeaking의 nickname 자리)"},
+  "radioSpeakerFallback": "경찰",
+  "radioSpeakerFallbackTag": "술래",
+  "dialogMicPermissionTitle": "마이크 권한 필요",
+  "@dialogMicPermissionTitle": {
+    "description": "무전 마이크 권한 안내 다이얼로그 타이틀 (거부한 뒤 무전 버튼을 다시 눌렀을 때)"
+  },
+  "dialogMicPermissionMessage": "무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요",
+  "@dialogMicPermissionMessage": {
+    "description": "무전 마이크 권한 안내 다이얼로그 본문"
+  },
+  "radioPttLabel": "무전"
 }
