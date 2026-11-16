@@ -1,7 +1,46 @@
 # Changelog
 
-**현재 버전:** 4.0.1  
-**마지막 업데이트:** 2026-11-08T16:27:46Z  
+**현재 버전:** 4.1.6  
+**마지막 업데이트:** 2026-11-16T04:33:44Z  
+
+---
+
+## [4.1.6] - 2026-11-16
+
+**PR:** #704  
+
+**새 기능**
+- 대기실 모드 변경을 바텀시트에서 전체 화면으로 교체 #696
+- 술래잡기 모드 추가 — 방 생성 모드 선택, 대기방 모드 변경, 감옥 없는 관전, 모드별 문구 #696
+- 인게임 무전 버튼과 말하는 사람 표시 #697
+- 무전 에러 문구와 다국어 문구 #697
+- 무전 연결 세션과 발언권 규칙 #697
+- 무전 의존성과 마이크 권한·포그라운드 서비스 추가 #697
+- 최대 참가 인원 150명에서 50명으로 #697
+
+**버그 수정**
+- main 병합 정리 — 무전 에러코드 중복 제거, 무전 문구 술래잡기 대응 #696
+- 출동 대기로 거절된 무전 접속을 2초 뒤 다시 시도 #697
+- 마이크 거부 뒤 다시 누르면 복구·설정 안내, 무전 참가자 목록 상시 구독 #697
+- 체인지로그·연결 이슈 워크플로우 pull_request 트리거 전환, artifact·github-script Node 24 버전 업 https://github.com/cops-and-robbers/cops-and-robbers-FE/issues/694
+
+**개선**
+- 무전 코드 이름·주석 정리, 알림 채널 생성 공통화 #697
+
+**기타**
+- chore : Update version.yml
+- Merge pull request #702 from cops-and-robbers/20261109_#696_술래잡기_Hide_and_Seek_모드
+- docs : 리포트 작성 #696
+- feat : 모드 선택 카드에 캐릭터 그림 추가 #696
+- Merge remote-tracking branch 'origin/main' into 20261109_#696_술래잡기_Hide_and_Seek_모드
+- docs : 리포트 작성 #696
+- Merge pull request #701 from cops-and-robbers/20261109_#696_술래잡기_Hide_and_Seek_모드
+- Merge remote-tracking branch 'origin/main' into 20261109_#696_술래잡기_Hide_and_Seek_모드
+- api-docs 서버 v4.0.0 동기화 — 술래잡기(TAG)·모드 변경·Deprecated 삭제 #696
+- Merge pull request #700 from cops-and-robbers/20261109_#697_경찰_팀_무전_PTT
+- LiveKit 2.5.4로 올려 retrofit 생성기 9.7.0 복구, analyze 경고 해소 #697
+- docs : 리포트 문서 작성 #697
+- Merge pull request #695 from cops-and-robbers/20261109_#694_버그_CI_체인지로그_워크플로우_트리거_변경
 
 ---
 
