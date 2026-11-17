@@ -577,6 +577,7 @@
   "buttonCheckNicknameDuplicate": "重複確認",
   "errorNicknameTooShort": "1文字未満のニックネームは使用できません",
   "errorNicknameDuplicated": "重複したニックネームです。別のニックネームを入力してください",
+  "errorNicknameBannedWord": "使用できない表現が含まれています。別のニックネームを入力してください",
   "nicknameAvailable": "使用可能なニックネームです",
   "splashReturningToScene": "再び現場に復帰しています",
   "dialogNetworkConnectionFailedTitle": "ネットワーク接続失敗",
