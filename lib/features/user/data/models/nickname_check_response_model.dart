@@ -10,8 +10,9 @@ part 'nickname_check_response_model.g.dart';
 /// **응답 예시**:
 /// ```json
 /// {
-///   "isAvailable": true,
-///   "message": "사용 가능한 닉네임입니다."
+///   "isAvailable": false,
+///   "code": "BANNED_WORD_NICKNAME",
+///   "message": "닉네임에 부적절한 표현이 포함되어 있습니다."
 /// }
 /// ```
 @freezed
@@ -19,6 +20,11 @@ class NicknameCheckResponseModel with _$NicknameCheckResponseModel {
   const factory NicknameCheckResponseModel({
     /// 사용 가능 여부
     required bool isAvailable,
+
+    /// 결과 코드 (`AVAILABLE` | `DUPLICATED_NICKNAME` | `BANNED_WORD_NICKNAME`)
+    ///
+    /// BE #248 배포 전 서버는 보내지 않으므로 nullable이다.
+    String? code,
 
     /// 결과 메시지
     required String message,

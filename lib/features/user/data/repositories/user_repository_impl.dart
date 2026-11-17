@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../core/errors/app_exception.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../domain/entities/agreement_status_entity.dart';
+import '../../domain/entities/nickname_check_result.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_remote_datasource.dart';
@@ -22,15 +23,24 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this._dataSource);
 
   @override
-  Future<bool> checkNickname(String nickname) async {
+  Future<NicknameCheckResult> checkNickname(String nickname) async {
     try {
       final response = await _dataSource.checkNickname(nickname);
 
       if (kDebugMode) {
-        debugPrint('✅ 닉네임 중복 확인: $nickname → ${response.isAvailable}');
+        debugPrint(
+          '✅ 닉네임 중복 확인: $nickname → ${response.isAvailable} (${response.code})',
+        );
       }
 
-      return response.isAvailable;
+      // 금칙어만 따로 가른다. code가 없거나(BE #248 배포 전) 다른 값이면
+      // 기존처럼 isAvailable로 판단한다
+      if (response.code == 'BANNED_WORD_NICKNAME') {
+        return NicknameCheckResult.bannedWord;
+      }
+      return response.isAvailable
+          ? NicknameCheckResult.available
+          : NicknameCheckResult.duplicated;
     } on DioException catch (e) {
       throw DioExceptionHandler.handle(e);
     } catch (e) {

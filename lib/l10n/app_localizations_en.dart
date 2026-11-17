@@ -1727,6 +1727,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This nickname is already taken. Please enter a different nickname';
 
   @override
+  String get errorNicknameBannedWord =>
+      'This nickname contains words that aren\'t allowed. Please enter a different nickname';
+
+  @override
   String get nicknameAvailable => 'This nickname is available';
 
   @override

@@ -1611,6 +1611,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorNicknameDuplicated => '重複したニックネームです。別のニックネームを入力してください';
 
   @override
+  String get errorNicknameBannedWord => '使用できない表現が含まれています。別のニックネームを入力してください';
+
+  @override
   String get nicknameAvailable => '使用可能なニックネームです';
 
   @override
