@@ -88,6 +88,7 @@ dependencies:
   connectivity_plus: ^6.1.0
   # 광고
   google_mobile_ads: ^7.0.0 # AdMob 전면 광고 (게임 종료 시점)
+  in_app_review: ^2.0.12 # 스토어 기본 리뷰 창 (게임 종료 후 이긴 판)
   custom_refresh_indicator: ^4.0.2
   audioplayers: ^6.7.1
   livekit_client: ^2.4.9

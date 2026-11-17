@@ -24,6 +24,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/ads/ad_service.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
+import '../../../../core/services/review/review_prompt_service.dart';
 import '../../../../core/services/background/background_service.dart';
 import '../../../../core/services/background/background_service_provider.dart';
 import '../../../../core/services/lifecycle/app_lifecycle_service.dart';
@@ -117,6 +118,7 @@ import 'package:cops_and_robbers/core/constants/game_team.dart';
 import 'package:cops_and_robbers/core/i18n/role_names.dart';
 import 'package:cops_and_robbers/core/constants/participant_status.dart';
 import '../../../../core/constants/dev_flags.dart';
+import '../../../../core/constants/game_result_reason.dart';
 import '../widgets/event_arrest_success_dialog.dart';
 import '../widgets/event_result_board.dart';
 
@@ -158,6 +160,9 @@ class _GamePageState extends ConsumerState<GamePage>
   bool _gameOverDialogShown = false;
   // 결과 다이얼로그 버튼 연타 가드 — 라우팅·Analytics 중복 기록 방지
   bool _exitTriggered = false;
+
+  /// 이 판을 나갈 때 전면 광고 대신 스토어 리뷰 창을 띄운다 (#706)
+  bool _reviewDue = false;
 
   /// 능동 중도 퇴장 진행 중 — 자기 몰수 GAME_OVER 모달/resume 라우팅 차단 + 연타 방지
   bool _isLeaving = false;
@@ -2278,6 +2283,44 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
+  /// 이 판을 나갈 때 띄울 것을 정한다 — 리뷰 요청 대상이면 리뷰 창, 아니면 전면 광고.
+  ///
+  /// 리뷰 대상 판은 광고를 아예 받지 않는다. 받아 두고 안 쓰면 다음 판까지 남아
+  /// 만료된 광고를 띄우려다 실패한다.
+  /// 이벤트 게임, 승패를 알 수 없는 판(GAME_OVER 유실 fallback), 한 팀이 모두 나가
+  /// 몰수로 끝난 판은 판 수에 넣지 않는다 — 끝까지 한 판이 아니다.
+  Future<void> _prepareExitAdOrReview(
+    String? winnerTeam,
+    String? reason,
+    int? gameResultId,
+  ) async {
+    // await 뒤에는 GamePage가 dispose됐을 수 있어 ref를 미리 확보한다
+    final adService = ref.read(adServiceProvider);
+    final reviewService = ref.read(reviewPromptServiceProvider);
+    final isEventGame =
+        ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false;
+
+    final isForfeit =
+        reason == GameResultReason.policeForfeited ||
+        reason == GameResultReason.robberForfeited;
+
+    if (!isEventGame &&
+        !isForfeit &&
+        winnerTeam != null &&
+        gameResultId != null) {
+      try {
+        _reviewDue = await reviewService.recordFinishedGame(
+          gameResultId: gameResultId,
+          isWin: winnerTeam == widget.team,
+        );
+      } catch (e) {
+        debugPrint('[GamePage] ⚠️ 리뷰 요청 판정 실패(무시): $e');
+      }
+    }
+
+    if (!_reviewDue) unawaited(adService.preloadGameEndInterstitial());
+  }
+
   /// 결과 다이얼로그 이탈 선택 처리 — 먼저 목적지로 이동하고 전면 광고를 그 위에 덮는다.
   ///
   /// 라우팅을 광고 닫힘 콜백에 의존시키면 안 된다:
@@ -2295,11 +2338,21 @@ class _GamePageState extends ConsumerState<GamePage>
     // (둘 다 keepAlive 싱글턴이라 dispose 이후 사용해도 안전)
     final analytics = ref.read(analyticsServiceProvider);
     final adService = ref.read(adServiceProvider);
+    final reviewService = ref.read(reviewPromptServiceProvider);
 
     unawaited(analytics.logGameExitChoice(choice: choice));
 
     // 1. 이동 먼저 — 광고 성공/실패와 무관하게 항상 실행된다
     context.go(destination);
+
+    // 리뷰 요청 대상 판은 광고 없이 스토어 리뷰 창만 띄운다 — 이긴 직후에 묻기 위해서다.
+    // 창이 실제로 떴는지는 스토어가 알려 주지 않아 요청 횟수만 남긴다.
+    // 중도 퇴장은 대상이 아니다 — 퇴장 확인창과 GAME_OVER가 겹쳐도 리뷰 창은 띄우지 않는다.
+    if (_reviewDue && choice != 'leave_mid_game') {
+      unawaited(analytics.logReviewRequest());
+      unawaited(reviewService.requestReview());
+      return;
+    }
 
     // 2. 광고를 전환 위에 표시 — 닫힘 시 할 일 없음 (이동은 이미 끝남)
     final result = adService.showGameEndInterstitial(onComplete: () {});
@@ -2323,10 +2376,10 @@ class _GamePageState extends ConsumerState<GamePage>
 
     _prepareGameOverPresentation();
 
-    // 전면 광고 사전 로드 — 결과 확인 후 이탈(홈으로/한 번 더) 시점에 1회 노출.
-    // 더미 모드 제외, 로드 실패해도 무시 (fail-open)
+    // 이탈(홈으로/한 번 더) 시점에 전면 광고나 리뷰 창 중 하나를 1회 노출한다.
+    // 더미 모드 제외, 실패해도 무시 (fail-open)
     if (!widget.isDummy) {
-      unawaited(ref.read(adServiceProvider).preloadGameEndInterstitial());
+      unawaited(_prepareExitAdOrReview(winnerTeam, reason, gameResultId));
     }
 
     // game_over 퍼널 이벤트 (_gameOverDialogShown 가드 직후라 게임당 1회 보장)
