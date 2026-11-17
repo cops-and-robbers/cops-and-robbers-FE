@@ -22,6 +22,7 @@ import flutter_webrtc
 import gal
 import geolocator_apple
 import google_sign_in_ios
+import in_app_review
 import livekit_client
 import mobile_scanner
 import package_info_plus
@@ -50,6 +51,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   GalPlugin.register(with: registry.registrar(forPlugin: "GalPlugin"))
   GeolocatorPlugin.register(with: registry.registrar(forPlugin: "GeolocatorPlugin"))
   FLTGoogleSignInPlugin.register(with: registry.registrar(forPlugin: "FLTGoogleSignInPlugin"))
+  InAppReviewPlugin.register(with: registry.registrar(forPlugin: "InAppReviewPlugin"))
   LiveKitPlugin.register(with: registry.registrar(forPlugin: "LiveKitPlugin"))
   MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))
   FPPPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FPPPackageInfoPlusPlugin"))
