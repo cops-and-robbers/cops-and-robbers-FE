@@ -19,6 +19,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/chips/action_chip.dart' as custom_chip;
 import '../../../../core/widgets/inputs/app_text_field.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
+import '../../../user/domain/entities/nickname_check_result.dart';
 import '../../../user/presentation/providers/user_provider.dart';
 import '../providers/auth_provider.dart';
 import '../../../../router/route_paths.dart';
@@ -33,6 +34,9 @@ enum NicknameValidationState {
 
   /// 중복된 닉네임
   duplicate,
+
+  /// 금칙어가 들어간 닉네임
+  bannedWord,
 
   /// 사용 가능한 닉네임
   valid,
@@ -117,7 +121,7 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
     });
 
     try {
-      final isAvailable = await ref
+      final result = await ref
           .read(userRepositoryProvider)
           .checkNickname(nickname);
 
@@ -125,9 +129,11 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
 
       setState(() {
         _isLoading = false;
-        _validationState = isAvailable
-            ? NicknameValidationState.valid
-            : NicknameValidationState.duplicate;
+        _validationState = switch (result) {
+          NicknameCheckResult.available => NicknameValidationState.valid,
+          NicknameCheckResult.duplicated => NicknameValidationState.duplicate,
+          NicknameCheckResult.bannedWord => NicknameValidationState.bannedWord,
+        };
       });
     } on AppException catch (e) {
       if (!mounted) return;
@@ -379,6 +385,11 @@ class _NicknameSetupPageState extends ConsumerState<NicknameSetupPage> {
         break;
       case NicknameValidationState.duplicate:
         message = l10n.errorNicknameDuplicated;
+        color = AppColors.red;
+        iconPath = AppIcons.wrongMark;
+        break;
+      case NicknameValidationState.bannedWord:
+        message = l10n.errorNicknameBannedWord;
         color = AppColors.red;
         iconPath = AppIcons.wrongMark;
         break;

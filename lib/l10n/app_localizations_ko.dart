@@ -1611,6 +1611,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorNicknameDuplicated => '중복된 닉네임이에요. 다른 닉네임을 입력하세요';
 
   @override
+  String get errorNicknameBannedWord => '사용할 수 없는 표현이 들어 있어요. 다른 닉네임을 입력하세요';
+
+  @override
   String get nicknameAvailable => '사용 가능한 닉네임이에요';
 
   @override

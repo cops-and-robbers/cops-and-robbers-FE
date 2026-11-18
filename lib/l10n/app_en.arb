@@ -577,6 +577,7 @@
   "buttonCheckNicknameDuplicate": "Check duplication",
   "errorNicknameTooShort": "Nicknames shorter than 1 character cannot be used",
   "errorNicknameDuplicated": "This nickname is already taken. Please enter a different nickname",
+  "errorNicknameBannedWord": "This nickname contains words that aren't allowed. Please enter a different nickname",
   "nicknameAvailable": "This nickname is available",
   "splashReturningToScene": "Returning to the field",
   "dialogNetworkConnectionFailedTitle": "Network connection failed",

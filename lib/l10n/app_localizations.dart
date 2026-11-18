@@ -3050,6 +3050,12 @@ abstract class AppLocalizations {
   /// **'중복된 닉네임이에요. 다른 닉네임을 입력하세요'**
   String get errorNicknameDuplicated;
 
+  /// 닉네임 검증 — 금칙어 포함
+  ///
+  /// In ko, this message translates to:
+  /// **'사용할 수 없는 표현이 들어 있어요. 다른 닉네임을 입력하세요'**
+  String get errorNicknameBannedWord;
+
   /// 닉네임 검증 — 사용 가능
   ///
   /// In ko, this message translates to:

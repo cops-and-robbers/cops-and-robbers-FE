@@ -1,11 +1,40 @@
 {
   "metadata": {
-    "lastUpdated": "2026-11-16T04:42:26Z",
-    "currentVersion": "4.1.6",
+    "lastUpdated": "2026-11-18T02:42:04Z",
+    "currentVersion": "4.1.8",
     "projectType": "flutter",
-    "totalReleases": 156
+    "totalReleases": 157
   },
   "releases": [
+    {
+      "version": "4.1.8",
+      "project_type": "flutter",
+      "date": "2026-11-18",
+      "pr_number": 712,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새 기능**\n  * 게임에서 이긴 뒤 나갈 때 스토어 리뷰 창을 띄움\n  * 리뷰 창을 띄우는 판은 종료 광고를 보여 주지 않음\n\n* **버그 수정**\n  * 금칙어가 든 닉네임을 '이미 쓰는 닉네임'으로 안내하던 문제 수정\n\n* **문서**\n  * 리뷰 요청·닉네임 안내 작업 리포트와 이슈 문서 추가",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "게임에서 이긴 뒤 나갈 때 스토어 리뷰 창을 띄움",
+            "리뷰 창을 띄우는 판은 종료 광고를 보여 주지 않음"
+          ]
+        },
+        "버그_수정": {
+          "title": "버그 수정",
+          "items": [
+            "금칙어가 든 닉네임을 '이미 쓰는 닉네임'으로 안내하던 문제 수정"
+          ]
+        },
+        "문서": {
+          "title": "문서",
+          "items": [
+            "리뷰 요청·닉네임 안내 작업 리포트와 이슈 문서 추가"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "4.1.6",
       "project_type": "flutter",

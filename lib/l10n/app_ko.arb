@@ -1644,6 +1644,10 @@
   "@errorNicknameDuplicated": {
     "description": "닉네임 검증 — 이미 사용 중"
   },
+  "errorNicknameBannedWord": "사용할 수 없는 표현이 들어 있어요. 다른 닉네임을 입력하세요",
+  "@errorNicknameBannedWord": {
+    "description": "닉네임 검증 — 금칙어 포함"
+  },
   "nicknameAvailable": "사용 가능한 닉네임이에요",
   "@nicknameAvailable": {
     "description": "닉네임 검증 — 사용 가능"

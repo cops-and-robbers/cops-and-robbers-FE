@@ -1,4 +1,5 @@
 import '../entities/agreement_status_entity.dart';
+import '../entities/nickname_check_result.dart';
 import '../entities/user_profile_entity.dart';
 
 /// User Repository 인터페이스
@@ -7,8 +8,8 @@ import '../entities/user_profile_entity.dart';
 abstract class UserRepository {
   /// 닉네임 중복 확인
   ///
-  /// [nickname]이 사용 가능하면 `true`, 중복이면 `false`를 반환합니다.
-  Future<bool> checkNickname(String nickname);
+  /// [nickname]이 사용 가능한지, 중복인지, 금칙어가 들어 있는지 반환합니다.
+  Future<NicknameCheckResult> checkNickname(String nickname);
 
   /// 닉네임 변경
   ///

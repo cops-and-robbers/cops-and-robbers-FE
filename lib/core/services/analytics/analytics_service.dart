@@ -116,6 +116,9 @@ class AnalyticsService {
 
   /// 인게임 튜토리얼 완료
 
+  /// 게임 종료 후 스토어 리뷰 창 요청 (창이 떴는지는 알 수 없다)
+  Future<void> logReviewRequest() => _log('review_request');
+
   /// 전면 광고 표시 시도 결과 — [status]: 'shown' | 'not_loaded' | 'failed'
   Future<void> logAdInterstitialResult({required String status}) =>
       _log('ad_interstitial_result', {'status': status});

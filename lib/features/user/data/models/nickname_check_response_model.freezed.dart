@@ -26,6 +26,11 @@ mixin _$NicknameCheckResponseModel {
   /// 사용 가능 여부
   bool get isAvailable => throw _privateConstructorUsedError;
 
+  /// 결과 코드 (`AVAILABLE` | `DUPLICATED_NICKNAME` | `BANNED_WORD_NICKNAME`)
+  ///
+  /// BE #248 배포 전 서버는 보내지 않으므로 nullable이다.
+  String? get code => throw _privateConstructorUsedError;
+
   /// 결과 메시지
   String get message => throw _privateConstructorUsedError;
 
@@ -50,7 +55,7 @@ abstract class $NicknameCheckResponseModelCopyWith<$Res> {
         NicknameCheckResponseModel
       >;
   @useResult
-  $Res call({bool isAvailable, String message});
+  $Res call({bool isAvailable, String? code, String message});
 }
 
 /// @nodoc
@@ -70,13 +75,21 @@ class _$NicknameCheckResponseModelCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? isAvailable = null, Object? message = null}) {
+  $Res call({
+    Object? isAvailable = null,
+    Object? code = freezed,
+    Object? message = null,
+  }) {
     return _then(
       _value.copyWith(
             isAvailable: null == isAvailable
                 ? _value.isAvailable
                 : isAvailable // ignore: cast_nullable_to_non_nullable
                       as bool,
+            code: freezed == code
+                ? _value.code
+                : code // ignore: cast_nullable_to_non_nullable
+                      as String?,
             message: null == message
                 ? _value.message
                 : message // ignore: cast_nullable_to_non_nullable
@@ -96,7 +109,7 @@ abstract class _$$NicknameCheckResponseModelImplCopyWith<$Res>
   ) = __$$NicknameCheckResponseModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool isAvailable, String message});
+  $Res call({bool isAvailable, String? code, String message});
 }
 
 /// @nodoc
@@ -116,13 +129,21 @@ class __$$NicknameCheckResponseModelImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? isAvailable = null, Object? message = null}) {
+  $Res call({
+    Object? isAvailable = null,
+    Object? code = freezed,
+    Object? message = null,
+  }) {
     return _then(
       _$NicknameCheckResponseModelImpl(
         isAvailable: null == isAvailable
             ? _value.isAvailable
             : isAvailable // ignore: cast_nullable_to_non_nullable
                   as bool,
+        code: freezed == code
+            ? _value.code
+            : code // ignore: cast_nullable_to_non_nullable
+                  as String?,
         message: null == message
             ? _value.message
             : message // ignore: cast_nullable_to_non_nullable
@@ -137,6 +158,7 @@ class __$$NicknameCheckResponseModelImplCopyWithImpl<$Res>
 class _$NicknameCheckResponseModelImpl implements _NicknameCheckResponseModel {
   const _$NicknameCheckResponseModelImpl({
     required this.isAvailable,
+    this.code,
     required this.message,
   });
 
@@ -148,13 +170,19 @@ class _$NicknameCheckResponseModelImpl implements _NicknameCheckResponseModel {
   @override
   final bool isAvailable;
 
+  /// 결과 코드 (`AVAILABLE` | `DUPLICATED_NICKNAME` | `BANNED_WORD_NICKNAME`)
+  ///
+  /// BE #248 배포 전 서버는 보내지 않으므로 nullable이다.
+  @override
+  final String? code;
+
   /// 결과 메시지
   @override
   final String message;
 
   @override
   String toString() {
-    return 'NicknameCheckResponseModel(isAvailable: $isAvailable, message: $message)';
+    return 'NicknameCheckResponseModel(isAvailable: $isAvailable, code: $code, message: $message)';
   }
 
   @override
@@ -164,12 +192,13 @@ class _$NicknameCheckResponseModelImpl implements _NicknameCheckResponseModel {
             other is _$NicknameCheckResponseModelImpl &&
             (identical(other.isAvailable, isAvailable) ||
                 other.isAvailable == isAvailable) &&
+            (identical(other.code, code) || other.code == code) &&
             (identical(other.message, message) || other.message == message));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, isAvailable, message);
+  int get hashCode => Object.hash(runtimeType, isAvailable, code, message);
 
   /// Create a copy of NicknameCheckResponseModel
   /// with the given fields replaced by the non-null parameter values.
@@ -192,6 +221,7 @@ abstract class _NicknameCheckResponseModel
     implements NicknameCheckResponseModel {
   const factory _NicknameCheckResponseModel({
     required final bool isAvailable,
+    final String? code,
     required final String message,
   }) = _$NicknameCheckResponseModelImpl;
 
@@ -201,6 +231,12 @@ abstract class _NicknameCheckResponseModel
   /// 사용 가능 여부
   @override
   bool get isAvailable;
+
+  /// 결과 코드 (`AVAILABLE` | `DUPLICATED_NICKNAME` | `BANNED_WORD_NICKNAME`)
+  ///
+  /// BE #248 배포 전 서버는 보내지 않으므로 nullable이다.
+  @override
+  String? get code;
 
   /// 결과 메시지
   @override
