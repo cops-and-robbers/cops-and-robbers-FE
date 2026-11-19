@@ -1653,12 +1653,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get agreementItemOptionalTag => '[選択]';
 
   @override
-  String get gameRobberOnTheRunBanner => '泥棒が逃走しています！';
-
-  @override
-  String get gameRobberOnTheRunBannerTag => '隠れる人が隠れています！';
-
-  @override
   String get gameOverBannerTitle => 'ゲーム終了！';
 
   @override

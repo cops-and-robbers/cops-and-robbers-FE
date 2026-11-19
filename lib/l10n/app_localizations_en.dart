@@ -1772,12 +1772,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get agreementItemOptionalTag => '[Optional]';
 
   @override
-  String get gameRobberOnTheRunBanner => 'Robbers are running away!';
-
-  @override
-  String get gameRobberOnTheRunBannerTag => 'Hiders are hiding!';
-
-  @override
   String get gameOverBannerTitle => 'Game over!';
 
   @override

@@ -28,7 +28,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cops_and_robbers/features/game/data/models/game_event_model.dart';
 import 'package:cops_and_robbers/core/services/lifecycle/app_lifecycle_service.dart';
 import 'package:cops_and_robbers/core/widgets/dialogs/reconnect_modal.dart';
-import 'package:cops_and_robbers/core/widgets/dialogs/app_popup.dart';
 import 'package:cops_and_robbers/features/chat/data/datasources/chat_stomp_datasource.dart';
 import 'package:cops_and_robbers/features/chat/data/models/chat_message_dto.dart';
 import 'package:cops_and_robbers/features/chat/presentation/widgets/chat_preview_card.dart';
@@ -712,7 +711,6 @@ void main() {
         await advance(tester, const Duration(seconds: 5));
         expect(find.byType(RoleBanner), findsNothing);
         expect(find.byType(ChaseScene), findsOneWidget);
-        expect(find.byType(AppPopup, skipOffstage: false), findsNothing);
         // 대기 중엔 지금 대기 팝업처럼 나갈 수 없다 — 뒤로가기를 눌러도 나가기 확인창이 뜨지 않는다
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
         await tester.binding.handlePopRoute();
@@ -751,30 +749,40 @@ void main() {
     },
   );
 
-  testWidgets('event_game_police_still_gets_wait_popup_when_settings_reload', (
-    tester,
-  ) async {
-    setFreshGame(team: 'POLICE', policeWaitMinutes: 1, isEventGame: true);
-    session.participants = const InGameParticipantsResponse(
-      police: [
-        InGameParticipant(
-          participantId: 5,
-          nickname: '경찰',
-          status: 'POLICE_WAITING',
-        ),
-      ],
-      robbers: [],
-    );
-    await mount(tester, team: 'POLICE');
-    expect(find.byType(AppPopup, skipOffstage: false), findsOneWidget);
-    expect(find.byType(RoleBanner), findsNothing);
+  // 이벤트 게임 경찰도 일반 게임과 같은 시작 연출을 본다 — 역할 배너 → 대기 장면 → 출동 카운팅 (#713)
+  testWidgets(
+    'event_game_police_sees_role_banner_wait_scene_and_dispatch_countdown',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        setFreshGame(team: 'POLICE', policeWaitMinutes: 1, isEventGame: true);
+        session.participants = const InGameParticipantsResponse(
+          police: [
+            InGameParticipant(
+              participantId: 5,
+              nickname: '경찰',
+              status: 'POLICE_WAITING',
+            ),
+          ],
+          robbers: [],
+        );
+        await mount(tester, team: 'POLICE');
+        expect(find.byType(RoleBanner), findsOneWidget);
+        await advance(tester, const Duration(seconds: 5));
+        expect(find.byType(RoleBanner), findsNothing);
+        expect(find.byType(ChaseScene), findsOneWidget);
 
-    await tester.pump(const Duration(seconds: 61));
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.byType(AppPopup, skipOffstage: false), findsNothing);
-    expect(find.byType(GamePage), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+        await tester.pump(const Duration(seconds: 55)); // 출동 시각(시작 후 60초)을 지나도록
+        await advance(tester, const Duration(seconds: 1));
+        expect(find.byType(ChaseScene), findsNothing);
+        expect(find.byType(DispatchCountdown), findsOneWidget);
+        await advance(tester, const Duration(seconds: 4));
+        expect(find.byType(DispatchCountdown), findsNothing);
+        expect(tester.takeException(), isNull);
+        // 시작 시스템 메시지(10초 간격)·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+        await tester.pump(const Duration(seconds: 40));
+      });
+    },
+  );
 
   testWidgets('robber_explainer_hides_police_countdown_until_robber_taps_it', (
     tester,
@@ -1041,6 +1049,27 @@ void main() {
       expect(find.byType(ChaseScene), findsNothing);
       await tester.pump(const Duration(seconds: 40));
     });
+  });
+
+  // 이벤트 게임에서도 ⓘ는 시작 때 본 장면을 다시 띄운다 (#713)
+  testWidgets('info_button_opens_rules_scene_when_event_game', (tester) async {
+    setFreshGame(team: 'POLICE', policeWaitMinutes: 0, isEventGame: true);
+    await mount(tester, team: 'POLICE', size: const Size(393, 852));
+    await advance(tester, const Duration(seconds: 5)); // 역할 배너가 지나간 뒤
+    final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+    await tester.tap(find.byTooltip(l10n.titleGameRules));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    final scene = tester.widget<ChaseScene>(find.byType(ChaseScene));
+    expect(scene.mode, ChaseSceneMode.rulesReplay);
+
+    await tester.tapAt(const Offset(150, 700)); // 카드 아래 빈 배경
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byType(ChaseScene), findsNothing);
+    expect(tester.takeException(), isNull);
+    // 시작 시스템 메시지·공지 배너·ⓘ 안내 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+    await advance(tester, const Duration(seconds: 60));
   });
 
   testWidgets('info_button_opens_rules_scene_when_normal_game', (tester) async {
@@ -2238,7 +2267,10 @@ void main() {
         game.area = const GameAreaModel(
           areaType: GameAreaType.circle,
           circle: CircleAreaModel(
-            playgroundCenter: LatLngModel(latitude: 37.5665, longitude: 126.9780),
+            playgroundCenter: LatLngModel(
+              latitude: 37.5665,
+              longitude: 126.9780,
+            ),
             playgroundRadiusInMeters: 500,
           ),
         );

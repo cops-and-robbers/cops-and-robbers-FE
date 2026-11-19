@@ -1653,12 +1653,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get agreementItemOptionalTag => '[선택]';
 
   @override
-  String get gameRobberOnTheRunBanner => '도둑이 도망치는 중이에요!';
-
-  @override
-  String get gameRobberOnTheRunBannerTag => '도망자가 숨는 중이에요!';
-
-  @override
   String get gameOverBannerTitle => '게임 종료!';
 
   @override

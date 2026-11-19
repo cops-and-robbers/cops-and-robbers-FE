@@ -3134,18 +3134,6 @@ abstract class AppLocalizations {
   /// **'[선택]'**
   String get agreementItemOptionalTag;
 
-  /// 게임 시작 후 도둑 도주 시작 알림 배너
-  ///
-  /// In ko, this message translates to:
-  /// **'도둑이 도망치는 중이에요!'**
-  String get gameRobberOnTheRunBanner;
-
-  /// 술래잡기용 — 게임 시작 후 도둑 도주 시작 알림 배너
-  ///
-  /// In ko, this message translates to:
-  /// **'도망자가 숨는 중이에요!'**
-  String get gameRobberOnTheRunBannerTag;
-
   /// 게임 종료 시 화면 상단에 표시되는 배너 타이틀
   ///
   /// In ko, this message translates to:
