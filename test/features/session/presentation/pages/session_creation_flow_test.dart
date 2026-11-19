@@ -292,6 +292,34 @@ void main() {
     expect(circle.containsKey('jailRadiusInMeters'), isFalse);
   });
 
+  // 플레이그라운드를 핀으로 그리다 뒤로 가면 묻지 않고 모드 선택으로 돌아간다 (#713)
+  testWidgets('back_from_drawn_playground_returns_to_mode_without_dialog', (
+    tester,
+  ) async {
+    await _openFlowAndPickMode(tester);
+    await tester.tap(find.text('핀으로 설정'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(
+      () async => tester
+          .widget<ZoneDrawLayer>(find.byType(ZoneDrawLayer))
+          .onDrawEnd(const [
+            Offset(100, 300),
+            Offset(200, 200),
+            Offset(300, 100),
+            Offset(300, 200),
+            Offset(300, 300),
+            Offset(200, 300),
+            Offset(100, 300),
+          ]),
+    );
+    await tester.pumpAndSettle();
+
+    await _tapBack(tester);
+
+    expect(find.text('방 만들기를 그만할까요?'), findsNothing);
+    expect(find.text('어떤 모드로 할까요?'), findsOneWidget);
+  });
+
   // 방장이 방 생성하기를 누르면 방이 바로 만들어지지 않고 확인 모달이 먼저 뜬다
   testWidgets('create_button_asks_confirm_before_sending_request', (
     tester,
