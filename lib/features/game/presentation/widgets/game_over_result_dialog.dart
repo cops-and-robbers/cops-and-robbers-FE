@@ -19,6 +19,7 @@ import '../../../../core/utils/widget_capture_util.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
+import '../../../../core/widgets/dialogs/dialog_card.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../../core/widgets/toggles/segmented_toggle.dart';
 import '../../domain/entities/game_result_entity.dart';
@@ -289,66 +290,70 @@ class GameOverResultDialog extends ConsumerWidget {
       // 실제 이동량이 절반이 된다. 의도한 값이 그대로 보이도록 직접 옮긴다.
       child: Transform.translate(
         offset: Offset(0, _dialogVerticalShift.h),
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.topCenter,
-          children: [
-            // 1) 몸통 — 맨 뒤, 다이얼로그에 가려져 상단(머리) 부분만 보임.
-            //    크기·겹침·가로 오프셋 모두 팀별 상수에서 선택된 지역 변수 사용.
-            //
-            //    top을 최종 위치가 아니라 0(카드 뒤에 완전히 숨는 자리)에 두고
-            //    [_RiseIn]이 위로 끌어올린다. Positioned를 직접 애니메이션하려면
-            //    이 위젯이 Stateful이 되어야 하는데, 그 대가가 연출 하나보다 크다.
-            Positioned(
-              top: 0,
-              child: _RiseIn(
-                startRise: bodyPeekHeight.h,
-                endRise: (bodyHeight - bodyOverlap).h,
-                overshoot: bodyOvershoot.h,
-                horizontalShift: bodyHorizontalShift.w,
-                child: SvgPicture.asset(
-                  bodyAsset,
-                  height: bodyHeight.h,
-                  fit: BoxFit.contain,
+        child: Padding(
+          // 팔이 카드 가장자리 기준이라 화면 좌우 36은 Stack 바깥에서 띄운다
+          padding: AppPadding.horizontal36,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topCenter,
+            children: [
+              // 1) 몸통 — 맨 뒤, 다이얼로그에 가려져 상단(머리) 부분만 보임.
+              //    크기·겹침·가로 오프셋 모두 팀별 상수에서 선택된 지역 변수 사용.
+              //
+              //    top을 최종 위치가 아니라 0(카드 뒤에 완전히 숨는 자리)에 두고
+              //    [_RiseIn]이 위로 끌어올린다. Positioned를 직접 애니메이션하려면
+              //    이 위젯이 Stateful이 되어야 하는데, 그 대가가 연출 하나보다 크다.
+              Positioned(
+                top: 0,
+                child: _RiseIn(
+                  startRise: bodyPeekHeight.h,
+                  endRise: (bodyHeight - bodyOverlap).h,
+                  overshoot: bodyOvershoot.h,
+                  horizontalShift: bodyHorizontalShift.w,
+                  child: SvgPicture.asset(
+                    bodyAsset,
+                    height: bodyHeight.h,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ),
 
-            // 2) 카드 본체 — 몸통을 가리고 팔 아래에 깔림.
-            //    캡처용 GlobalKey를 쥐어야 해서 별도 Stateful 위젯으로 분리했다.
-            _GameOverCard(
-              isDarkMode: isDarkMode,
-              myTeam: myTeam,
-              winnerTeam: winnerTeam,
-              gameResultId: gameResultId,
-              onGoHome: onGoHome,
-              onRematch: onRematch,
-              gameMode: gameMode,
-            ),
-
-            // 3) 왼쪽 팔 — 맨 앞. SizedBox로 크기를 고정해 inset에 영향 받지 않게.
-            //    크기/위치는 팀별 상수에서 선택된 지역 변수 사용.
-            Positioned(
-              top: _armTopOffset.h,
-              left: armLeftInset.w,
-              child: SizedBox(
-                width: armWidth.w,
-                height: armHeight.h,
-                child: SvgPicture.asset(leftArmAsset),
+              // 2) 카드 본체 — 몸통을 가리고 팔 아래에 깔림.
+              //    캡처용 GlobalKey를 쥐어야 해서 별도 Stateful 위젯으로 분리했다.
+              _GameOverCard(
+                isDarkMode: isDarkMode,
+                myTeam: myTeam,
+                winnerTeam: winnerTeam,
+                gameResultId: gameResultId,
+                onGoHome: onGoHome,
+                onRematch: onRematch,
+                gameMode: gameMode,
               ),
-            ),
 
-            // 4) 오른쪽 팔 — 왼쪽 팔과 동일 구조, `right` 기준 배치.
-            Positioned(
-              top: _armTopOffset.h,
-              right: armRightInset.w,
-              child: SizedBox(
-                width: armWidth.w,
-                height: armHeight.h,
-                child: SvgPicture.asset(rightArmAsset),
+              // 3) 왼쪽 팔 — 맨 앞. SizedBox로 크기를 고정해 inset에 영향 받지 않게.
+              //    크기/위치는 팀별 상수에서 선택된 지역 변수 사용.
+              Positioned(
+                top: _armTopOffset.h,
+                left: armLeftInset.w,
+                child: SizedBox(
+                  width: armWidth.w,
+                  height: armHeight.h,
+                  child: SvgPicture.asset(leftArmAsset),
+                ),
               ),
-            ),
-          ],
+
+              // 4) 오른쪽 팔 — 왼쪽 팔과 동일 구조, `right` 기준 배치.
+              Positioned(
+                top: _armTopOffset.h,
+                right: armRightInset.w,
+                child: SizedBox(
+                  width: armWidth.w,
+                  height: armHeight.h,
+                  child: SvgPicture.asset(rightArmAsset),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -489,9 +494,6 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
   /// 공유 이미지가 안 바뀌고, 개인 탭은 한 번 넘기면 된다.
   int _tabIndex = 0;
 
-  /// 카드 폭 — 지도(콘텐츠 폭)가 좌우 패딩과 함께 이 값에 맞춰진다.
-  static const double _cardWidth = 320;
-
   /// 카드를 PNG로 떠서 OS 공유 시트로 넘긴다.
   ///
   /// 버튼·아이콘은 숨김이 실제로 그려진 다음 프레임에 캡처해야 이미지에서 빠진다.
@@ -574,172 +576,157 @@ class _GameOverCardState extends ConsumerState<_GameOverCard> {
 
     return RepaintBoundary(
       key: _captureKey,
-      child: Container(
-        width: _cardWidth.w,
-        padding: EdgeInsets.only(
-          top: AppSpacing.vertical20,
-          bottom: AppSpacing.vertical18,
-          left: AppSpacing.horizontal16,
-          right: AppSpacing.horizontal16,
-        ),
-        decoration: BoxDecoration(
-          color: widget.isDarkMode ? AppColors.black : AppColors.white,
-          borderRadius: AppRadius.xxlarge,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _ResultTitleRow(
-                isDarkMode: widget.isDarkMode,
-                isWin: isWin,
-                hideShareIcon: _capturing,
-                onShare: _onShare,
+      child: DialogCard(
+        margin: EdgeInsets.zero,
+        color: widget.isDarkMode ? AppColors.black : AppColors.white,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _ResultTitleRow(
+              isDarkMode: widget.isDarkMode,
+              isWin: isWin,
+              hideShareIcon: _capturing,
+              onShare: _onShare,
+            ),
+            SizedBox(height: AppSpacing.vertical12),
+            // 캡처 이미지에는 UI 크롬(토글)이 찍히면 안 된다. Opacity는 자리를 남겨
+            // 제목-날짜 사이에 빈 띠가 생기므로(버튼/로고 교체와 달리 자기 행을
+            // 차지) Offstage로 자리째 접는다 — 뒤 여백까지 같이 접어야 빈 띠가 안 남는다.
+            Offstage(
+              offstage: _capturing,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SegmentedToggle(
+                    labels: [
+                      AppLocalizations.of(context).tabResultTeam,
+                      AppLocalizations.of(context).tabResultMine,
+                    ],
+                    selectedIndex: _tabIndex,
+                    onChanged: (index) => setState(() => _tabIndex = index),
+                    isDarkMode: widget.isDarkMode,
+                  ),
+                  SizedBox(height: AppSpacing.vertical12),
+                ],
               ),
-              SizedBox(height: AppSpacing.vertical12),
-              // 캡처 이미지에는 UI 크롬(토글)이 찍히면 안 된다. Opacity는 자리를 남겨
-              // 제목-날짜 사이에 빈 띠가 생기므로(버튼/로고 교체와 달리 자기 행을
-              // 차지) Offstage로 자리째 접는다 — 뒤 여백까지 같이 접어야 빈 띠가 안 남는다.
-              Offstage(
-                offstage: _capturing,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SegmentedToggle(
-                      labels: [
-                        AppLocalizations.of(context).tabResultTeam,
-                        AppLocalizations.of(context).tabResultMine,
-                      ],
-                      selectedIndex: _tabIndex,
-                      onChanged: (index) => setState(() => _tabIndex = index),
-                      isDarkMode: widget.isDarkMode,
-                    ),
-                    SizedBox(height: AppSpacing.vertical12),
-                  ],
-                ),
-              ),
-              // 본문(날짜·거리·지도·통계)만 좌우로 한 단계 더 들여쓴다.
-              // 타이틀 행과 버튼은 카드 콘텐츠 폭을 그대로 쓴다.
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.horizontal8,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 내가 우리 팀 MVP면 날짜·거리 오른쪽에 왕관을 둔다. 카드 안이라 저장
-                    // 이미지에도 찍힌다. 개인 기록을 못 받았으면(로딩·실패) 표시하지 않는다.
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // 날짜는 통계와 같은 들여쓰기(본문 8 + 8) — 거리·지도는 본문 폭 그대로.
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.horizontal8,
-                                ),
-                                child: Text(
-                                  record.endedAt == null
-                                      ? ''
-                                      : formatRecordDate(record.endedAt!),
-                                  style: AppTextStyles.paragraph_14_100
-                                      .copyWith(
-                                        color: widget.isDarkMode
-                                            ? AppColors.black200
-                                            : AppColors.black600,
-                                      ),
+            ),
+            // 본문(날짜·거리·지도·통계)만 좌우로 한 단계 더 들여쓴다.
+            // 타이틀 행과 버튼은 카드 콘텐츠 폭을 그대로 쓴다.
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.horizontal8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 내가 우리 팀 MVP면 날짜·거리 오른쪽에 왕관을 둔다. 카드 안이라 저장
+                  // 이미지에도 찍힌다. 개인 기록을 못 받았으면(로딩·실패) 표시하지 않는다.
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 날짜는 통계와 같은 들여쓰기(본문 8 + 8) — 거리·지도는 본문 폭 그대로.
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: AppSpacing.horizontal8,
+                              ),
+                              child: Text(
+                                record.endedAt == null
+                                    ? ''
+                                    : formatRecordDate(record.endedAt!),
+                                style: AppTextStyles.paragraph_14_100.copyWith(
+                                  color: widget.isDarkMode
+                                      ? AppColors.black200
+                                      : AppColors.black600,
                                 ),
                               ),
-                              SizedBox(height: AppSpacing.vertical4),
-                              Text.rich(
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: distance.value,
-                                      style: AppTextStyles.semibold_56.copyWith(
-                                        color: accent,
-                                      ),
+                            ),
+                            SizedBox(height: AppSpacing.vertical4),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: distance.value,
+                                    style: AppTextStyles.semibold_56.copyWith(
+                                      color: accent,
                                     ),
-                                    const TextSpan(text: ' '),
-                                    TextSpan(
-                                      text: distance.unit,
-                                      style: AppTextStyles.heading_24.copyWith(
-                                        color: accent,
-                                      ),
+                                  ),
+                                  const TextSpan(text: ' '),
+                                  TextSpan(
+                                    text: distance.unit,
+                                    style: AppTextStyles.heading_24.copyWith(
+                                      color: accent,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        if (myRecordAsync.valueOrNull?.isMvp ?? false)
-                          _MvpCrown(isDarkMode: widget.isDarkMode),
-                      ],
+                      ),
+                      if (myRecordAsync.valueOrNull?.isMvp ?? false)
+                        _MvpCrown(isDarkMode: widget.isDarkMode),
+                    ],
+                  ),
+                  SizedBox(height: AppSpacing.vertical4),
+                  RecordRouteMap(
+                    key: _mapKey,
+                    route: record.route,
+                    segmentStarts: record.segmentStarts,
+                    // 경찰은 체포한 곳, 도둑은 잡힌 곳을 표시한다.
+                    markerPoints: isRobber
+                        ? record.caughtLocations
+                        : record.arrestLocations,
+                    lineColor: accent,
+                    isDarkMode: widget.isDarkMode,
+                  ),
+                  SizedBox(height: AppSpacing.vertical16),
+                  // 통계 3행만 한 단계 더 들여쓴다(카드 16 + 본문 8 + 8).
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.horizontal8,
                     ),
-                    SizedBox(height: AppSpacing.vertical4),
-                    RecordRouteMap(
-                      key: _mapKey,
-                      route: record.route,
-                      segmentStarts: record.segmentStarts,
-                      // 경찰은 체포한 곳, 도둑은 잡힌 곳을 표시한다.
-                      markerPoints: isRobber
-                          ? record.caughtLocations
-                          : record.arrestLocations,
-                      lineColor: accent,
+                    child: _StatsSection(
                       isDarkMode: widget.isDarkMode,
+                      isRobber: isRobber,
+                      gameMode: widget.gameMode,
+                      tabIndex: _tabIndex,
+                      resultAsync: resultAsync,
+                      myRecordAsync: myRecordAsync,
                     ),
-                    SizedBox(height: AppSpacing.vertical16),
-                    // 통계 3행만 한 단계 더 들여쓴다(카드 16 + 본문 8 + 8).
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AppSpacing.horizontal8,
-                      ),
-                      child: _StatsSection(
-                        isDarkMode: widget.isDarkMode,
-                        isRobber: isRobber,
-                        gameMode: widget.gameMode,
-                        tabIndex: _tabIndex,
-                        resultAsync: resultAsync,
-                        myRecordAsync: myRecordAsync,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              SizedBox(height: AppSpacing.vertical20),
-              // 버튼은 공유 이미지에 들어가면 안 되고, 대신 그 자리에 브랜드 로고가 들어간다.
-              // if/else 교체가 아니라 Offstage 토글인 이유: 캡처 프레임에 처음
-              // 마운트된 SVG는 비동기 로딩 때문에 그 프레임에 그려지지 못한다.
-              // 로고를 미리 마운트해 디코딩을 끝내 두고 그리기만 켜고 끈다.
-              Offstage(
-                offstage: _capturing,
-                child: _ActionButtons(
-                  isDarkMode: widget.isDarkMode,
-                  onGoHome: widget.onGoHome,
-                  onRematch: widget.onRematch,
-                ),
+            ),
+            SizedBox(height: AppSpacing.vertical20),
+            // 버튼은 공유 이미지에 들어가면 안 되고, 대신 그 자리에 브랜드 로고가 들어간다.
+            // if/else 교체가 아니라 Offstage 토글인 이유: 캡처 프레임에 처음
+            // 마운트된 SVG는 비동기 로딩 때문에 그 프레임에 그려지지 못한다.
+            // 로고를 미리 마운트해 디코딩을 끝내 두고 그리기만 켜고 끈다.
+            Offstage(
+              offstage: _capturing,
+              child: _ActionButtons(
+                isDarkMode: widget.isDarkMode,
+                onGoHome: widget.onGoHome,
+                onRematch: widget.onRematch,
               ),
-              Offstage(
-                offstage: !_capturing,
-                // 캡처 이미지 전용 하단 여백 — 카드 bottom 패딩 18과 합쳐
-                // 로고 아래 총 54를 만든다. 라이브 버튼 상태에는 영향 없다.
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: AppSpacing.vertical14),
-                    Center(child: _BrandLockup(isDarkMode: widget.isDarkMode)),
-                    SizedBox(height: AppSpacing.vertical18),
-                  ],
-                ),
+            ),
+            Offstage(
+              offstage: !_capturing,
+              // 캡처 이미지 전용 하단 여백 — 카드 아래 패딩 24와 합쳐
+              // 로고 아래 여백을 예전(18 + 18)과 같게 둔다. 라이브 버튼 상태에는 영향 없다.
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: AppSpacing.vertical14),
+                  Center(child: _BrandLockup(isDarkMode: widget.isDarkMode)),
+                  SizedBox(height: AppSpacing.vertical12),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -854,8 +841,8 @@ class _ResultTitle extends StatelessWidget {
         : (isWin ? AppColors.blue : AppColors.red);
 
     final baseStyle = isDarkMode
-        ? AppTextStyles.robberHeading24
-        : AppTextStyles.heading_24;
+        ? AppTextStyles.robberHeading.copyWith(fontSize: 18.sp)
+        : AppTextStyles.subHeading_18;
 
     final l10n = AppLocalizations.of(context);
     return Text(
@@ -1082,7 +1069,9 @@ class _ActionButtons extends StatelessWidget {
             backgroundColor: cancelBg,
             foregroundColor: cancelFg,
             height: 48.h,
-            textStyle: isDarkMode ? AppTextStyles.robberLabel : null,
+            textStyle: isDarkMode
+                ? AppTextStyles.robberLabel
+                : AppTextStyles.label_16,
           ),
         ),
         SizedBox(width: AppSpacing.horizontal8),
@@ -1094,7 +1083,9 @@ class _ActionButtons extends StatelessWidget {
             backgroundColor: confirmBg,
             foregroundColor: confirmFg,
             height: 48.h,
-            textStyle: isDarkMode ? AppTextStyles.robberLabel : null,
+            textStyle: isDarkMode
+                ? AppTextStyles.robberLabel
+                : AppTextStyles.label_16,
           ),
         ),
       ],

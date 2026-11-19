@@ -11,6 +11,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
 import '../../domain/qr_payload.dart';
+import '../../../../core/widgets/dialogs/dialog_card.dart';
 
 /// 도둑 QR 코드 표시 다이얼로그
 ///
@@ -58,24 +59,20 @@ class QrDisplayDialog extends StatelessWidget {
     ).toRaw();
     final l10n = AppLocalizations.of(context);
 
-    return Dialog(
-      backgroundColor: AppColors.black,
-      shape: RoundedRectangleBorder(borderRadius: AppRadius.xxlarge),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.horizontal24,
-          vertical: AppSpacing.vertical28,
-        ),
+    return Center(
+      child: DialogCard(
+        color: AppColors.black,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               l10n.gameQrDisplayTitle,
               style: AppTextStyles.robberHeading.copyWith(
+                fontSize: 18.sp,
                 color: AppColors.green,
               ),
             ),
-            SizedBox(height: AppSpacing.vertical20),
+            SizedBox(height: AppSpacing.vertical8),
 
             // QR 코드
             Container(
@@ -91,7 +88,7 @@ class QrDisplayDialog extends StatelessWidget {
                 backgroundColor: AppColors.white,
               ),
             ),
-            SizedBox(height: AppSpacing.vertical20),
+            SizedBox(height: AppSpacing.vertical12),
 
             Text(
               byMode(
@@ -103,7 +100,7 @@ class QrDisplayDialog extends StatelessWidget {
                 color: AppColors.black300,
               ),
             ),
-            SizedBox(height: AppSpacing.vertical20),
+            SizedBox(height: AppSpacing.vertical24),
 
             // 닫기 버튼
             SizedBox(

@@ -7,7 +7,6 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/dialogs/dialog_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// 게임 규칙 다이얼로그 내용 위젯
@@ -42,10 +41,6 @@ class GameRulesContent extends StatelessWidget {
       isDarkMode: isDarkMode,
       backgroundColor: isDarkMode ? AppColors.black : null,
       title: l10n.titleGameRules,
-      titleStyle: isDarkMode
-          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-          : null,
-      spacing: const DialogSpacing(toContent: 12),
       customContent: GameRulesContent(
         locationRevealIntervalMinutes: locationRevealIntervalMinutes,
         isDarkMode: isDarkMode,

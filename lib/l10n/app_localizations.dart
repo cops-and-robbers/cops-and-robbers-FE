@@ -1943,7 +1943,7 @@ abstract class AppLocalizations {
   /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요'**
+  /// **'게임 중 화면만 보면 위험할 수 있어요\n도로와 주변을 살피며 안전하게 이용해 주세요'**
   String get dialogSafetyWarningMessage;
 
   /// 주변 안전 확인 다이얼로그의 동의 버튼 ('확인했어요!')
@@ -2015,7 +2015,7 @@ abstract class AppLocalizations {
   /// 공통 — 게임 생성 버튼
   ///
   /// In ko, this message translates to:
-  /// **'게임 생성하기'**
+  /// **'방 생성하기'**
   String get buttonCreateRoom;
 
   /// 공통 — 게임 참여 버튼
@@ -2057,8 +2057,26 @@ abstract class AppLocalizations {
   /// 방 생성 — 리뷰 단계 보조 설명
   ///
   /// In ko, this message translates to:
-  /// **'추천값으로 채워 뒀어요. 바꿀 항목만 눌러요'**
+  /// **'추천 설정을 적용했어요. 원하는 대로 변경할 수 있어요'**
   String get sessionCreationStepReviewHint;
+
+  /// 방 생성 — 방 생성하기를 누른 뒤 뜨는 확인 모달 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'이대로 방을 만들까요?'**
+  String get sessionCreateConfirmTitle;
+
+  /// 방 생성 — 확인 모달 설명 (두 줄)
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 모드와 세부 설정을 확인했나요?\n지금 설정 그대로 방을 만들어요'**
+  String get sessionCreateConfirmMessage;
+
+  /// 방 생성 — 확인 모달 오른쪽 버튼, 실제로 방을 만든다
+  ///
+  /// In ko, this message translates to:
+  /// **'만들기'**
+  String get sessionCreateConfirmCreate;
 
   /// 방 생성 — 모드 선택 단계 제목
   ///
@@ -2951,7 +2969,7 @@ abstract class AppLocalizations {
   /// 만 14세 이상 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요'**
+  /// **'경찰과 도둑은 만 14세 이상만 가입할 수 있어요\n입력한 정보는 나이 확인에만 써요'**
   String get dialogAge14ConfirmMessage;
 
   /// 로그인 처리 중 발생한 일반 오류

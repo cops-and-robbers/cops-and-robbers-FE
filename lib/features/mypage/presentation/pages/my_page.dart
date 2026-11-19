@@ -556,6 +556,9 @@ class _MyPageState extends ConsumerState<MyPage> {
                   trackOutlineColor: WidgetStateProperty.all(
                     Colors.transparent,
                   ),
+                  // 빈 아이콘: M3 Switch는 thumbIcon이 있으면 꺼짐에서도 손잡이를
+                  // 줄이지 않는다. 그림은 없이 크기만 켜짐과 같게 둔다
+                  thumbIcon: const WidgetStatePropertyAll(Icon(null)),
                 ),
               ),
             ),

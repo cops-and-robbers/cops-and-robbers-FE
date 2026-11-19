@@ -15,6 +15,7 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/i18n/role_names.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
+import '../../../../core/widgets/dialogs/dialog_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/game_result_entity.dart';
 import 'mvp_confetti.dart';
@@ -311,15 +312,8 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
           final dx = math.sin(t * math.pi * 6) * 14 * (1 - t);
           return Transform.translate(offset: Offset(dx, 0), child: child);
         },
-        child: Container(
-          width: double.infinity,
-          margin: AppPadding.horizontal36,
-          // AppPopup 카드와 같은 안쪽 여백 — 팝업에서 넘어온 티가 나지 않게.
-          padding: EdgeInsets.symmetric(vertical: 42.h, horizontal: 16.w),
-          decoration: BoxDecoration(
-            color: dark ? AppColors.black : AppColors.white,
-            borderRadius: AppRadius.xxlarge,
-          ),
+        child: DialogCard(
+          color: dark ? AppColors.black : AppColors.white,
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             child: _showTeaseText
@@ -340,9 +334,10 @@ class _GameOverIntroModalState extends State<GameOverIntroModal>
                         textAlign: TextAlign.center,
                         style: dark
                             ? AppTextStyles.robberHeading.copyWith(
+                                fontSize: 18.sp,
                                 color: AppColors.green,
                               )
-                            : AppTextStyles.heading_20.copyWith(
+                            : AppTextStyles.subHeading_18.copyWith(
                                 color: AppColors.black,
                               ),
                       ),

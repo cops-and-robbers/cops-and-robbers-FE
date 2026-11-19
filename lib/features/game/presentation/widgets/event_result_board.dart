@@ -10,6 +10,7 @@ import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../domain/event_evidence.dart';
 import '../../domain/event_evidence_layout.dart';
 import 'event_evidence_image.dart';
+import '../../../../core/widgets/dialogs/dialog_card.dart';
 
 /// 이벤트 모드 — 게임 종료 결과 증거 보드.
 ///
@@ -77,39 +78,35 @@ class EventResultBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: AppPadding.horizontal36,
-      child: Container(
-        padding: EdgeInsets.all(20.w),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: AppRadius.xxlarge,
-        ),
+    return Center(
+      child: DialogCard(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // 결과 타이틀 ("수사 종료")
             Text(
               title ?? l10n.gameEventResultTitle,
-              style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+              style: AppTextStyles.subHeading_18.copyWith(
+                color: AppColors.black,
+              ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: AppSpacing.vertical16),
+            SizedBox(height: AppSpacing.vertical8),
             _buildPhotos(context),
-            SizedBox(height: AppSpacing.vertical16),
+            SizedBox(height: AppSpacing.vertical12),
             // 검거 수 텍스트 ("운영진 N명 검거")
             Text(
               l10n.gameEventResultArrestCount(arrestCount),
               style: AppTextStyles.heading_20.copyWith(color: AppColors.blue),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: AppSpacing.vertical20),
+            SizedBox(height: AppSpacing.vertical24),
             // "홈으로" 버튼 (이벤트 모드: rematch 없음)
             AppButton(
               text: buttonText ?? l10n.buttonGoHome,
               onPressed: onGoHome,
               height: 48.h,
+              textStyle: AppTextStyles.label_16,
             ),
           ],
         ),

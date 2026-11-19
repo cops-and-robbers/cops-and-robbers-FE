@@ -9,7 +9,6 @@ import '../../../../core/constants/spacing_and_radius.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
-import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../core/constants/game_config.dart';
 import '../../../../core/widgets/map/pin_zone_setting_widget.dart';
@@ -117,10 +116,12 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   LatLng? get _initialMapCenter {
     if (_currentCenter != null) return _currentCenter;
     if (_pinPoints.isNotEmpty) {
-      final center = AreaShape.polygon(points: [
-        for (final point in _pinPoints)
-          GeoPoint(latitude: point.latitude, longitude: point.longitude),
-      ]).centroid;
+      final center = AreaShape.polygon(
+        points: [
+          for (final point in _pinPoints)
+            GeoPoint(latitude: point.latitude, longitude: point.longitude),
+        ],
+      ).centroid;
       return LatLng(center.latitude, center.longitude);
     }
     return widget.initialCenter;
@@ -176,46 +177,23 @@ class _SetupPlaygroundPageState extends ConsumerState<SetupPlaygroundPage> {
   /// 상단 바 (흐름 안에서는 없음)
   PreferredSizeWidget? _buildTopBar(String title, bool isDark) => _isEmbedded
       ? null
-      : AppTopBar(title: title, isDarkMode: isDark, onBack: _handleBack);
+      : AppTopBar(title: title, isDarkMode: isDark, onBack: _exit);
 
   void _exit() => _isEmbedded ? widget.onExit?.call() : context.pop();
 
   void _finish(AreaShape shape) =>
       _isEmbedded ? widget.onDone!(shape) : context.pop<AreaShape>(shape);
 
-  /// 시스템 뒤로와 상단 바 뒤로를 같은 [_handleBack]으로 받는다
+  /// 시스템 뒤로와 상단 바 뒤로를 같은 [_exit]으로 받는다
+  ///
+  /// 핀으로 그리던 중이어도 묻지 않고 바로 나간다 (#713 — 이탈 확인 제거).
   Widget _withBackHandling(Widget child) => PopScope(
     canPop: false,
     onPopInvokedWithResult: (didPop, result) {
-      if (!didPop) _handleBack();
+      if (!didPop) _exit();
     },
     child: child,
   );
-
-  /// 뒤로 가기 처리
-  ///
-  /// 핀을 하나라도 찍은 상태에서 처음 그리던 중이면 이탈 확인을 띄운다.
-  /// 원형 모드는 그린 노력이 없어 바로 나간다. 고치러 들어온 경우(초기 도형
-  /// 있음)는 나가도 원래 도형이 남으므로 묻지 않는다.
-  void _handleBack() {
-    final shouldConfirm =
-        _areaType == GameAreaType.polygon &&
-        _pinPoints.isNotEmpty &&
-        widget.editInitialShape == null;
-    if (!shouldConfirm) {
-      _exit();
-      return;
-    }
-    final l10n = AppLocalizations.of(context);
-    AppDialog.show(
-      context: context,
-      title: l10n.dialogQuitCreationTitle,
-      message: l10n.dialogQuitCreationMessage,
-      cancelText: l10n.buttonKeepCreating,
-      confirmText: l10n.buttonQuitCreation,
-      onConfirm: _exit,
-    );
-  }
 
   void _onZoneChanged(LatLng center, double radius) {
     setState(() {
