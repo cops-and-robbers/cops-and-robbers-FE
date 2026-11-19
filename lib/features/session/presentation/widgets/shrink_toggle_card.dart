@@ -105,6 +105,8 @@ class ShrinkToggleCard extends StatelessWidget {
                       : (isDarkMode ? AppColors.black800 : AppColors.black200),
                 ),
                 thumbColor: const WidgetStatePropertyAll(AppColors.white),
+                // 빈 아이콘: 꺼짐에서도 손잡이를 줄이지 않게 하는 M3 동작용 (그림 없음)
+                thumbIcon: const WidgetStatePropertyAll(Icon(null)),
                 trackOutlineColor: const WidgetStatePropertyAll(
                   AppColors.transparent,
                 ),
