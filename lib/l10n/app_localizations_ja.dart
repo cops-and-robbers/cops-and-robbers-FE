@@ -3135,6 +3135,24 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tutorialShrinkBodyTag => 'ルームを作るときにホストが選べます\n外にいると警告のあと自動で捕まります';
 
   @override
+  String get tutorialRadioTitle => '無線は警察だけが使えます';
+
+  @override
+  String get tutorialRadioTitleTag => '無線は鬼だけが使えます';
+
+  @override
+  String get tutorialRadioBody => 'ボタンを長押ししている間話せます\n一度に話せるのは一人だけです';
+
+  @override
+  String get tutorialRadioSampleName => 'ウィミン';
+
+  @override
+  String get tutorialGridTitle => '座標で位置を知らせます';
+
+  @override
+  String get tutorialGridBody => 'メニューで座標をオンにして地図を長押しすると\nマス名がチームチャットにも送られます';
+
+  @override
   String get tutorialFinishTitle => 'さあ、始めましょうか?';
 
   @override

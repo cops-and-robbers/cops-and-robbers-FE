@@ -5869,6 +5869,42 @@ abstract class AppLocalizations {
   /// **'방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 잡혀요'**
   String get tutorialShrinkBodyTag;
 
+  /// 방 입장 튜토리얼 무전 장면 제목 (#719) — 튜토리얼은 역할을 모르고 열려 도둑도 본다
+  ///
+  /// In ko, this message translates to:
+  /// **'경찰만 무전기를 쓸 수 있어요'**
+  String get tutorialRadioTitle;
+
+  /// 술래잡기용 — tutorialRadioTitle
+  ///
+  /// In ko, this message translates to:
+  /// **'술래만 무전기를 쓸 수 있어요'**
+  String get tutorialRadioTitleTag;
+
+  /// 튜토리얼 무전 장면 본문 — 누르는 동안만 송신, 발언권은 한 명 (#719)
+  ///
+  /// In ko, this message translates to:
+  /// **'버튼을 길게 누르는 동안 말해요\n한 번에 한 명만 말할 수 있어요'**
+  String get tutorialRadioBody;
+
+  /// 튜토리얼 무전·좌표 장면에서 먼저 말하는 동료 경찰의 예시 닉네임 (radioSpeaking의 nickname 자리, 팀 채팅 미리보기 이름)
+  ///
+  /// In ko, this message translates to:
+  /// **'의민'**
+  String get tutorialRadioSampleName;
+
+  /// 튜토리얼 좌표 장면 제목 (#719)
+  ///
+  /// In ko, this message translates to:
+  /// **'좌표로 위치를 알려요'**
+  String get tutorialGridTitle;
+
+  /// 튜토리얼 좌표 장면 본문 — 좌표를 켠 사람의 핑은 팀 채팅으로도 간다 (DEC-0100)
+  ///
+  /// In ko, this message translates to:
+  /// **'메뉴에서 좌표를 켜고 지도를 길게 누르면\n칸 이름이 팀 채팅으로도 가요'**
+  String get tutorialGridBody;
+
   /// No description provided for @tutorialFinishTitle.
   ///
   /// In ko, this message translates to:

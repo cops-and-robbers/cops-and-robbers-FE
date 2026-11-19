@@ -3383,6 +3383,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'The Host can choose this when creating a room\nStay outside: a warning, then you\'re out';
 
   @override
+  String get tutorialRadioTitle => 'Only cops can use the radio';
+
+  @override
+  String get tutorialRadioTitleTag => 'Only Seekers can use the radio';
+
+  @override
+  String get tutorialRadioBody =>
+      'Hold the button to talk\nOnly one person can talk at a time';
+
+  @override
+  String get tutorialRadioSampleName => 'Euimin';
+
+  @override
+  String get tutorialGridTitle => 'Share spots with the grid';
+
+  @override
+  String get tutorialGridBody =>
+      'Turn on Grid in the menu and long-press the map\nThe cell name goes to team chat too';
+
+  @override
   String get tutorialFinishTitle => 'Ready to get started?';
 
   @override

@@ -3139,6 +3139,24 @@ class AppLocalizationsKo extends AppLocalizations {
       '방을 만들 때 방장이 선택할 수 있어요\n구역 밖에 있으면 경고 후 자동으로 잡혀요';
 
   @override
+  String get tutorialRadioTitle => '경찰만 무전기를 쓸 수 있어요';
+
+  @override
+  String get tutorialRadioTitleTag => '술래만 무전기를 쓸 수 있어요';
+
+  @override
+  String get tutorialRadioBody => '버튼을 길게 누르는 동안 말해요\n한 번에 한 명만 말할 수 있어요';
+
+  @override
+  String get tutorialRadioSampleName => '의민';
+
+  @override
+  String get tutorialGridTitle => '좌표로 위치를 알려요';
+
+  @override
+  String get tutorialGridBody => '메뉴에서 좌표를 켜고 지도를 길게 누르면\n칸 이름이 팀 채팅으로도 가요';
+
+  @override
   String get tutorialFinishTitle => '이제 시작하러 가볼까요?';
 
   @override

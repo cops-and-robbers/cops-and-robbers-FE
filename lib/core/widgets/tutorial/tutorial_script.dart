@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'tutorial_camera.dart';
 import 'tutorial_stage.dart';
 
@@ -16,6 +18,8 @@ enum TutorialScene {
   escape,
   out,
   shrink,
+  radio,
+  grid,
   community,
   pick,
   friends,
@@ -34,6 +38,8 @@ List<TutorialScene> tutorialScenes(TutorialMode mode) => switch (mode) {
     TutorialScene.rescue,
     TutorialScene.escape,
     TutorialScene.shrink,
+    TutorialScene.radio,
+    TutorialScene.grid,
     TutorialScene.community,
   ],
   // 술래잡기도 QR 스캔으로 잡는다. 감옥만 없어 스캔 뒤 바로 탈락(out)으로 간다.
@@ -45,9 +51,17 @@ List<TutorialScene> tutorialScenes(TutorialMode mode) => switch (mode) {
     TutorialScene.scan,
     TutorialScene.out,
     TutorialScene.shrink,
+    TutorialScene.radio,
+    TutorialScene.grid,
     TutorialScene.community,
   ],
 };
+
+/// 몰라도 게임은 되는 추가 기능(무전·좌표)이 시작되는 장면 번호 (#719)
+///
+/// 처음 볼 때는 앞의 필수 규칙을 건너뛸 수 없고, 여기부터 건너뛸 수 있다.
+int tutorialFirstExtraIndex(TutorialMode mode) =>
+    tutorialScenes(mode).indexOf(TutorialScene.radio);
 
 /// 첫 실행 온보딩. 로그인 전이라 모드와 역할을 모르므로 앱이 뭔지만 보여 준다.
 const List<TutorialScene> onboardingScenes = [
@@ -81,6 +95,10 @@ void playScene(TutorialScene scene, TutorialStage s) {
       _out(s);
     case TutorialScene.shrink:
       _shrink(s, hasJail: !_isTagRun(s));
+    case TutorialScene.radio:
+      _radio(s);
+    case TutorialScene.grid:
+      _grid(s);
     case TutorialScene.community:
       _community(s);
     case TutorialScene.pick:
@@ -424,6 +442,71 @@ void _shrink(TutorialStage s, {required bool hasJail}) {
     t.to(s.rob, {'op': 0}, 150);
     t.to(s.caught, {'op': 1}, 150);
   });
+}
+
+// 경찰 무전: 축소된 구역을 위에서 내려다보며, 무전 버튼을 누르는 동안 말하고
+// 동료가 먼저 말하면 "OO 무전 중"이 뜨고 내 버튼이 잠긴다. 게임 화면의 무전과 같은 모습이다.
+void _radio(TutorialStage s) {
+  final t = s.timeline;
+  final px = s.view['px'];
+  final py = s.view['py'];
+  s.setTheme(false, 196, 240);
+  t.to(s.caught, {'op': 0}, 200);
+  t.to(s.rob, {'op': 0}, 200);
+  t.to(s.outed, {'op': 0}, 200);
+  // 감옥 원이 구역 한가운데를 가려 좌표 칸이 안 보인다. 이 두 장면에서는 뺀다
+  t.to(s.view, {'jail': 0, 'dim': 1}, 400);
+  t.to(s.cam, {
+    ...TutorialCamera.flatValues,
+    'cx': px,
+    'cy': py,
+    // 줄어든 구역이 무대 폭의 절반쯤 되도록 키운다
+    'scale': 100 / s.view['play'],
+  }, 900);
+  s.dot['x'] = px - s.view['play'] * .45;
+  s.dot['y'] = py;
+  s.dot['sc'] = 1;
+  t.to(s.dot, {'op': 1}, 300);
+  t.after(900, () => t.to(s.q, {'radio': 1}, 250));
+  t.after(1300, () => t.to(s.q, {'ptt': 1}, 90));
+  t.after(2500, () => t.to(s.q, {'ptt': 0}, 150));
+  t.after(2900, () => t.to(s.q, {'pill': 1, 'lock': 1}, 250));
+}
+
+// 좌표: QR 체포 장면처럼 + 메뉴를 열어 좌표를 켜고, 칸을 길게 눌러 발견 핑을 찍으면
+// 칸 이름이 팀 채팅으로도 간다(DEC-0100).
+void _grid(TutorialStage s) {
+  final t = s.timeline;
+  t.to(s.q, {'fab': 1}, 150);
+  t.after(400, () => t.to(s.q, {'gmenu': 1, 'bar': 1, 'fabOpen': 1}, 300));
+  t.after(1000, () {
+    t.to(s.q, {'gpress': 1}, 90);
+    t.after(130, () => t.to(s.q, {'gpress': 0}, 170));
+  });
+  t.after(1300, () {
+    t.to(s.q, {'gmenu': 0, 'bar': 0, 'fabOpen': 0}, 250);
+    t.to(s.view, {'grid': 1}, 400);
+  });
+  // 길게 누른 자리에 물결이 퍼지고 핑 카드가 뜬다
+  t.after(2000, () {
+    final at = tutorialPingPoint(s);
+    s.q['rx'] = at.dx - 28;
+    s.q['ry'] = at.dy - 28;
+    s.q['rip'] = .9;
+    t.to(s.q, {'rip': 0}, 500);
+  });
+  t.after(2400, () => t.to(s.q, {'pcard': 1}, 200));
+  t.after(3300, () {
+    t.to(s.q, {'pcard': 0}, 150);
+    t.to(s.q, {'ping': 1}, 200);
+    t.to(s.q, {'chat': 1}, 250);
+  });
+}
+
+/// 좌표 장면에서 길게 누르는 자리 — 가운데 칸(C3)의 아래쪽이라 칸 이름을 가리지 않는다.
+Offset tutorialPingPoint(TutorialStage s) {
+  final c = s.cameraFrame().project(s.view['px'], s.view['py']);
+  return Offset(c.x, c.y + 14);
 }
 
 // 구역 원을 그대로 이어 쓴다: 원 안이 희게 차며 화면 밖까지 커지고 그 위로 그림이 올라온다.

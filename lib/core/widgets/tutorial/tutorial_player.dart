@@ -20,6 +20,7 @@ import 'tutorial_map_painter.dart';
 import 'tutorial_overlays.dart';
 import 'tutorial_script.dart';
 import 'tutorial_stage.dart';
+import 'tutorial_team_overlays.dart';
 
 class TutorialCopy {
   const TutorialCopy(this.title, this.body);
@@ -58,6 +59,7 @@ class TutorialPlayer extends StatefulWidget {
     required this.onFinished,
     this.mode = TutorialMode.classic,
     this.canSkip = true,
+    this.skipFrom = 0,
     this.tiltStream = deviceTiltStream,
     super.key,
   });
@@ -71,6 +73,9 @@ class TutorialPlayer extends StatefulWidget {
   final VoidCallback onFinished;
   final TutorialMode mode;
   final bool canSkip;
+
+  /// 이 번호 장면부터 건너뛰기를 보인다. 앞 장면은 끝까지 봐야 한다 (#719).
+  final int skipFrom;
   final Stream<Offset> Function() tiltStream;
 
   @override
@@ -98,7 +103,10 @@ class _TutorialPlayerState extends State<TutorialPlayer>
   }
 
   Future<void> _load() async {
-    for (final asset in tutorialSvgAssets) {
+    for (final asset in [
+      ...tutorialSvgAssets,
+      ...TutorialTeamOverlays.svgAssets,
+    ]) {
       final loader = SvgAssetLoader(asset);
       unawaited(
         svg.cache.putIfAbsent(
@@ -391,7 +399,7 @@ class _TutorialPlayerState extends State<TutorialPlayer>
         ),
         // 건너뛰기는 마지막 장에서도 자리를 지킨다. 사라지면 진행 표시가 밀려 보인다.
         Expanded(
-          child: widget.canSkip
+          child: widget.canSkip && _index >= widget.skipFrom
               ? Align(
                   alignment: Alignment.centerRight,
                   child: Opacity(
