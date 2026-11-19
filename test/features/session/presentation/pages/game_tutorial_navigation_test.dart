@@ -126,6 +126,29 @@ void main() {
     expect(find.text('건너뛰기'), findsNothing);
   });
 
+  // 처음 볼 때도 필수 규칙(축소까지)을 다 보면 무전·좌표 같은 추가 기능은 넘길 수 있다 (#719)
+  testWidgets('tutorial_offers_skip_from_radio_scene_when_first_viewing', (
+    tester,
+  ) async {
+    await _openTutorial(tester);
+    final firstExtra = tutorialFirstExtraIndex(TutorialMode.classic);
+
+    for (var i = 0; i < firstExtra; i++) {
+      expect(find.text('건너뛰기'), findsNothing, reason: '${i + 1}번째 장면');
+      for (var t = 0; t < 7000; t += 32) {
+        await tester.pump(const Duration(milliseconds: 32));
+      }
+      await tester.tap(find.text('다음').last, warnIfMissed: false);
+    }
+    await _settle(tester);
+
+    expect(find.text('경찰만 무전기를 쓸 수 있어요'), findsOneWidget);
+    await tester.tap(find.text('건너뛰기'));
+    await _settle(tester);
+
+    expect(find.text('대기방'), findsOneWidget);
+  });
+
   testWidgets('tutorial_offers_skip_when_player_reopens_it_after_finishing', (
     tester,
   ) async {
@@ -157,7 +180,7 @@ void main() {
     (tester) async {
       await _openTutorial(tester);
 
-      for (var i = 0; i < 9; i++) {
+      for (var i = 0; i < 11; i++) {
         for (var t = 0; t < 7000; t += 32) {
           await tester.pump(const Duration(milliseconds: 32));
         }

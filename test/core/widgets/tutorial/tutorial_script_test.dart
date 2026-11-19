@@ -36,7 +36,85 @@ void main() {
       TutorialScene.flat,
       TutorialScene.chase,
     ]);
-    expect(classic.length, 10);
+    expect(classic.length, 12);
+  });
+
+  // 필수 규칙(구역~축소)을 다 본 뒤에 몰라도 게임은 되는 추가 기능을 보여 준다 (#719)
+  test('classic_tutorial_shows_radio_then_grid_when_rules_are_done', () {
+    expect(classic.skip(classic.indexOf(TutorialScene.shrink)), [
+      TutorialScene.shrink,
+      TutorialScene.radio,
+      TutorialScene.grid,
+      TutorialScene.community,
+    ]);
+  });
+
+  test('extra_feature_scenes_start_right_after_zone_shrink_in_both_modes', () {
+    for (final mode in TutorialMode.values) {
+      final scenes = tutorialScenes(mode);
+      expect(
+        tutorialFirstExtraIndex(mode),
+        scenes.indexOf(TutorialScene.shrink) + 1,
+      );
+      expect(scenes[tutorialFirstExtraIndex(mode)], TutorialScene.radio);
+    }
+  });
+
+  // 경찰이 무전 버튼을 누르고 말한 뒤, 동료가 먼저 말하자 내 버튼이 잠기는 데서 멈춘다
+  test('radio_scene_ends_with_teammate_talking_and_my_button_locked', () {
+    final stage = _playUpTo(classic, TutorialScene.radio);
+    var talked = false;
+    for (var i = 0; i < 2000 && stage.timeline.isPlaying; i++) {
+      stage.update(16);
+      talked |= stage.q['ptt'] > .9;
+    }
+
+    expect(talked, isTrue);
+    expect(stage.q['radio'], 1);
+    expect(stage.q['ptt'], 0);
+    expect(stage.q['pill'], 1);
+    expect(stage.q['lock'], 1);
+    expect(stage.dark, isFalse);
+  });
+
+  // QR 체포 장면처럼 + 메뉴에서 좌표를 켜고, 길게 눌러 발견 핑을 찍으면 팀 채팅으로 간다
+  test('grid_scene_ends_with_found_ping_in_team_chat_when_grid_is_on', () {
+    final stage = _playUpTo(classic, TutorialScene.grid);
+    var menuOpened = false;
+    var gridPressed = false;
+    var cardShown = false;
+    for (var i = 0; i < 2000 && stage.timeline.isPlaying; i++) {
+      stage.update(16);
+      menuOpened |= stage.q['gmenu'] > .9;
+      gridPressed |= stage.q['gpress'] > .9;
+      cardShown |= stage.q['pcard'] > .9;
+    }
+
+    expect(menuOpened && gridPressed && cardShown, isTrue);
+    expect(stage.q['gmenu'], 0);
+    expect(stage.q['bar'], 0);
+    expect(stage.q['pcard'], 0);
+    expect(stage.view['grid'], 1);
+    expect(stage.q['ping'], 1);
+    expect(stage.q['chat'], 1);
+  });
+
+  test('grid_scene_hides_radio_button_when_previous_scene_was_radio', () {
+    final stage = _playUpTo(classic, TutorialScene.grid);
+    _runUntilIdle(stage);
+
+    expect(stage.q['radio'], 0);
+    expect(stage.q['pill'], 0);
+  });
+
+  test('last_scene_clears_grid_and_chat_when_tutorial_wraps_up', () {
+    final stage = _playUpTo(classic, TutorialScene.community);
+    _runUntilIdle(stage);
+
+    expect(stage.view['grid'], 0);
+    expect(stage.q['ping'], 0);
+    expect(stage.q['chat'], 0);
+    expect(stage.q['fab'], 0);
   });
 
   test('tag_tutorial_shows_qr_and_scan_before_out_when_arrest_is_qr', () {
@@ -50,6 +128,8 @@ void main() {
       TutorialScene.scan,
       TutorialScene.out,
       TutorialScene.shrink,
+      TutorialScene.radio,
+      TutorialScene.grid,
       TutorialScene.community,
     ]);
     expect(tag, isNot(contains(TutorialScene.jail)));
@@ -237,13 +317,15 @@ void main() {
     },
   );
 
-  // 원이 커지는 동안 지도가 함께 누우면 건물과 나무가 일그러져 보였다
+  // 원이 커지는 동안 지도가 함께 누우면 건물과 나무가 일그러져 보였다.
+  // 앞 장면(좌표, #719)이 위에서 내려다보는 시점이라 그 각도를 그대로 이어 간다.
   test('map_keeps_its_angle_when_zone_circle_grows_into_the_last_scene', () {
     final stage = _playUpTo(classic, TutorialScene.community);
+    final tiltBefore = stage.cam['tilt'];
 
     _runUntilIdle(stage);
 
-    expect(stage.cam['tilt'], 58);
+    expect(stage.cam['tilt'], tiltBefore);
   });
 
   // 실제 플로팅 메뉴처럼 + 버튼이 눌리면 X로 돌아간다

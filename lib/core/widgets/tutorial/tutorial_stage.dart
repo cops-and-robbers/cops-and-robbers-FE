@@ -86,6 +86,7 @@ class TutorialStage extends ChangeNotifier {
     'ra': 0,
     'rt': 0,
     'copy': 1,
+    'grid': 0,
   });
 
   final TutorialProps run = TutorialProps(const {'v': 0, 't': 0, 'sh': 0});
@@ -125,6 +126,17 @@ class TutorialStage extends ChangeNotifier {
     'hs': 1,
     'hy': 0,
     'fb': 0,
+    // 무전 장면: 버튼 표시, 누름, 동료 무전 알약, 내 버튼 잠김
+    'radio': 0,
+    'ptt': 0,
+    'pill': 0,
+    'lock': 0,
+    // 좌표 장면: 메뉴 항목, 좌표 누름, 핑 카드, 찍힌 핑, 팀 채팅 미리보기
+    'gmenu': 0,
+    'gpress': 0,
+    'pcard': 0,
+    'ping': 0,
+    'chat': 0,
   });
 
   final TutorialActor cop = TutorialActor(
@@ -249,12 +261,22 @@ class TutorialStage extends ChangeNotifier {
       'flash': 0,
       'fr': 0,
       'tilt': 0,
+      'radio': 0,
+      'ptt': 0,
+      'pill': 0,
+      'lock': 0,
+      'gmenu': 0,
+      'gpress': 0,
+      'pcard': 0,
+      'ping': 0,
+      'chat': 0,
     };
     if (!keepQr) {
       cleared['tg'] = 0;
       cleared['bar'] = 0;
     }
     timeline.to(q, cleared, 150);
+    timeline.to(view, {'grid': 0}, 150);
   }
 
   void startBlink() => _blinkStartMs = clockMs;

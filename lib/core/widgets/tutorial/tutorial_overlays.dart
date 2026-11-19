@@ -11,6 +11,7 @@ import '../../constants/text_styles.dart';
 import '../../../l10n/app_localizations.dart';
 import '../dialogs/dialog_animation.dart';
 import 'tutorial_stage.dart';
+import 'tutorial_team_overlays.dart';
 
 const _copChase = 'assets/characters/police/start/default/chase.svg';
 const _robChase = 'assets/characters/robber/start/default/chase.svg';
@@ -74,6 +75,7 @@ class TutorialOverlays extends StatelessWidget {
                 : null,
           ),
         ),
+        ...TutorialTeamOverlays.belowMenu(stage),
         _fade(
           q['bar'],
           Positioned(
@@ -87,6 +89,7 @@ class TutorialOverlays extends StatelessWidget {
         // 실제 메뉴처럼 버튼과 항목은 어두운 배경 위에 있다
         _fade(q['fab'], _fab(q['fabOpen'])),
         _fade(q['item'], _myQrItem(l10n)),
+        ...TutorialTeamOverlays.aboveMenu(stage, l10n),
         _fade(q['hand'], _heldPhone()),
         _fade(q['tg'], _qrTarget()),
         _fade(q['fr'], _scanFrame()),
@@ -194,7 +197,8 @@ class TutorialOverlays extends StatelessWidget {
     );
   }
 
-  // 게임 화면의 플로팅 버튼(GameFabMenu)과 같은 모습이다
+  // 게임 화면의 플로팅 버튼(GameFabMenu)과 같은 모습이다. 도둑은 검정 원에 초록 +,
+  // 경찰은 파란 원에 흰 +다.
   Positioned _fab(double open) => Positioned(
     left: 168.5,
     top: 410,
@@ -202,9 +206,9 @@ class TutorialOverlays extends StatelessWidget {
       width: 56,
       height: 56,
       decoration: BoxDecoration(
-        color: AppColors.black,
+        color: stage.dark ? AppColors.black : AppColors.blue,
         shape: BoxShape.circle,
-        boxShadow: AppShadows.softThemed(true),
+        boxShadow: AppShadows.softThemed(stage.dark),
       ),
       alignment: Alignment.center,
       child: Transform.rotate(
@@ -213,7 +217,10 @@ class TutorialOverlays extends StatelessWidget {
           AppIcons.plus,
           width: 24,
           height: 24,
-          colorFilter: const ColorFilter.mode(AppColors.green, BlendMode.srcIn),
+          colorFilter: ColorFilter.mode(
+            stage.dark ? AppColors.green : AppColors.white,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     ),
