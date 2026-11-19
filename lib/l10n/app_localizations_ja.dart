@@ -1016,7 +1016,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dialogSafetyWarningMessage =>
-      'ゲーム中画面に集中しすぎると危険です\n道路や歩行環境を確認し、安全にご利用ください';
+      '画面だけを見ていると危険です\n道路や周りを確認しながら遊んでください';
 
   @override
   String get buttonAcknowledgedSurroundings => '確認しました！';
@@ -1569,8 +1569,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogAge14ConfirmTitle => '14歳以上ですか';
 
   @override
-  String get dialogAge14ConfirmMessage =>
-      'Cops and Robbersは14歳未満の会員登録ができません\n該当情報は登録禁止の確認目的のみに使用しています';
+  String get dialogAge14ConfirmMessage => '14歳以上の方のみ登録できます\nこの情報は年齢確認にのみ使います';
 
   @override
   String get errorLoginGeneric => 'ログイン中にエラーが発生しました';

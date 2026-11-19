@@ -1015,7 +1015,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogSafetyWarningMessage =>
-      '게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요';
+      '게임 중 화면만 보면 위험할 수 있어요\n도로와 주변을 살피며 안전하게 이용해 주세요';
 
   @override
   String get buttonAcknowledgedSurroundings => '확인했어요!';
@@ -1569,7 +1569,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dialogAge14ConfirmMessage =>
-      '경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요';
+      '경찰과 도둑은 만 14세 이상만 가입할 수 있어요\n입력한 정보는 나이 확인에만 써요';
 
   @override
   String get errorLoginGeneric => '로그인 중 오류가 생겼어요';

@@ -1083,7 +1083,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialogSafetyWarningMessage =>
-      'Focusing only on the screen during the game can be dangerous\nPlease check the road and walking environment to stay safe';
+      'Looking only at the screen can be dangerous\nWatch the road and your surroundings';
 
   @override
   String get buttonAcknowledgedSurroundings => 'I understand!';
@@ -1682,7 +1682,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialogAge14ConfirmMessage =>
-      'Cops and Robbers does not allow signups for users under 14\nThis information is used solely to verify eligibility';
+      'You must be 14 or older to sign up\nWe use this only to check your age';
 
   @override
   String get errorLoginGeneric => 'An error occurred during sign in';

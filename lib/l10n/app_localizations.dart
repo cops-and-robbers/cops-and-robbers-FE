@@ -1943,7 +1943,7 @@ abstract class AppLocalizations {
   /// 홈 진입 시 표시되는 주변 안전 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'게임 중 화면에만 집중하면 위험할 수 있어요\n도로 및 보행 환경을 확인하며 안전하게 이용해 주세요'**
+  /// **'게임 중 화면만 보면 위험할 수 있어요\n도로와 주변을 살피며 안전하게 이용해 주세요'**
   String get dialogSafetyWarningMessage;
 
   /// 주변 안전 확인 다이얼로그의 동의 버튼 ('확인했어요!')
@@ -2969,7 +2969,7 @@ abstract class AppLocalizations {
   /// 만 14세 이상 확인 다이얼로그 본문
   ///
   /// In ko, this message translates to:
-  /// **'경찰과 도둑은 만 14세 미만 회원가입이 불가능해요.\n해당 정보는 가입 금지 확인 용도로만 사용하고 있어요'**
+  /// **'경찰과 도둑은 만 14세 이상만 가입할 수 있어요\n입력한 정보는 나이 확인에만 써요'**
   String get dialogAge14ConfirmMessage;
 
   /// 로그인 처리 중 발생한 일반 오류
