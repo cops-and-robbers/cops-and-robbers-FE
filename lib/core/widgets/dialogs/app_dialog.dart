@@ -7,13 +7,15 @@ import '../../constants/spacing_and_radius.dart';
 import '../../constants/text_styles.dart';
 import '../buttons/app_button.dart';
 import 'dialog_animation.dart';
+import 'dialog_card.dart';
 import 'dialog_spacing.dart';
 
 /// 앱 전역에서 사용하는 공용 다이얼로그 컴포넌트
 ///
 /// **기본 스펙**:
-/// - 배경: white, 모서리: 16px 라운드 (버튼은 AppButton 기본 12px)
-/// - 내부 패딩: 상 24 / 좌우 12 / 하 16
+/// - 배경: white, 모서리: 24px 라운드 (버튼은 AppButton 기본 12px)
+/// - 제목 18 / 설명 14 / 버튼 글자 16 (모달_GUI)
+/// - 내부 패딩: 상하좌우 24 / 제목-설명 8 / 설명-버튼 24
 /// - 양옆 마진: 36px (화면 너비에 맞게 확장)
 /// - 애니메이션: 스케일 + 페이드 (250ms, easeOutBack)
 ///
@@ -97,7 +99,7 @@ class AppDialog extends StatefulWidget {
     this.isDarkMode = false,
   });
 
-  /// 제목 (선택) - heading_20, black. null이면 제목 영역 숨김
+  /// 제목 (선택) - subHeading_18, black. null이면 제목 영역 숨김
   final String? title;
 
   /// 메시지 (선택) - paragraph_14, black600
@@ -145,7 +147,7 @@ class AppDialog extends StatefulWidget {
   /// 취소 버튼 텍스트색 (미지정 시 black600)
   final Color? cancelTextColor;
 
-  /// 제목 스타일 오버라이드 (미지정 시 heading_20, black)
+  /// 제목 스타일 오버라이드 (미지정 시 subHeading_18, black)
   final TextStyle? titleStyle;
 
   /// 다이얼로그 내부 섹션 간 간격 오버라이드 (미지정 시 기본값 적용)
@@ -361,6 +363,11 @@ class _AppDialogState extends State<AppDialog>
   }
 
   /// 확인 버튼 배경색 (기본값 적용)
+  /// 버튼 글자는 16 — 다크는 robberLabel, 라이트는 label_16.
+  /// AppButton 기본(18)은 화면 하단 버튼용이라 다이얼로그 안에서는 한 단계 작게 쓴다.
+  TextStyle get _buttonTextStyle =>
+      widget.isDarkMode ? AppTextStyles.robberLabel : AppTextStyles.label_16;
+
   Color get _resolvedConfirmColor =>
       widget.confirmColor ??
       (widget.isDestructive
@@ -399,110 +406,78 @@ class _AppDialogState extends State<AppDialog>
             child: child,
           ),
           child: SingleChildScrollView(
-            child: Container(
-              width: double.infinity,
-              margin: AppPadding.horizontal36,
-              padding: EdgeInsets.only(
-                top: AppSpacing.vertical24,
-                left: AppSpacing.horizontal12,
-                right: AppSpacing.horizontal12,
-                bottom: AppSpacing.vertical16,
-              ),
-              decoration: BoxDecoration(
-                color:
-                    widget.backgroundColor ??
-                    (widget.isDarkMode ? AppColors.black : AppColors.white),
-                borderRadius: AppRadius.xlarge,
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // 아바타 + 닉네임 (선택)
-                    if (widget.showAvatar) ...[
-                      _buildAvatarSection(),
-                      SizedBox(
-                        height:
-                            widget.spacing?.avatarToTitle ??
-                            AppSpacing.vertical16,
-                      ),
-                    ],
-
-                    // 제목
-                    if (widget.title != null)
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.horizontal4,
-                        ),
-                        child: Text(
-                          widget.title!,
-                          style:
-                              widget.titleStyle ??
-                              (widget.isDarkMode
-                                  ? AppTextStyles.robberHeading.copyWith(
-                                      color: AppColors.white,
-                                    )
-                                  : AppTextStyles.heading_20.copyWith(
-                                      color: AppColors.black,
-                                    )),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-
-                    // 메시지
-                    if (widget.message != null) ...[
-                      SizedBox(
-                        height:
-                            widget.spacing?.titleToMessage ??
-                            AppSpacing.vertical12,
-                      ),
-                      Text(
-                        widget.message!,
-                        style: AppTextStyles.paragraph_14.copyWith(
-                          color: widget.isDarkMode
-                              ? AppColors.black400
-                              : AppColors.black600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-
-                    // 커스텀 콘텐츠
-                    if (widget.customContent != null) ...[
-                      SizedBox(
-                        height:
-                            widget.spacing?.toContent ??
-                            (widget.message != null
-                                ? AppSpacing.vertical12
-                                : AppSpacing.vertical20),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.horizontal6,
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: widget.customContent!,
-                        ),
-                      ),
-                    ],
-
-                    // 버튼들
-                    if (widget.showButtons) ...[
-                      SizedBox(
-                        height:
-                            widget.spacing?.toButtons ?? AppSpacing.vertical20,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.horizontal4,
-                        ),
-                        child: _buildButtons(),
-                      ),
-                    ],
+            child: DialogCard(
+              color:
+                  widget.backgroundColor ??
+                  (widget.isDarkMode ? AppColors.black : AppColors.white),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 아바타 + 닉네임 (선택)
+                  if (widget.showAvatar) ...[
+                    _buildAvatarSection(),
+                    SizedBox(
+                      height:
+                          widget.spacing?.avatarToTitle ??
+                          AppSpacing.vertical16,
+                    ),
                   ],
-                ),
+
+                  // 제목
+                  if (widget.title != null)
+                    Text(
+                      widget.title!,
+                      style:
+                          widget.titleStyle ??
+                          (widget.isDarkMode
+                              ? AppTextStyles.robberHeading.copyWith(
+                                  fontSize: 18.sp,
+                                  color: AppColors.white,
+                                )
+                              : AppTextStyles.subHeading_18.copyWith(
+                                  color: AppColors.black,
+                                )),
+                      textAlign: TextAlign.center,
+                    ),
+
+                  // 메시지
+                  if (widget.message != null) ...[
+                    SizedBox(
+                      height:
+                          widget.spacing?.titleToMessage ??
+                          AppSpacing.vertical8,
+                    ),
+                    Text(
+                      widget.message!,
+                      style: AppTextStyles.paragraph_14.copyWith(
+                        color: widget.isDarkMode
+                            ? AppColors.black400
+                            : AppColors.black600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+
+                  // 커스텀 콘텐츠
+                  if (widget.customContent != null) ...[
+                    SizedBox(
+                      height: widget.spacing?.toContent ?? AppSpacing.vertical8,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: widget.customContent!,
+                    ),
+                  ],
+
+                  // 버튼들
+                  if (widget.showButtons) ...[
+                    SizedBox(
+                      height:
+                          widget.spacing?.toButtons ?? AppSpacing.vertical24,
+                    ),
+                    _buildButtons(),
+                  ],
+                ],
               ),
             ),
           ),
@@ -550,7 +525,7 @@ class _AppDialogState extends State<AppDialog>
               backgroundColor: _resolvedCancelColor,
               foregroundColor: _resolvedCancelTextColor,
               height: 48.h,
-              textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
+              textStyle: _buttonTextStyle,
             ),
           ),
           SizedBox(width: AppSpacing.horizontal8),
@@ -563,7 +538,7 @@ class _AppDialogState extends State<AppDialog>
               backgroundColor: _resolvedConfirmColor,
               foregroundColor: _resolvedConfirmTextColor,
               height: 48.h,
-              textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
+              textStyle: _buttonTextStyle,
             ),
           ),
         ],
@@ -580,7 +555,7 @@ class _AppDialogState extends State<AppDialog>
       foregroundColor: _resolvedConfirmTextColor,
       width: double.infinity,
       height: 48.h,
-      textStyle: widget.isDarkMode ? AppTextStyles.robberLabel : null,
+      textStyle: _buttonTextStyle,
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/spacing_and_radius.dart';
-import '../../../../core/constants/text_styles.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
 
 /// 체포 / 탈옥 확인 공통 모달
@@ -57,9 +56,6 @@ class GameActionModal {
       isDarkMode: isDarkMode,
       backgroundColor: isDarkMode ? AppColors.black : null,
       title: title,
-      titleStyle: isDarkMode
-          ? AppTextStyles.robberHeading.copyWith(color: AppColors.white)
-          : null,
       message: useAvatar ? null : message,
       confirmText: confirmLabel,
       cancelText: useAvatar ? l10n.buttonNo : l10n.buttonCancel,

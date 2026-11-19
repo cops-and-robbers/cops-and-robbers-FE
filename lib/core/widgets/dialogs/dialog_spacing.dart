@@ -26,13 +26,12 @@ class DialogSpacing {
   /// 아바타 <-> 타이틀 간격 (기본: AppSpacing.vertical16)
   final double? avatarToTitle;
 
-  /// 타이틀 <-> 메시지 간격 (기본: AppSpacing.vertical12)
+  /// 타이틀 <-> 메시지 간격 (기본: AppSpacing.vertical8)
   final double? titleToMessage;
 
-  /// 메시지/타이틀 <-> 커스텀 콘텐츠 간격
-  /// (기본: message 있으면 AppSpacing.vertical12, 없으면 AppSpacing.vertical20)
+  /// 메시지/타이틀 <-> 커스텀 콘텐츠 간격 (기본: AppSpacing.vertical8)
   final double? toContent;
 
-  /// 콘텐츠/메시지 <-> 버튼 간격 (기본: AppSpacing.vertical20)
+  /// 콘텐츠/메시지 <-> 버튼 간격 (기본: AppSpacing.vertical24)
   final double? toButtons;
 }

@@ -9,6 +9,7 @@ import '../../../../core/widgets/buttons/app_button.dart';
 import '../../../../core/widgets/dialogs/dialog_animation.dart';
 import '../../domain/event_evidence.dart';
 import 'event_evidence_image.dart';
+import '../../../../core/widgets/dialogs/dialog_card.dart';
 
 /// 이벤트 모드 — 운영진 체포 성공 피드백 다이얼로그(증거 공개).
 ///
@@ -62,25 +63,20 @@ class EventArrestSuccessDialog extends StatelessWidget {
     // 사진 수보다 많이 검거하면 마지막 사진을 다시 보여 준다.
     final slot = evidenceIndex.clamp(1, evidence.count);
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: AppPadding.horizontal36,
-      child: Container(
-        padding: EdgeInsets.all(20.w),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: AppRadius.xxlarge,
-        ),
+    return Center(
+      child: DialogCard(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // 타이틀: "운영진 검거"
             Text(
               l10n.gameEventArrestSuccessTitle,
-              style: AppTextStyles.heading_20.copyWith(color: AppColors.black),
+              style: AppTextStyles.subHeading_18.copyWith(
+                color: AppColors.black,
+              ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: AppSpacing.vertical12),
+            SizedBox(height: AppSpacing.vertical8),
             // 증거 이미지 슬롯 — ValueKey로 테스트에서 slot 값 검증
             SizedBox(
               key: ValueKey('event_evidence_$slot'),
@@ -97,12 +93,13 @@ class EventArrestSuccessDialog extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: AppSpacing.vertical20),
+            SizedBox(height: AppSpacing.vertical24),
             // 확인 버튼
             AppButton(
               text: l10n.gameEventArrestSuccessConfirm,
               onPressed: () => Navigator.of(context).pop(),
               height: 48.h,
+              textStyle: AppTextStyles.label_16,
             ),
           ],
         ),

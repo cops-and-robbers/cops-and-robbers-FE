@@ -9,6 +9,7 @@ import '../../constants/text_styles.dart';
 import '../../network/websocket/stomp_connection.dart';
 import '../buttons/app_button.dart';
 import 'dialog_animation.dart';
+import 'dialog_card.dart';
 
 /// WebSocket 연결 끊김 시 표시되는 재연결 모달
 ///
@@ -130,60 +131,46 @@ class _ReconnectModalState extends State<ReconnectModal> {
           // connecting 중에만 버튼 비활성 / 그 외엔 항상 재연결 가능
           final isConnecting = connState == StompConnectionState.connecting;
 
-          return Container(
-            width: 320.w,
-            height: 182.h,
-            padding: EdgeInsets.only(
-              top: 24.h,
-              left: 16.w,
-              right: 16.w,
-              bottom: 16.h,
-            ),
-            decoration: BoxDecoration(
-              color: _cardColor,
-              borderRadius: AppRadius.xxlarge,
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: 44.w,
-                    height: 44.w,
-                    child: CircularProgressIndicator(color: _indicatorColor),
-                  ),
+          return DialogCard(
+            color: _cardColor,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 44.w,
+                  height: 44.w,
+                  child: CircularProgressIndicator(color: _indicatorColor),
+                ),
 
-                  SizedBox(height: 12.h),
+                SizedBox(height: AppSpacing.vertical12),
 
-                  Text(
-                    AppLocalizations.of(context).dialogReconnectMessage,
-                    style: AppTextStyles.paragraph_14.copyWith(
-                      color: _textColor,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                Text(
+                  AppLocalizations.of(context).dialogReconnectMessage,
+                  style: AppTextStyles.paragraph_14.copyWith(color: _textColor),
+                  textAlign: TextAlign.center,
+                ),
 
-                  const Spacer(),
+                SizedBox(height: AppSpacing.vertical24),
 
-                  // connecting 중에만 "연결 중..." 비활성, 나머지는 "재연결" 활성
-                  AppButton(
-                    text: isConnecting
-                        ? AppLocalizations.of(
-                            context,
-                          ).dialogReconnectButtonConnecting
-                        : AppLocalizations.of(
-                            context,
-                          ).dialogReconnectButtonRetry,
-                    onPressed: isConnecting ? null : widget.onReconnect,
-                    backgroundColor: _buttonBg,
-                    foregroundColor: _buttonFg,
-                    disabledBackgroundColor: _buttonDisabledBg,
-                    disabledForegroundColor: _buttonDisabledFg,
-                    width: double.infinity,
-                    height: 48.h,
-                  ),
-                ],
-              ),
+                // connecting 중에만 "연결 중..." 비활성, 나머지는 "재연결" 활성
+                AppButton(
+                  text: isConnecting
+                      ? AppLocalizations.of(
+                          context,
+                        ).dialogReconnectButtonConnecting
+                      : AppLocalizations.of(context).dialogReconnectButtonRetry,
+                  onPressed: isConnecting ? null : widget.onReconnect,
+                  backgroundColor: _buttonBg,
+                  foregroundColor: _buttonFg,
+                  disabledBackgroundColor: _buttonDisabledBg,
+                  disabledForegroundColor: _buttonDisabledFg,
+                  width: double.infinity,
+                  height: 48.h,
+                  textStyle: widget.isDarkMode
+                      ? AppTextStyles.robberLabel
+                      : AppTextStyles.label_16,
+                ),
+              ],
             ),
           );
         },

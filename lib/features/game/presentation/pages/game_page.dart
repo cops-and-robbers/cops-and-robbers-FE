@@ -2539,9 +2539,10 @@ class _GamePageState extends ConsumerState<GamePage>
           ? l10n.messageGameOverWinner(winnerTeamLabel)
           : l10n.gameOverFallbackMessage,
       titleStyle:
+          // 크기는 공용 다이얼로그 제목(18)과 같게, 색만 승패로 바꾼다
           (_isDarkMode
-                  ? AppTextStyles.robberHeading24
-                  : AppTextStyles.heading_20)
+                  ? AppTextStyles.robberHeading.copyWith(fontSize: 18.sp)
+                  : AppTextStyles.subHeading_18)
               .copyWith(
                 color: _isDarkMode
                     ? AppColors.green
