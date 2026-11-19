@@ -493,6 +493,8 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
         return errorNicknameUpdateUnexpected;
       case 'errorDeleteAccountUnexpected':
         return errorDeleteAccountUnexpected;
+      case 'errorAppleTokenRevokeFailed':
+        return errorAppleTokenRevokeFailed;
       case 'errorAgreementFetchUnexpected':
         return errorAgreementFetchUnexpected;
       case 'errorAgreementSaveUnexpected':

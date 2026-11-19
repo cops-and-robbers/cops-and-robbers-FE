@@ -155,6 +155,31 @@ class AuthRepositoryImpl implements AuthRepository {
   // ============================================
 
   @override
+  bool get isAppleAccount => _firebaseAuthDataSource.isAppleUser;
+
+  @override
+  Future<void> revokeAppleToken() async {
+    try {
+      await _firebaseAuthDataSource.revokeAppleToken();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'ERROR_ABORTED_BY_USER') {
+        throw const AuthCancelledException();
+      }
+      throw AuthException(
+        message: 'Apple 계정 연결을 해제하지 못했습니다.',
+        messageKey: 'errorAppleTokenRevokeFailed',
+        originalException: e,
+      );
+    } catch (e) {
+      throw AuthException(
+        message: 'Apple 계정 연결을 해제하지 못했습니다.',
+        messageKey: 'errorAppleTokenRevokeFailed',
+        originalException: e,
+      );
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     try {
       // 1. 백엔드 로그아웃 (refreshToken 전달)
