@@ -1119,7 +1119,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homePageWelcomeMessage => 'Who stole\nMy cheese!!!!🧀';
 
   @override
-  String get buttonCreateRoom => 'Create game';
+  String get buttonCreateRoom => 'Create room';
 
   @override
   String get buttonJoinRoom => 'Join game';
@@ -1144,7 +1144,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionCreationStepReviewHint =>
-      'Filled in with recommended values. Tap only what you want to change';
+      'Recommended settings applied. Change anything you like';
+
+  @override
+  String get sessionCreateConfirmTitle => 'Create this room?';
+
+  @override
+  String get sessionCreateConfirmMessage =>
+      'Did you check the mode and details?\nThe room will use the current settings';
+
+  @override
+  String get sessionCreateConfirmCreate => 'Create';
 
   @override
   String get modeSelectTitle => 'Which mode do you want to play?';

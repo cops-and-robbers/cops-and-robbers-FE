@@ -1051,7 +1051,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homePageWelcomeMessage => '누가 내 치즈\n훔쳐갔어!!!!🧀';
 
   @override
-  String get buttonCreateRoom => '게임 생성하기';
+  String get buttonCreateRoom => '방 생성하기';
 
   @override
   String get buttonJoinRoom => '게임 참여하기';
@@ -1072,7 +1072,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sessionCreationStepBasicHint => '게임을 진행할 때, 꼭 필요한 정보들이에요';
 
   @override
-  String get sessionCreationStepReviewHint => '추천값으로 채워 뒀어요. 바꿀 항목만 눌러요';
+  String get sessionCreationStepReviewHint => '추천 설정을 적용했어요. 원하는 대로 변경할 수 있어요';
+
+  @override
+  String get sessionCreateConfirmTitle => '이대로 방을 만들까요?';
+
+  @override
+  String get sessionCreateConfirmMessage =>
+      '게임 모드와 세부 설정을 확인했나요?\n지금 설정 그대로 방을 만들어요';
+
+  @override
+  String get sessionCreateConfirmCreate => '만들기';
 
   @override
   String get modeSelectTitle => '어떤 모드로 할까요?';

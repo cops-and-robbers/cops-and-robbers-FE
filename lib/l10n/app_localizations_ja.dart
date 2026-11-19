@@ -1052,7 +1052,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
 
   @override
-  String get buttonCreateRoom => 'ゲーム作成';
+  String get buttonCreateRoom => 'ルーム作成';
 
   @override
   String get buttonJoinRoom => 'ゲーム参加';
@@ -1073,7 +1073,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sessionCreationStepBasicHint => 'ゲームを進行する際、必ず必要な情報です';
 
   @override
-  String get sessionCreationStepReviewHint => 'おすすめの値を入れました。変えたい項目だけタップしてください';
+  String get sessionCreationStepReviewHint => 'おすすめの設定を適用しました。自由に変更できます';
+
+  @override
+  String get sessionCreateConfirmTitle => 'このルームを作りますか？';
+
+  @override
+  String get sessionCreateConfirmMessage =>
+      'ゲームモードと詳細設定を確認しましたか？\n今の設定のままルームを作ります';
+
+  @override
+  String get sessionCreateConfirmCreate => '作る';
 
   @override
   String get modeSelectTitle => 'どのモードで遊びますか？';

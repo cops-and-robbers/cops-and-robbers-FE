@@ -2015,7 +2015,7 @@ abstract class AppLocalizations {
   /// 공통 — 게임 생성 버튼
   ///
   /// In ko, this message translates to:
-  /// **'게임 생성하기'**
+  /// **'방 생성하기'**
   String get buttonCreateRoom;
 
   /// 공통 — 게임 참여 버튼
@@ -2057,8 +2057,26 @@ abstract class AppLocalizations {
   /// 방 생성 — 리뷰 단계 보조 설명
   ///
   /// In ko, this message translates to:
-  /// **'추천값으로 채워 뒀어요. 바꿀 항목만 눌러요'**
+  /// **'추천 설정을 적용했어요. 원하는 대로 변경할 수 있어요'**
   String get sessionCreationStepReviewHint;
+
+  /// 방 생성 — 방 생성하기를 누른 뒤 뜨는 확인 모달 제목
+  ///
+  /// In ko, this message translates to:
+  /// **'이대로 방을 만들까요?'**
+  String get sessionCreateConfirmTitle;
+
+  /// 방 생성 — 확인 모달 설명 (두 줄)
+  ///
+  /// In ko, this message translates to:
+  /// **'게임 모드와 세부 설정을 확인했나요?\n지금 설정 그대로 방을 만들어요'**
+  String get sessionCreateConfirmMessage;
+
+  /// 방 생성 — 확인 모달 오른쪽 버튼, 실제로 방을 만든다
+  ///
+  /// In ko, this message translates to:
+  /// **'만들기'**
+  String get sessionCreateConfirmCreate;
 
   /// 방 생성 — 모드 선택 단계 제목
   ///
