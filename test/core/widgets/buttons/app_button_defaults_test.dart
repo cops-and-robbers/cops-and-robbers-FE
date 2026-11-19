@@ -154,7 +154,7 @@ void main() {
 
     expect(tester.widget<Text>(title).style?.fontSize, 18.sp);
     expect(tester.widget<Text>(message).style?.fontSize, 14.sp);
-    expect(tester.getRect(title).top - card.top, closeTo(24.h, 0.01));
+    expect(tester.getRect(title).top - card.top, closeTo(24.w, 0.01));
     expect(
       tester.getRect(message).top - tester.getRect(title).bottom,
       closeTo(8.h, 0.01),
@@ -165,7 +165,7 @@ void main() {
     );
     expect(close.left - card.left, closeTo(24.w, 0.01));
     expect(card.right - create.right, closeTo(24.w, 0.01));
-    expect(card.bottom - close.bottom, closeTo(24.h, 0.01));
+    expect(card.bottom - close.bottom, closeTo(24.w, 0.01));
   });
 
   // 다이얼로그 버튼이 하나뿐일 때(확인만)도 같은 16을 쓴다

@@ -27,10 +27,7 @@ class DialogCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: margin ?? AppPadding.horizontal36,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.horizontal24,
-        vertical: AppSpacing.vertical24,
-      ),
+      padding: AppPadding.all24,
       decoration: BoxDecoration(color: color, borderRadius: AppRadius.xxlarge),
       child: Material(color: Colors.transparent, child: child),
     );
