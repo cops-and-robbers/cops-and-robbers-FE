@@ -90,10 +90,3 @@ class CameraFrame {
   double get horizonY =>
       tutorialStageHeight * oy - scale * persp / math.tan(tilt * math.pi / 180);
 }
-
-ProjectedPoint projectPoint(
-  TutorialCamera camera,
-  double x,
-  double y, [
-  double z = 0,
-]) => CameraFrame(camera).project(x, y, z);

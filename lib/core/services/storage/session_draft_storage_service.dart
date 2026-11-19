@@ -197,22 +197,6 @@ class SessionDraftStorageService {
     }
   }
 
-  /// 최대 참가자 수 업데이트
-  ///
-  /// **사용 시점**: SessionSettingsPage에서 설정 완료 시
-  Future<void> updateMaxParticipants(int maxParticipants) async {
-    try {
-      final currentDraft = await loadDraft();
-      final updatedDraft = (currentDraft ?? const SessionCreationDraftModel())
-          .copyWith(maxParticipants: maxParticipants);
-      await saveDraft(updatedDraft);
-      debugPrint('✅ 최대 참가자 수 업데이트: $maxParticipants명');
-    } catch (e, stack) {
-      debugPrint('❌ 최대 참가자 수 업데이트 실패: $e');
-      debugPrint('Stack: $stack');
-    }
-  }
-
   /// 게임 설정 정보 업데이트
   ///
   /// **사용 시점**: GameSettingsPage에서 설정 완료 시

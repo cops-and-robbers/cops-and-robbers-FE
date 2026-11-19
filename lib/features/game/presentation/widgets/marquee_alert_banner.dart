@@ -32,22 +32,6 @@ class MarqueeAlertBanner extends StatefulWidget {
   /// 화면 가장자리와 배너 사이 여백. 없으면 20 — 시작 장면은 카드 줄에 맞춰 바꾼다.
   final double? horizontalMargin;
 
-  /// 배너 한 장의 높이(위아래 여백 12 + 아이콘 20과 글자 한 줄 중 큰 쪽).
-  /// 시작 장면이 공지가 없을 때도 이만큼 자리를 비워 둬 카드가 움직이지 않게 한다.
-  static double heightFor({required bool isDarkMode}) {
-    final painter = TextPainter(
-      text: TextSpan(
-        text: ' ',
-        style: _MarqueeAlertBannerState._styleFor(isDarkMode),
-      ),
-      textDirection: TextDirection.ltr,
-      maxLines: 1,
-    )..layout();
-    final line = painter.height;
-    painter.dispose();
-    return 12.h * 2 + (line > 20.w ? line : 20.w);
-  }
-
   @override
   State<MarqueeAlertBanner> createState() => _MarqueeAlertBannerState();
 }
