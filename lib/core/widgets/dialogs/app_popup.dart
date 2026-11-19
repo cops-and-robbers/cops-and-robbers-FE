@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/spacing_and_radius.dart';
 import 'dialog_animation.dart';
+import 'dialog_card.dart';
 
 /// 버튼 없이 콘텐츠만 표시하는 팝업
 ///
@@ -141,15 +140,9 @@ class _AppPopupState extends State<AppPopup> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     Widget popup = Center(
-      child: Container(
-        width: double.infinity,
-        margin: AppPadding.horizontal36,
-        padding: EdgeInsets.symmetric(vertical: 42.h, horizontal: 16.w),
-        decoration: BoxDecoration(
-          color: widget.backgroundColor ?? AppColors.white,
-          borderRadius: AppRadius.xxlarge,
-        ),
-        child: Material(color: Colors.transparent, child: widget.content),
+      child: DialogCard(
+        color: widget.backgroundColor ?? AppColors.white,
+        child: widget.content,
       ),
     );
 

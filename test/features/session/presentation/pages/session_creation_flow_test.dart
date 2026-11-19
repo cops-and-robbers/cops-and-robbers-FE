@@ -280,7 +280,9 @@ void main() {
     await tester.tap(find.text('완료'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('게임 생성하기'));
+    await tester.tap(find.text('방 생성하기'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('만들기')); // 확인 모달
     await tester.pumpAndSettle();
 
     final body = server.requestBodies.single;
@@ -288,6 +290,69 @@ void main() {
     final circle = (body['area'] as Map)['circle'] as Map;
     expect(circle.containsKey('jailCenter'), isFalse);
     expect(circle.containsKey('jailRadiusInMeters'), isFalse);
+  });
+
+  // 플레이그라운드를 핀으로 그리다 뒤로 가면 묻지 않고 모드 선택으로 돌아간다 (#713)
+  testWidgets('back_from_drawn_playground_returns_to_mode_without_dialog', (
+    tester,
+  ) async {
+    await _openFlowAndPickMode(tester);
+    await tester.tap(find.text('핀으로 설정'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(
+      () async => tester
+          .widget<ZoneDrawLayer>(find.byType(ZoneDrawLayer))
+          .onDrawEnd(const [
+            Offset(100, 300),
+            Offset(200, 200),
+            Offset(300, 100),
+            Offset(300, 200),
+            Offset(300, 300),
+            Offset(200, 300),
+            Offset(100, 300),
+          ]),
+    );
+    await tester.pumpAndSettle();
+
+    await _tapBack(tester);
+
+    expect(find.text('방 만들기를 그만할까요?'), findsNothing);
+    expect(find.text('어떤 모드로 할까요?'), findsOneWidget);
+  });
+
+  // 방장이 방 생성하기를 누르면 방이 바로 만들어지지 않고 확인 모달이 먼저 뜬다
+  testWidgets('create_button_asks_confirm_before_sending_request', (
+    tester,
+  ) async {
+    final server = FakeCreateGameServer();
+    await _openFlowAndPickMode(tester, mode: '술래잡기', server: server);
+    await tester.tap(find.text('완료'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('방 생성하기'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('이대로 방을 만들까요?'), findsOneWidget);
+    expect(server.requestBodies, isEmpty);
+  });
+
+  // 모달에서 닫기를 누르면 방을 만들지 않고 확인 화면에 남아 설정을 고칠 수 있다
+  testWidgets('close_in_confirm_modal_stays_on_review_without_creating', (
+    tester,
+  ) async {
+    final server = FakeCreateGameServer();
+    await _openFlowAndPickMode(tester, mode: '술래잡기', server: server);
+    await tester.tap(find.text('완료'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('방 생성하기'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('닫기'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('이대로 방을 만들까요?'), findsNothing);
+    expect(find.text('최종 설정을 확인해요'), findsOneWidget);
+    expect(server.requestBodies, isEmpty);
   });
 
   // 확인 화면에서 모드 행을 눌러 술래잡기 → 경찰과 도둑으로 바꾸면 그려 둔 감옥이
@@ -348,7 +413,9 @@ void main() {
       expect(find.text('최종 설정을 확인해요'), findsOneWidget);
       expect(find.text('원형 구역에서만 쓸 수 있어요'), findsOneWidget);
 
-      await tester.tap(find.text('게임 생성하기'));
+      await tester.tap(find.text('방 생성하기'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('만들기')); // 확인 모달
       await tester.pumpAndSettle();
 
       final body = server.requestBodies.single;

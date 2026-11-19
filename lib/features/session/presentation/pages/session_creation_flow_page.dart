@@ -21,6 +21,7 @@ import '../../../../core/errors/app_exception.dart';
 import '../../../../core/services/analytics/analytics_service.dart';
 import '../../../../core/utils/agreement_error_handler.dart';
 import '../../../../core/services/loading_message_service.dart';
+import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../game/domain/shrink_schedule.dart';
@@ -394,6 +395,21 @@ class _SessionCreationFlowPageState
   // ============================================
   // Session Creation
   // ============================================
+
+  /// 방을 만들기 전에 설정을 한 번 더 확인받는다.
+  /// "닫기"나 바깥 탭으로 닫으면 확인 화면에 그대로 남는다.
+  /// 왼쪽 버튼은 UX 가이드대로 기본값 "닫기"를 쓴다.
+  Future<void> _confirmAndCreateSession() async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await AppDialog.confirm(
+      context: context,
+      title: l10n.sessionCreateConfirmTitle,
+      message: l10n.sessionCreateConfirmMessage,
+      confirmText: l10n.sessionCreateConfirmCreate,
+    );
+    if (confirmed != true || !mounted) return;
+    await _createSessionAndNavigate();
+  }
 
   /// 세션 생성 API 호출 후 대기실로 이동
   Future<void> _createSessionAndNavigate() async {
@@ -1014,7 +1030,7 @@ class _SessionCreationFlowPageState
           child: AppButton(
             text: l10n.buttonCreateRoom,
             onPressed: area != null && !_isLoading
-                ? _createSessionAndNavigate
+                ? _confirmAndCreateSession
                 : null,
             isLoading: _isLoading,
           ),

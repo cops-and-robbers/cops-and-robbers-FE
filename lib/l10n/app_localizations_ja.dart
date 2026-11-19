@@ -1016,7 +1016,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dialogSafetyWarningMessage =>
-      'ゲーム中画面に集中しすぎると危険です\n道路や歩行環境を確認し、安全にご利用ください';
+      '画面だけを見ていると危険です\n道路や周りを確認しながら遊んでください';
 
   @override
   String get buttonAcknowledgedSurroundings => '確認しました！';
@@ -1052,7 +1052,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homePageWelcomeMessage => '誰がぼくのチーズを\n盗んだの!!!!🧀';
 
   @override
-  String get buttonCreateRoom => 'ゲーム作成';
+  String get buttonCreateRoom => 'ルーム作成';
 
   @override
   String get buttonJoinRoom => 'ゲーム参加';
@@ -1073,7 +1073,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sessionCreationStepBasicHint => 'ゲームを進行する際、必ず必要な情報です';
 
   @override
-  String get sessionCreationStepReviewHint => 'おすすめの値を入れました。変えたい項目だけタップしてください';
+  String get sessionCreationStepReviewHint => 'おすすめの設定を適用しました。自由に変更できます';
+
+  @override
+  String get sessionCreateConfirmTitle => 'このルームを作りますか？';
+
+  @override
+  String get sessionCreateConfirmMessage =>
+      'ゲームモードと詳細設定を確認しましたか？\n今の設定のままルームを作ります';
+
+  @override
+  String get sessionCreateConfirmCreate => '作る';
 
   @override
   String get modeSelectTitle => 'どのモードで遊びますか？';
@@ -1559,8 +1569,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dialogAge14ConfirmTitle => '14歳以上ですか';
 
   @override
-  String get dialogAge14ConfirmMessage =>
-      'Cops and Robbersは14歳未満の会員登録ができません\n該当情報は登録禁止の確認目的のみに使用しています';
+  String get dialogAge14ConfirmMessage => '14歳以上の方のみ登録できます\nこの情報は年齢確認にのみ使います';
 
   @override
   String get errorLoginGeneric => 'ログイン中にエラーが発生しました';
