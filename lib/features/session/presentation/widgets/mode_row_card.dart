@@ -15,12 +15,20 @@ import '../../../../l10n/app_localizations.dart';
 
 /// 최종 확인 맨 위 "모드 · 술래잡기 >" 행. 탭하면 모드 선택으로 돌아간다.
 class ModeRowCard extends StatelessWidget {
-  const ModeRowCard({super.key, required this.mode, this.onTap});
+  const ModeRowCard({
+    super.key,
+    required this.mode,
+    this.onTap,
+    this.isDarkMode = false,
+  });
 
   final GameMode mode;
 
   /// null이면 읽기 전용 — 화살표를 감춘다.
   final VoidCallback? onTap;
+
+  /// 게임 설정 화면처럼 다크모드를 지원하는 화면에서 넘긴다. 방 생성 확인 화면은 라이트 전용.
+  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +37,8 @@ class ModeRowCard extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: InfoCard(
+        backgroundColor: isDarkMode ? AppColors.black900 : null,
+        borderColor: isDarkMode ? AppColors.black800 : null,
         padding: EdgeInsets.symmetric(
           horizontal: AppSpacing.horizontal24,
           vertical: AppSpacing.vertical20,
@@ -39,7 +49,7 @@ class ModeRowCard extends StatelessWidget {
             Text(
               l10n.confirmRowMode,
               style: AppTextStyles.paragraph_14_100.copyWith(
-                color: AppColors.black800,
+                color: isDarkMode ? AppColors.black400 : AppColors.black800,
               ),
             ),
             Row(
@@ -47,7 +57,7 @@ class ModeRowCard extends StatelessWidget {
                 Text(
                   modeName(l10n, mode),
                   style: AppTextStyles.paragraph14Semibold.copyWith(
-                    color: AppColors.black,
+                    color: isDarkMode ? AppColors.white : AppColors.black,
                   ),
                 ),
                 if (onTap != null) ...[

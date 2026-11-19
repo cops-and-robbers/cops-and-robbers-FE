@@ -322,6 +322,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
               )) ...[
                 ModeRowCard(
                   mode: participantInfo?.gameMode ?? GameMode.copsAndRobbers,
+                  isDarkMode: isDark,
                   // 이벤트 게임은 술래잡기로 바꿀 수 없어 고를 것이 없다
                   onTap: isHost && !(participantInfo?.isEventGame ?? false)
                       ? () => _changeMode(area)
