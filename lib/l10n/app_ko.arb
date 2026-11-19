@@ -1712,14 +1712,6 @@
   "@agreementItemOptionalTag": {
     "description": "약관 항목 — 선택 태그"
   },
-  "gameRobberOnTheRunBanner": "도둑이 도망치는 중이에요!",
-  "@gameRobberOnTheRunBanner": {
-    "description": "게임 시작 후 도둑 도주 시작 알림 배너"
-  },
-  "gameRobberOnTheRunBannerTag": "도망자가 숨는 중이에요!",
-  "@gameRobberOnTheRunBannerTag": {
-    "description": "술래잡기용 — 게임 시작 후 도둑 도주 시작 알림 배너"
-  },
   "gameOverBannerTitle": "게임 종료!",
   "@gameOverBannerTitle": {
     "description": "게임 종료 시 화면 상단에 표시되는 배너 타이틀"

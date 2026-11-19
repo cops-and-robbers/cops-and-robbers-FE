@@ -129,20 +129,4 @@ class DeviceIdManager {
 
   static String? _nonEmpty(String? value) =>
       (value == null || value.isEmpty) ? null : value;
-
-  /// 캐시된 기기 ID를 삭제합니다 (테스트용)
-  ///
-  /// **주의**: 프로덕션에서는 사용하지 마세요.
-  /// Android·iOS 는 다음 호출 때 플랫폼 ID를 다시 읽으므로 대개 같은 값을 받습니다.
-  @visibleForTesting
-  static Future<void> clearDeviceId() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_deviceIdKey);
-      await prefs.remove(_legacyDeviceIdKey);
-      debugPrint('[DeviceIdManager] 🗑️ 캐시된 기기 ID 삭제 완료');
-    } catch (e) {
-      debugPrint('[DeviceIdManager] ❌ 기기 ID 삭제 실패: $e');
-    }
-  }
 }

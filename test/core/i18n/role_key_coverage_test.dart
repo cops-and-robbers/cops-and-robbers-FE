@@ -38,8 +38,7 @@ const inGameRoleWordKeys = <String>[
   'startRuleMyReveal',
   'startRuleWin',
   'startRuleTeamReveal',
-  // 인게임 (14)
-  'gameRobberOnTheRunBanner',
+  // 인게임 (13)
   'errorCannotArrestDuringWait',
   'qrScannerWantedRobberTitle',
   'errorAlreadyArrested',
@@ -100,7 +99,7 @@ Map<String, dynamic> _arb(String locale) =>
 
 void main() {
   test('every_in_game_role_key_has_tag_variant_in_all_locales', () {
-    expect(inGameRoleWordKeys.length, 75);
+    expect(inGameRoleWordKeys.length, 74);
     for (final locale in ['ko', 'en', 'ja']) {
       final arb = _arb(locale);
       final missing = [

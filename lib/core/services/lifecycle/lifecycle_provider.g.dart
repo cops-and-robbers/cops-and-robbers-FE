@@ -66,30 +66,5 @@ final lifecycleStateProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef LifecycleStateRef = AutoDisposeStreamProviderRef<AppLifecycleState>;
-String _$lifecycleLogsNotifierHash() =>
-    r'4a0cdb8ee8c90f4520427dc3b2e83418e742c43b';
-
-/// 생명주기 로그 이력 Notifier
-///
-/// 상태 변화 이력을 관리하며, 서비스의 로그가 업데이트될 때마다
-/// UI를 자동으로 재빌드합니다.
-///
-/// Copied from [LifecycleLogsNotifier].
-@ProviderFor(LifecycleLogsNotifier)
-final lifecycleLogsNotifierProvider =
-    AutoDisposeNotifierProvider<
-      LifecycleLogsNotifier,
-      List<LifecycleLog>
-    >.internal(
-      LifecycleLogsNotifier.new,
-      name: r'lifecycleLogsNotifierProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$lifecycleLogsNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$LifecycleLogsNotifier = AutoDisposeNotifier<List<LifecycleLog>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

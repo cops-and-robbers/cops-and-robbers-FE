@@ -18,18 +18,6 @@ DateTime? policeReleaseAt({
   required int? policeWaitMinutes,
 }) => gameStartTime?.add(Duration(minutes: policeWaitMinutes ?? 0));
 
-/// 경찰 대기 진행 비율 0~1. 대기가 없으면 1.
-double waitProgress({
-  required DateTime gameStartTime,
-  required int policeWaitMinutes,
-  required DateTime now,
-}) {
-  if (policeWaitMinutes <= 0) return 1;
-  final total = Duration(minutes: policeWaitMinutes).inMilliseconds;
-  final elapsed = now.difference(gameStartTime).inMilliseconds;
-  return (elapsed / total).clamp(0.0, 1.0);
-}
-
 /// 지금 게임 화면에 들어온 사람이 차례로 볼 단계.
 ///
 /// - 역할 배너는 시작 직후(20초 안)에만 — 다시 켠 앱에서 또 보이지 않게
@@ -37,12 +25,11 @@ double waitProgress({
 /// - 도둑 설명 화면은 시작 직후 + 출동 전에만
 List<StartIntroStep> startIntroSteps({
   required bool isPolice,
-  required bool isEventGame,
   required DateTime? gameStartTime,
   required int? policeWaitMinutes,
   required DateTime now,
 }) {
-  if (isEventGame || gameStartTime == null) return const [];
+  if (gameStartTime == null) return const [];
   final fresh = now.difference(gameStartTime) <= startIntroFreshWindow;
   final release = policeReleaseAt(
     gameStartTime: gameStartTime,

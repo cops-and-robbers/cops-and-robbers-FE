@@ -9,11 +9,9 @@ void main() {
     required bool isPolice,
     required Duration after,
     int? wait = 5,
-    bool isEventGame = false,
     DateTime? gameStartTime,
   }) => startIntroSteps(
     isPolice: isPolice,
-    isEventGame: isEventGame,
     gameStartTime: gameStartTime ?? start,
     policeWaitMinutes: wait,
     now: start.add(after),
@@ -71,22 +69,10 @@ void main() {
       }
     });
 
-    test('event_game_shows_nothing_when_just_started', () {
-      expect(
-        steps(
-          isPolice: true,
-          after: const Duration(seconds: 2),
-          isEventGame: true,
-        ),
-        isEmpty,
-      );
-    });
-
     test('nothing_shows_when_start_time_not_loaded_yet', () {
       expect(
         startIntroSteps(
           isPolice: true,
-          isEventGame: false,
           gameStartTime: null,
           policeWaitMinutes: 5,
           now: start,
@@ -108,37 +94,6 @@ void main() {
         );
       },
     );
-  });
-
-  group('waitProgress', () {
-    test('progress_is_half_when_two_and_a_half_of_five_minutes_passed', () {
-      expect(
-        waitProgress(
-          gameStartTime: start,
-          policeWaitMinutes: 5,
-          now: start.add(const Duration(minutes: 2, seconds: 30)),
-        ),
-        0.5,
-      );
-    });
-
-    test('progress_stays_at_one_when_police_already_dispatched', () {
-      expect(
-        waitProgress(
-          gameStartTime: start,
-          policeWaitMinutes: 5,
-          now: start.add(const Duration(minutes: 9)),
-        ),
-        1,
-      );
-    });
-
-    test('progress_is_one_when_room_has_no_police_wait', () {
-      expect(
-        waitProgress(gameStartTime: start, policeWaitMinutes: 0, now: start),
-        1,
-      );
-    });
   });
 
   group('policeReleaseAt', () {

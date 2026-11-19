@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +45,6 @@ import '../../../../router/current_branch_index_provider.dart';
 import '../../../../router/route_paths.dart';
 import '../../../notice/presentation/providers/notice_provider.dart';
 import '../game_creation_entry.dart';
-import '../../../../test_widget_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../game/presentation/widgets/qr_scanner_page.dart';
 import '../providers/game_participant_provider.dart';
@@ -279,40 +277,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   /// 위치 권한 + (Android) 배터리 최적화 게이트 통과 후 세션 생성 플로우로 이동.
   Future<void> _onCreateSession() async {
     await startGameCreation(context: context, ref: ref, replace: true);
-  }
-
-  /// 개발자 도구 메뉴 표시
-  void _showDevMenu() {
-    AppDialog.show(
-      context: context,
-      title: '개발자 도구',
-      showButtons: false,
-      customContent: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.pending_actions),
-            title: Text('Lifecycle Test', style: AppTextStyles.paragraph_14),
-            onTap: () {
-              // 홈 페이지 context로 pop하면 다이얼로그 대신 홈이 pop된다 (#537)
-              Navigator.of(context, rootNavigator: true).pop();
-              context.push(RoutePaths.lifecycleTest);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.widgets),
-            title: Text('Test Widget', style: AppTextStyles.paragraph_14),
-            onTap: () {
-              final rootNavigator = Navigator.of(context, rootNavigator: true);
-              rootNavigator.pop();
-              rootNavigator.push(
-                MaterialPageRoute(builder: (context) => const TestWidgetPage()),
-              );
-            },
-          ),
-        ],
-      ),
-    );
   }
 
   /// 방 참여 다이얼로그 표시
@@ -633,17 +597,6 @@ class _HomePageState extends ConsumerState<HomePage> {
           SizedBox(width: AppSpacing.horizontal16),
         ],
       ),
-
-      // 개발자 도구 버튼 (디버그 모드에서만 표시)
-      floatingActionButton: kDebugMode
-          ? FloatingActionButton(
-              mini: true,
-              backgroundColor: AppColors.black.withValues(alpha: 0.7),
-              foregroundColor: AppColors.white,
-              onPressed: _showDevMenu,
-              child: const Icon(Icons.bug_report),
-            )
-          : null,
 
       // 좌우 패딩은 스크롤 영역만 갖는다 — 앱바는 자체 여백을 쓴다.
       body: SingleChildScrollView(

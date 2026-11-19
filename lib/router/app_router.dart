@@ -64,7 +64,6 @@ import '../features/notice/presentation/pages/notices_page.dart';
 import '../features/report/domain/report_target.dart';
 import '../features/report/presentation/pages/report_category_page.dart';
 import '../features/report/presentation/pages/report_reason_page.dart';
-import '../features/lifecycle_test/presentation/pages/lifecycle_test_page.dart';
 import '../core/widgets/buttons/previous_button.dart';
 import '../core/widgets/pages/legal_document_page.dart';
 import '../core/services/remote_config/maintenance_gate.dart';
@@ -173,7 +172,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           RoutePaths.login,
           RoutePaths.maintenance,
           RoutePaths.forceUpdate,
-          if (kDebugMode) RoutePaths.lifecycleTest,
         ];
 
         // ====================================================================
@@ -434,11 +432,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                       key: state.pageKey,
                       child: SessionCreationFlowPage(
                         communityPostId:
-                            (state.extra as GameCreationArgs?)
-                                ?.communityPostId,
+                            (state.extra as GameCreationArgs?)?.communityPostId,
                         initialCenter:
-                            (state.extra as GameCreationArgs?)
-                                ?.initialCenter,
+                            (state.extra as GameCreationArgs?)?.initialCenter,
                       ),
                       isForward: true,
                     ),
@@ -951,16 +947,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) =>
             buildSmoothFade(key: state.pageKey, child: const ForceUpdatePage()),
       ),
-
-      // ====================================================================
-      // Developer Tools (개발/테스트용 — 릴리스 빌드에서는 등록되지 않음)
-      // ====================================================================
-      if (kDebugMode)
-        GoRoute(
-          path: RoutePaths.lifecycleTest,
-          name: RoutePaths.lifecycleTestName,
-          builder: (context, state) => const LifecycleTestPage(),
-        ),
     ],
 
     // ====================================================================

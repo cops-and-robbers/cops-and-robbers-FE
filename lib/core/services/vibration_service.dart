@@ -107,12 +107,6 @@ class VibrationService {
   // 대기방
   // ═══════════════════════════════════════════════════════════════════════
 
-  /// 플레이어 입장/퇴장 진동
-  void playerJoinLeave() => _vibrateSingle(
-    VibrationPatterns.playerJoinLeaveDuration,
-    VibrationPatterns.playerJoinLeaveAmplitude,
-  );
-
   /// 게임 시작 진동
   void gameStart() => _vibratePattern(
     VibrationPatterns.gameStartPattern,

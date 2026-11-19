@@ -37,9 +37,7 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../core/widgets/buttons/svg_icon_button.dart';
 import '../../../../core/widgets/buttons/previous_button.dart';
 import '../../../../core/widgets/dialogs/app_dialog.dart';
-import '../../../../core/widgets/dialogs/app_popup.dart';
 import '../../../../core/widgets/dialogs/reconnect_modal.dart';
-import '../../../../core/widgets/dialogs/countdown_timer_content.dart';
 import '../../../../core/widgets/navigation/app_top_bar.dart';
 import '../../../../router/route_paths.dart';
 import '../../../chat/presentation/providers/chat_notification_provider.dart';
@@ -578,16 +576,12 @@ class _GamePageState extends ConsumerState<GamePage>
     super.dispose();
   }
 
-  /// 게임 시작 흐름을 정한다. 이벤트 게임은 예전 경찰 대기 팝업 그대로.
+  /// 게임 시작 흐름을 정한다. 이벤트 게임도 일반 게임과 같은 연출을 쓴다 (#713).
   /// 무전 켜진 경찰은 여기서 출동 시각까지 무전 입장을 걸어 둔다.
   void _startIntro() {
     // 위치 권한을 다시 허용하면 _initGameConnections가 한 번 더 돈다 — 흐름은 한 번만 만든다
     if (widget.isDummy || _intro != null) return;
     final info = ref.read(gameParticipantNotifierProvider);
-    if (info?.isEventGame ?? false) {
-      _showPoliceTimerIfNeeded();
-      return;
-    }
     final start = IsoTimestampParser.parse(info?.gameStartTime);
     if (start == null) return;
     final wait = info?.policeWaitMinutes ?? 0;
@@ -609,7 +603,6 @@ class _GamePageState extends ConsumerState<GamePage>
     final intro = StartIntroController(
       steps: startIntroSteps(
         isPolice: GameTeam.isPolice(widget.team),
-        isEventGame: false,
         gameStartTime: start,
         policeWaitMinutes: wait,
         now: now,
@@ -736,36 +729,6 @@ class _GamePageState extends ConsumerState<GamePage>
       AppLocalizations.of(context).startRulesHint,
     );
     unawaited(GameRulesHintPrefs.markSeen());
-  }
-
-  /// 경찰 대기 타이머 팝업 (이벤트 게임 경찰만, 서버 startTime 기준 남은 시간)
-  void _showPoliceTimerIfNeeded() {
-    if (widget.isDummy || !GameTeam.isPolice(widget.team)) return;
-
-    final info = ref.read(gameParticipantNotifierProvider);
-    final startTimeStr = info?.gameStartTime;
-    final waitMinutes = info?.policeWaitMinutes;
-    if (startTimeStr == null || waitMinutes == null || waitMinutes <= 0) return;
-
-    final startTime = IsoTimestampParser.parse(startTimeStr);
-    if (startTime == null) return;
-
-    final waitEndTime = startTime.add(Duration(minutes: waitMinutes));
-    final remaining = waitEndTime.difference(DateTime.now());
-    if (remaining <= Duration.zero) return;
-
-    AppPopup.show(
-      context: context,
-      autoCloseDuration: remaining,
-      content: CountdownTimerContent(
-        duration: remaining,
-        subtitle: byMode(
-          _gameMode,
-          classic: AppLocalizations.of(context).gameRobberOnTheRunBanner,
-          tag: AppLocalizations.of(context).gameRobberOnTheRunBannerTag,
-        ),
-      ),
-    );
   }
 
   /// 게임 설정 API 보완 초기화
@@ -1551,7 +1514,7 @@ class _GamePageState extends ConsumerState<GamePage>
 
   /// 게임 규칙 (앱바 우측 info 버튼)
   ///
-  /// 일반 게임은 시작 때 본 장면을 내 팀 테마로 다시 띄운다. 이벤트 게임은 예전 다이얼로그.
+  /// 시작 때 본 장면을 내 팀 테마로 다시 띄운다. 시작 시각을 모르면 예전 다이얼로그.
   void _showGameRulesDialog() {
     // 다이얼로그 열기 전 포커스 해제 — 다이얼로그 닫힘 시
     // 채팅 입력 TextField로 포커스가 복원되어 시트가 올라오는 현상 방지
@@ -1559,7 +1522,7 @@ class _GamePageState extends ConsumerState<GamePage>
     final info = ref.read(gameParticipantNotifierProvider);
     final start =
         _introStartTime ?? IsoTimestampParser.parse(info?.gameStartTime);
-    if ((info?.isEventGame ?? false) || start == null) {
+    if (start == null) {
       GameRulesContent.showAsDialog(
         context,
         isDarkMode: _isDarkMode,

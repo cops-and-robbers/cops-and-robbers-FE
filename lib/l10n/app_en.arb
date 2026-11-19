@@ -594,8 +594,6 @@
   "agreementAllCheckboxLabel": "Agree to all",
   "agreementItemRequiredTag": "[Required]",
   "agreementItemOptionalTag": "[Optional]",
-  "gameRobberOnTheRunBanner": "Robbers are running away!",
-  "gameRobberOnTheRunBannerTag": "Hiders are hiding!",
   "gameOverBannerTitle": "Game over!",
   "gameOverReasonAllArrested": "All Robbers have been arrested!",
   "gameOverReasonAllArrestedTag": "All Hiders have been caught!",

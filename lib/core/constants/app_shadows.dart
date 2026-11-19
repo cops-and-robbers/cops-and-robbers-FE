@@ -54,15 +54,6 @@ class AppShadows {
     ),
   ];
 
-  /// [topLift]의 다크모드 대응 변형
-  static List<BoxShadow> topLiftThemed(bool isDarkMode) => [
-    BoxShadow(
-      offset: const Offset(0, -2),
-      blurRadius: 10,
-      color: isDarkMode ? AppColors.black : AppColors.black200,
-    ),
-  ];
-
   /// 리스트 카드용 얕은 쉐도우 (x0 y1 blur4)
   static List<BoxShadow> get card => [
     BoxShadow(

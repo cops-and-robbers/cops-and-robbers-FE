@@ -594,8 +594,6 @@
   "agreementAllCheckboxLabel": "全て同意",
   "agreementItemRequiredTag": "[必須]",
   "agreementItemOptionalTag": "[選択]",
-  "gameRobberOnTheRunBanner": "泥棒が逃走しています！",
-  "gameRobberOnTheRunBannerTag": "隠れる人が隠れています！",
   "gameOverBannerTitle": "ゲーム終了！",
   "gameOverReasonAllArrested": "泥棒が全員逮捕されました！",
   "gameOverReasonAllArrestedTag": "隠れる人が全員捕まりました！",
