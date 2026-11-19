@@ -11,7 +11,6 @@ void main() {
     setUp(() {
       service = AppLifecycleService.instance();
       service.activate();
-      service.clearLogs();
     });
 
     tearDown(() {

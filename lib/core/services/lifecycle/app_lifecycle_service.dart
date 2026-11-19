@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'lifecycle_log.dart';
 
 /// 앱 생명주기 상태를 감지하고 관리하는 서비스
 ///
@@ -40,12 +39,6 @@ class AppLifecycleService with WidgetsBindingObserver {
   ///
   /// nullable로 선언하여 close 후 재생성 가능
   StreamController<AppLifecycleState>? _stateController;
-
-  /// 상태 변화 이력 (최근 50개)
-  final List<LifecycleLog> _logs = [];
-
-  /// 최대 로그 개수
-  static const int _maxLogs = 50;
 
   /// 생명주기 감지 활성화 여부
   bool _isActive = false;
@@ -159,11 +152,6 @@ class AppLifecycleService with WidgetsBindingObserver {
     return _stateController!.stream;
   }
 
-  /// 상태 변화 이력 (읽기 전용)
-  ///
-  /// 최근 50개의 상태 변화 기록을 반환합니다.
-  List<LifecycleLog> get logs => List.unmodifiable(_logs);
-
   /// 현재 생명주기 상태
   ///
   /// 아직 상태 변화가 없으면 null을 반환합니다.
@@ -226,9 +214,6 @@ class AppLifecycleService with WidgetsBindingObserver {
 
     _currentState = state;
 
-    // 상태 변화 로깅
-    _addLog(state);
-
     // Stream으로 브로드캐스트 (이제 null이 아님을 보장)
     _stateController!.add(state);
 
@@ -247,20 +232,6 @@ class AppLifecycleService with WidgetsBindingObserver {
     }
   }
 
-  /// 상태 변화를 로그에 추가
-  ///
-  /// 최대 [_maxLogs]개까지 저장하며, 초과 시 가장 오래된 로그를 삭제합니다.
-  void _addLog(AppLifecycleState state) {
-    final log = LifecycleLog(state: state, timestamp: DateTime.now());
-
-    _logs.add(log);
-
-    // 최대 개수 초과 시 가장 오래된 로그 삭제
-    if (_logs.length > _maxLogs) {
-      _logs.removeAt(0);
-    }
-  }
-
   /// 상태에 대한 한글 설명 반환
   String _getStateDescription(AppLifecycleState state) {
     switch (state) {
@@ -275,14 +246,6 @@ class AppLifecycleService with WidgetsBindingObserver {
       case AppLifecycleState.detached:
         return '앱 종료 직전';
     }
-  }
-
-  /// 모든 로그 삭제
-  ///
-  /// 테스트 목적으로 로그를 초기화할 때 사용합니다.
-  void clearLogs() {
-    _logs.clear();
-    debugPrint('🗑️ AppLifecycleService: 로그 초기화');
   }
 
   /// 서비스 정리
