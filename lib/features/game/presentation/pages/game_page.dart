@@ -2720,7 +2720,8 @@ class _GamePageState extends ConsumerState<GamePage>
         prev,
         next,
       ) {
-        if (_isLeaving) return;
+        // 결과 화면이 뜬 뒤(GAME_OVER 유실 대비 경로는 무전을 멈추지 않는다)에는 안내하지 않는다
+        if (_isLeaving || _gameOverDialogShown) return;
         final notice = radioStatusNotice(
           AppLocalizations.of(context),
           prev,
