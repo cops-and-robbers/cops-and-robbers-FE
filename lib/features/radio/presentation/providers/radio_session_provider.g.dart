@@ -117,7 +117,7 @@ final radioMicMemoryProvider = AutoDisposeProvider<RadioMicMemory>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef RadioMicMemoryRef = AutoDisposeProviderRef<RadioMicMemory>;
-String _$radioSessionHash() => r'58126549584a971ad38f3f6163dd5de301bf53d8';
+String _$radioSessionHash() => r'85e28ebdee8c30dff54189839d537df54400e327';
 
 /// Copied from Dart SDK
 class _SystemHash {
