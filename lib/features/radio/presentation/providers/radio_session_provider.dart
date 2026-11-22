@@ -237,7 +237,7 @@ class RadioSession extends _$RadioSession {
         state.status != RadioStatus.serverBusy) {
       state = state.copyWith(status: RadioStatus.connecting);
     }
-    final token = await _issue();
+    final token = await _issue(gen);
     if (_stale(gen)) return;
     if (token == null) {
       if (state.status != RadioStatus.off) _retry(_connect);
@@ -301,7 +301,7 @@ class RadioSession extends _$RadioSession {
 
   Future<void> _refresh() async {
     final gen = _gen;
-    final token = await _issue();
+    final token = await _issue(gen);
     if (_stale(gen)) return;
     if (token != null) {
       _scheduleRefresh(token.lifetime);
@@ -311,10 +311,13 @@ class RadioSession extends _$RadioSession {
   }
 
   /// 토큰을 받는다. 거절 코드에 따라 방을 떠나거나 대기 상태로 돌린다.
-  Future<RadioTokenModel?> _issue() async {
+  ///
+  /// [gen]이 지난 요청(그사이 다시 붙거나 끝남)의 거절은 지금 세션을 건드리지 않는다.
+  Future<RadioTokenModel?> _issue(int gen) async {
     try {
       return await ref.read(radioApiProvider).issueToken(gameId);
     } on DioException catch (e) {
+      if (_stale(gen)) return null;
       final code = DioExceptionHandler.handle(e).code;
       if (_endCodes.contains(code)) {
         await stop();

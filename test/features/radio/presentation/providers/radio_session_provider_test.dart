@@ -53,11 +53,16 @@ class _FakeRadioApi implements RadioApi {
   /// 있으면 응답을 이 시점까지 붙잡아 둔다 — 요청 중에 화면이 닫히는 경우
   Completer<void>? hold;
 
+  /// 요청마다 따로 정한 응답(null = 정상 토큰). 비어 있으면 [rejectWith]를 쓴다.
+  /// 보낸 순서대로 소비해서, 붙잡혀 있던 두 요청이 서로 다른 답을 받게 한다.
+  final queued = <DioException?>[];
+
   @override
   Future<RadioTokenModel> issueToken(int gameId) async {
     requestedAt.add(clock.now());
+    final reject = queued.isNotEmpty ? queued.removeAt(0) : rejectWith;
     await hold?.future;
-    if (rejectWith != null) throw rejectWith!;
+    if (reject != null) throw reject;
     return _token();
   }
 }
@@ -601,6 +606,27 @@ void main() {
   });
 
   // 토큰 요청이 걸린 사이 게임이 끝났고, 늦게 온 응답이 혼잡 거절이다 — 결과 화면에 혼잡 안내가 뜨면 안 된다
+  // 무전 중이던 경찰의 재발급 요청이 응답을 기다리는 사이 네트워크가 끊겨 다시 붙는다.
+  // 늦게 도착한 옛 요청의 혼잡 거절이 새로 붙는 세션을 혼잡으로 바꾸면 안 된다 —
+  // 바꾸면 혼잡 안내와 "연결됐어요"가 잘못 뜬다.
+  test('ignores_busy_answer_of_old_reissue_when_cop_already_reconnecting_after_network_drop', () {
+    inGame((async, h) {
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      final seen = _watchStatus(h);
+      h.api.hold = Completer<void>();
+      h.api.queued.addAll([_rejected('RADIO_SERVER_BUSY', 503), null]);
+      async.elapse(const Duration(seconds: 97)); // 재발급 요청이 나가 응답 대기 중
+      h.room.emit(const RoomDisconnected()); // 그 사이 WiFi → LTE
+      async.flushMicrotasks();
+      expect(h.api.requestedAt.length, 3);
+      h.api.hold!.complete();
+      async.flushMicrotasks();
+      expect(seen, isNot(contains(RadioStatus.serverBusy)));
+      expect(h.state.status, RadioStatus.ready);
+    });
+  });
+
   test('stays_off_when_busy_answer_arrives_after_game_ended', () {
     inGame((async, h) {
       h.api.hold = Completer<void>();

@@ -206,17 +206,19 @@ class _SessionApi implements SessionRemoteDataSource {
     return participants;
   }
 
+  /// 앱이 돌아올 때 확인하는 내 게임 상태. 끝난 판이면 GAME_OVER 유실 대비 결과 화면이 뜬다.
+  UserGameStatusModel activeGame = const UserGameStatusModel(
+    isParticipating: true,
+    participationInfo: UserGameParticipationModel(
+      gameId: 1,
+      participantId: 5,
+      gameStatus: 'IN_PROGRESS',
+      team: 'ROBBER',
+    ),
+  );
+
   @override
-  Future<UserGameStatusModel> getMyActiveGame() async =>
-      const UserGameStatusModel(
-        isParticipating: true,
-        participationInfo: UserGameParticipationModel(
-          gameId: 1,
-          participantId: 5,
-          gameStatus: 'IN_PROGRESS',
-          team: 'ROBBER',
-        ),
-      );
+  Future<UserGameStatusModel> getMyActiveGame() async => activeGame;
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -2525,6 +2527,46 @@ void main() {
   });
 
   // 게임 시작 1분 뒤 화면에 들어온 경찰 — 무전 서버가 혼잡해 못 들어가다가, 풀리자 연결된다 (#722)
+  // 경찰 무전이 아직 붙지 못하고 재시도하던 중에 GAME_OVER 이벤트를 놓쳐, 앱이 돌아왔을 때
+  // 끝난 판으로 확인돼 결과 화면이 떴다. 그 뒤 도착한 혼잡 거절이 결과 화면 위에
+  // 무전 안내를 띄우면 안 된다.
+  testWidgets(
+    'police_sees_no_radio_congestion_notice_over_result_when_game_ended_while_radio_was_retrying',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        await mount(tester, team: 'POLICE', size: const Size(393, 852));
+        final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+        await advance(tester, const Duration(seconds: 2)); // 무전은 코드 없는 실패로 "연결 중" 재시도
+
+        session.activeGame = const UserGameStatusModel(isParticipating: false);
+        for (final state in [
+          AppLifecycleState.inactive,
+          AppLifecycleState.hidden,
+          AppLifecycleState.paused,
+          AppLifecycleState.hidden,
+          AppLifecycleState.inactive,
+          AppLifecycleState.resumed,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        radio.rejectWith = _radioRejected(503, 'RADIO_SERVER_BUSY');
+        // 다음 재시도(10초 안)가 혼잡으로 거절된다 — 3초짜리 안내가 한 번이라도 떴는지 본다
+        var shown = false;
+        for (var i = 0; i < 120; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+          shown = shown ||
+              find.text(l10n.errorCodeRadioServerBusy).evaluate().isNotEmpty;
+        }
+        expect(shown, isFalse);
+        expect(tester.takeException(), isNull);
+        await advance(tester, const Duration(seconds: 40));
+      });
+    },
+  );
+
   testWidgets(
     'police_sees_congestion_notice_once_then_connected_notice_when_radio_server_was_busy',
     (tester) async {
