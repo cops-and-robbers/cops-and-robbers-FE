@@ -53,11 +53,16 @@ class _FakeRadioApi implements RadioApi {
   /// 있으면 응답을 이 시점까지 붙잡아 둔다 — 요청 중에 화면이 닫히는 경우
   Completer<void>? hold;
 
+  /// 요청마다 따로 정한 응답(null = 정상 토큰). 비어 있으면 [rejectWith]를 쓴다.
+  /// 보낸 순서대로 소비해서, 붙잡혀 있던 두 요청이 서로 다른 답을 받게 한다.
+  final queued = <DioException?>[];
+
   @override
   Future<RadioTokenModel> issueToken(int gameId) async {
     requestedAt.add(clock.now());
+    final reject = queued.isNotEmpty ? queued.removeAt(0) : rejectWith;
     await hold?.future;
-    if (rejectWith != null) throw rejectWith!;
+    if (reject != null) throw reject;
     return _token();
   }
 }
@@ -154,6 +159,16 @@ class _Harness {
   RadioSession get session => container.read(radioSessionProvider(7).notifier);
   RadioSessionState get state => container.read(radioSessionProvider(7));
   _FakeRoom get room => rooms.last;
+}
+
+/// 화면이 보는 것과 같은 무전 상태 전이 기록 — 스낵바는 화면이 이 전이를 보고 띄운다
+List<RadioStatus> _watchStatus(_Harness h) {
+  final seen = <RadioStatus>[];
+  h.container.listen(
+    radioSessionProvider(7).select((s) => s.status),
+    (_, next) => seen.add(next),
+  );
+  return seen;
 }
 
 void main() {
@@ -483,6 +498,185 @@ void main() {
       async.flushMicrotasks();
       expect(h.state.status, RadioStatus.micDenied);
       expect(h.state.isTalking, isFalse);
+    });
+  });
+
+  // ── 무전 서버 혼잡 (#722, BE #253: 503 RADIO_SERVER_BUSY) ──
+
+  // 무전 서버가 과부하인 중에 경찰이 출동했다 — 방에 못 들어가고 10초마다 다시 두드린다
+  test('stays_busy_and_retries_every_10_seconds_when_police_released_during_congestion', () {
+    inGame((async, h) {
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      h.session.start(policeReleaseAt: release);
+      async.elapse(const Duration(minutes: 3));
+      expect(h.state.status, RadioStatus.serverBusy);
+      expect(h.rooms, isEmpty);
+
+      async.elapse(const Duration(seconds: 25));
+      final at = h.api.requestedAt;
+      expect(at.length, 3);
+      expect([at[1].difference(at[0]), at[2].difference(at[1])], [
+        const Duration(seconds: 10),
+        const Duration(seconds: 10),
+      ]);
+      expect(h.state.status, RadioStatus.serverBusy);
+    });
+  });
+
+  // 혼잡이 35초 이어져 네 번 거절당했다 — 안내는 처음 한 번만 떠야 한다
+  test('enters_busy_once_when_token_is_refused_on_every_10_second_retry', () {
+    inGame((async, h) {
+      final seen = _watchStatus(h);
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      h.session.start(policeReleaseAt: gameStart);
+      async.elapse(const Duration(seconds: 35));
+      expect(h.api.requestedAt.length, 4);
+      expect(seen, [RadioStatus.connecting, RadioStatus.serverBusy]);
+    });
+  });
+
+  // 혼잡이 풀렸다 — 다음 10초 시도에서 방에 들어가 바로 쓸 수 있다
+  test('joins_muted_when_congestion_clears_on_next_retry', () {
+    inGame((async, h) {
+      final seen = _watchStatus(h);
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      h.api.rejectWith = null;
+      async.elapse(const Duration(seconds: 10));
+      expect(seen, [
+        RadioStatus.connecting,
+        RadioStatus.serverBusy,
+        RadioStatus.ready,
+      ]);
+      expect(h.room.published, isTrue);
+      expect(h.room.micMuted, isTrue);
+    });
+  });
+
+  // WiFi에서 LTE로 넘어가며 끊긴 경찰이 다시 붙으려는데 그 사이 서버가 혼잡해졌다
+  test('turns_busy_when_cop_reconnects_during_congestion', () {
+    inGame((async, h) {
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      expect(h.state.status, RadioStatus.ready);
+
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      h.room.emit(const RoomDisconnected());
+      async.flushMicrotasks();
+      expect(h.state.status, RadioStatus.serverBusy);
+      expect(h.state.isMicReady, isFalse);
+      expect(h.state.isTalking, isFalse);
+      expect(h.rooms.length, 1);
+
+      h.api.rejectWith = null;
+      async.elapse(const Duration(seconds: 10));
+      expect(h.state.status, RadioStatus.ready);
+      expect(h.rooms.length, 2);
+    });
+  });
+
+  // 이미 무전 중인 경찰 — 혼잡 중에도 서버는 재발급을 통과시킨다. 쓰던 무전은 그대로다
+  test('connected_cop_stays_ready_when_token_reissue_passes_during_congestion', () {
+    inGame((async, h) {
+      final seen = _watchStatus(h);
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      async.elapse(const Duration(seconds: 97));
+      expect(h.api.requestedAt.length, 2);
+      expect(seen, [RadioStatus.connecting, RadioStatus.ready]);
+      expect(h.rooms.length, 1);
+    });
+  });
+
+  // 터널에서 재발급이 3분 넘게 밀린 경찰 — 신호가 돌아왔을 때 재발급이 혼잡으로 거절된다.
+  // 듣고 말하던 무전은 그대로여야 한다 (버튼이 회색이 되면 안 된다)
+  test('connected_cop_keeps_radio_when_token_reissue_is_refused_as_busy', () {
+    inGame((async, h) {
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      async.elapse(const Duration(seconds: 97));
+      expect(h.state.status, RadioStatus.ready);
+      expect(h.room.disconnected, isFalse);
+
+      async.elapse(const Duration(seconds: 10)); // 10초 뒤 재발급을 다시 시도한다
+      expect(h.api.requestedAt.length, 3);
+    });
+  });
+
+  // 토큰 요청이 걸린 사이 게임이 끝났고, 늦게 온 응답이 혼잡 거절이다 — 결과 화면에 혼잡 안내가 뜨면 안 된다
+  // 무전 중이던 경찰의 재발급 요청이 응답을 기다리는 사이 네트워크가 끊겨 다시 붙는다.
+  // 늦게 도착한 옛 요청의 혼잡 거절이 새로 붙는 세션을 혼잡으로 바꾸면 안 된다 —
+  // 바꾸면 혼잡 안내와 "연결됐어요"가 잘못 뜬다.
+  test('ignores_busy_answer_of_old_reissue_when_cop_already_reconnecting_after_network_drop', () {
+    inGame((async, h) {
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      final seen = _watchStatus(h);
+      h.api.hold = Completer<void>();
+      h.api.queued.addAll([_rejected('RADIO_SERVER_BUSY', 503), null]);
+      async.elapse(const Duration(seconds: 97)); // 재발급 요청이 나가 응답 대기 중
+      h.room.emit(const RoomDisconnected()); // 그 사이 WiFi → LTE
+      async.flushMicrotasks();
+      expect(h.api.requestedAt.length, 3);
+      h.api.hold!.complete();
+      async.flushMicrotasks();
+      expect(seen, isNot(contains(RadioStatus.serverBusy)));
+      expect(h.state.status, RadioStatus.ready);
+    });
+  });
+
+  test('stays_off_when_busy_answer_arrives_after_game_ended', () {
+    inGame((async, h) {
+      h.api.hold = Completer<void>();
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      h.session.stop();
+      async.flushMicrotasks();
+      h.api.hold!.complete();
+      async.flushMicrotasks();
+      expect(h.state.status, RadioStatus.off);
+    });
+  });
+
+  // 혼잡한 채 화면을 껐다 켰다 — 돌아오자마자 다시 두드리고, 여전히 혼잡이면 조용하다
+  test('retries_without_new_busy_transition_when_app_returns_during_congestion', () {
+    inGame((async, h) {
+      final seen = _watchStatus(h);
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      h.foreground = false;
+      async.elapse(const Duration(seconds: 10));
+      expect(h.api.requestedAt.length, 1);
+
+      h.foreground = true;
+      h.session.onAppResumed();
+      async.flushMicrotasks();
+      expect(h.api.requestedAt.length, 2);
+      expect(seen, [RadioStatus.connecting, RadioStatus.serverBusy]);
+    });
+  });
+
+  // 혼잡 중 다음 시도는 신호가 끊겨 코드 없이 실패했다 — "연결 중"으로 돌아갔다가 다시 혼잡 안내가 뜨면 안 된다
+  test('stays_busy_when_next_retry_fails_without_error_code', () {
+    inGame((async, h) {
+      final seen = _watchStatus(h);
+      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      h.api.rejectWith = DioException(
+        requestOptions: RequestOptions(path: '/api/games/7/radio/token'),
+        type: DioExceptionType.connectionError,
+      );
+      async.elapse(const Duration(seconds: 10));
+      expect(seen, [RadioStatus.connecting, RadioStatus.serverBusy]);
+
+      h.api.rejectWith = null;
+      async.elapse(const Duration(seconds: 10));
+      expect(seen.last, RadioStatus.ready);
     });
   });
 }

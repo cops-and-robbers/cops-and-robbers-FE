@@ -1,7 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:clock/clock.dart';
+import 'package:cops_and_robbers/features/radio/data/datasources/radio_api_datasource.dart';
+import 'package:cops_and_robbers/features/radio/data/datasources/radio_room_port.dart';
+import 'package:cops_and_robbers/features/radio/data/models/radio_token_model.dart';
+import 'package:cops_and_robbers/features/radio/presentation/providers/radio_session_provider.dart';
 import 'package:cops_and_robbers/features/radio/presentation/widgets/radio_ptt_button.dart';
 import 'package:cops_and_robbers/core/constants/app_colors.dart';
 import 'package:cops_and_robbers/core/constants/app_icons.dart';
@@ -48,6 +53,7 @@ import 'package:cops_and_robbers/features/session/data/models/user_game_status_m
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -200,19 +206,69 @@ class _SessionApi implements SessionRemoteDataSource {
     return participants;
   }
 
+  /// 앱이 돌아올 때 확인하는 내 게임 상태. 끝난 판이면 GAME_OVER 유실 대비 결과 화면이 뜬다.
+  UserGameStatusModel activeGame = const UserGameStatusModel(
+    isParticipating: true,
+    participationInfo: UserGameParticipationModel(
+      gameId: 1,
+      participantId: 5,
+      gameStatus: 'IN_PROGRESS',
+      team: 'ROBBER',
+    ),
+  );
+
   @override
-  Future<UserGameStatusModel> getMyActiveGame() async =>
-      const UserGameStatusModel(
-        isParticipating: true,
-        participationInfo: UserGameParticipationModel(
-          gameId: 1,
-          participantId: 5,
-          gameStatus: 'IN_PROGRESS',
-          team: 'ROBBER',
-        ),
-      );
+  Future<UserGameStatusModel> getMyActiveGame() async => activeGame;
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// 무전 토큰 거절 응답 — 본문이 없으면(code == null) 코드 없는 실패다
+DioException _radioRejected(int status, [String? code]) => DioException(
+  requestOptions: RequestOptions(path: '/api/games/1/radio/token'),
+  response: Response(
+    requestOptions: RequestOptions(path: '/api/games/1/radio/token'),
+    statusCode: status,
+    data: code == null
+        ? null
+        : {'errorCode': code, 'title': '', 'status': status, 'detail': ''},
+  ),
+  type: DioExceptionType.badResponse,
+);
+
+/// 게임 서버의 무전 토큰 API 경계 (#722)
+class _RadioApi implements RadioApi {
+  /// null이면 토큰을 준다. 기본값은 이 가짜를 넣기 전 테스트 바인딩의 HTTP가 주던
+  /// 본문 없는 400 — 다른 경찰 테스트의 무전은 그대로 "연결 중"에 머문다.
+  DioException? rejectWith = _radioRejected(400);
+
+  @override
+  Future<RadioTokenModel> issueToken(int gameId) async {
+    if (rejectWith != null) throw rejectWith!;
+    String part(Object json) =>
+        base64Url.encode(utf8.encode(jsonEncode(json))).replaceAll('=', '');
+    return RadioTokenModel(
+      url: 'wss://radio.test',
+      room: 'game-1-police',
+      identity: '5',
+      token: '${part({'alg': 'HS256'})}.${part({'iat': 0, 'exp': 120})}.sig',
+      expiresAt: '2026-11-10T21:30:00+09:00',
+    );
+  }
+}
+
+/// 음성 서버(LiveKit) 경계 — 들어가기만 하고 아무도 말하지 않는 방
+class _RadioRoom implements RadioRoomPort {
+  @override
+  Stream<RadioRoomEvent> get events => const Stream.empty();
+  @override
+  Future<void> connect(String url, String token) async {}
+  @override
+  Future<void> publishMutedMic() async {}
+  @override
+  Future<void> setMicMuted(bool muted) async {}
+  @override
+  Future<void> disconnect() async {}
 }
 
 Future<void> openFloatingMenu(WidgetTester tester) async {
@@ -234,6 +290,7 @@ void main() {
   late _Chat chat;
   late _GameApi game;
   late _SessionApi session;
+  late _RadioApi radio;
   late ProviderContainer container;
   late List<MethodCall> backgroundCalls;
 
@@ -260,6 +317,7 @@ void main() {
     chat = _Chat();
     game = _GameApi();
     session = _SessionApi();
+    radio = _RadioApi();
     final oldLocation = GeolocatorPlatform.instance;
     final oldMap = GoogleMapsFlutterPlatform.instance;
     GeolocatorPlatform.instance = location;
@@ -281,6 +339,8 @@ void main() {
         chatStompDatasourceProvider.overrideWithValue(chat),
         gameSystemApiProvider.overrideWithValue(game),
         sessionRemoteDataSourceProvider.overrideWithValue(session),
+        radioApiProvider.overrideWithValue(radio),
+        radioRoomFactoryProvider.overrideWithValue(_RadioRoom.new),
         // 실제 채널 구현으로 잠금 화면 현황 전송까지 연결한다(호스트 플랫폼 기본값은 no-op).
         backgroundServiceProvider.overrideWithValue(
           MethodChannelBackgroundService(),
@@ -2465,4 +2525,75 @@ void main() {
       },
     );
   });
+
+  // 게임 시작 1분 뒤 화면에 들어온 경찰 — 무전 서버가 혼잡해 못 들어가다가, 풀리자 연결된다 (#722)
+  // 경찰 무전이 아직 붙지 못하고 재시도하던 중에 GAME_OVER 이벤트를 놓쳐, 앱이 돌아왔을 때
+  // 끝난 판으로 확인돼 결과 화면이 떴다. 그 뒤 도착한 혼잡 거절이 결과 화면 위에
+  // 무전 안내를 띄우면 안 된다.
+  testWidgets(
+    'police_sees_no_radio_congestion_notice_over_result_when_game_ended_while_radio_was_retrying',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        await mount(tester, team: 'POLICE', size: const Size(393, 852));
+        final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+        await advance(tester, const Duration(seconds: 2)); // 무전은 코드 없는 실패로 "연결 중" 재시도
+
+        session.activeGame = const UserGameStatusModel(isParticipating: false);
+        for (final state in [
+          AppLifecycleState.inactive,
+          AppLifecycleState.hidden,
+          AppLifecycleState.paused,
+          AppLifecycleState.hidden,
+          AppLifecycleState.inactive,
+          AppLifecycleState.resumed,
+        ]) {
+          tester.binding.handleAppLifecycleStateChanged(state);
+        }
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+
+        radio.rejectWith = _radioRejected(503, 'RADIO_SERVER_BUSY');
+        // 다음 재시도(10초 안)가 혼잡으로 거절된다 — 3초짜리 안내가 한 번이라도 떴는지 본다
+        var shown = false;
+        for (var i = 0; i < 120; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+          shown = shown ||
+              find.text(l10n.errorCodeRadioServerBusy).evaluate().isNotEmpty;
+        }
+        expect(shown, isFalse);
+        expect(tester.takeException(), isNull);
+        await advance(tester, const Duration(seconds: 40));
+      });
+    },
+  );
+
+  testWidgets(
+    'police_sees_congestion_notice_once_then_connected_notice_when_radio_server_was_busy',
+    (tester) async {
+      await withClock(gameClock(tester), () async {
+        radio.rejectWith = _radioRejected(503, 'RADIO_SERVER_BUSY');
+        await mount(tester, team: 'POLICE', size: const Size(393, 852));
+        final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
+
+        // 막힌 순간 한 번
+        expect(find.text(l10n.errorCodeRadioServerBusy), findsOneWidget);
+        // 스낵바(3초)가 내려간 뒤 10초 재시도가 두 번 더 거절돼도 다시 뜨지 않는다
+        await advance(tester, const Duration(seconds: 25));
+        expect(find.text(l10n.errorCodeRadioServerBusy), findsNothing);
+
+        // 회색 버튼을 누르면 다시 알려 준다
+        await tester.tap(find.byType(RadioPttButton));
+        await tester.pump();
+        expect(find.text(l10n.errorCodeRadioServerBusy), findsOneWidget);
+
+        // 혼잡이 풀려 다음 시도(진입 30초째)에서 연결된다 — 안내가 내려가기 전에 본다
+        radio.rejectWith = null;
+        await advance(tester, const Duration(seconds: 6));
+        expect(find.text(l10n.radioConnected), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        // 연결 안내가 내려갈 때까지 흘려 종료 시 남는 스낵바 타이머를 없앤다
+        await advance(tester, const Duration(seconds: 4));
+      });
+    },
+  );
 }

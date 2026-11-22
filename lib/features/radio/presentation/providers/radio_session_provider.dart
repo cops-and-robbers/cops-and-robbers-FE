@@ -61,7 +61,17 @@ class RadioMicMemory {
 @riverpod
 RadioMicMemory radioMicMemory(Ref ref) => RadioMicMemory();
 
-enum RadioStatus { off, waitingPolice, connecting, ready, micDenied, reconnecting }
+enum RadioStatus {
+  off,
+  waitingPolice,
+  connecting,
+  ready,
+  micDenied,
+  reconnecting,
+
+  /// 무전 서버가 혼잡해 방 밖에서 10초마다 다시 시도하는 중 (#722)
+  serverBusy,
+}
 
 @freezed
 class RadioSessionState with _$RadioSessionState {
@@ -222,10 +232,12 @@ class RadioSession extends _$RadioSession {
     }
     _isJoinPending = false;
     final gen = _gen;
-    if (state.status != RadioStatus.reconnecting) {
+    // 혼잡 중 재시도마다 "연결 중"으로 돌아가면 혼잡 안내가 10초마다 다시 뜬다
+    if (state.status != RadioStatus.reconnecting &&
+        state.status != RadioStatus.serverBusy) {
       state = state.copyWith(status: RadioStatus.connecting);
     }
-    final token = await _issue();
+    final token = await _issue(gen);
     if (_stale(gen)) return;
     if (token == null) {
       if (state.status != RadioStatus.off) _retry(_connect);
@@ -289,7 +301,7 @@ class RadioSession extends _$RadioSession {
 
   Future<void> _refresh() async {
     final gen = _gen;
-    final token = await _issue();
+    final token = await _issue(gen);
     if (_stale(gen)) return;
     if (token != null) {
       _scheduleRefresh(token.lifetime);
@@ -299,16 +311,23 @@ class RadioSession extends _$RadioSession {
   }
 
   /// 토큰을 받는다. 거절 코드에 따라 방을 떠나거나 대기 상태로 돌린다.
-  Future<RadioTokenModel?> _issue() async {
+  ///
+  /// [gen]이 지난 요청(그사이 다시 붙거나 끝남)의 거절은 지금 세션을 건드리지 않는다.
+  Future<RadioTokenModel?> _issue(int gen) async {
     try {
       return await ref.read(radioApiProvider).issueToken(gameId);
     } on DioException catch (e) {
+      if (_stale(gen)) return null;
       final code = DioExceptionHandler.handle(e).code;
       if (_endCodes.contains(code)) {
         await stop();
       } else if (code == 'RADIO_POLICE_WAITING_TIME') {
         // 서버가 아직 출동을 반영하지 않았거나 폰 시계가 빠르다 — 곧 다시 (_retry)
         state = state.copyWith(status: RadioStatus.waitingPolice);
+      } else if (code == 'RADIO_SERVER_BUSY' && _isActive && _room == null) {
+        // 방 밖에서 막혔을 때만 — 이미 무전 중인 경찰의 재발급 거절이나
+        // 게임이 끝난 뒤 도착한 응답으로 쓰던 무전·꺼진 무전을 혼잡으로 바꾸지 않는다
+        state = state.copyWith(status: RadioStatus.serverBusy);
       }
       return null;
     }

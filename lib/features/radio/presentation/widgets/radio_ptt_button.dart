@@ -10,6 +10,23 @@ import '../../../../core/services/vibration_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/radio_session_provider.dart';
 
+/// 무전 상태가 [previous]에서 [next]로 바뀔 때 스낵바로 알릴 문구. 알릴 게 없으면 null. (#722)
+///
+/// 혼잡으로 막힌 순간과, 혼잡이 풀려 방에 들어간 순간만 알린다.
+String? radioStatusNotice(
+  AppLocalizations l10n,
+  RadioStatus? previous,
+  RadioStatus next,
+) {
+  if (next == RadioStatus.serverBusy && previous != RadioStatus.serverBusy) {
+    return l10n.errorCodeRadioServerBusy;
+  }
+  if (previous == RadioStatus.serverBusy && next == RadioStatus.ready) {
+    return l10n.radioConnected;
+  }
+  return null;
+}
+
 /// 누르고 있는 동안만 말하는 무전 버튼 (#697). 게임 화면 좌우 버튼(SvgIconButton)과 같은 크기.
 ///
 /// 누름/뗌을 받아야 해서 [Listener]를 쓴다 — 포인터가 취소돼도 [onRelease]가 불려 마이크가 닫힌다.
@@ -26,7 +43,7 @@ class RadioPttButton extends StatelessWidget {
   final VoidCallback onPress;
   final VoidCallback onRelease;
 
-  /// 대기 시간·다른 경찰 송신 중에 눌렀을 때 — 왜 안 되는지 알려 준다
+  /// 대기 시간·서버 혼잡·다른 경찰 송신 중에 눌렀을 때 — 왜 안 되는지 알려 준다
   final VoidCallback onBlockedTap;
 
   bool get _canTalk =>
