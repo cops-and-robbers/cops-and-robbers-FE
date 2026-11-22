@@ -45,6 +45,9 @@ class GameSettingsResponse with _$GameSettingsResponse {
     /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
     int? shrinkFinalRadiusInMeters,
 
+    /// 방장이 무전을 켰는지. 키가 없는 응답(구버전 서버·예전 방)은 꺼짐 (#723)
+    @Default(false) bool radioEnabled,
+
     /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
     @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
     @Default(GameMode.copsAndRobbers)

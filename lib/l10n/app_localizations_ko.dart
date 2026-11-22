@@ -2611,6 +2611,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeRadioNotAllowedInEventGame => '이벤트 게임에서는 무전을 쓸 수 없어요';
 
   @override
+  String get errorCodeRadioDisabledInGame => '이 방은 무전을 쓰지 않아요';
+
+  @override
   String get errorCodeOnlyPoliceCanUseRadio => '무전은 경찰만 쓸 수 있어요';
 
   @override
@@ -2771,6 +2774,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shrinkPinHint => '핀으로 그리면 구역 축소를 쓸 수 없어요';
+
+  @override
+  String get radioCardDesc => '버튼을 길게 누르는 동안 말해요';
+
+  @override
+  String get radioBetaChip => 'Beta';
 
   @override
   String gameShrinkNotice(int stage) {

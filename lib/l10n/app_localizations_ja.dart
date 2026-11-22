@@ -2612,6 +2612,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeRadioNotAllowedInEventGame => 'イベントゲームでは無線を使えません';
 
   @override
+  String get errorCodeRadioDisabledInGame => 'このルームでは無線を使いません';
+
+  @override
   String get errorCodeOnlyPoliceCanUseRadio => '無線は警察だけが使えます';
 
   @override
@@ -2768,6 +2771,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shrinkPinHint => 'ピンで描いたエリアではエリア縮小を使えません';
+
+  @override
+  String get radioCardDesc => 'ボタンを長押ししている間話せます';
+
+  @override
+  String get radioBetaChip => 'Beta';
 
   @override
   String gameShrinkNotice(int stage) {

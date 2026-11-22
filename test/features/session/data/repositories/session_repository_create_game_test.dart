@@ -112,6 +112,7 @@ DioException _dioError(int statusCode) => DioException(
 Future<dynamic> _callCreateGame(
   SessionRepositoryImpl repo, {
   int? shrinkFinalRadiusInMeters,
+  bool radioEnabled = false,
   GameMode gameMode = GameMode.copsAndRobbers,
 }) => repo.createGame(
   gameMode: gameMode,
@@ -130,6 +131,7 @@ Future<dynamic> _callCreateGame(
   policeWaitMinutes: 3,
   maxParticipants: 10,
   shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
+  radioEnabled: radioEnabled,
 );
 
 CreateSessionResponse _createSessionResponse() =>
@@ -231,6 +233,26 @@ void main() {
         expect(fake.lastRequest, isNull);
       },
     );
+
+    // 방장이 확인 화면에서 무전을 켜고 방을 만든다
+    test('create_request_carries_radio_on_when_host_turned_it_on', () async {
+      final fake = _FakeSessionRemoteDataSource()
+        ..responseToReturn = _createSessionResponse();
+
+      await _callCreateGame(SessionRepositoryImpl(fake), radioEnabled: true);
+
+      expect(fake.lastRequest?.settings.radioEnabled, isTrue);
+    });
+
+    // 방장이 무전을 건드리지 않고 방을 만든다 — 기본은 꺼짐
+    test('create_request_carries_radio_off_when_host_left_it_off', () async {
+      final fake = _FakeSessionRemoteDataSource()
+        ..responseToReturn = _createSessionResponse();
+
+      await _callCreateGame(SessionRepositoryImpl(fake));
+
+      expect(fake.lastRequest?.settings.radioEnabled, isFalse);
+    });
 
     test('circle_area_is_mapped_to_request_when_game_is_created', () async {
       final fake = _FakeSessionRemoteDataSource()

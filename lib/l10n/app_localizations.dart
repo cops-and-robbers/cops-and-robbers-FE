@@ -4915,6 +4915,12 @@ abstract class AppLocalizations {
   /// **'이벤트 게임에서는 무전을 쓸 수 없어요'**
   String get errorCodeRadioNotAllowedInEventGame;
 
+  /// 방장이 무전을 끈 방에서 토큰이 거절됐을 때 (#723, BE RADIO_DISABLED_IN_GAME)
+  ///
+  /// In ko, this message translates to:
+  /// **'이 방은 무전을 쓰지 않아요'**
+  String get errorCodeRadioDisabledInGame;
+
   /// No description provided for @errorCodeOnlyPoliceCanUseRadio.
   ///
   /// In ko, this message translates to:
@@ -5220,6 +5226,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'핀으로 그리면 구역 축소를 쓸 수 없어요'**
   String get shrinkPinHint;
+
+  /// 방 설정 무전 카드 설명 한 줄 — 튜토리얼 무전 장면 첫 줄과 같은 문구 (#723)
+  ///
+  /// In ko, this message translates to:
+  /// **'버튼을 길게 누르는 동안 말해요'**
+  String get radioCardDesc;
+
+  /// 방 설정 무전 카드 제목 옆 칩 — 세 언어 공통 (#723)
+  ///
+  /// In ko, this message translates to:
+  /// **'Beta'**
+  String get radioBetaChip;
 
   /// 구역 축소 (#668)
   ///

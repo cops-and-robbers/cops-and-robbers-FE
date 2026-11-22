@@ -291,7 +291,12 @@ void main() {
     );
     container.read(gameParticipantNotifierProvider.notifier)
       ..setGameInfo(gameId: 1, participantId: 5, nickname: '도둑', team: 'ROBBER')
-      ..initFromLobby(participantId: 5, roundTimeMinutes: 30)
+      // 방장이 무전을 켠 방 — 경찰 화면에 무전 버튼이 있는 테스트들의 전제다 (#723)
+      ..initFromLobby(
+        participantId: 5,
+        roundTimeMinutes: 30,
+        radioEnabled: true,
+      )
       // 서버 시각 문자열은 시간대를 명시한다 — 시간대가 없으면 IsoTimestampParser가
       // KST로 해석하므로, 단말 시간대가 KST가 아닌 CI(UTC)에서 9시간 어긋난다.
       ..setGameStartTime(
@@ -531,6 +536,7 @@ void main() {
     required String team,
     required int policeWaitMinutes,
     bool isEventGame = false,
+    bool radioEnabled = false,
   }) {
     container
         .read(gameParticipantNotifierProvider.notifier)
@@ -541,6 +547,7 @@ void main() {
       policeWaitMinutes: policeWaitMinutes,
       maxParticipants: 10,
       isEventGame: isEventGame,
+      radioEnabled: radioEnabled,
       gameStartTime: DateTime.now().toUtc().toIso8601String(),
     );
   }
@@ -1087,6 +1094,71 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(ChaseScene), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  final chatButtonFinder = find.byWidgetPredicate(
+    (w) => w is SvgIconButton && w.assetPath == AppIcons.comment,
+  );
+
+  // 방장이 방을 만들 때 무전을 켰다 — 대기방을 거쳐 들어온 경찰
+  testWidgets(
+    'police_sees_radio_button_when_host_turned_radio_on_at_creation',
+    (tester) async {
+      await mount(tester, team: 'POLICE');
+
+      expect(find.byType(RadioPttButton), findsOneWidget);
+      expect(chatButtonFinder, findsNothing);
+    },
+  );
+
+  // 방장이 무전을 켜지 않은 방 — 경찰도 도둑처럼 채팅 버튼을 본다
+  testWidgets(
+    'police_sees_chat_button_instead_of_radio_when_host_left_radio_off',
+    (tester) async {
+      container
+          .read(gameParticipantNotifierProvider.notifier)
+          .initFromLobby(participantId: 5, radioEnabled: false);
+      await mount(tester, team: 'POLICE');
+
+      expect(find.byType(RadioPttButton), findsNothing);
+      expect(chatButtonFinder, findsOneWidget);
+    },
+  );
+
+  // 방장이 무전을 켠 방이어도 도둑에게는 무전 버튼이 없다
+  testWidgets('robber_sees_chat_button_when_host_turned_radio_on', (
+    tester,
+  ) async {
+    await mount(tester);
+
+    expect(find.byType(RadioPttButton), findsNothing);
+    expect(chatButtonFinder, findsOneWidget);
+  });
+
+  // 무전 켠 게임 도중 경찰이 앱을 껐다 켰다 — 참가자 상태가 비어 서버 조회로 복원한다
+  testWidgets('police_keeps_radio_button_when_app_restarts_mid_game', (
+    tester,
+  ) async {
+    setFreshGame(team: 'POLICE', policeWaitMinutes: 0, radioEnabled: true);
+    await mount(tester, team: 'POLICE');
+    await advance(tester, const Duration(seconds: 5)); // 역할 배너가 지나간 뒤
+
+    expect(find.byType(RadioPttButton), findsOneWidget);
+    // 시작 시스템 메시지·공지 배너 타이머를 끝내 종료 시 남는 타이머를 없앤다.
+    await advance(tester, const Duration(seconds: 60));
+  });
+
+  // 무전 설정이 없는 구버전 서버(응답에 키 없음)로 재접속한 경찰 — 버튼이 없어야 한다
+  testWidgets('police_has_no_radio_button_when_restarting_against_old_server', (
+    tester,
+  ) async {
+    setFreshGame(team: 'POLICE', policeWaitMinutes: 0);
+    await mount(tester, team: 'POLICE');
+    await advance(tester, const Duration(seconds: 5)); // 역할 배너가 지나간 뒤
+
+    expect(find.byType(RadioPttButton), findsNothing);
+    expect(chatButtonFinder, findsOneWidget);
+    await advance(tester, const Duration(seconds: 60));
   });
 
   for (final variant in [

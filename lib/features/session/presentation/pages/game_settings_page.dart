@@ -27,6 +27,7 @@ import '../providers/game_participant_provider.dart';
 import '../providers/session_provider.dart';
 import 'setup_prison_page.dart';
 import '../widgets/mode_row_card.dart';
+import '../widgets/radio_toggle_card.dart';
 import '../widgets/setting_list_card.dart';
 import '../widgets/shrink_toggle_card.dart';
 import '../../../game/domain/shrink_schedule.dart';
@@ -250,16 +251,43 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
     int gameId,
     GameSettingsResponse settings,
     int? finalRadius,
+  ) => _putSettings(
+    gameId,
+    settings.toRequest(shrinkFinalRadiusInMeters: finalRadius),
+  );
+
+  /// 방장이 무전을 켜고 끈다 (#723). 켜 둔 구역 축소는 그대로 싣는다.
+  Future<void> _saveRadio(
+    int gameId,
+    GameSettingsResponse settings,
+    bool on,
+  ) async {
+    final saved = await _putSettings(
+      gameId,
+      settings.toRequest(
+        shrinkFinalRadiusInMeters: settings.shrinkFinalRadiusInMeters,
+        radioEnabled: on,
+      ),
+    );
+    // 로비 SETTINGS_UPDATED 에코를 기다리지 않고 방장 폰의 인게임 값도 바로 맞춘다
+    if (saved != null) {
+      ref
+          .read(gameParticipantNotifierProvider.notifier)
+          .updateSettings(radioEnabled: saved.radioEnabled);
+    }
+  }
+
+  /// `PUT /settings`. 실패하면 사유를 스낵바로 알리고 null을 돌려준다.
+  Future<GameSettingsResponse?> _putSettings(
+    int gameId,
+    GameSettingsRequestModel request,
   ) async {
     try {
-      await ref.read(
-        updateGameSettingsProvider(
-          gameId,
-          request: settings.toRequest(shrinkFinalRadiusInMeters: finalRadius),
-        ).future,
+      return await ref.read(
+        updateGameSettingsProvider(gameId, request: request).future,
       );
     } on DioException catch (e) {
-      if (!mounted) return;
+      if (!mounted) return null;
       AppSnackbar.show(
         context,
         message: AppLocalizations.of(
@@ -267,6 +295,7 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
         ).errorByException(DioExceptionHandler.handle(e), mode: _currentMode),
         backgroundColor: AppColors.red,
       );
+      return null;
     }
   }
 
@@ -337,6 +366,17 @@ class _GameSettingsPageState extends ConsumerState<GameSettingsPage> {
                   isDark: isDark,
                 ),
                 SizedBox(height: AppSpacing.vertical8),
+                // 이벤트 게임은 무전이 없어 켜도 소용없는 스위치를 보이지 않는다 (#723)
+                if (!(participantInfo?.isEventGame ?? false)) ...[
+                  RadioToggleCard(
+                    enabled: settings.radioEnabled,
+                    isDarkMode: isDark,
+                    onChanged: isHost
+                        ? (on) => _saveRadio(gameId, settings, on)
+                        : null,
+                  ),
+                  SizedBox(height: AppSpacing.vertical8),
+                ],
               ],
 
               // ── 구역 섹션 ──

@@ -45,6 +45,9 @@ mixin _$GameSettingsResponse {
   /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
   int? get shrinkFinalRadiusInMeters => throw _privateConstructorUsedError;
 
+  /// 방장이 무전을 켰는지. 키가 없는 응답(구버전 서버·예전 방)은 꺼짐 (#723)
+  bool get radioEnabled => throw _privateConstructorUsedError;
+
   /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
   @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
   GameMode get gameMode => throw _privateConstructorUsedError;
@@ -74,6 +77,7 @@ abstract class $GameSettingsResponseCopyWith<$Res> {
     String? gameStartTime,
     bool isEventGame,
     int? shrinkFinalRadiusInMeters,
+    bool radioEnabled,
     @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
     GameMode gameMode,
   });
@@ -104,6 +108,7 @@ class _$GameSettingsResponseCopyWithImpl<
     Object? gameStartTime = freezed,
     Object? isEventGame = null,
     Object? shrinkFinalRadiusInMeters = freezed,
+    Object? radioEnabled = null,
     Object? gameMode = null,
   }) {
     return _then(
@@ -136,6 +141,10 @@ class _$GameSettingsResponseCopyWithImpl<
                 ? _value.shrinkFinalRadiusInMeters
                 : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
                       as int?,
+            radioEnabled: null == radioEnabled
+                ? _value.radioEnabled
+                : radioEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
             gameMode: null == gameMode
                 ? _value.gameMode
                 : gameMode // ignore: cast_nullable_to_non_nullable
@@ -163,6 +172,7 @@ abstract class _$$GameSettingsResponseImplCopyWith<$Res>
     String? gameStartTime,
     bool isEventGame,
     int? shrinkFinalRadiusInMeters,
+    bool radioEnabled,
     @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
     GameMode gameMode,
   });
@@ -189,6 +199,7 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
     Object? gameStartTime = freezed,
     Object? isEventGame = null,
     Object? shrinkFinalRadiusInMeters = freezed,
+    Object? radioEnabled = null,
     Object? gameMode = null,
   }) {
     return _then(
@@ -221,6 +232,10 @@ class __$$GameSettingsResponseImplCopyWithImpl<$Res>
             ? _value.shrinkFinalRadiusInMeters
             : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
                   as int?,
+        radioEnabled: null == radioEnabled
+            ? _value.radioEnabled
+            : radioEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
         gameMode: null == gameMode
             ? _value.gameMode
             : gameMode // ignore: cast_nullable_to_non_nullable
@@ -241,6 +256,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     this.gameStartTime,
     this.isEventGame = false,
     this.shrinkFinalRadiusInMeters,
+    this.radioEnabled = false,
     @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
     this.gameMode = GameMode.copsAndRobbers,
   });
@@ -280,6 +296,11 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
   @override
   final int? shrinkFinalRadiusInMeters;
 
+  /// 방장이 무전을 켰는지. 키가 없는 응답(구버전 서버·예전 방)은 꺼짐 (#723)
+  @override
+  @JsonKey()
+  final bool radioEnabled;
+
   /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
   @override
   @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
@@ -287,7 +308,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
 
   @override
   String toString() {
-    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, gameStartTime: $gameStartTime, isEventGame: $isEventGame, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters, gameMode: $gameMode)';
+    return 'GameSettingsResponse(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, gameStartTime: $gameStartTime, isEventGame: $isEventGame, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters, radioEnabled: $radioEnabled, gameMode: $gameMode)';
   }
 
   @override
@@ -316,6 +337,8 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
                   shrinkFinalRadiusInMeters,
                 ) ||
                 other.shrinkFinalRadiusInMeters == shrinkFinalRadiusInMeters) &&
+            (identical(other.radioEnabled, radioEnabled) ||
+                other.radioEnabled == radioEnabled) &&
             (identical(other.gameMode, gameMode) ||
                 other.gameMode == gameMode));
   }
@@ -331,6 +354,7 @@ class _$GameSettingsResponseImpl implements _GameSettingsResponse {
     gameStartTime,
     isEventGame,
     shrinkFinalRadiusInMeters,
+    radioEnabled,
     gameMode,
   );
 
@@ -361,6 +385,7 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
     final String? gameStartTime,
     final bool isEventGame,
     final int? shrinkFinalRadiusInMeters,
+    final bool radioEnabled,
     @JsonKey(fromJson: GameMode.fromJson, toJson: _modeToJson)
     final GameMode gameMode,
   }) = _$GameSettingsResponseImpl;
@@ -398,6 +423,10 @@ abstract class _GameSettingsResponse implements GameSettingsResponse {
   /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668, BE v3.1.0)
   @override
   int? get shrinkFinalRadiusInMeters;
+
+  /// 방장이 무전을 켰는지. 키가 없는 응답(구버전 서버·예전 방)은 꺼짐 (#723)
+  @override
+  bool get radioEnabled;
 
   /// 게임 모드. 키가 없는 구버전 응답은 경찰과 도둑, 모르는 값은 unknown
   @override

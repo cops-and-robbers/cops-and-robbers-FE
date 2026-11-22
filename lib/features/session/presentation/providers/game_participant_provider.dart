@@ -52,6 +52,9 @@ class GameParticipantInfo {
   /// 잠금 화면 현황이 네트워크 없이 읽는다(DEC-0089).
   final bool shrinkEnabled;
 
+  /// 방장이 무전을 켰는지 — 인게임 무전 버튼이 읽는 값 (#723). 서버 조회값만 넣는다.
+  final bool radioEnabled;
+
   const GameParticipantInfo({
     required this.gameId,
     required this.team,
@@ -67,6 +70,7 @@ class GameParticipantInfo {
     this.isEventGame = false,
     this.gameMode = GameMode.copsAndRobbers,
     this.shrinkEnabled = false,
+    this.radioEnabled = false,
   });
 
   GameParticipantInfo copyWith({
@@ -84,6 +88,7 @@ class GameParticipantInfo {
     bool? isEventGame,
     GameMode? gameMode,
     bool? shrinkEnabled,
+    bool? radioEnabled,
   }) {
     return GameParticipantInfo(
       gameId: gameId ?? this.gameId,
@@ -101,6 +106,7 @@ class GameParticipantInfo {
       isEventGame: isEventGame ?? this.isEventGame,
       gameMode: gameMode ?? this.gameMode,
       shrinkEnabled: shrinkEnabled ?? this.shrinkEnabled,
+      radioEnabled: radioEnabled ?? this.radioEnabled,
     );
   }
 }
@@ -181,6 +187,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? hostParticipantId,
     bool? isEventGame,
     GameMode? gameMode,
+    bool? radioEnabled,
   }) {
     if (state == null) return;
     state = state!.copyWith(
@@ -193,6 +200,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       hostParticipantId: hostParticipantId,
       isEventGame: isEventGame,
       gameMode: gameMode,
+      radioEnabled: radioEnabled,
     );
   }
 
@@ -216,6 +224,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
     int? policeWaitMinutes,
     int? roundTimeMinutes,
     GameMode? gameMode,
+    bool? radioEnabled,
   }) {
     if (state == null) return;
     state = state!.copyWith(
@@ -224,6 +233,7 @@ class GameParticipantNotifier extends _$GameParticipantNotifier {
       policeWaitMinutes: policeWaitMinutes,
       roundTimeMinutes: roundTimeMinutes,
       gameMode: gameMode,
+      radioEnabled: radioEnabled,
     );
   }
 

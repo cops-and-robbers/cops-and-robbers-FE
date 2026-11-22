@@ -10,6 +10,8 @@ import 'package:cops_and_robbers/features/session/presentation/pages/game_settin
 import 'package:cops_and_robbers/features/session/presentation/pages/mode_change_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/providers/session_provider.dart';
+import 'package:cops_and_robbers/features/session/presentation/widgets/radio_toggle_card.dart';
+import 'package:cops_and_robbers/features/session/presentation/widgets/shrink_toggle_card.dart';
 import 'package:cops_and_robbers/l10n/app_localizations.dart';
 import 'package:cops_and_robbers/router/route_paths.dart';
 import 'package:flutter/material.dart';
@@ -41,17 +43,36 @@ class _FakeRemote extends Fake implements SessionRemoteDataSource {
     GameSettingsRequestModel request,
   ) async {
     sent.add(request);
-    return _settings(request.shrinkFinalRadiusInMeters);
+    return _settings(
+      request.shrinkFinalRadiusInMeters,
+      radio: request.radioEnabled,
+    );
   }
 }
 
-GameSettingsResponse _settings(int? shrink) => GameSettingsResponse(
-  roundDurationMinutes: 30,
-  locationRevealIntervalMinutes: 5,
-  policeWaitMinutes: 5,
-  maxParticipants: 10,
-  shrinkFinalRadiusInMeters: shrink,
+GameSettingsResponse _settings(int? shrink, {bool radio = false}) =>
+    GameSettingsResponse(
+      roundDurationMinutes: 30,
+      locationRevealIntervalMinutes: 5,
+      policeWaitMinutes: 5,
+      maxParticipants: 10,
+      shrinkFinalRadiusInMeters: shrink,
+      radioEnabled: radio,
+    );
+
+// 설정 화면에 스위치가 둘(구역 축소·무전)이라 카드로 좁혀 찾는다 (#723)
+final _shrinkSwitch = find.descendant(
+  of: find.byType(ShrinkToggleCard),
+  matching: find.byType(Switch),
 );
+final _radioSwitch = find.descendant(
+  of: find.byType(RadioToggleCard),
+  matching: find.byType(Switch),
+);
+
+/// [_pump]가 만든 화면의 Riverpod 컨테이너 — 참가자 상태를 읽을 때 쓴다.
+ProviderContainer _containerOf(WidgetTester tester) =>
+    ProviderScope.containerOf(tester.element(find.byType(GameSettingsPage)));
 
 const _c = GeoPoint(latitude: 37.55, longitude: 127.07);
 const _area = GameAreaEntity(
@@ -66,6 +87,7 @@ Future<_FakeRemote> _pump(
   int? shrink,
   GameMode mode = GameMode.copsAndRobbers,
   bool isEventGame = false,
+  bool radio = false,
 }) async {
   tester.view.physicalSize = const Size(393, 852);
   tester.view.devicePixelRatio = 1;
@@ -76,7 +98,7 @@ Future<_FakeRemote> _pump(
       sessionRemoteDataSourceProvider.overrideWithValue(remote),
       fetchGameSettingsProvider(
         7,
-      ).overrideWith((ref) async => _settings(shrink)),
+      ).overrideWith((ref) async => _settings(shrink, radio: radio)),
       fetchGameAreaProvider(7).overrideWith((ref) async => _area),
     ],
   );
@@ -134,7 +156,7 @@ void main() {
     // 500m 구역·감옥 100m 대기방에서 방장이 구역 축소를 켠다
     final remote = await _pump(tester, isHost: true);
 
-    await tester.tap(find.byType(Switch));
+    await tester.tap(_shrinkSwitch);
     await tester.pumpAndSettle();
 
     expect(remote.sent.single.shrinkFinalRadiusInMeters, 200);
@@ -144,9 +166,107 @@ void main() {
   testWidgets('guest_cannot_toggle_shrink', (tester) async {
     final remote = await _pump(tester, isHost: false, shrink: 200);
 
-    expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
-    expect(tester.widget<Switch>(find.byType(Switch)).onChanged, isNull);
+    expect(tester.widget<Switch>(_shrinkSwitch).value, isTrue);
+    expect(tester.widget<Switch>(_shrinkSwitch).onChanged, isNull);
     expect(remote.sent, isEmpty);
+  });
+
+  // 방장이 대기방에서 무전을 켠다 — 켜 둔 구역 축소(200m)는 그대로 실린다
+  testWidgets(
+    'host_turning_radio_on_in_waiting_room_saves_radio_on_and_keeps_shrink',
+    (tester) async {
+      final remote = await _pump(tester, isHost: true, shrink: 200);
+
+      await tester.tap(_radioSwitch);
+      await tester.pumpAndSettle();
+
+      expect(
+        (
+          remote.sent.single.radioEnabled,
+          remote.sent.single.shrinkFinalRadiusInMeters,
+        ),
+        (true, 200),
+      );
+    },
+  );
+
+  // 방장이 대기방에서 켜 둔 무전을 다시 끈다
+  testWidgets('host_turning_radio_off_in_waiting_room_saves_radio_off', (
+    tester,
+  ) async {
+    final remote = await _pump(tester, isHost: true, radio: true);
+
+    await tester.tap(_radioSwitch);
+    await tester.pumpAndSettle();
+
+    expect(remote.sent.single.radioEnabled, isFalse);
+  });
+
+  // 무전을 켠 방에서 방장이 구역 축소를 켠다 — 무전이 꺼지면 안 된다
+  testWidgets('host_turning_shrink_on_keeps_radio_on', (tester) async {
+    final remote = await _pump(tester, isHost: true, radio: true);
+
+    await tester.tap(_shrinkSwitch);
+    await tester.pumpAndSettle();
+
+    expect(
+      (
+        remote.sent.single.radioEnabled,
+        remote.sent.single.shrinkFinalRadiusInMeters,
+      ),
+      (true, 200),
+    );
+  });
+
+  // 참가자는 방장이 켠 무전을 보기만 한다
+  testWidgets('guest_sees_radio_on_but_cannot_toggle', (tester) async {
+    final remote = await _pump(tester, isHost: false, radio: true);
+
+    expect(tester.widget<Switch>(_radioSwitch).value, isTrue);
+    expect(tester.widget<Switch>(_radioSwitch).onChanged, isNull);
+    expect(remote.sent, isEmpty);
+  });
+
+  // 방장이 무전을 켠 직후 게임을 시작해도 방장 폰에 무전 버튼이 나오도록,
+  // 로비 알림을 기다리지 않고 방장 폰의 참가자 상태도 켜진다
+  testWidgets('host_participant_radio_turns_on_right_after_saving', (
+    tester,
+  ) async {
+    await _pump(tester, isHost: true);
+    expect(
+      _containerOf(tester).read(gameParticipantNotifierProvider)?.radioEnabled,
+      isFalse,
+    );
+
+    await tester.tap(_radioSwitch);
+    await tester.pumpAndSettle();
+
+    expect(
+      _containerOf(tester).read(gameParticipantNotifierProvider)?.radioEnabled,
+      isTrue,
+    );
+  });
+
+  // 무전 카드는 구역 축소 카드 바로 아래, 구역 카드 위다
+  testWidgets('radio_card_sits_between_shrink_card_and_zone_card', (
+    tester,
+  ) async {
+    await _pump(tester, isHost: true);
+
+    final radioTop = tester.getTopLeft(find.byType(RadioToggleCard)).dy;
+    expect(
+      radioTop,
+      greaterThan(tester.getBottomLeft(find.byType(ShrinkToggleCard)).dy),
+    );
+    expect(radioTop, lessThan(tester.getTopLeft(find.text('플레이그라운드')).dy));
+  });
+
+  // 이벤트 게임은 무전이 없다 — 눌러도 소용없는 스위치를 보이지 않는다
+  testWidgets('radio_card_is_hidden_when_room_is_event_game', (tester) async {
+    await _pump(tester, isHost: true, isEventGame: true);
+
+    expect(find.byType(ShrinkToggleCard), findsOneWidget);
+    expect(find.byType(RadioToggleCard), findsNothing);
   });
 
   testWidgets('shrink_card_sits_above_zone_card', (tester) async {

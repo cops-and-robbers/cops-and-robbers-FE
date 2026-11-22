@@ -32,6 +32,7 @@ _$SessionCreationDraftModelImpl _$$SessionCreationDraftModelImplFromJson(
   locationShareMinutes: (json['locationShareMinutes'] as num?)?.toInt(),
   policeWaitMinutes: (json['policeWaitMinutes'] as num?)?.toInt(),
   shrinkEnabled: json['shrinkEnabled'] as bool? ?? false,
+  radioEnabled: json['radioEnabled'] as bool? ?? false,
   maxParticipants: (json['maxParticipants'] as num?)?.toInt(),
 );
 
@@ -52,6 +53,7 @@ Map<String, dynamic> _$$SessionCreationDraftModelImplToJson(
   'locationShareMinutes': instance.locationShareMinutes,
   'policeWaitMinutes': instance.policeWaitMinutes,
   'shrinkEnabled': instance.shrinkEnabled,
+  'radioEnabled': instance.radioEnabled,
   'maxParticipants': instance.maxParticipants,
 };
 

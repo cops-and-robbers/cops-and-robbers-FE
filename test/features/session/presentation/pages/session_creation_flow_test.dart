@@ -7,6 +7,8 @@ import 'package:cops_and_robbers/features/session/presentation/pages/session_cre
 import 'package:cops_and_robbers/features/session/presentation/providers/game_participant_provider.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_playground_page.dart';
 import 'package:cops_and_robbers/features/session/presentation/pages/setup_prison_page.dart';
+import 'package:cops_and_robbers/features/session/presentation/widgets/radio_toggle_card.dart';
+import 'package:cops_and_robbers/features/session/presentation/widgets/shrink_toggle_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
@@ -235,11 +237,90 @@ void main() {
   testWidgets('turning_shrink_on_shows_how_far_it_shrinks', (tester) async {
     await _finishBothMaps(tester);
 
-    await tester.tap(find.byType(Switch));
+    // 확인 화면에 스위치가 둘(구역 축소·무전)이라 구역 축소 카드의 것으로 좁힌다 (#723)
+    await tester.tap(
+      find.descendant(
+        of: find.byType(ShrinkToggleCard),
+        matching: find.byType(Switch),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.textContaining('→'), findsOneWidget);
     expect(find.text('구역이 점점 줄어들어요'), findsNothing);
+  });
+
+  final radioSwitch = find.descendant(
+    of: find.byType(RadioToggleCard),
+    matching: find.byType(Switch),
+  );
+
+  // 방장이 확인 화면까지 왔다 — 무전 카드는 구역 축소 카드 바로 아래에 꺼진 채로 있다
+  testWidgets('confirm_shows_radio_card_turned_off_below_shrink_card', (
+    tester,
+  ) async {
+    await _finishBothMaps(tester);
+
+    expect(tester.widget<Switch>(radioSwitch).value, isFalse);
+    final radioTop = tester.getTopLeft(find.byType(RadioToggleCard)).dy;
+    expect(
+      radioTop,
+      greaterThan(tester.getBottomLeft(find.byType(ShrinkToggleCard)).dy),
+    );
+    expect(radioTop, lessThan(tester.getTopLeft(find.text('플레이그라운드')).dy));
+  });
+
+  // 방장이 무전을 켜도 구역 축소는 꺼진 채로 남는다 — 스위치가 서로 섞이지 않는다
+  testWidgets(
+    'turning_radio_on_leaves_shrink_off_when_host_taps_radio_switch',
+    (tester) async {
+      await _finishBothMaps(tester);
+
+      await tester.tap(radioSwitch);
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<Switch>(radioSwitch).value, isTrue);
+      expect(find.text('구역이 점점 줄어들어요'), findsOneWidget);
+    },
+  );
+
+  Future<Map<String, dynamic>> createRoom(
+    WidgetTester tester, {
+    required bool turnRadioOn,
+  }) async {
+    final server = FakeCreateGameServer();
+    await _openFlowAndPickMode(tester, server: server);
+    await tester.tap(find.text('완료'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('완료'));
+    await tester.pumpAndSettle();
+    if (turnRadioOn) {
+      await tester.tap(radioSwitch);
+      await tester.pumpAndSettle();
+    }
+    await tester.tap(find.text('방 생성하기'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('만들기')); // 확인 모달
+    await tester.pumpAndSettle();
+    return server.requestBodies.single['settings'] as Map<String, dynamic>;
+  }
+
+  // 방장이 확인 화면에서 무전을 켜고 방을 만든다
+  testWidgets('create_request_sends_radio_on_when_host_turned_radio_on', (
+    tester,
+  ) async {
+    final settings = await createRoom(tester, turnRadioOn: true);
+
+    expect(settings['radioEnabled'], isTrue);
+  });
+
+  // 방장이 무전을 건드리지 않고 방을 만든다 — 기본 꺼짐
+  testWidgets('create_request_sends_radio_off_when_host_left_it_off', (
+    tester,
+  ) async {
+    final settings = await createRoom(tester, turnRadioOn: false);
+
+    expect(settings['radioEnabled'], isFalse);
   });
 
   // 핀으로 그린 뒤에야 잠긴 걸 알면 다시 그려야 하니 고르는 순간 알려 준다 (#668)

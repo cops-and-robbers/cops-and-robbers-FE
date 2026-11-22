@@ -87,6 +87,9 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
 
     /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
     int? shrinkFinalRadiusInMeters,
+
+    /// 방장이 무전을 켰는지. 기본 꺼짐 (#723)
+    bool radioEnabled = false,
   }) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
@@ -100,6 +103,7 @@ class SessionCreationNotifier extends _$SessionCreationNotifier {
             policeWaitMinutes: policeWaitMinutes,
             maxParticipants: maxParticipants,
             shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
+            radioEnabled: radioEnabled,
           );
     });
   }

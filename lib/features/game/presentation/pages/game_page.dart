@@ -318,15 +318,16 @@ class _GamePageState extends ConsumerState<GamePage>
   int get _gameId => int.tryParse(widget.sessionId) ?? 0;
   bool get _isDarkMode => GameTeam.isRobber(widget.team);
 
-  /// 무전 켜진 일반 게임의 경찰만 오른쪽 아래 채팅 자리에 무전 버튼을 둔다 (#697)
-  bool get _hasRadio =>
-      !widget.isDummy &&
-      radioAvailable(
-        isPolice: GameTeam.isPolice(widget.team),
-        isEventGame:
-            ref.read(gameParticipantNotifierProvider)?.isEventGame ?? false,
-        isRadioEnabled: kRadioEnabledDefault,
-      );
+  /// 방장이 무전을 켠 일반 게임의 경찰만 오른쪽 아래 채팅 자리에 무전 버튼을 둔다 (#697, #723)
+  bool get _hasRadio {
+    if (widget.isDummy) return false;
+    final info = ref.read(gameParticipantNotifierProvider);
+    return radioAvailable(
+      isPolice: GameTeam.isPolice(widget.team),
+      isEventGame: info?.isEventGame ?? false,
+      isRadioEnabled: info?.radioEnabled ?? false,
+    );
+  }
 
   @override
   void initState() {
@@ -775,6 +776,7 @@ class _GamePageState extends ConsumerState<GamePage>
             roundTimeMinutes: settings.roundDurationMinutes,
             isEventGame: isEvent,
             gameMode: settings.gameMode,
+            radioEnabled: settings.radioEnabled,
           );
 
       if (!mounted) return;

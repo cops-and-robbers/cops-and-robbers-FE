@@ -42,6 +42,17 @@ void main() {
       );
     });
 
+    // 방장이 무전을 끈 방에서 토큰을 요청했다 (BE PR #261)
+    test(
+      'says_radio_is_off_in_this_room_when_token_refused_for_radio_off_room',
+      () {
+        expect(
+          l10n.errorByCode('RADIO_DISABLED_IN_GAME'),
+          l10n.errorCodeRadioDisabledInGame,
+        );
+      },
+    );
+
     test('returns_pick_another_spot_when_code_is_address_not_found', () {
       // 그 좌표에 주소·국가가 없어 서버가 글 생성을 거절한 경우다. 공통 폴백
       // "잠시 후 다시 시도"는 틀린 안내다 — 같은 핀으로는 몇 번을 해도 실패한다.

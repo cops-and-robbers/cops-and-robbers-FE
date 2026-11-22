@@ -150,6 +150,10 @@ class GameSettingsRequestModel with _$GameSettingsRequestModel {
     ///
     /// `PUT /settings`는 값을 통째로 덮어쓰므로 null이어도 키를 빼지 않는다.
     int? shrinkFinalRadiusInMeters,
+
+    /// 무전 켬 여부 (#723). `PUT /settings`가 통째로 덮어써 항상 싣는다 —
+    /// 빠지면 서버가 꺼짐으로 되돌린다.
+    @Default(false) bool radioEnabled,
   }) = _GameSettingsRequestModel;
 
   factory GameSettingsRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -215,15 +219,19 @@ CoordinatesRequestModel _toCoordinates(GeoPoint point) =>
 extension GameSettingsResponseRequest on GameSettingsResponse {
   GameSettingsRequestModel toRequest({
     required int? shrinkFinalRadiusInMeters,
+
+    /// null이면 지금 방의 무전 값을 그대로 싣는다 (#723)
+    bool? radioEnabled,
   }) => GameSettingsRequestModel(
     roundDurationMinutes: roundDurationMinutes,
     locationRevealIntervalMinutes: locationRevealIntervalMinutes,
     policeWaitMinutes: policeWaitMinutes,
     maxParticipants: maxParticipants,
     shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
+    radioEnabled: radioEnabled ?? this.radioEnabled,
   );
 
-  /// 대기방 설정 수정 — 네 항목만 바꾸고 켜 둔 구역 축소는 그대로 싣는다.
+  /// 대기방 설정 수정 — 네 항목만 바꾸고 켜 둔 구역 축소·무전은 그대로 싣는다.
   GameSettingsRequestModel toEditRequest({
     required int maxParticipants,
     required int roundDurationMinutes,
@@ -235,5 +243,6 @@ extension GameSettingsResponseRequest on GameSettingsResponse {
     policeWaitMinutes: policeWaitMinutes,
     maxParticipants: maxParticipants,
     shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
+    radioEnabled: radioEnabled,
   );
 }

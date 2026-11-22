@@ -166,6 +166,9 @@ extension AppLocalizationsErrorMapping on AppLocalizations {
       // ── 무전 토큰 발급 거절 (BE PR #239) ──
       case 'RADIO_NOT_ALLOWED_IN_EVENT_GAME':
         return errorCodeRadioNotAllowedInEventGame;
+      // 방장이 무전을 끈 방 (#723, BE PR #261)
+      case 'RADIO_DISABLED_IN_GAME':
+        return errorCodeRadioDisabledInGame;
       case 'ONLY_POLICE_CAN_USE_RADIO':
         return byMode(
           mode,

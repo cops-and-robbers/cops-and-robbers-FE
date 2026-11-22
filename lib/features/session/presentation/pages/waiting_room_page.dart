@@ -453,6 +453,8 @@ class _WaitingRoomPageState extends ConsumerState<WaitingRoomPage>
             isEventGame:
                 (settings?.isEventGame ?? false) || kEventGameDevOverride,
             gameMode: settings?.gameMode,
+            // 설정 조회가 실패하면 null — 알고 있던 값을 유지한다 (#723)
+            radioEnabled: settings?.radioEnabled,
           );
 
       // isHost는 initFromLobby()에서 갱신되지 않으므로 항상 서버 기준으로 명시적 설정

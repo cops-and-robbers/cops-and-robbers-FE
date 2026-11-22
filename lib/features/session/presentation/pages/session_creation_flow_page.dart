@@ -25,6 +25,7 @@ import '../../../../core/widgets/dialogs/app_dialog.dart';
 import '../../../../core/widgets/loading/app_loading.dart';
 import '../../../../core/widgets/snackbars/app_snackbar.dart';
 import '../../../game/domain/shrink_schedule.dart';
+import '../widgets/radio_toggle_card.dart';
 import '../widgets/shrink_toggle_card.dart';
 import '../../../../core/services/storage/session_draft_storage_service.dart';
 import '../../../../core/widgets/buttons/app_button.dart';
@@ -164,6 +165,9 @@ class _SessionCreationFlowPageState
   /// 구역 축소 (#668). 기본 꺼짐.
   bool _shrinkEnabled = false;
 
+  /// 무전 켬 여부 (#723) — 기본 꺼짐
+  bool _radioEnabled = false;
+
   // ============================================
   // Lifecycle
   // ============================================
@@ -211,6 +215,7 @@ class _SessionCreationFlowPageState
             (draft.policeWaitMinutes ?? GameSettingValues.recommendedPoliceWait)
                 .clamp(1, 10);
         _shrinkEnabled = draft.shrinkEnabled;
+        _radioEnabled = draft.radioEnabled;
       });
     }
   }
@@ -231,6 +236,7 @@ class _SessionCreationFlowPageState
       locationShareMinutes: _locationShareMinutes,
       policeWaitMinutes: _policeWaitMinutes,
       shrinkEnabled: _shrinkEnabled,
+      radioEnabled: _radioEnabled,
     );
     await _storageService.saveDraft(draft);
   }
@@ -438,6 +444,7 @@ class _SessionCreationFlowPageState
             shrinkFinalRadiusInMeters: _shrinkEnabled
                 ? _shrinkFinalRadius(area)
                 : null,
+            radioEnabled: _radioEnabled,
           );
     } finally {
       // 성공/실패 무관하게 로딩 종료 보장 (최소 표시 시간은 핸들이 처리)
@@ -1003,6 +1010,14 @@ class _SessionCreationFlowPageState
                   )
                 else ...[
                   _buildShrinkCard(area),
+                  SizedBox(height: AppSpacing.vertical8),
+                  RadioToggleCard(
+                    enabled: _radioEnabled,
+                    onChanged: (value) {
+                      setState(() => _radioEnabled = value);
+                      unawaited(_saveDraft());
+                    },
+                  ),
                   SizedBox(height: AppSpacing.vertical8),
                   ZoneListCard(
                     area: area,
