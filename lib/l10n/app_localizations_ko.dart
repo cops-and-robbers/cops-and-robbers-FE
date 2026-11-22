@@ -2623,6 +2623,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get errorCodeRadioPoliceWaitingTimeTag => '술래가 움직이기 시작한 뒤에 쓸 수 있어요';
 
   @override
+  String get errorCodeRadioServerBusy => '지금 무전 사용자가 많아요\n혼잡이 풀리면 자동으로 연결돼요';
+
+  @override
   String get errorCodeGameNotActive => '대기 중이거나 진행 중인 게임에서만 조회할 수 있어요';
 
   @override
@@ -3215,6 +3218,9 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get dialogMicPermissionMessage =>
       '무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요';
+
+  @override
+  String get radioConnected => '무전이 연결됐어요';
 
   @override
   String get radioPttLabel => '무전';

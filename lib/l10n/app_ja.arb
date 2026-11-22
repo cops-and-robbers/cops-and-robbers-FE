@@ -884,6 +884,7 @@
   "errorCodeOnlyPoliceCanUseRadioTag": "無線は鬼だけが使えます",
   "errorCodeRadioPoliceWaitingTime": "警察が出動した後に使えます",
   "errorCodeRadioPoliceWaitingTimeTag": "鬼が動き出した後に使えます",
+  "errorCodeRadioServerBusy": "ただいま無線の利用者が多いです\n混雑が解消したら自動で接続します",
   "errorCodeGameNotActive": "待機中または進行中のゲームでのみ照会できます",
   "errorCodeGameNotWaiting": "待機中のゲームのみ設定を変更できます",
   "errorCodeInvalidLocationInterval": "位置公開間隔はラウンド時間より短くしてください",
@@ -1076,5 +1077,6 @@
   "radioSpeakerFallbackTag": "鬼",
   "dialogMicPermissionTitle": "マイクの権限が必要です",
   "dialogMicPermissionMessage": "無線で話すにはマイクの権限が必要です\n設定でマイクの権限を許可してください",
+  "radioConnected": "無線に接続しました",
   "radioPttLabel": "無線"
 }

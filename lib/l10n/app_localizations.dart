@@ -4939,6 +4939,12 @@ abstract class AppLocalizations {
   /// **'술래가 움직이기 시작한 뒤에 쓸 수 있어요'**
   String get errorCodeRadioPoliceWaitingTimeTag;
 
+  /// No description provided for @errorCodeRadioServerBusy.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 무전 사용자가 많아요\n혼잡이 풀리면 자동으로 연결돼요'**
+  String get errorCodeRadioServerBusy;
+
   /// No description provided for @errorCodeGameNotActive.
   ///
   /// In ko, this message translates to:
@@ -6018,6 +6024,12 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'무전으로 말하려면 마이크 권한이 필요해요\n설정에서 마이크 권한을 허용해주세요'**
   String get dialogMicPermissionMessage;
+
+  /// 혼잡으로 막혔던 무전이 풀려 연결된 순간 스낵바 (#722)
+  ///
+  /// In ko, this message translates to:
+  /// **'무전이 연결됐어요'**
+  String get radioConnected;
 
   /// No description provided for @radioPttLabel.
   ///
