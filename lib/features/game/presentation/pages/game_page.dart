@@ -2712,6 +2712,25 @@ class _GamePageState extends ConsumerState<GamePage>
       }
     });
 
+    // 무전 서버 혼잡·복구 안내 (#722) — 노티파이어는 상태만 바꾸고 스낵바는 화면이 띄운다.
+    // 혼잡한 동안 상태가 serverBusy에 머물러 10초 재시도마다 다시 뜨지 않는다.
+    // 무전이 없는 화면(도둑·이벤트 게임·더미)에서는 세션 provider를 만들지 않는다.
+    if (_hasRadio) {
+      ref.listen(radioSessionProvider(_gameId).select((s) => s.status), (
+        prev,
+        next,
+      ) {
+        if (_isLeaving) return;
+        final notice = radioStatusNotice(
+          AppLocalizations.of(context),
+          prev,
+          next,
+        );
+        if (notice == null) return;
+        AppSnackbar.show(context, message: notice, isDarkMode: _isDarkMode);
+      });
+    }
+
     // 게임 이벤트 → 전체채팅 시스템 메시지 주입 (chat feature와 game feature를 중재)
     ref.listen(gameEventNotifierProvider.select((s) => s.policeMoveStartTime), (
       prev,
@@ -3564,18 +3583,22 @@ class _GamePageState extends ConsumerState<GamePage>
     );
   }
 
-  /// 무전이 안 눌리는 이유 — 다른 경찰이 말하는 중이면 알약이 이미 보여서 따로 알리지 않는다
+  /// 무전이 안 눌리는 이유(출동 대기·서버 혼잡) — 다른 경찰이 말하는 중이면 알약이 이미 보여서 따로 알리지 않는다
   void _explainBlockedRadio(RadioStatus status) {
-    if (status != RadioStatus.waitingPolice) return;
-    AppSnackbar.show(
-      context,
-      message: byMode(
+    final l10n = AppLocalizations.of(context);
+    final String message;
+    if (status == RadioStatus.waitingPolice) {
+      message = byMode(
         _gameMode,
-        classic: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTime,
-        tag: AppLocalizations.of(context).errorCodeRadioPoliceWaitingTimeTag,
-      ),
-      isDarkMode: _isDarkMode,
-    );
+        classic: l10n.errorCodeRadioPoliceWaitingTime,
+        tag: l10n.errorCodeRadioPoliceWaitingTimeTag,
+      );
+    } else if (status == RadioStatus.serverBusy) {
+      message = l10n.errorCodeRadioServerBusy;
+    } else {
+      return;
+    }
+    AppSnackbar.show(context, message: message, isDarkMode: _isDarkMode);
   }
 
   void _showMicPermissionDialog() {

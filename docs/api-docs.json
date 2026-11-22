@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v4.0.0 업데이트 내역\n\n### ✨ 추가 — 술래잡기 모드\n- 게임 모드 gameMode(COPS_AND_ROBBERS | TAG) 추가\n  - 술래잡기는 감옥과 탈옥이 없고, 나머지 규칙은 경찰과도둑과 같다\n  - 요청: POST /api/games 에 gameMode(optional). 없으면 COPS_AND_ROBBERS\n  - 응답\n    - POST /api/games, GET /api/games/{gameId}, POST /api/games/join\n    - PUT /api/games/{gameId}/settings, GET /api/games/{gameId}/state\n    - 게임 결과, 로비 SETTINGS_UPDATED 이벤트\n    - 어드민 GraphQL 의 AdminGameSummary, AdminGame, AdminGameHistory, UserGameHistory\n  - 어드민 GraphQL 필터: adminGames, adminGameHistories 에 gameMode(optional) 추가\n\n- 대기실 모드 변경 PUT /api/games/{gameId}/mode 추가\n  - 방장만 호출할 수 있고, 모드와 구역을 함께 보낸다\n  - 로비 이벤트 MODE_UPDATED(gameMode, areaData) 발행\n  - ⚠️ 에러코드 추가 — EVENT_GAME_NOT_SUPPORTED_IN_MODE(400)\n    - 이벤트 게임을 술래잡기로 바꿀 때\n    - 어드민에서 술래잡기 게임을 이벤트로 전환할 때\n\n- 구역의 감옥(jail) 필드가 선택 값으로 바뀜\n  - 술래잡기는 감옥을 보내지 않고, 응답의 감옥 필드는 null 이다\n  - CIRCLE 의 감옥 중심과 반경은 둘 다 보내거나 둘 다 빼야 한다\n  - ⚠️ 에러코드 추가 — JAIL_AREA_REQUIRED, JAIL_AREA_NOT_ALLOWED\n    - 경찰과도둑에 감옥이 없거나, 술래잡기에 감옥이 있을 때\n    - POST /api/games, PUT /api/games/{gameId}/area, PUT /api/games/{gameId}/mode\n\n- 술래잡기에서 탈옥 POST /api/games/{gameId}/system/escape 거절\n  - ⚠️ 에러코드 추가 — ESCAPE_NOT_ALLOWED_IN_MODE(400)\n\n- FCM 시스템 알림 문구가 모드별로 바뀜\n  - 술래잡기는 \"술래\", \"도망자\", \"잡힘\" 문구를 쓴다\n- 식별자는 그대로다\n  - POLICE 는 술래, ROBBER 는 도망자, JAILED 는 잡힌 상태로 해석한다\n\n### 🧹 삭제 — Deprecated API\n- 로비 준비 상태 변경 PATCH /api/games/{gameId}/lobby/ready\n- 참가자 isReady\n  - 로비 조회 GET /api/games/{gameId}/lobby\n  - 로비 이벤트 ENTER, TEAM_UPDATE, HOST_CHANGED\n- 구역 평면 필드 (요청, 응답 모두)\n  - playgroundCenter, playgroundRadiusInMeters, jailCenter, jailRadiusInMeters\n  - circle / polygon 을 쓴다. 요청에 areaType 이 필수가 된다\n- 도둑 위치 조회 GET /api/games/{gameId}/robbers/location\n- 구버전 소켓 경로 /game-connection\n- 앱 영향\n  - 이 API 를 쓰는 구버전 앱은 동작하지 않는다\n  - 배포 전에 강제 업데이트 최소 버전을 올려야 한다\n\n## v3.3.0 업데이트 내역\n\n### ✨ 추가 — 웹 회원 탈퇴 API\n- POST /api/auth/withdrawal/preview 추가. Firebase ID 토큰으로 계정을 확인하고 닉네임과 게임 참여 여부를 응답한다.\n- POST /api/auth/withdrawal 추가. DELETE /api/user/me 와 같은 탈퇴 처리를 한다.\n- 두 API 모두 회원가입을 하지 않고 JWT 도 발급하지 않는다.\n- ⚠️ 에러코드 추가 — WITHDRAWAL_USER_NOT_FOUND. 가입되지 않은 계정이면 404 를 응답한다.\n- 앱 영향 — 없음. 웹사이트의 계정 삭제 페이지에서만 사용한다.\n\n## v3.2.0 업데이트 내역\n\n### ✨ 추가 — 경찰 무전 접속 토큰 API\n- 무전 접속 토큰 발급 POST /api/games/{gameId}/radio/token 추가. 경찰이 무전 서버에 들어갈 토큰을 받는다\n  - 요청 본문 없음(로그인한 경찰 본인). 응답은 url, room, identity, token, expiresAt\n  - 토큰 수명은 2분이다. 앱은 수명의 70~90% 지점에서 랜덤하게 다시 호출해 재발급받는다\n  - 재발급 때마다 자격을 다시 검증한다. 게임이 끝났거나 나갔으면 거절된다\n  - 음성은 서버를 거치지 않고 무전 서버와 앱 사이에서만 흐른다. 앱은 url 을 하드코딩하지 않는다\n  - ⚠️ 에러코드 추가 — ONLY_POLICE_CAN_USE_RADIO(403), RADIO_POLICE_WAITING_TIME(400), RADIO_NOT_ALLOWED_IN_EVENT_GAME(400)\n- 무전 사용 시간을 라운드별 참가자 기록에 누적한다. 어드민 GraphQL 의 AdminGameHistoryParticipant 에 radioSeconds(Int!), AdminUser 에 누적 radioSeconds(Int!) 추가\n\n### 변경 — 최대 참가 인원 150명 → 50명\n- ⚠️ maxParticipants 상한이 50 으로 내려간다. 51 이상이면 400 이다\n  - POST /api/games 의 settings, PUT /api/games/{gameId}/settings\n- 앱 영향 — 방 생성 인원 슬라이더 최대값을 50 으로 맞춘다\n",
-    "version": "4.0.0"
+    "description": "## v4.4.0 업데이트 내역\n\n### ✨ 추가 — 방 설정 무전 켜기 (기본 꺼짐)\n- 방 설정에 radioEnabled(boolean) 추가\n  - 요청 — 방 생성 POST /api/games, 설정 변경 PUT /api/games/{gameId}/settings. 보내지 않으면 false\n  - 응답 — 방 생성, 방 정보 GET /api/games/{gameId}, 설정 변경, 대기방 설정 변경 알림\n- 무전이 꺼진 방의 무전 토큰 발급은 400 RADIO_DISABLED_IN_GAME 으로 거절한다\n- 이벤트 게임은 값과 상관없이 지금처럼 무전을 쓸 수 없다\n- **앱 영향** — radioEnabled 를 모르는 이전 앱이 만든 방은 무전이 꺼진다\n\n### ✨ 추가 — 무전 서버 혼잡 시 신규 입장 거절\n- 무전 토큰 발급 POST /api/games/{gameId}/radio/token 에 503 RADIO_SERVER_BUSY 추가\n  - 무전 서버 CPU가 높을 때 아직 무전이 시작되지 않은 판만 거절한다\n  - 이미 무전이 돌고 있는 판은 늦게 합류한 경찰까지 그대로 성공한다\n- 혼잡이 풀리면 같은 요청이 다시 성공한다. 별도로 상태를 조회할 필요는 없다\n- **앱 영향** — RADIO_SERVER_BUSY 를 받으면 혼잡 문구를 띄우고 무전 버튼을 잠시 막는다. 처리하지 않은 이전 앱에서는 일반 에러로 보인다\n",
+    "version": "4.4.0"
   },
   "servers": [
     {
@@ -4320,7 +4320,7 @@
           "Radio"
         ],
         "summary": "무전 접속 토큰 발급",
-        "description": "경찰이 무전 서버에 접속할 토큰을 발급받습니다.\n\n- 경찰만 요청 가능\n- 경찰 대기 시간이 끝난 뒤에만 사용 가능\n- 이벤트 게임에서는 사용 불가\n- 토큰 수명은 2분입니다. 수명의 70~90% 지점에서 다시 호출해 재발급받습니다\n- 재발급 때마다 자격을 다시 검증하므로 게임이 끝났거나 나갔으면 거절됩니다\n- 음성은 서버를 거치지 않고 무전 서버와 앱 사이에서만 흐릅니다\n",
+        "description": "경찰이 무전 서버에 접속할 토큰을 발급받습니다.\n\n- 경찰만 요청 가능\n- 경찰 대기 시간이 끝난 뒤에만 사용 가능\n- 이벤트 게임에서는 사용 불가\n- 방장이 방 설정에서 무전을 켠 게임(radioEnabled true)에서만 사용 가능\n- 토큰 수명은 2분입니다. 수명의 70~90% 지점에서 다시 호출해 재발급받습니다\n- 재발급 때마다 자격을 다시 검증하므로 게임이 끝났거나 나갔으면 거절됩니다\n- 음성은 서버를 거치지 않고 무전 서버와 앱 사이에서만 흐릅니다\n- 무전 서버가 혼잡하면 아직 무전이 시작되지 않은 판은 503 RADIO_SERVER_BUSY로 거절됩니다 (이미 무전이 돌고 있는 판은 늦게 합류한 경찰도 발급 가능)\n",
         "operationId": "issueToken",
         "parameters": [
           {
@@ -4381,6 +4381,16 @@
                       "title": "경찰 대기 시간",
                       "status": 400,
                       "detail": "경찰은 대기 시간 동안 무전을 사용할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  },
+                  "무전 꺼진 게임": {
+                    "summary": "무전 꺼진 게임",
+                    "value": {
+                      "errorCode": "RADIO_DISABLED_IN_GAME",
+                      "title": "무전 꺼진 게임",
+                      "status": 400,
+                      "detail": "방장이 무전을 켜지 않은 게임입니다.",
                       "instance": "/api/games/{gameId}/radio/token"
                     }
                   },
@@ -4445,6 +4455,28 @@
                       "title": "경찰만 무전 가능",
                       "status": 403,
                       "detail": "경찰 팀만 무전을 사용할 수 있습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "503 Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "무전 서버 혼잡": {
+                    "summary": "무전 서버 혼잡",
+                    "value": {
+                      "errorCode": "RADIO_SERVER_BUSY",
+                      "title": "무전 서버 혼잡",
+                      "status": 503,
+                      "detail": "무전 서버가 혼잡합니다. 잠시 후 다시 시도해주세요.",
                       "instance": "/api/games/{gameId}/radio/token"
                     }
                   }
@@ -7674,7 +7706,7 @@
           "User"
         ],
         "summary": "닉네임 중복 확인",
-        "description": "닉네임 변경 전, 해당 닉네임이 이미 사용 중인지 확인합니다. (쿼리 파라미터로 요청)",
+        "description": "닉네임 변경 전, 해당 닉네임이 이미 사용 중이거나 부적절한 표현을 포함하는지 확인합니다. (쿼리 파라미터로 요청)",
         "operationId": "checkDuplicate",
         "parameters": [
           {
@@ -7695,6 +7727,35 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/NicknameCheckResponse"
+                },
+                "examples": {
+                  "AVAILABLE": {
+                    "summary": "사용 가능",
+                    "description": "AVAILABLE",
+                    "value": {
+                      "isAvailable": true,
+                      "code": "AVAILABLE",
+                      "message": "사용 가능한 닉네임 입니다!"
+                    }
+                  },
+                  "DUPLICATED_NICKNAME": {
+                    "summary": "이미 사용 중",
+                    "description": "DUPLICATED_NICKNAME",
+                    "value": {
+                      "isAvailable": false,
+                      "code": "DUPLICATED_NICKNAME",
+                      "message": "이미 사용 중인 닉네임입니다."
+                    }
+                  },
+                  "BANNED_WORD_NICKNAME": {
+                    "summary": "금칙어 포함 — 이미 쓰는 닉네임이어도 이 결과",
+                    "description": "BANNED_WORD_NICKNAME",
+                    "value": {
+                      "isAvailable": false,
+                      "code": "BANNED_WORD_NICKNAME",
+                      "message": "닉네임에 부적절한 표현이 포함되어 있습니다."
+                    }
+                  }
                 }
               }
             }
@@ -10397,6 +10458,12 @@
             "format": "int32",
             "nullable": true,
             "example": 200
+          },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부. 보내지 않으면 false",
+            "nullable": true,
+            "example": false
           }
         }
       },
@@ -10442,6 +10509,11 @@
             "format": "int32",
             "nullable": true,
             "example": 200
+          },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부",
+            "example": false
           }
         }
       },
@@ -11272,6 +11344,11 @@
             "nullable": true,
             "example": 200
           },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부",
+            "example": false
+          },
           "createdAt": {
             "type": "string",
             "description": "생성 시각",
@@ -11953,6 +12030,11 @@
             "description": "닉네임 사용 가능 여부",
             "example": false
           },
+          "code": {
+            "type": "string",
+            "description": "결과 코드 (AVAILABLE, DUPLICATED_NICKNAME, BANNED_WORD_NICKNAME)",
+            "example": "DUPLICATED_NICKNAME"
+          },
           "message": {
             "type": "string",
             "description": "결과 메시지",
@@ -12129,6 +12211,11 @@
             "format": "int32",
             "nullable": true,
             "example": 200
+          },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부",
+            "example": false
           },
           "isStarted": {
             "type": "boolean",

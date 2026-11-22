@@ -2627,6 +2627,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorCodeRadioPoliceWaitingTimeTag => '鬼が動き出した後に使えます';
 
   @override
+  String get errorCodeRadioServerBusy => 'ただいま無線の利用者が多いです\n混雑が解消したら自動で接続します';
+
+  @override
   String get errorCodeGameNotActive => '待機中または進行中のゲームでのみ照会できます';
 
   @override
@@ -3220,6 +3223,9 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get dialogMicPermissionMessage =>
       '無線で話すにはマイクの権限が必要です\n設定でマイクの権限を許可してください';
+
+  @override
+  String get radioConnected => '無線に接続しました';
 
   @override
   String get radioPttLabel => '無線';

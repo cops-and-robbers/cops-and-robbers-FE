@@ -61,7 +61,17 @@ class RadioMicMemory {
 @riverpod
 RadioMicMemory radioMicMemory(Ref ref) => RadioMicMemory();
 
-enum RadioStatus { off, waitingPolice, connecting, ready, micDenied, reconnecting }
+enum RadioStatus {
+  off,
+  waitingPolice,
+  connecting,
+  ready,
+  micDenied,
+  reconnecting,
+
+  /// 무전 서버가 혼잡해 방 밖에서 10초마다 다시 시도하는 중 (#722)
+  serverBusy,
+}
 
 @freezed
 class RadioSessionState with _$RadioSessionState {
@@ -223,7 +233,9 @@ class RadioSession extends _$RadioSession {
     }
     _isJoinPending = false;
     final gen = _gen;
-    if (state.status != RadioStatus.reconnecting) {
+    // 혼잡 중 재시도마다 "연결 중"으로 돌아가면 혼잡 안내가 10초마다 다시 뜬다
+    if (state.status != RadioStatus.reconnecting &&
+        state.status != RadioStatus.serverBusy) {
       state = state.copyWith(status: RadioStatus.connecting);
     }
     final token = await _issue();
@@ -310,6 +322,10 @@ class RadioSession extends _$RadioSession {
       } else if (code == 'RADIO_POLICE_WAITING_TIME') {
         // 서버가 아직 출동을 반영하지 않았거나 폰 시계가 빠르다 — 곧 다시 (_retry)
         state = state.copyWith(status: RadioStatus.waitingPolice);
+      } else if (code == 'RADIO_SERVER_BUSY' && _isActive && _room == null) {
+        // 방 밖에서 막혔을 때만 — 이미 무전 중인 경찰의 재발급 거절이나
+        // 게임이 끝난 뒤 도착한 응답으로 쓰던 무전·꺼진 무전을 혼잡으로 바꾸지 않는다
+        state = state.copyWith(status: RadioStatus.serverBusy);
       }
       return null;
     }

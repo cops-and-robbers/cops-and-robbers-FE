@@ -2818,6 +2818,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Available after the Seekers start moving';
 
   @override
+  String get errorCodeRadioServerBusy =>
+      'Radio is busy right now\nYou\'ll be connected automatically once it clears';
+
+  @override
   String get errorCodeGameNotActive =>
       'Can only be viewed in a waiting or in-progress game';
 
@@ -3474,6 +3478,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get dialogMicPermissionMessage =>
       'Microphone permission is required to talk on the radio\nPlease allow microphone permission in settings';
+
+  @override
+  String get radioConnected => 'Radio connected';
 
   @override
   String get radioPttLabel => 'Radio';

@@ -115,6 +115,102 @@ void main() {
       expect(pressed, 1);
       expect(blocked, 0);
     });
+
+    // 혼잡으로 막힌 경찰이 회색 버튼을 누른다 — 말은 안 나가고 이유를 다시 알려 준다 (#722)
+    testWidgets(
+      'ptt_button_calls_blocked_tap_instead_of_press_while_radio_server_is_busy',
+      (tester) async {
+        var pressed = 0, blocked = 0;
+        await _pump(
+          tester,
+          RadioPttButton(
+            state: const RadioSessionState(status: RadioStatus.serverBusy),
+            onPress: () => pressed++,
+            onRelease: () {},
+            onBlockedTap: () => blocked++,
+          ),
+        );
+        await tester.tap(find.byType(RadioPttButton));
+        expect(pressed, 0);
+        expect(blocked, 1);
+      },
+    );
+  });
+
+  group('radioStatusNotice', () {
+    final ko = lookupAppLocalizations(const Locale('ko'));
+    final en = lookupAppLocalizations(const Locale('en'));
+    final ja = lookupAppLocalizations(const Locale('ja'));
+
+    // 출동 직후·끊겼다 붙는 중·출동 대기 재시도 중 어디서 막혀도 같은 안내가 뜬다
+    test(
+      'announces_congestion_in_each_language_when_radio_join_is_refused_as_busy',
+      () {
+        for (final before in [
+          RadioStatus.connecting,
+          RadioStatus.reconnecting,
+          RadioStatus.waitingPolice,
+        ]) {
+          expect(
+            radioStatusNotice(ko, before, RadioStatus.serverBusy),
+            '지금 무전 사용자가 많아요\n혼잡이 풀리면 자동으로 연결돼요',
+          );
+        }
+        expect(
+          radioStatusNotice(en, RadioStatus.connecting, RadioStatus.serverBusy),
+          "Radio is busy right now\nYou'll be connected automatically once it clears",
+        );
+        expect(
+          radioStatusNotice(ja, RadioStatus.connecting, RadioStatus.serverBusy),
+          'ただいま無線の利用者が多いです\n混雑が解消したら自動で接続します',
+        );
+      },
+    );
+
+    // 혼잡으로 못 들어가던 경찰이 다음 10초 시도에서 방에 들어갔다
+    test('announces_connection_when_radio_joins_after_congestion', () {
+      expect(
+        radioStatusNotice(ko, RadioStatus.serverBusy, RadioStatus.ready),
+        '무전이 연결됐어요',
+      );
+      expect(
+        radioStatusNotice(en, RadioStatus.serverBusy, RadioStatus.ready),
+        'Radio connected',
+      );
+      expect(
+        radioStatusNotice(ja, RadioStatus.serverBusy, RadioStatus.ready),
+        '無線に接続しました',
+      );
+    });
+
+    // 혼잡 없이 평소처럼 붙었다 — 알릴 게 없다
+    test('stays_silent_when_radio_joins_without_congestion', () {
+      expect(
+        radioStatusNotice(ko, RadioStatus.connecting, RadioStatus.ready),
+        isNull,
+      );
+      expect(
+        radioStatusNotice(ko, RadioStatus.reconnecting, RadioStatus.ready),
+        isNull,
+      );
+      expect(radioStatusNotice(ko, null, RadioStatus.connecting), isNull);
+    });
+
+    // 혼잡한 채 게임이 끝났거나(off) 서버가 출동 대기로 돌려보냈다 — 연결된 게 아니다
+    test('stays_silent_when_congestion_ends_without_joining', () {
+      expect(
+        radioStatusNotice(ko, RadioStatus.serverBusy, RadioStatus.off),
+        isNull,
+      );
+      expect(
+        radioStatusNotice(
+          ko,
+          RadioStatus.serverBusy,
+          RadioStatus.waitingPolice,
+        ),
+        isNull,
+      );
+    });
   });
 
   group('radioSpeakerLabel', () {
