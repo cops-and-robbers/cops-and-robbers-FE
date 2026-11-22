@@ -42,6 +42,17 @@ void main() {
       );
     });
 
+    // 방장이 무전을 끈 방에서 토큰을 요청했다 (BE PR #261)
+    test(
+      'says_radio_is_off_in_this_room_when_token_refused_for_radio_off_room',
+      () {
+        expect(
+          l10n.errorByCode('RADIO_DISABLED_IN_GAME'),
+          l10n.errorCodeRadioDisabledInGame,
+        );
+      },
+    );
+
     // 무전 서버 과부하로 새 입장이 거절됐다 (BE PR #253) — "잠시 후 다시 시도"가 아니라
     // 사람이 몰렸고 풀리면 저절로 붙는다는 걸 알려야 한다.
     test('says_radio_is_crowded_and_will_connect_by_itself_when_radio_server_is_busy', () {

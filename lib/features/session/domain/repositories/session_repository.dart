@@ -27,6 +27,9 @@ abstract class SessionRepository {
 
     /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
     int? shrinkFinalRadiusInMeters,
+
+    /// 방장이 무전을 켰는지. 기본 꺼짐 (#723)
+    bool radioEnabled = false,
   });
 
   /// 대기실 게임 모드 변경 (방장 전용)

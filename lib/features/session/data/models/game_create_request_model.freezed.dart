@@ -1296,6 +1296,10 @@ mixin _$GameSettingsRequestModel {
   /// `PUT /settings`는 값을 통째로 덮어쓰므로 null이어도 키를 빼지 않는다.
   int? get shrinkFinalRadiusInMeters => throw _privateConstructorUsedError;
 
+  /// 무전 켬 여부 (#723). `PUT /settings`가 통째로 덮어써 항상 싣는다 —
+  /// 빠지면 서버가 꺼짐으로 되돌린다.
+  bool get radioEnabled => throw _privateConstructorUsedError;
+
   /// Serializes this GameSettingsRequestModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -1319,6 +1323,7 @@ abstract class $GameSettingsRequestModelCopyWith<$Res> {
     int policeWaitMinutes,
     int maxParticipants,
     int? shrinkFinalRadiusInMeters,
+    bool radioEnabled,
   });
 }
 
@@ -1345,6 +1350,7 @@ class _$GameSettingsRequestModelCopyWithImpl<
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
     Object? shrinkFinalRadiusInMeters = freezed,
+    Object? radioEnabled = null,
   }) {
     return _then(
       _value.copyWith(
@@ -1368,6 +1374,10 @@ class _$GameSettingsRequestModelCopyWithImpl<
                 ? _value.shrinkFinalRadiusInMeters
                 : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
                       as int?,
+            radioEnabled: null == radioEnabled
+                ? _value.radioEnabled
+                : radioEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -1389,6 +1399,7 @@ abstract class _$$GameSettingsRequestModelImplCopyWith<$Res>
     int policeWaitMinutes,
     int maxParticipants,
     int? shrinkFinalRadiusInMeters,
+    bool radioEnabled,
   });
 }
 
@@ -1415,6 +1426,7 @@ class __$$GameSettingsRequestModelImplCopyWithImpl<$Res>
     Object? policeWaitMinutes = null,
     Object? maxParticipants = null,
     Object? shrinkFinalRadiusInMeters = freezed,
+    Object? radioEnabled = null,
   }) {
     return _then(
       _$GameSettingsRequestModelImpl(
@@ -1438,6 +1450,10 @@ class __$$GameSettingsRequestModelImplCopyWithImpl<$Res>
             ? _value.shrinkFinalRadiusInMeters
             : shrinkFinalRadiusInMeters // ignore: cast_nullable_to_non_nullable
                   as int?,
+        radioEnabled: null == radioEnabled
+            ? _value.radioEnabled
+            : radioEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -1452,6 +1468,7 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
     required this.policeWaitMinutes,
     required this.maxParticipants,
     this.shrinkFinalRadiusInMeters,
+    this.radioEnabled = false,
   });
 
   factory _$GameSettingsRequestModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -1479,9 +1496,15 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
   @override
   final int? shrinkFinalRadiusInMeters;
 
+  /// 무전 켬 여부 (#723). `PUT /settings`가 통째로 덮어써 항상 싣는다 —
+  /// 빠지면 서버가 꺼짐으로 되돌린다.
+  @override
+  @JsonKey()
+  final bool radioEnabled;
+
   @override
   String toString() {
-    return 'GameSettingsRequestModel(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters)';
+    return 'GameSettingsRequestModel(roundDurationMinutes: $roundDurationMinutes, locationRevealIntervalMinutes: $locationRevealIntervalMinutes, policeWaitMinutes: $policeWaitMinutes, maxParticipants: $maxParticipants, shrinkFinalRadiusInMeters: $shrinkFinalRadiusInMeters, radioEnabled: $radioEnabled)';
   }
 
   @override
@@ -1505,7 +1528,9 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
                   other.shrinkFinalRadiusInMeters,
                   shrinkFinalRadiusInMeters,
                 ) ||
-                other.shrinkFinalRadiusInMeters == shrinkFinalRadiusInMeters));
+                other.shrinkFinalRadiusInMeters == shrinkFinalRadiusInMeters) &&
+            (identical(other.radioEnabled, radioEnabled) ||
+                other.radioEnabled == radioEnabled));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1517,6 +1542,7 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
     policeWaitMinutes,
     maxParticipants,
     shrinkFinalRadiusInMeters,
+    radioEnabled,
   );
 
   /// Create a copy of GameSettingsRequestModel
@@ -1543,6 +1569,7 @@ abstract class _GameSettingsRequestModel implements GameSettingsRequestModel {
     required final int policeWaitMinutes,
     required final int maxParticipants,
     final int? shrinkFinalRadiusInMeters,
+    final bool radioEnabled,
   }) = _$GameSettingsRequestModelImpl;
 
   factory _GameSettingsRequestModel.fromJson(Map<String, dynamic> json) =
@@ -1569,6 +1596,11 @@ abstract class _GameSettingsRequestModel implements GameSettingsRequestModel {
   /// `PUT /settings`는 값을 통째로 덮어쓰므로 null이어도 키를 빼지 않는다.
   @override
   int? get shrinkFinalRadiusInMeters;
+
+  /// 무전 켬 여부 (#723). `PUT /settings`가 통째로 덮어써 항상 싣는다 —
+  /// 빠지면 서버가 꺼짐으로 되돌린다.
+  @override
+  bool get radioEnabled;
 
   /// Create a copy of GameSettingsRequestModel
   /// with the given fields replaced by the non-null parameter values.

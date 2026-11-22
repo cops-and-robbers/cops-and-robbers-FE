@@ -42,6 +42,19 @@ void main() {
     expect(SessionCreationDraftModel.fromJson(const {}).shrinkEnabled, isFalse);
   });
 
+  test('draft_keeps_radio_on_when_host_leaves_creation_and_comes_back', () {
+    // 확인 화면에서 무전을 켜 두고 앱을 나갔다 돌아와도 켜져 있어야 한다 (#723)
+    const draft = SessionCreationDraftModel(radioEnabled: true);
+    expect(
+      SessionCreationDraftModel.fromJson(draft.toJson()).radioEnabled,
+      isTrue,
+    );
+  });
+
+  test('legacy_draft_without_radio_field_starts_with_radio_off', () {
+    expect(SessionCreationDraftModel.fromJson(const {}).radioEnabled, isFalse);
+  });
+
   test('draft_keeps_hide_and_seek_when_host_leaves_and_comes_back', () {
     const draft = SessionCreationDraftModel(gameMode: 'TAG');
     final restored = SessionCreationDraftModel.fromJson(draft.toJson());

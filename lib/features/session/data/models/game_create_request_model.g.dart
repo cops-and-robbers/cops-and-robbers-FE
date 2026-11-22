@@ -121,6 +121,7 @@ _$GameSettingsRequestModelImpl _$$GameSettingsRequestModelImplFromJson(
   maxParticipants: (json['maxParticipants'] as num).toInt(),
   shrinkFinalRadiusInMeters: (json['shrinkFinalRadiusInMeters'] as num?)
       ?.toInt(),
+  radioEnabled: json['radioEnabled'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$GameSettingsRequestModelImplToJson(
@@ -131,4 +132,5 @@ Map<String, dynamic> _$$GameSettingsRequestModelImplToJson(
   'policeWaitMinutes': instance.policeWaitMinutes,
   'maxParticipants': instance.maxParticipants,
   'shrinkFinalRadiusInMeters': instance.shrinkFinalRadiusInMeters,
+  'radioEnabled': instance.radioEnabled,
 };

@@ -34,6 +34,9 @@ class SessionRepositoryImpl implements SessionRepository {
 
     /// 구역 축소 최종 반경(m). null이면 꺼짐 (#668)
     int? shrinkFinalRadiusInMeters,
+
+    /// 방장이 무전을 켰는지. 기본 꺼짐 (#723)
+    bool radioEnabled = false,
   }) async {
     // unknown은 서버가 모르는 값이다. toJson의 assert는 release에서 빠지므로 여기서 막는다.
     if (gameMode == GameMode.unknown) {
@@ -51,6 +54,7 @@ class SessionRepositoryImpl implements SessionRepository {
           policeWaitMinutes: policeWaitMinutes,
           maxParticipants: maxParticipants,
           shrinkFinalRadiusInMeters: shrinkFinalRadiusInMeters,
+          radioEnabled: radioEnabled,
         ),
       );
 

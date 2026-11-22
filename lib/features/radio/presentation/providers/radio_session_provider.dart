@@ -108,6 +108,7 @@ class RadioSession extends _$RadioSession {
     'GAME_NOT_FOUND',
     'ONLY_POLICE_CAN_USE_RADIO',
     'RADIO_NOT_ALLOWED_IN_EVENT_GAME',
+    'RADIO_DISABLED_IN_GAME', // 방장이 무전을 끈 방 (#723)
   };
 
   RadioRoomPort? _room;

@@ -76,6 +76,9 @@ class SessionCreationDraftModel with _$SessionCreationDraftModel {
     /// 구역 축소 켬 여부 (#668). 구버전 초안에는 없으므로 꺼짐으로 시작한다.
     @Default(false) bool shrinkEnabled,
 
+    /// 무전 켬 여부 (#723). 구버전 초안에는 없으므로 꺼짐으로 시작한다.
+    @Default(false) bool radioEnabled,
+
     /// 최대 참가자 수
     int? maxParticipants,
   }) = _SessionCreationDraftModel;

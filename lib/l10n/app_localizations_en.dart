@@ -2800,6 +2800,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Radio isn\'t available in event games';
 
   @override
+  String get errorCodeRadioDisabledInGame => 'Radio is off in this room';
+
+  @override
   String get errorCodeOnlyPoliceCanUseRadio => 'Only cops can use the radio';
 
   @override
@@ -2992,6 +2995,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shrinkPinHint =>
       'Shrinking area isn\'t available for areas drawn with pins';
+
+  @override
+  String get radioCardDesc => 'Hold the button to talk';
+
+  @override
+  String get radioBetaChip => 'Beta';
 
   @override
   String gameShrinkNotice(int stage) {

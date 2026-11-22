@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v4.4.0 업데이트 내역\n\n### ✨ 추가 — 무전 서버 혼잡 시 신규 입장 거절\n- 무전 토큰 발급 POST /api/games/{gameId}/radio/token 에 503 RADIO_SERVER_BUSY 추가\n  - 무전 서버 CPU가 높을 때 새로 무전에 들어오는 경찰만 거절한다\n  - 이미 무전 중인 경찰의 토큰 재발급은 그대로 성공한다\n- 혼잡이 풀리면 같은 요청이 다시 성공한다. 별도로 상태를 조회할 필요는 없다\n- **앱 영향** — RADIO_SERVER_BUSY 를 받으면 혼잡 문구를 띄우고 무전 버튼을 잠시 막는다. 처리하지 않은 이전 앱에서는 일반 에러로 보인다\n",
+    "description": "## v4.4.0 업데이트 내역\n\n### ✨ 추가 — 방 설정 무전 켜기 (기본 꺼짐)\n- 방 설정에 radioEnabled(boolean) 추가\n  - 요청 — 방 생성 POST /api/games, 설정 변경 PUT /api/games/{gameId}/settings. 보내지 않으면 false\n  - 응답 — 방 생성, 방 정보 GET /api/games/{gameId}, 설정 변경, 대기방 설정 변경 알림\n- 무전이 꺼진 방의 무전 토큰 발급은 400 RADIO_DISABLED_IN_GAME 으로 거절한다\n- 이벤트 게임은 값과 상관없이 지금처럼 무전을 쓸 수 없다\n- **앱 영향** — radioEnabled 를 모르는 이전 앱이 만든 방은 무전이 꺼진다\n\n### ✨ 추가 — 무전 서버 혼잡 시 신규 입장 거절\n- 무전 토큰 발급 POST /api/games/{gameId}/radio/token 에 503 RADIO_SERVER_BUSY 추가\n  - 무전 서버 CPU가 높을 때 아직 무전이 시작되지 않은 판만 거절한다\n  - 이미 무전이 돌고 있는 판은 늦게 합류한 경찰까지 그대로 성공한다\n- 혼잡이 풀리면 같은 요청이 다시 성공한다. 별도로 상태를 조회할 필요는 없다\n- **앱 영향** — RADIO_SERVER_BUSY 를 받으면 혼잡 문구를 띄우고 무전 버튼을 잠시 막는다. 처리하지 않은 이전 앱에서는 일반 에러로 보인다\n",
     "version": "4.4.0"
   },
   "servers": [
@@ -4320,7 +4320,7 @@
           "Radio"
         ],
         "summary": "무전 접속 토큰 발급",
-        "description": "경찰이 무전 서버에 접속할 토큰을 발급받습니다.\n\n- 경찰만 요청 가능\n- 경찰 대기 시간이 끝난 뒤에만 사용 가능\n- 이벤트 게임에서는 사용 불가\n- 토큰 수명은 2분입니다. 수명의 70~90% 지점에서 다시 호출해 재발급받습니다\n- 재발급 때마다 자격을 다시 검증하므로 게임이 끝났거나 나갔으면 거절됩니다\n- 음성은 서버를 거치지 않고 무전 서버와 앱 사이에서만 흐릅니다\n- 무전 서버가 혼잡하면 신규 입장은 503 RADIO_SERVER_BUSY로 거절됩니다 (이미 무전 중인 경찰의 재발급은 그대로 가능)\n",
+        "description": "경찰이 무전 서버에 접속할 토큰을 발급받습니다.\n\n- 경찰만 요청 가능\n- 경찰 대기 시간이 끝난 뒤에만 사용 가능\n- 이벤트 게임에서는 사용 불가\n- 방장이 방 설정에서 무전을 켠 게임(radioEnabled true)에서만 사용 가능\n- 토큰 수명은 2분입니다. 수명의 70~90% 지점에서 다시 호출해 재발급받습니다\n- 재발급 때마다 자격을 다시 검증하므로 게임이 끝났거나 나갔으면 거절됩니다\n- 음성은 서버를 거치지 않고 무전 서버와 앱 사이에서만 흐릅니다\n- 무전 서버가 혼잡하면 아직 무전이 시작되지 않은 판은 503 RADIO_SERVER_BUSY로 거절됩니다 (이미 무전이 돌고 있는 판은 늦게 합류한 경찰도 발급 가능)\n",
         "operationId": "issueToken",
         "parameters": [
           {
@@ -4381,6 +4381,16 @@
                       "title": "경찰 대기 시간",
                       "status": 400,
                       "detail": "경찰은 대기 시간 동안 무전을 사용할 수 없습니다.",
+                      "instance": "/api/games/{gameId}/radio/token"
+                    }
+                  },
+                  "무전 꺼진 게임": {
+                    "summary": "무전 꺼진 게임",
+                    "value": {
+                      "errorCode": "RADIO_DISABLED_IN_GAME",
+                      "title": "무전 꺼진 게임",
+                      "status": 400,
+                      "detail": "방장이 무전을 켜지 않은 게임입니다.",
                       "instance": "/api/games/{gameId}/radio/token"
                     }
                   },
@@ -10448,6 +10458,12 @@
             "format": "int32",
             "nullable": true,
             "example": 200
+          },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부. 보내지 않으면 false",
+            "nullable": true,
+            "example": false
           }
         }
       },
@@ -10493,6 +10509,11 @@
             "format": "int32",
             "nullable": true,
             "example": 200
+          },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부",
+            "example": false
           }
         }
       },
@@ -11322,6 +11343,11 @@
             "format": "int32",
             "nullable": true,
             "example": 200
+          },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부",
+            "example": false
           },
           "createdAt": {
             "type": "string",
@@ -12185,6 +12211,11 @@
             "format": "int32",
             "nullable": true,
             "example": 200
+          },
+          "radioEnabled": {
+            "type": "boolean",
+            "description": "무전 사용 여부",
+            "example": false
           },
           "isStarted": {
             "type": "boolean",

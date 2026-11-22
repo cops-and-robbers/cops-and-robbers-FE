@@ -321,6 +321,7 @@ class LobbyNotifier extends _$LobbyNotifier {
                       settings.locationRevealIntervalMinutes,
                   policeWaitMinutes: settings.policeWaitMinutes,
                   roundTimeMinutes: settings.roundDurationMinutes,
+                  radioEnabled: settings.radioEnabled,
                 );
           })
           .catchError((e) {

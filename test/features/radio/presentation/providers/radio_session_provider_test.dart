@@ -230,6 +230,18 @@ void main() {
     });
   });
 
+  // 대기방에서 방장이 무전을 끈 걸 놓쳐 켜진 줄 아는 경찰 — 서버가 꺼진 방이라고 거절하면 그만둔다
+  test('gives_up_radio_without_retrying_when_host_turned_radio_off', () {
+    inGame((async, h) {
+      h.api.rejectWith = _rejected('RADIO_DISABLED_IN_GAME', 400);
+      h.session.start(policeReleaseAt: gameStart);
+      async.flushMicrotasks();
+      async.elapse(const Duration(minutes: 1)); // 재시도 간격(10초)의 6배
+      expect(h.state.status, RadioStatus.off);
+      expect(h.api.requestedAt.length, 1);
+    });
+  });
+
   test('leaves_room_and_hides_radio_when_reissue_rejected_after_game_over', () {
     inGame((async, h) {
       h.session.start(policeReleaseAt: gameStart);

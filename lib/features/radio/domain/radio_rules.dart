@@ -32,7 +32,3 @@ class RadioFloor {
 
   bool lockedFor(String me) => holder != null && holder != me;
 }
-
-/// 방장이 무전을 켰는지 — 방 설정(게임 모드처럼 켜고 끄기)이 서버에 생기면 그 값으로 바꾼다.
-/// 지금은 모든 일반 게임에서 켠다 (#697).
-const kRadioEnabledDefault = true;
