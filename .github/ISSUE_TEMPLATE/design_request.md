@@ -2,7 +2,7 @@
 name: 🎨 디자인 요청
 about: 디자인 관련 요청을 작성
 labels: [작업전]
-assignees: [Cassiiopeia]
+assignees: [EM-H20]
 ---
 
 <!--📚 GitHub 이슈 작성 템플릿 -->
