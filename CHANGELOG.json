@@ -1,11 +1,27 @@
 {
   "metadata": {
-    "lastUpdated": "2026-11-26T02:22:45Z",
-    "currentVersion": "4.1.19",
+    "lastUpdated": "2026-11-26T02:43:32Z",
+    "currentVersion": "4.1.21",
     "projectType": "flutter",
-    "totalReleases": 159
+    "totalReleases": 160
   },
   "releases": [
+    {
+      "version": "4.1.21",
+      "project_type": "flutter",
+      "date": "2026-11-26",
+      "pr_number": 733,
+      "raw_summary": "## Summary by CodeRabbit\n\n## 릴리스 노트\n\n* **새 기능**\n  * Apple로 가입한 계정은 탈퇴할 때 Apple 로그인 연결도 함께 끊어요",
+      "parsed_changes": {
+        "새_기능": {
+          "title": "새 기능",
+          "items": [
+            "Apple로 가입한 계정은 탈퇴할 때 Apple 로그인 연결도 함께 끊어요"
+          ]
+        }
+      },
+      "parse_method": "markdown"
+    },
     {
       "version": "4.1.19",
       "project_type": "flutter",
