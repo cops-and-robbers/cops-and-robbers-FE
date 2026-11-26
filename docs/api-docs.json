@@ -2,8 +2,8 @@
   "openapi": "3.0.1",
   "info": {
     "title": "👮 경찰과 도둑 API 🥷",
-    "description": "## v4.4.0 업데이트 내역\n\n### ✨ 추가 — 방 설정 무전 켜기 (기본 꺼짐)\n- 방 설정에 radioEnabled(boolean) 추가\n  - 요청 — 방 생성 POST /api/games, 설정 변경 PUT /api/games/{gameId}/settings. 보내지 않으면 false\n  - 응답 — 방 생성, 방 정보 GET /api/games/{gameId}, 설정 변경, 대기방 설정 변경 알림\n- 무전이 꺼진 방의 무전 토큰 발급은 400 RADIO_DISABLED_IN_GAME 으로 거절한다\n- 이벤트 게임은 값과 상관없이 지금처럼 무전을 쓸 수 없다\n- **앱 영향** — radioEnabled 를 모르는 이전 앱이 만든 방은 무전이 꺼진다\n\n### ✨ 추가 — 무전 서버 혼잡 시 신규 입장 거절\n- 무전 토큰 발급 POST /api/games/{gameId}/radio/token 에 503 RADIO_SERVER_BUSY 추가\n  - 무전 서버 CPU가 높을 때 아직 무전이 시작되지 않은 판만 거절한다\n  - 이미 무전이 돌고 있는 판은 늦게 합류한 경찰까지 그대로 성공한다\n- 혼잡이 풀리면 같은 요청이 다시 성공한다. 별도로 상태를 조회할 필요는 없다\n- **앱 영향** — RADIO_SERVER_BUSY 를 받으면 혼잡 문구를 띄우고 무전 버튼을 잠시 막는다. 처리하지 않은 이전 앱에서는 일반 에러로 보인다\n",
-    "version": "4.4.0"
+    "description": "## v4.5.0 업데이트 내역\n\n### 🔁 변경 — 경찰·도둑 용어를 모드 공통 용어로 변경\n- 쫓는 쪽은 CHASER, 쫓기는 쪽은 RUNNER 로 부른다. 화면 문구(경찰/술래/좀비)는 앱이 gameMode 를 보고 정한다\n- 응답 필드에 새 이름을 추가한다. 옛 이름도 같은 값으로 그대로 내려간다 (deprecated)\n  - policeWaitMinutes → chaserWaitMinutes (게임 생성·조회·설정 변경, 로비 SETTINGS_UPDATED)\n  - policeMvp / robberMvp / remainingRobberCount → chaserMvp / runnerMvp / remainingRunnerCount (게임 결과)\n  - police / robbers → chasers / runners (참가자 목록)\n  - robberLocations → runnerLocations (게임 상태)\n  - robberNickname / remainingThieves → runnerNickname / remainingRunners (체포 응답)\n  - police / robber / remainingThieves → chaser / runner / remainingRunners (시스템 ARREST)\n  - escapedThief / remainingThieves → escapedRunner / remainingRunners (시스템 ESCAPE)\n- 요청은 옛 이름과 새 이름을 모두 받는다\n  - policeWaitMinutes → chaserWaitMinutes (게임 생성·설정 변경)\n  - robberParticipantId → runnerParticipantId (체포)\n  - 팀 변경 targetTeam 은 POLICE / ROBBER 와 CHASER / RUNNER 를 모두 받는다\n- 구독 경로를 추가한다. 옛 경로에도 같은 메시지가 같이 발행된다\n  - /subscribe/game/{gameId}/chat/chaser, /chat/runner\n  - /subscribe/game/{gameId}/ping/chaser, /ping/runner\n- 응답 enum 값, 시스템 이벤트 type, FCM type, 에러 코드는 아직 옛 이름 그대로다\n  - 이후 버전에서 CHASER / RUNNER, CHASER_WAITING, CHASER_FORFEITED, CHASER_MOVE_START, RUNNER_LOCATION_REVEAL, ONLY_CHASER_CAN_ARREST 등으로 바뀐다\n- **앱 영향** — 새 앱은 새 필드와 새 구독 경로를 쓰고, enum 값과 에러 코드는 옛 이름과 새 이름을 둘 다 처리한다. 이전 앱은 그대로 동작한다\n\n## v4.4.0 업데이트 내역\n\n### ✨ 추가 — 방 설정 무전 켜기 (기본 꺼짐)\n- 방 설정에 radioEnabled(boolean) 추가\n  - 요청 — 방 생성 POST /api/games, 설정 변경 PUT /api/games/{gameId}/settings. 보내지 않으면 false\n  - 응답 — 방 생성, 방 정보 GET /api/games/{gameId}, 설정 변경, 대기방 설정 변경 알림\n- 무전이 꺼진 방의 무전 토큰 발급은 400 RADIO_DISABLED_IN_GAME 으로 거절한다\n- 이벤트 게임은 값과 상관없이 지금처럼 무전을 쓸 수 없다\n- **앱 영향** — radioEnabled 를 모르는 이전 앱이 만든 방은 무전이 꺼진다\n\n### ✨ 추가 — 무전 서버 혼잡 시 신규 입장 거절\n- 무전 토큰 발급 POST /api/games/{gameId}/radio/token 에 503 RADIO_SERVER_BUSY 추가\n  - 무전 서버 CPU가 높을 때 아직 무전이 시작되지 않은 판만 거절한다\n  - 이미 무전이 돌고 있는 판은 늦게 합류한 경찰까지 그대로 성공한다\n- 혼잡이 풀리면 같은 요청이 다시 성공한다. 별도로 상태를 조회할 필요는 없다\n- **앱 영향** — RADIO_SERVER_BUSY 를 받으면 혼잡 문구를 띄우고 무전 버튼을 잠시 막는다. 처리하지 않은 이전 앱에서는 일반 에러로 보인다\n",
+    "version": "4.5.0"
   },
   "servers": [
     {
@@ -3788,8 +3788,8 @@
           "System"
         ],
         "summary": "도둑 강제 체포",
-        "description": "구역 밖에 오래 머문 도둑이 스스로 체포됩니다.\n\n- 구역 이탈 판정과 경고 횟수는 앱이 처리하고, 서버는 위치를 검증하지 않음\n- 로그인한 도둑 본인이 체포 대상이므로 요청 본문 없음\n- 이미 수감된 도둑은 체포 불가\n- 이벤트 게임에서는 체포 불가\n- 경찰 대기 시간 중에도 요청 가능\n- 경찰의 체포 수는 올라가지 않고, ARREST 이벤트의 police 가 null 로 전송됨\n",
-        "operationId": "forceArrestRobber",
+        "description": "구역 밖에 오래 머문 도둑이 스스로 체포됩니다.\n\n- 구역 이탈 판정과 경고 횟수는 앱이 처리하고, 서버는 위치를 검증하지 않음\n- 로그인한 도둑 본인이 체포 대상이므로 요청 본문 없음\n- 이미 수감된 도둑은 체포 불가\n- 이벤트 게임에서는 체포 불가\n- 경찰 대기 시간 중에도 요청 가능\n- 경찰의 체포 수는 올라가지 않고, ARREST 이벤트의 chaser 가 null 로 전송됨\n",
+        "operationId": "forceArrestRunner",
         "parameters": [
           {
             "name": "gameId",
@@ -4118,7 +4118,7 @@
         ],
         "summary": "도둑 체포",
         "description": "경찰이 도둑을 체포합니다.\n\n- 경찰만 요청 가능\n- 도둑만 체포 대상이 될 수 있음\n- 이미 체포된 도둑은 체포 불가\n- 같은 게임 내 참가자끼리만 상호작용 가능\n",
-        "operationId": "arrestRobber",
+        "operationId": "arrestRunner",
         "parameters": [
           {
             "name": "gameId",
@@ -8067,7 +8067,7 @@
           "Location"
         ],
         "summary": "게임 현재 상태 조회",
-        "description": "현재 게임 상태를 조회합니다. 소켓 재연결 시 게임 화면(상태) 복원에 활용됩니다.\n\n- 가장 최근 도둑 위치 공개 시점의 위치를 기준으로 목록을 응답합니다.\n\n**응답 내용**\n- `robberLocations`: 마지막 위치 공개 주기에 찍힌 생존 도둑들의 위치\n- `participants`: 전체 참가자의 팀·상태 현황\n\n**robberLocations 반환 조건**\n\n| 게임 단계 | robberLocations |\n|---|---|\n| 경찰 대기 시간 중 (POLICE_WAITING) | 빈 배열 |\n| 경찰 출동 후 첫 위치 공개 전 | 빈 배열 |\n| 첫 위치 공개 이후 | 생존 도둑 위치 목록 (JAILED 제외) |\n\n> 경찰 대기 시간 중에는 경찰·도둑 구분 없이 모두 빈 배열이 반환됩니다.\n",
+        "description": "현재 게임 상태를 조회합니다. 소켓 재연결 시 게임 화면(상태) 복원에 활용됩니다.\n\n- 가장 최근 도둑 위치 공개 시점의 위치를 기준으로 목록을 응답합니다.\n\n**응답 내용**\n- `runnerLocations`: 마지막 위치 공개 주기에 찍힌 생존 도둑들의 위치\n- `participants`: 전체 참가자의 팀·상태 현황\n\n**runnerLocations 반환 조건**\n\n| 게임 단계 | runnerLocations |\n|---|---|\n| 경찰 대기 시간 중 (POLICE_WAITING) | 빈 배열 |\n| 경찰 출동 후 첫 위치 공개 전 | 빈 배열 |\n| 첫 위치 공개 이후 | 생존 도둑 위치 목록 (JAILED 제외) |\n\n> 경찰 대기 시간 중에는 경찰·도둑 구분 없이 모두 빈 배열이 반환됩니다.\n",
         "operationId": "getGameState",
         "parameters": [
           {
@@ -8095,7 +8095,7 @@
                     "summary": "경찰이 아직 출동하지 않은 상태 — 누구도 도둑 위치를 볼 수 없음",
                     "description": "경찰 대기 단계 (POLICE_WAITING)",
                     "value": {
-                      "robberLocations": [],
+                      "runnerLocations": [],
                       "participants": [
                         {
                           "participantId": 1,
@@ -8122,7 +8122,7 @@
                     "summary": "경찰 출동 완료, 아직 위치 공개 주기가 도래하지 않아 스냅샷 없음",
                     "description": "경찰 출동 후 첫 위치 공개 전",
                     "value": {
-                      "robberLocations": [],
+                      "runnerLocations": [],
                       "participants": [
                         {
                           "participantId": 1,
@@ -8149,7 +8149,7 @@
                     "summary": "최소 1회 위치 공개 완료, JAILED 도둑은 위치 목록에서 제외되고 participants에만 포함",
                     "description": "위치 공개 이후 (일부 도둑 체포)",
                     "value": {
-                      "robberLocations": [
+                      "runnerLocations": [
                         {
                           "participantId": 2,
                           "nickname": "민첩한괴도1",
@@ -8556,7 +8556,7 @@
           "Game Result"
         ],
         "summary": "게임 결과 조회",
-        "description": "게임 종료 후 결과(승리 팀, 진행 시간, 총 체포 횟수, 남은 도둑 수)와 팀별 MVP 를 조회합니다.\n\n`policeMvp` 는 체포 많은 순 → 이동 거리 긴 순 → 먼저 참가한 순으로 뽑습니다.\n`robberMvp` 는 잡힌 횟수 적은 순 → 종료 시점 감옥 밖 우선 → 이동 거리 긴 순 → 먼저 참가한 순입니다.\n\n중도 퇴장자는 후보에서 빠지며, 팀에 남은 사람이 없으면 `null` 입니다.\n이벤트 게임과 이 기능이 추가되기 전에 끝난 게임도 `null` 입니다.\nMVP 가 탈퇴한 사용자면 `nickname` 은 `\"알수없음\"` 입니다.\n",
+        "description": "게임 종료 후 결과(승리 팀, 진행 시간, 총 체포 횟수, 남은 도둑 수)와 팀별 MVP 를 조회합니다.\n\n`chaserMvp` 는 체포 많은 순 → 이동 거리 긴 순 → 먼저 참가한 순으로 뽑습니다.\n`runnerMvp` 는 잡힌 횟수 적은 순 → 종료 시점 감옥 밖 우선 → 이동 거리 긴 순 → 먼저 참가한 순입니다.\n\n중도 퇴장자는 후보에서 빠지며, 팀에 남은 사람이 없으면 `null` 입니다.\n이벤트 게임과 이 기능이 추가되기 전에 끝난 게임도 `null` 입니다.\nMVP 가 탈퇴한 사용자면 `nickname` 은 `\"알수없음\"` 입니다.\n",
         "operationId": "getGameResult",
         "parameters": [
           {
@@ -10414,9 +10414,9 @@
       },
       "GameSettingsRequest": {
         "required": [
+          "chaserWaitMinutes",
           "locationRevealIntervalMinutes",
           "maxParticipants",
-          "policeWaitMinutes",
           "roundDurationMinutes"
         ],
         "type": "object",
@@ -10436,7 +10436,7 @@
             "format": "int32",
             "example": 5
           },
-          "policeWaitMinutes": {
+          "chaserWaitMinutes": {
             "minimum": 1,
             "type": "integer",
             "description": "경찰 대기 시간(분)",
@@ -10491,7 +10491,7 @@
             "format": "int32",
             "example": 10
           },
-          "policeWaitMinutes": {
+          "chaserWaitMinutes": {
             "type": "integer",
             "description": "경찰 대기 시간(분)",
             "format": "int32",
@@ -10514,6 +10514,13 @@
             "type": "boolean",
             "description": "무전 사용 여부",
             "example": false
+          },
+          "policeWaitMinutes": {
+            "type": "integer",
+            "description": "옛 이름. chaserWaitMinutes 을 사용하세요",
+            "format": "int32",
+            "readOnly": true,
+            "deprecated": true
           }
         }
       },
@@ -11325,7 +11332,7 @@
             "format": "int32",
             "example": 5
           },
-          "policeWaitMinutes": {
+          "chaserWaitMinutes": {
             "type": "integer",
             "description": "경찰 대기 시간(분)",
             "format": "int32",
@@ -11353,32 +11360,52 @@
             "type": "string",
             "description": "생성 시각",
             "example": "2026-01-16T01:25:37+09:00"
+          },
+          "policeWaitMinutes": {
+            "type": "integer",
+            "description": "옛 이름. chaserWaitMinutes 을 사용하세요",
+            "format": "int32",
+            "readOnly": true,
+            "deprecated": true
           }
         }
       },
       "ArrestResponse": {
         "type": "object",
         "properties": {
-          "robberNickname": {
+          "runnerNickname": {
             "type": "string",
             "description": "체포된 도둑 닉네임",
             "example": "잡힌도둑"
           },
-          "remainingThieves": {
+          "remainingRunners": {
             "type": "integer",
             "description": "남은 도둑 수",
             "format": "int32",
             "example": 2
+          },
+          "robberNickname": {
+            "type": "string",
+            "description": "옛 이름. runnerNickname 을 사용하세요",
+            "readOnly": true,
+            "deprecated": true
+          },
+          "remainingThieves": {
+            "type": "integer",
+            "description": "옛 이름. remainingRunners 을 사용하세요",
+            "format": "int32",
+            "readOnly": true,
+            "deprecated": true
           }
         }
       },
       "ArrestRequest": {
         "required": [
-          "robberParticipantId"
+          "runnerParticipantId"
         ],
         "type": "object",
         "properties": {
-          "robberParticipantId": {
+          "runnerParticipantId": {
             "type": "integer",
             "description": "체포할 도둑 참가자 ID",
             "format": "int64",
@@ -11397,7 +11424,7 @@
           "room": {
             "type": "string",
             "description": "접속할 무전 방 이름",
-            "example": "dev-game-1-police"
+            "example": "dev-game-1-chaser"
           },
           "identity": {
             "type": "string",
@@ -11897,8 +11924,8 @@
         "properties": {
           "targetTeam": {
             "type": "string",
-            "description": "변경할 팀",
-            "example": "POLICE",
+            "description": "변경할 팀. 옛 이름 POLICE / ROBBER 도 받는다",
+            "example": "CHASER",
             "enum": [
               "POLICE",
               "ROBBER"
@@ -12193,7 +12220,7 @@
             "format": "int32",
             "example": 5
           },
-          "policeWaitMinutes": {
+          "chaserWaitMinutes": {
             "type": "integer",
             "description": "경찰 대기 시간(분)",
             "format": "int32",
@@ -12240,6 +12267,13 @@
               "COPS_AND_ROBBERS",
               "TAG"
             ]
+          },
+          "policeWaitMinutes": {
+            "type": "integer",
+            "description": "옛 이름. chaserWaitMinutes 을 사용하세요",
+            "format": "int32",
+            "readOnly": true,
+            "deprecated": true
           }
         }
       },
@@ -12255,11 +12289,11 @@
               "TAG"
             ]
           },
-          "robberLocations": {
+          "runnerLocations": {
             "type": "array",
             "description": "마지막 공개된 생존 도둑 위치 목록",
             "items": {
-              "$ref": "#/components/schemas/RobberLocationInfo"
+              "$ref": "#/components/schemas/RunnerLocationInfo"
             }
           },
           "participants": {
@@ -12267,6 +12301,15 @@
             "description": "전체 참여자 현황",
             "items": {
               "$ref": "#/components/schemas/ParticipantInfo"
+            }
+          },
+          "robberLocations": {
+            "type": "array",
+            "description": "옛 이름. runnerLocations 을 사용하세요",
+            "readOnly": true,
+            "deprecated": true,
+            "items": {
+              "$ref": "#/components/schemas/RunnerLocationInfo"
             }
           }
         }
@@ -12304,7 +12347,7 @@
         },
         "description": "전체 참여자 현황"
       },
-      "RobberLocationInfo": {
+      "RunnerLocationInfo": {
         "type": "object",
         "properties": {
           "participantId": {
@@ -12327,21 +12370,40 @@
             "format": "double"
           }
         },
-        "description": "마지막 공개된 생존 도둑 위치 목록"
+        "description": "옛 이름. runnerLocations 을 사용하세요",
+        "deprecated": true
       },
       "GameParticipantListResponse": {
         "type": "object",
         "properties": {
-          "police": {
+          "chasers": {
             "type": "array",
             "description": "경찰 참가자 목록",
             "items": {
               "$ref": "#/components/schemas/InGameParticipantResponse"
             }
           },
-          "robbers": {
+          "runners": {
             "type": "array",
             "description": "도둑 참가자 목록",
+            "items": {
+              "$ref": "#/components/schemas/InGameParticipantResponse"
+            }
+          },
+          "police": {
+            "type": "array",
+            "description": "옛 이름. chasers 을 사용하세요",
+            "readOnly": true,
+            "deprecated": true,
+            "items": {
+              "$ref": "#/components/schemas/InGameParticipantResponse"
+            }
+          },
+          "robbers": {
+            "type": "array",
+            "description": "옛 이름. runners 을 사용하세요",
+            "readOnly": true,
+            "deprecated": true,
             "items": {
               "$ref": "#/components/schemas/InGameParticipantResponse"
             }
@@ -12368,7 +12430,8 @@
             "example": "POLICE_WAITING"
           }
         },
-        "description": "인게임 참가자 정보"
+        "description": "인게임 참가자 정보",
+        "deprecated": true
       },
       "LobbyInfoResponse": {
         "type": "object",
@@ -12477,17 +12540,30 @@
             "format": "int32",
             "example": 5
           },
-          "remainingRobberCount": {
+          "remainingRunnerCount": {
             "type": "integer",
             "description": "남은 도둑 수",
             "format": "int32",
             "example": 1
+          },
+          "chaserMvp": {
+            "$ref": "#/components/schemas/MvpResponse"
+          },
+          "runnerMvp": {
+            "$ref": "#/components/schemas/MvpResponse"
           },
           "policeMvp": {
             "$ref": "#/components/schemas/MvpResponse"
           },
           "robberMvp": {
             "$ref": "#/components/schemas/MvpResponse"
+          },
+          "remainingRobberCount": {
+            "type": "integer",
+            "description": "옛 이름. remainingRunnerCount 을 사용하세요",
+            "format": "int32",
+            "readOnly": true,
+            "deprecated": true
           }
         }
       },
@@ -12500,7 +12576,8 @@
             "example": "번개경찰"
           }
         },
-        "description": "팀 MVP 정보"
+        "description": "팀 MVP 정보",
+        "deprecated": true
       },
       "GameResultParticipantResponse": {
         "type": "object",
