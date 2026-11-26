@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import '../../network/server_term_compat.dart';
 import '../device/device_info_service.dart';
 import '../device/device_id_manager.dart';
 import 'push_navigation_event.dart';
@@ -315,7 +316,7 @@ class FirebaseMessagingService {
     debugPrint('  notification.body : ${message.notification?.body}');
     debugPrint('  data: ${message.data}');
 
-    final messageType = message.data['type'];
+    final messageType = _messageType(message);
 
     // 콘텐츠 분석 완료 알림 처리
     if (messageType == 'content_completed') {
@@ -352,7 +353,7 @@ class FirebaseMessagingService {
     debugPrint('  data: ${message.data}');
 
     // 백엔드 메시지 타입 확인 (data.type)
-    final messageType = message.data['type'];
+    final messageType = _messageType(message);
 
     // 콘텐츠 분석 완료 알림 처리
     if (messageType == 'content_completed') {
@@ -404,7 +405,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('  data: ${message.data}');
 
   // 백엔드 메시지 타입 확인 (data.type)
-  final messageType = message.data['type'];
+  final messageType = _messageType(message);
 
   // 콘텐츠 분석 완료 알림 처리
   if (messageType == 'content_completed') {
@@ -415,4 +416,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       // 사용자가 앱을 열면 _onMessageOpenedApp에서 처리됨
     }
   }
+}
+
+/// `data.type`을 앱이 아는 이름으로 읽는다 (서버 팀 용어 변경 BE #254 대응).
+dynamic _messageType(RemoteMessage message) {
+  final type = message.data['type'];
+  return type is String ? toAppTerm(type) : type;
 }

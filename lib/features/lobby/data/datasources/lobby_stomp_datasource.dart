@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import '../../../../core/network/websocket/base_stomp_datasource.dart';
+import '../../../../core/network/server_term_compat.dart';
 import '../models/lobby_event_dto.dart';
 
 export '../../../../core/network/websocket/base_stomp_datasource.dart'
@@ -62,7 +63,7 @@ class LobbyStompDatasource extends BaseStompDatasource {
     debugPrint('[$logTag] 📩 이벤트 수신 raw: ${frame.body}');
 
     try {
-      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final json = toAppTerms(jsonDecode(frame.body!))! as Map<String, dynamic>;
       final dto = LobbyEventDto.fromJson(json);
       debugPrint(
         '[$logTag] 📩 이벤트 파싱 완료: type=${dto.type}, gameId=${dto.gameId}',

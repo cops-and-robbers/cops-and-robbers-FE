@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import 'stomp_connection.dart';
+import '../server_term_compat.dart';
 
 export 'stomp_connection.dart' show StompConnectionState, StompErrorInfo;
 
@@ -127,7 +128,8 @@ abstract class BaseStompDatasource {
     StompErrorInfo errorInfo;
     if (frame.body != null && frame.body!.isNotEmpty) {
       try {
-        final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+        final json =
+            toAppTerms(jsonDecode(frame.body!))! as Map<String, dynamic>;
         errorInfo = StompErrorInfo.fromJson(json);
       } catch (e) {
         debugPrint('[$logTag] ⚠️ STOMP ERROR body 파싱 실패: $e');

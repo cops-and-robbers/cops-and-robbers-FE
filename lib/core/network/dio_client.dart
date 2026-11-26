@@ -8,6 +8,7 @@ import '../i18n/locale_provider.dart';
 import '../storage/secure_token_storage.dart';
 import 'auth_interceptor.dart';
 import 'required_terms_interceptor.dart';
+import 'server_term_compat.dart';
 
 part 'dio_client.g.dart';
 
@@ -150,9 +151,15 @@ class DioClient {
     // reissue 전용 plain Dio (인터셉터 없음)
     // AuthInterceptor 재진입으로 인한 이중 강제 로그아웃 방지
     final plainDio = Dio(baseOptions);
+    // 재시도 응답은 바깥 Dio의 응답 인터셉터를 다시 타지 않으므로, 서버 팀 용어
+    // 호환만은 여기에도 건다 (없으면 재발급 직후 응답이 새 이름 그대로 호출부에 간다).
+    plainDio.interceptors.add(ServerTermCompatInterceptor());
 
     // 인터셉터 추가
     dio.interceptors.addAll([
+      // 0. 서버 팀 용어 호환 — 뒤 인터셉터와 호출부가 앱 이름만 보게 맨 앞에 둔다
+      ServerTermCompatInterceptor(),
+
       // 1. 언어 인터셉터 (Accept-Language 주입)
       //
       // 서버가 언어에 따라 달라지는 응답(닉네임 생성 등)을 현재 앱 언어로
