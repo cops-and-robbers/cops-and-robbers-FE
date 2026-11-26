@@ -82,7 +82,8 @@ class SoundService {
   /// 무음 스위치(iOS)·미디어 볼륨(Android)을 따른다.
   Future<void> radioBeep() async {
     try {
-      final player = _beep ??= AudioPlayer()..audioCache = AudioCache(prefix: '');
+      final player = _beep ??= AudioPlayer()
+        ..audioCache = AudioCache(prefix: '');
       await player.setAudioContext(_context);
       await player.setReleaseMode(ReleaseMode.stop);
       await player.play(AssetSource(AppSounds.radioBeep));

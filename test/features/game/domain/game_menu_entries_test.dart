@@ -69,13 +69,16 @@ void main() {
     ]);
   });
 
-  test('robber_explainer_scene_stacks_my_qr_participants_chat_when_menu_opens', () {
-    expect(sceneEntries(), [
-      GameMenuEntry.myQr,
-      GameMenuEntry.participants,
-      GameMenuEntry.chat,
-    ]);
-  });
+  test(
+    'robber_explainer_scene_stacks_my_qr_participants_chat_when_menu_opens',
+    () {
+      expect(sceneEntries(), [
+        GameMenuEntry.myQr,
+        GameMenuEntry.participants,
+        GameMenuEntry.chat,
+      ]);
+    },
+  );
 
   // 장면에는 채팅 전용 버튼이 없어, 구역을 벗어나도 채팅은 메뉴에 남는다
   test('scene_menu_keeps_only_chat_when_robber_runs_out_of_the_zone', () {

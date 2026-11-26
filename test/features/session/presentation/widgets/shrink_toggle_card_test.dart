@@ -192,7 +192,11 @@ void main() {
         final desc = tester
             .renderObjectList<RenderParagraph>(find.byType(RichText))
             .elementAt(1);
-        expect(desc.didExceedMaxLines, isFalse, reason: desc.text.toPlainText());
+        expect(
+          desc.didExceedMaxLines,
+          isFalse,
+          reason: desc.text.toPlainText(),
+        );
       });
     }
   }

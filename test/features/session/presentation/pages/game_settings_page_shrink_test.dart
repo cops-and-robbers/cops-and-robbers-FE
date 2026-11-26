@@ -305,55 +305,57 @@ void main() {
     },
   );
 
-  testWidgets('host_sees_reason_and_mode_stays_when_server_rejects_mode_change', (
-    tester,
-  ) async {
-    // 서버가 모드 변경을 거절(400 JAIL_AREA_NOT_ALLOWED)하면 사유를 보이고 모드는 그대로다
-    final req = RequestOptions(path: '/api/games/7/mode');
-    final remote = await _pump(
-      tester,
-      isHost: true,
-      modeError: DioException(
-        requestOptions: req,
-        type: DioExceptionType.badResponse,
-        response: Response(
+  testWidgets(
+    'host_sees_reason_and_mode_stays_when_server_rejects_mode_change',
+    (tester) async {
+      // 서버가 모드 변경을 거절(400 JAIL_AREA_NOT_ALLOWED)하면 사유를 보이고 모드는 그대로다
+      final req = RequestOptions(path: '/api/games/7/mode');
+      final remote = await _pump(
+        tester,
+        isHost: true,
+        modeError: DioException(
           requestOptions: req,
-          statusCode: 400,
-          data: {'errorCode': 'JAIL_AREA_NOT_ALLOWED'},
+          type: DioExceptionType.badResponse,
+          response: Response(
+            requestOptions: req,
+            statusCode: 400,
+            data: {'errorCode': 'JAIL_AREA_NOT_ALLOWED'},
+          ),
         ),
-      ),
-    );
+      );
 
-    await tester.tap(find.text('경찰과 도둑'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('술래잡기'));
-    await tester.pump();
-    await tester.tap(find.text('저장'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('경찰과 도둑'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('술래잡기'));
+      await tester.pump();
+      await tester.tap(find.text('저장'));
+      await tester.pumpAndSettle();
 
-    expect(remote.modeSent, isNotEmpty);
-    expect(find.text('이 게임 모드에는 감옥 구역이 없어요'), findsOneWidget);
-    expect(find.text('경찰과 도둑'), findsOneWidget);
-    expect(find.text('술래잡기'), findsNothing);
-    // 스낵바 자동 닫힘 타이머를 비운다
-    await tester.pump(const Duration(seconds: 4));
-  });
+      expect(remote.modeSent, isNotEmpty);
+      expect(find.text('이 게임 모드에는 감옥 구역이 없어요'), findsOneWidget);
+      expect(find.text('경찰과 도둑'), findsOneWidget);
+      expect(find.text('술래잡기'), findsNothing);
+      // 스낵바 자동 닫힘 타이머를 비운다
+      await tester.pump(const Duration(seconds: 4));
+    },
+  );
 
-  testWidgets('host_tapping_mode_row_opens_mode_change_page_with_save_disabled', (
-    tester,
-  ) async {
-    // 방장이 모드 행을 누르면 설정 수정처럼 전체 화면이 열리고, 지금 모드 그대로면 저장할 게 없다
-    final remote = await _pump(tester, isHost: true);
+  testWidgets(
+    'host_tapping_mode_row_opens_mode_change_page_with_save_disabled',
+    (tester) async {
+      // 방장이 모드 행을 누르면 설정 수정처럼 전체 화면이 열리고, 지금 모드 그대로면 저장할 게 없다
+      final remote = await _pump(tester, isHost: true);
 
-    await tester.tap(find.text('경찰과 도둑'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('경찰과 도둑'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('모드 변경'), findsOneWidget);
-    await tester.tap(find.text('다음'));
-    await tester.pumpAndSettle();
-    expect(find.byType(ModeChangePage), findsOneWidget);
-    expect(remote.modeSent, isEmpty);
-  });
+      expect(find.text('모드 변경'), findsOneWidget);
+      await tester.tap(find.text('다음'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ModeChangePage), findsOneWidget);
+      expect(remote.modeSent, isEmpty);
+    },
+  );
 
   testWidgets('host_leaving_mode_change_page_with_back_keeps_mode', (
     tester,

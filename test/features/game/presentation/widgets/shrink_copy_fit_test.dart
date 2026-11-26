@@ -41,7 +41,8 @@ void main() {
                   locationRevealIntervalMinutes: 10,
                   nextShrinkAt: (_) => DateTime(2026, 11, 8, 12, 45, 59),
                   zoneWarningAt: outside
-                      ? (_) => (count: 2, untilNext: const Duration(seconds: 59))
+                      ? (_) =>
+                            (count: 2, untilNext: const Duration(seconds: 59))
                       : null,
                 ),
               ),

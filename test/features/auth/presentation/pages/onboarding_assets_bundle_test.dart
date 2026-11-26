@@ -8,9 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const paths = [
-    'assets/onboarding/onboarding_flag.svg',
-  ];
+  const paths = ['assets/onboarding/onboarding_flag.svg'];
 
   for (final path in paths) {
     test(
