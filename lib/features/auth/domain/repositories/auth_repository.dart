@@ -33,4 +33,14 @@ abstract class AuthRepository {
   /// 2. Firebase 로그아웃
   /// 3. JWT 토큰 삭제
   Future<void> signOut();
+
+  /// 현재 로그인한 계정이 Apple 계정인지 여부
+  bool get isAppleAccount;
+
+  /// Apple 토큰 철회
+  ///
+  /// 회원 탈퇴 전에 호출합니다. Apple 인증 창이 다시 뜹니다.
+  ///
+  /// Throws: [AuthCancelledException] 사용자가 인증을 취소한 경우, [AuthException]
+  Future<void> revokeAppleToken();
 }
