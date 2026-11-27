@@ -148,4 +148,96 @@ void main() {
 
     verify(() => remoteConfig.activate()).called(1);
   });
+
+  // 스토어에 4.1.21이 나가 있고 4.1.22가 심사 중인 상황.
+  group('maintenance', () {
+    void arrange({
+      required String appVersion,
+      required bool maintenance,
+      String minimumVersion = '4.1.21',
+      String latestVersion = '4.1.21',
+    }) {
+      PackageInfo.setMockInitialValues(
+        appName: 'test',
+        packageName: 'test',
+        version: appVersion,
+        buildNumber: '1',
+        buildSignature: '',
+      );
+      when(() => remoteConfig.getBool('maintenance')).thenReturn(maintenance);
+      when(
+        () => remoteConfig.getString('minimum_version'),
+      ).thenReturn(minimumVersion);
+      when(
+        () => remoteConfig.getString('latest_version'),
+      ).thenReturn(latestVersion);
+    }
+
+    test(
+      'review_build_is_not_under_maintenance_when_higher_than_store_version',
+      () async {
+        arrange(appVersion: '4.1.22', maintenance: true);
+        await service.initialize();
+
+        expect(service.maintenance, isFalse);
+      },
+    );
+
+    test('store_version_is_under_maintenance_when_maintenance_is_on', () async {
+      arrange(appVersion: '4.1.21', maintenance: true);
+      await service.initialize();
+
+      expect(service.maintenance, isTrue);
+    });
+
+    test(
+      'review_build_is_not_under_maintenance_when_maintenance_is_off',
+      () async {
+        arrange(appVersion: '4.1.22', maintenance: false);
+        await service.initialize();
+
+        expect(service.maintenance, isFalse);
+      },
+    );
+
+    // 강제 업데이트 없이 최신 버전만 4.1.22로 올린 출시 직후
+    test(
+      'new_version_is_under_maintenance_when_only_latest_was_raised',
+      () async {
+        arrange(
+          appVersion: '4.1.22',
+          maintenance: true,
+          latestVersion: '4.1.22',
+        );
+        await service.initialize();
+
+        expect(service.maintenance, isTrue);
+      },
+    );
+
+    // 출시 후 최소 버전만 4.1.22로 올리고 최신 버전은 잊었다
+    test(
+      'new_version_is_under_maintenance_when_only_minimum_was_raised',
+      () async {
+        arrange(
+          appVersion: '4.1.22',
+          maintenance: true,
+          minimumVersion: '4.1.22',
+        );
+        await service.initialize();
+
+        expect(service.maintenance, isTrue);
+      },
+    );
+
+    // 라우터는 초기화 전부터 이 값을 읽는다.
+    test('maintenance_is_off_when_read_before_initialize', () async {
+      arrange(appVersion: '4.1.21', maintenance: true);
+
+      expect(service.maintenance, isFalse);
+
+      await service.initialize();
+      expect(service.maintenance, isTrue);
+    });
+  });
 }

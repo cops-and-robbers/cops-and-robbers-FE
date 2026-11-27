@@ -27,7 +27,8 @@ enum VersionCheckResult {
 /// 점검 모드, 강제/선택 업데이트 여부를 판단한다.
 ///
 /// 체크 순서:
-/// 1. maintenance == true → [VersionCheckResult.maintenance]
+/// 1. 이 앱에 점검이 적용됨 → [VersionCheckResult.maintenance]
+///    (스토어에 아직 없는 버전은 제외 — [RemoteConfigService.maintenance])
 /// 2. 현재 버전 < minimum_version → force_update에 따라 forceUpdate 또는 optionalUpdate
 /// 3. 현재 버전 < latest_version → [VersionCheckResult.recommendUpdate]
 /// 4. 그 외 → [VersionCheckResult.upToDate]

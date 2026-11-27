@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'remote_config_keys.dart';
+import 'unreleased_version.dart';
 
 /// Firebase Remote Config 서비스
 ///
@@ -15,7 +16,7 @@ import 'remote_config_keys.dart';
 /// - `minimum_version` (String): 최소 허용 버전
 /// - `latest_version` (String): 최신 버전 (권고 업데이트용)
 /// - `force_update` (bool): 강제 업데이트 여부
-/// - `maintenance` (bool): 서버 점검 모드
+/// - `maintenance` (bool): 서버 점검 모드 (스토어에 아직 없는 버전은 건너뛴다)
 /// - `maintenance_message` (String): 점검 안내 메시지 (시간 등)
 /// - `ads_enabled` (bool): 광고 전역 스위치 (kill switch)
 /// - `community_ads_enabled` (bool): 커뮤니티 목록·상세 광고 스위치
@@ -40,6 +41,7 @@ class RemoteConfigService {
   final FirebaseRemoteConfig? _injectedRemoteConfig;
   late final FirebaseRemoteConfig _remoteConfig;
   bool _isInitialized = false;
+  String _appVersion = '';
   final StreamController<void> _updates = StreamController<void>.broadcast();
 
   /// Remote Config 초기화 및 서버 값 fetch
@@ -69,6 +71,14 @@ class RemoteConfigService {
       debugPrint('✅ Remote Config fetched successfully');
     } catch (e) {
       debugPrint('⚠️ Remote Config fetch failed, using defaults: $e');
+    }
+
+    // 점검 판정이 동기로 읽을 수 있게 앱 버전을 한 번 읽어 둔다.
+    // 못 읽으면 빈 값으로 남아 점검이 그대로 적용된다.
+    try {
+      _appVersion = (await PackageInfo.fromPlatform()).version;
+    } catch (e) {
+      debugPrint('⚠️ 앱 버전 읽기 실패, 점검 예외 없이 진행: $e');
     }
 
     _isInitialized = true;
@@ -131,11 +141,19 @@ class RemoteConfigService {
   /// 강제 업데이트 여부
   bool get forceUpdate => _remoteConfig.getBool(RemoteConfigKeys.forceUpdate);
 
-  /// 서버 점검 모드 여부
+  /// 이 앱에 점검이 적용되는지
   ///
   /// 초기화 전에는 false. 라우터가 초기화 전부터 이 값을 읽는다.
+  /// 스토어에 아직 없는 버전은 점검 중에도 false다. 심사 빌드가 점검 화면에 막히면
+  /// 리젝 사유가 되고, 점검은 진입만 막을 뿐 서버는 살아 있다.
   bool get maintenance =>
-      _isInitialized && _remoteConfig.getBool(RemoteConfigKeys.maintenance);
+      _isInitialized &&
+      _remoteConfig.getBool(RemoteConfigKeys.maintenance) &&
+      !isUnreleasedVersion(
+        appVersion: _appVersion,
+        minimumVersion: minimumVersion,
+        latestVersion: latestVersion,
+      );
 
   /// 점검 안내 메시지 (시간 등, 빈 문자열이면 기본 메시지 사용)
   String get maintenanceMessage => _isInitialized
