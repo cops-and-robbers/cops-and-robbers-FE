@@ -41,10 +41,22 @@ void main() {
     test('maps_status_to_label_when_given_alive_jailed_or_other', () {
       final l10n = lookupAppLocalizations(const Locale('ko'));
 
-      expect(finalStatusLabel(l10n, 'ALIVE', gameMode: GameMode.copsAndRobbers), '생존');
-      expect(finalStatusLabel(l10n, 'JAILED', gameMode: GameMode.copsAndRobbers), '수감');
-      expect(finalStatusLabel(l10n, 'WAITING', gameMode: GameMode.copsAndRobbers), '-');
-      expect(finalStatusLabel(l10n, '', gameMode: GameMode.copsAndRobbers), '-');
+      expect(
+        finalStatusLabel(l10n, 'ALIVE', gameMode: GameMode.copsAndRobbers),
+        '생존',
+      );
+      expect(
+        finalStatusLabel(l10n, 'JAILED', gameMode: GameMode.copsAndRobbers),
+        '수감',
+      );
+      expect(
+        finalStatusLabel(l10n, 'WAITING', gameMode: GameMode.copsAndRobbers),
+        '-',
+      );
+      expect(
+        finalStatusLabel(l10n, '', gameMode: GameMode.copsAndRobbers),
+        '-',
+      );
     });
   });
 

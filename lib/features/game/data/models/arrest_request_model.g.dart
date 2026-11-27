@@ -9,9 +9,9 @@ part of 'arrest_request_model.dart';
 _$ArrestRequestModelImpl _$$ArrestRequestModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$ArrestRequestModelImpl(
-  robberParticipantId: (json['robberParticipantId'] as num).toInt(),
+  robberParticipantId: (json['runnerParticipantId'] as num).toInt(),
 );
 
 Map<String, dynamic> _$$ArrestRequestModelImplToJson(
   _$ArrestRequestModelImpl instance,
-) => <String, dynamic>{'robberParticipantId': instance.robberParticipantId};
+) => <String, dynamic>{'runnerParticipantId': instance.robberParticipantId};

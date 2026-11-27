@@ -27,8 +27,10 @@ class RadioFloor {
   RadioFloor onUnmuted(String identity) =>
       _order.contains(identity) ? this : RadioFloor([..._order, identity]);
 
-  RadioFloor onMuted(String identity) =>
-      RadioFloor([for (final id in _order) if (id != identity) id]);
+  RadioFloor onMuted(String identity) => RadioFloor([
+    for (final id in _order)
+      if (id != identity) id,
+  ]);
 
   bool lockedFor(String me) => holder != null && holder != me;
 }

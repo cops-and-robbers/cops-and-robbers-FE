@@ -7,6 +7,7 @@ import '../../../../core/config/env_config.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/dio_exception_handler.dart';
 import '../../../../core/network/required_terms_interceptor.dart';
+import '../../../../core/network/server_term_compat.dart';
 import '../../../../core/storage/secure_token_storage.dart';
 import '../../data/datasources/game_result_api_datasource.dart';
 import '../../data/models/game_result_response_model.dart';
@@ -47,6 +48,9 @@ final gameResultDioProvider = Provider<Dio>((ref) {
       },
     ),
   );
+
+  // 전역 Dio를 안 쓰므로 서버 팀 용어 호환도 여기서 따로 건다 (winnerTeam·MVP 키).
+  dio.interceptors.add(ServerTermCompatInterceptor());
 
   // 전역 Dio를 안 쓰는 대가로 필수 약관 미동의 처리도 빠진다.
   // `/api/game-results/**`는 BE 제외 목록에 없어 재동의 상태면 400이 오므로,

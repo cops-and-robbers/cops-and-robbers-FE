@@ -21,6 +21,8 @@ ArrestRequestModel _$ArrestRequestModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ArrestRequestModel {
+  /// 서버 키는 `runnerParticipantId` (BE #254)
+  @JsonKey(name: 'runnerParticipantId')
   int get robberParticipantId => throw _privateConstructorUsedError;
 
   /// Serializes this ArrestRequestModel to a JSON map.
@@ -40,7 +42,7 @@ abstract class $ArrestRequestModelCopyWith<$Res> {
     $Res Function(ArrestRequestModel) then,
   ) = _$ArrestRequestModelCopyWithImpl<$Res, ArrestRequestModel>;
   @useResult
-  $Res call({int robberParticipantId});
+  $Res call({@JsonKey(name: 'runnerParticipantId') int robberParticipantId});
 }
 
 /// @nodoc
@@ -79,7 +81,7 @@ abstract class _$$ArrestRequestModelImplCopyWith<$Res>
   ) = __$$ArrestRequestModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int robberParticipantId});
+  $Res call({@JsonKey(name: 'runnerParticipantId') int robberParticipantId});
 }
 
 /// @nodoc
@@ -110,12 +112,16 @@ class __$$ArrestRequestModelImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ArrestRequestModelImpl implements _ArrestRequestModel {
-  const _$ArrestRequestModelImpl({required this.robberParticipantId});
+  const _$ArrestRequestModelImpl({
+    @JsonKey(name: 'runnerParticipantId') required this.robberParticipantId,
+  });
 
   factory _$ArrestRequestModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ArrestRequestModelImplFromJson(json);
 
+  /// 서버 키는 `runnerParticipantId` (BE #254)
   @override
+  @JsonKey(name: 'runnerParticipantId')
   final int robberParticipantId;
 
   @override
@@ -154,13 +160,17 @@ class _$ArrestRequestModelImpl implements _ArrestRequestModel {
 }
 
 abstract class _ArrestRequestModel implements ArrestRequestModel {
-  const factory _ArrestRequestModel({required final int robberParticipantId}) =
-      _$ArrestRequestModelImpl;
+  const factory _ArrestRequestModel({
+    @JsonKey(name: 'runnerParticipantId')
+    required final int robberParticipantId,
+  }) = _$ArrestRequestModelImpl;
 
   factory _ArrestRequestModel.fromJson(Map<String, dynamic> json) =
       _$ArrestRequestModelImpl.fromJson;
 
+  /// 서버 키는 `runnerParticipantId` (BE #254)
   @override
+  @JsonKey(name: 'runnerParticipantId')
   int get robberParticipantId;
 
   /// Create a copy of ArrestRequestModel

@@ -25,15 +25,18 @@ void main() {
     expect(model.room, 'game-1-police');
   });
 
-  test('token_lifetime_is_two_minutes_when_server_signs_exp_120s_after_iat', () {
-    final model = RadioTokenModel(
-      url: 'wss://x',
-      room: 'game-1-police',
-      identity: '101',
-      token: _jwt({'iat': 1762690080, 'exp': 1762690200}),
-      expiresAt: '2026-11-09T21:30:00+09:00',
-    );
+  test(
+    'token_lifetime_is_two_minutes_when_server_signs_exp_120s_after_iat',
+    () {
+      final model = RadioTokenModel(
+        url: 'wss://x',
+        room: 'game-1-police',
+        identity: '101',
+        token: _jwt({'iat': 1762690080, 'exp': 1762690200}),
+        expiresAt: '2026-11-09T21:30:00+09:00',
+      );
 
-    expect(model.lifetime, const Duration(seconds: 120));
-  });
+      expect(model.lifetime, const Duration(seconds: 120));
+    },
+  );
 }

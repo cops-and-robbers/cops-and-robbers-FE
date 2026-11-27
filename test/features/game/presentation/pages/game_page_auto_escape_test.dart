@@ -2608,7 +2608,10 @@ void main() {
       await withClock(gameClock(tester), () async {
         await mount(tester, team: 'POLICE', size: const Size(393, 852));
         final l10n = AppLocalizations.of(tester.element(find.byType(GamePage)));
-        await advance(tester, const Duration(seconds: 2)); // 무전은 코드 없는 실패로 "연결 중" 재시도
+        await advance(
+          tester,
+          const Duration(seconds: 2),
+        ); // 무전은 코드 없는 실패로 "연결 중" 재시도
 
         session.activeGame = const UserGameStatusModel(isParticipating: false);
         for (final state in [
@@ -2629,7 +2632,8 @@ void main() {
         var shown = false;
         for (var i = 0; i < 120; i++) {
           await tester.pump(const Duration(milliseconds: 100));
-          shown = shown ||
+          shown =
+              shown ||
               find.text(l10n.errorCodeRadioServerBusy).evaluate().isNotEmpty;
         }
         expect(shown, isFalse);

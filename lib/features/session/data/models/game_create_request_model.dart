@@ -140,8 +140,8 @@ class GameSettingsRequestModel with _$GameSettingsRequestModel {
     /// 위치 공개 주기 (최소 1분)
     required int locationRevealIntervalMinutes,
 
-    /// 경찰 대기 시간 (최소 0분)
-    required int policeWaitMinutes,
+    /// 경찰 대기 시간 (최소 0분). 서버 키는 `chaserWaitMinutes` (BE #254)
+    @JsonKey(name: 'chaserWaitMinutes') required int policeWaitMinutes,
 
     /// 최대 참여 인원 (2~50명)
     required int maxParticipants,

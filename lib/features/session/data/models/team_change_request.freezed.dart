@@ -22,6 +22,8 @@ TeamChangeRequest _$TeamChangeRequestFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$TeamChangeRequest {
   /// 변경할 팀 ("POLICE" 또는 "ROBBER")
+  /// 앱 값(POLICE/ROBBER)을 서버 새 값(CHASER/RUNNER)으로 보낸다 (BE #254)
+  @JsonKey(toJson: toServerTeam)
   String get targetTeam => throw _privateConstructorUsedError;
 
   /// Serializes this TeamChangeRequest to a JSON map.
@@ -41,7 +43,7 @@ abstract class $TeamChangeRequestCopyWith<$Res> {
     $Res Function(TeamChangeRequest) then,
   ) = _$TeamChangeRequestCopyWithImpl<$Res, TeamChangeRequest>;
   @useResult
-  $Res call({String targetTeam});
+  $Res call({@JsonKey(toJson: toServerTeam) String targetTeam});
 }
 
 /// @nodoc
@@ -80,7 +82,7 @@ abstract class _$$TeamChangeRequestImplCopyWith<$Res>
   ) = __$$TeamChangeRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String targetTeam});
+  $Res call({@JsonKey(toJson: toServerTeam) String targetTeam});
 }
 
 /// @nodoc
@@ -111,13 +113,17 @@ class __$$TeamChangeRequestImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TeamChangeRequestImpl implements _TeamChangeRequest {
-  const _$TeamChangeRequestImpl({required this.targetTeam});
+  const _$TeamChangeRequestImpl({
+    @JsonKey(toJson: toServerTeam) required this.targetTeam,
+  });
 
   factory _$TeamChangeRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$TeamChangeRequestImplFromJson(json);
 
   /// 변경할 팀 ("POLICE" 또는 "ROBBER")
+  /// 앱 값(POLICE/ROBBER)을 서버 새 값(CHASER/RUNNER)으로 보낸다 (BE #254)
   @override
+  @JsonKey(toJson: toServerTeam)
   final String targetTeam;
 
   @override
@@ -156,14 +162,17 @@ class _$TeamChangeRequestImpl implements _TeamChangeRequest {
 }
 
 abstract class _TeamChangeRequest implements TeamChangeRequest {
-  const factory _TeamChangeRequest({required final String targetTeam}) =
-      _$TeamChangeRequestImpl;
+  const factory _TeamChangeRequest({
+    @JsonKey(toJson: toServerTeam) required final String targetTeam,
+  }) = _$TeamChangeRequestImpl;
 
   factory _TeamChangeRequest.fromJson(Map<String, dynamic> json) =
       _$TeamChangeRequestImpl.fromJson;
 
   /// 변경할 팀 ("POLICE" 또는 "ROBBER")
+  /// 앱 값(POLICE/ROBBER)을 서버 새 값(CHASER/RUNNER)으로 보낸다 (BE #254)
   @override
+  @JsonKey(toJson: toServerTeam)
   String get targetTeam;
 
   /// Create a copy of TeamChangeRequest

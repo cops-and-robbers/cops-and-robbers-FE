@@ -120,53 +120,51 @@ void main() {
   });
 
   // 디자인 모달_GUI: 제목 18, 설명 14, 안쪽 여백 24, 제목-설명 8, 설명-버튼 24
-  testWidgets('dialog_layout_matches_modal_gui_spec_when_opened_with_defaults', (
-    tester,
-  ) async {
-    final ctx = await _pump(tester);
+  testWidgets(
+    'dialog_layout_matches_modal_gui_spec_when_opened_with_defaults',
+    (tester) async {
+      final ctx = await _pump(tester);
 
-    AppDialog.confirm(
-      context: ctx,
-      title: '이대로 방을 만들까요?',
-      message: '게임 모드와 세부 설정을 확인했나요?',
-      confirmText: '만들기',
-      cancelText: '닫기',
-    );
-    await tester.pumpAndSettle();
+      AppDialog.confirm(
+        context: ctx,
+        title: '이대로 방을 만들까요?',
+        message: '게임 모드와 세부 설정을 확인했나요?',
+        confirmText: '만들기',
+        cancelText: '닫기',
+      );
+      await tester.pumpAndSettle();
 
-    // 카드 바깥 여백(margin)을 빼고 흰 배경이 칠해진 영역만 잰다
-    final card = tester.getRect(
-      find
-          .descendant(
-            of: find.byType(AppDialog),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
-    final title = find.text('이대로 방을 만들까요?');
-    final message = find.text('게임 모드와 세부 설정을 확인했나요?');
-    final close = tester.getRect(
-      find.ancestor(of: find.text('닫기'), matching: find.byType(AppButton)),
-    );
-    final create = tester.getRect(
-      find.ancestor(of: find.text('만들기'), matching: find.byType(AppButton)),
-    );
+      // 카드 바깥 여백(margin)을 빼고 흰 배경이 칠해진 영역만 잰다
+      final card = tester.getRect(
+        find
+            .descendant(
+              of: find.byType(AppDialog),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+      final title = find.text('이대로 방을 만들까요?');
+      final message = find.text('게임 모드와 세부 설정을 확인했나요?');
+      final close = tester.getRect(
+        find.ancestor(of: find.text('닫기'), matching: find.byType(AppButton)),
+      );
+      final create = tester.getRect(
+        find.ancestor(of: find.text('만들기'), matching: find.byType(AppButton)),
+      );
 
-    expect(tester.widget<Text>(title).style?.fontSize, 18.sp);
-    expect(tester.widget<Text>(message).style?.fontSize, 14.sp);
-    expect(tester.getRect(title).top - card.top, closeTo(24.w, 0.01));
-    expect(
-      tester.getRect(message).top - tester.getRect(title).bottom,
-      closeTo(8.h, 0.01),
-    );
-    expect(
-      close.top - tester.getRect(message).bottom,
-      closeTo(24.h, 0.01),
-    );
-    expect(close.left - card.left, closeTo(24.w, 0.01));
-    expect(card.right - create.right, closeTo(24.w, 0.01));
-    expect(card.bottom - close.bottom, closeTo(24.w, 0.01));
-  });
+      expect(tester.widget<Text>(title).style?.fontSize, 18.sp);
+      expect(tester.widget<Text>(message).style?.fontSize, 14.sp);
+      expect(tester.getRect(title).top - card.top, closeTo(24.w, 0.01));
+      expect(
+        tester.getRect(message).top - tester.getRect(title).bottom,
+        closeTo(8.h, 0.01),
+      );
+      expect(close.top - tester.getRect(message).bottom, closeTo(24.h, 0.01));
+      expect(close.left - card.left, closeTo(24.w, 0.01));
+      expect(card.right - create.right, closeTo(24.w, 0.01));
+      expect(card.bottom - close.bottom, closeTo(24.w, 0.01));
+    },
+  );
 
   // 다이얼로그 버튼이 하나뿐일 때(확인만)도 같은 16을 쓴다
   testWidgets('single_button_dialog_uses_16_label', (tester) async {

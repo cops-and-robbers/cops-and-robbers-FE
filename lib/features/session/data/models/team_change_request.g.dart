@@ -12,4 +12,4 @@ _$TeamChangeRequestImpl _$$TeamChangeRequestImplFromJson(
 
 Map<String, dynamic> _$$TeamChangeRequestImplToJson(
   _$TeamChangeRequestImpl instance,
-) => <String, dynamic>{'targetTeam': instance.targetTeam};
+) => <String, dynamic>{'targetTeam': toServerTeam(instance.targetTeam)};

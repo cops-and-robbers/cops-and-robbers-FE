@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import '../../../../core/network/websocket/base_stomp_datasource.dart';
+import '../../../../core/network/server_term_compat.dart';
 import '../../domain/entities/ping.dart';
 import '../models/game_event_model.dart';
 import '../models/ping_message_dto.dart';
@@ -71,7 +72,7 @@ class GameEventStompDatasource extends BaseStompDatasource {
     addSubscription(_systemSub);
     debugPrint('[$logTag] ✅ 게임 이벤트 구독: $sysDest');
 
-    final pingDest = '/subscribe/game/$gameId/ping/$team';
+    final pingDest = '/subscribe/game/$gameId/ping/${teamChannelSegment(team)}';
     _pingSub = stompClient!.subscribe(
       destination: pingDest,
       callback: _handlePing,
@@ -146,7 +147,7 @@ class GameEventStompDatasource extends BaseStompDatasource {
     }
 
     try {
-      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final json = toAppTerms(jsonDecode(frame.body!))! as Map<String, dynamic>;
       final event = GameEventModel.fromJson(json);
       if (kDebugMode) {
         debugPrint('[$logTag] 📩 이벤트 파싱 완료: type=${event.type}');
@@ -166,7 +167,7 @@ class GameEventStompDatasource extends BaseStompDatasource {
     }
 
     try {
-      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final json = toAppTerms(jsonDecode(frame.body!))! as Map<String, dynamic>;
       final dto = PingMessageDto.fromJson(json);
       if (kDebugMode) {
         debugPrint(

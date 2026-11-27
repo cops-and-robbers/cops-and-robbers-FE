@@ -1285,7 +1285,8 @@ mixin _$GameSettingsRequestModel {
   /// 위치 공개 주기 (최소 1분)
   int get locationRevealIntervalMinutes => throw _privateConstructorUsedError;
 
-  /// 경찰 대기 시간 (최소 0분)
+  /// 경찰 대기 시간 (최소 0분). 서버 키는 `chaserWaitMinutes` (BE #254)
+  @JsonKey(name: 'chaserWaitMinutes')
   int get policeWaitMinutes => throw _privateConstructorUsedError;
 
   /// 최대 참여 인원 (2~50명)
@@ -1320,7 +1321,7 @@ abstract class $GameSettingsRequestModelCopyWith<$Res> {
   $Res call({
     int roundDurationMinutes,
     int locationRevealIntervalMinutes,
-    int policeWaitMinutes,
+    @JsonKey(name: 'chaserWaitMinutes') int policeWaitMinutes,
     int maxParticipants,
     int? shrinkFinalRadiusInMeters,
     bool radioEnabled,
@@ -1396,7 +1397,7 @@ abstract class _$$GameSettingsRequestModelImplCopyWith<$Res>
   $Res call({
     int roundDurationMinutes,
     int locationRevealIntervalMinutes,
-    int policeWaitMinutes,
+    @JsonKey(name: 'chaserWaitMinutes') int policeWaitMinutes,
     int maxParticipants,
     int? shrinkFinalRadiusInMeters,
     bool radioEnabled,
@@ -1465,7 +1466,7 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
   const _$GameSettingsRequestModelImpl({
     required this.roundDurationMinutes,
     required this.locationRevealIntervalMinutes,
-    required this.policeWaitMinutes,
+    @JsonKey(name: 'chaserWaitMinutes') required this.policeWaitMinutes,
     required this.maxParticipants,
     this.shrinkFinalRadiusInMeters,
     this.radioEnabled = false,
@@ -1482,8 +1483,9 @@ class _$GameSettingsRequestModelImpl implements _GameSettingsRequestModel {
   @override
   final int locationRevealIntervalMinutes;
 
-  /// 경찰 대기 시간 (최소 0분)
+  /// 경찰 대기 시간 (최소 0분). 서버 키는 `chaserWaitMinutes` (BE #254)
   @override
+  @JsonKey(name: 'chaserWaitMinutes')
   final int policeWaitMinutes;
 
   /// 최대 참여 인원 (2~50명)
@@ -1566,7 +1568,7 @@ abstract class _GameSettingsRequestModel implements GameSettingsRequestModel {
   const factory _GameSettingsRequestModel({
     required final int roundDurationMinutes,
     required final int locationRevealIntervalMinutes,
-    required final int policeWaitMinutes,
+    @JsonKey(name: 'chaserWaitMinutes') required final int policeWaitMinutes,
     required final int maxParticipants,
     final int? shrinkFinalRadiusInMeters,
     final bool radioEnabled,
@@ -1583,8 +1585,9 @@ abstract class _GameSettingsRequestModel implements GameSettingsRequestModel {
   @override
   int get locationRevealIntervalMinutes;
 
-  /// 경찰 대기 시간 (최소 0분)
+  /// 경찰 대기 시간 (최소 0분). 서버 키는 `chaserWaitMinutes` (BE #254)
   @override
+  @JsonKey(name: 'chaserWaitMinutes')
   int get policeWaitMinutes;
 
   /// 최대 참여 인원 (2~50명)

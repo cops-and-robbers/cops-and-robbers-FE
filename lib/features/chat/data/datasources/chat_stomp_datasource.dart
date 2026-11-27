@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import '../../../../core/network/websocket/base_stomp_datasource.dart';
+import '../../../../core/network/server_term_compat.dart';
 import '../models/chat_message_dto.dart';
 import '../models/chat_send_request.dart';
 
@@ -61,7 +62,7 @@ class ChatStompDatasource extends BaseStompDatasource {
     addSubscription(_allSub);
     debugPrint('[$logTag] ✅ 전체 채팅 구독: $allDest');
 
-    final teamDest = '/subscribe/game/$gameId/chat/$team';
+    final teamDest = '/subscribe/game/$gameId/chat/${teamChannelSegment(team)}';
     _teamSub = stompClient!.subscribe(
       destination: teamDest,
       callback: _handleMessage,
@@ -102,7 +103,7 @@ class ChatStompDatasource extends BaseStompDatasource {
     debugPrint('[$logTag] 📩 메시지 수신 raw: ${frame.body}');
 
     try {
-      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final json = toAppTerms(jsonDecode(frame.body!))! as Map<String, dynamic>;
       final dto = ChatMessageDto.fromJson(json);
       debugPrint(
         '[$logTag] 📩 메시지 파싱 완료: sender=${dto.sender.nickname}, '

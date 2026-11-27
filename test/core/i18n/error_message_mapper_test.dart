@@ -21,12 +21,15 @@ void main() {
 
     // 무전 토큰 발급 거절 (BE PR #239) — 공통 "잠시 후 다시 시도"로 떨어지면 안 된다.
     // 대기 시간 중에는 다시 눌러도 안 되고, 출동한 뒤에 된다는 걸 알려야 한다.
-    test('tells_police_to_wait_for_dispatch_when_radio_requested_during_wait', () {
-      expect(
-        l10n.errorByCode('RADIO_POLICE_WAITING_TIME'),
-        l10n.errorCodeRadioPoliceWaitingTime,
-      );
-    });
+    test(
+      'tells_police_to_wait_for_dispatch_when_radio_requested_during_wait',
+      () {
+        expect(
+          l10n.errorByCode('RADIO_POLICE_WAITING_TIME'),
+          l10n.errorCodeRadioPoliceWaitingTime,
+        );
+      },
+    );
 
     test('says_radio_is_police_only_when_robber_requests_token', () {
       expect(
@@ -55,16 +58,19 @@ void main() {
 
     // 무전 서버 과부하로 새 입장이 거절됐다 (BE PR #253) — "잠시 후 다시 시도"가 아니라
     // 사람이 몰렸고 풀리면 저절로 붙는다는 걸 알려야 한다.
-    test('says_radio_is_crowded_and_will_connect_by_itself_when_radio_server_is_busy', () {
-      expect(
-        l10n.errorByCode('RADIO_SERVER_BUSY'),
-        l10n.errorCodeRadioServerBusy,
-      );
-      expect(
-        l10n.errorCodeRadioServerBusy,
-        '지금 무전 사용자가 많아요\n혼잡이 풀리면 자동으로 연결돼요',
-      );
-    });
+    test(
+      'says_radio_is_crowded_and_will_connect_by_itself_when_radio_server_is_busy',
+      () {
+        expect(
+          l10n.errorByCode('RADIO_SERVER_BUSY'),
+          l10n.errorCodeRadioServerBusy,
+        );
+        expect(
+          l10n.errorCodeRadioServerBusy,
+          '지금 무전 사용자가 많아요\n혼잡이 풀리면 자동으로 연결돼요',
+        );
+      },
+    );
 
     test('returns_pick_another_spot_when_code_is_address_not_found', () {
       // 그 좌표에 주소·국가가 없어 서버가 글 생성을 거절한 경우다. 공통 폴백

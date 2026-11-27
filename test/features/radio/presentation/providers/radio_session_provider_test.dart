@@ -81,7 +81,8 @@ class _FakeRoom implements RadioRoomPort {
   Stream<RadioRoomEvent> get events => _events.stream;
 
   @override
-  Future<void> connect(String url, String token) async => connectedToken = token;
+  Future<void> connect(String url, String token) async =>
+      connectedToken = token;
 
   @override
   Future<void> publishMutedMic() async {
@@ -349,29 +350,35 @@ void main() {
   });
 
   // 게임 화면을 닫는 순간 기다리던 출동 타이머·재시도 타이머가 남으면 안 된다
-  test('leaves_no_timer_when_game_screen_closes_while_waiting_for_dispatch', () {
-    inGame((async, h) {
-      h.session.start(policeReleaseAt: release);
-      async.flushMicrotasks();
-      h.session.shutdown();
-      expect(async.pendingTimers, isEmpty);
-      expect(h.background.radioRunning, isFalse);
-    });
-  });
+  test(
+    'leaves_no_timer_when_game_screen_closes_while_waiting_for_dispatch',
+    () {
+      inGame((async, h) {
+        h.session.start(policeReleaseAt: release);
+        async.flushMicrotasks();
+        h.session.shutdown();
+        expect(async.pendingTimers, isEmpty);
+        expect(h.background.radioRunning, isFalse);
+      });
+    },
+  );
 
-  test('leaves_no_room_when_game_screen_closes_while_token_request_in_flight', () {
-    inGame((async, h) {
-      h.api.hold = Completer<void>();
-      h.session.start(policeReleaseAt: gameStart);
-      async.flushMicrotasks();
-      h.session.shutdown(); // 토큰을 기다리는 사이 게임 화면을 나갔다
-      h.api.hold!.complete();
-      async.flushMicrotasks();
-      expect(h.rooms, isEmpty);
-      expect(h.background.radioRunning, isFalse);
-      expect(async.pendingTimers, isEmpty);
-    });
-  });
+  test(
+    'leaves_no_room_when_game_screen_closes_while_token_request_in_flight',
+    () {
+      inGame((async, h) {
+        h.api.hold = Completer<void>();
+        h.session.start(policeReleaseAt: gameStart);
+        async.flushMicrotasks();
+        h.session.shutdown(); // 토큰을 기다리는 사이 게임 화면을 나갔다
+        h.api.hold!.complete();
+        async.flushMicrotasks();
+        expect(h.rooms, isEmpty);
+        expect(h.background.radioRunning, isFalse);
+        expect(async.pendingTimers, isEmpty);
+      });
+    },
+  );
 
   test('stops_refreshing_when_game_ends_while_reissue_in_flight', () {
     inGame((async, h) {
@@ -387,35 +394,41 @@ void main() {
   });
 
   // 출동 대기 중 폰을 잠갔다 — 백그라운드에서는 마이크·microphone 서비스를 열 수 없다(Android 14+)
-  test('waits_for_app_to_return_before_joining_when_dispatch_passes_in_background', () {
-    inGame((async, h) {
-      h.foreground = false;
-      h.session.start(policeReleaseAt: release);
-      async.elapse(const Duration(minutes: 4));
-      expect(h.rooms, isEmpty);
-      expect(h.background.radioRunning, isFalse);
-      h.foreground = true;
-      h.session.onAppResumed();
-      async.flushMicrotasks();
-      expect(h.state.status, RadioStatus.ready);
-      expect(h.background.radioRunning, isTrue);
-    });
-  });
+  test(
+    'waits_for_app_to_return_before_joining_when_dispatch_passes_in_background',
+    () {
+      inGame((async, h) {
+        h.foreground = false;
+        h.session.start(policeReleaseAt: release);
+        async.elapse(const Duration(minutes: 4));
+        expect(h.rooms, isEmpty);
+        expect(h.background.radioRunning, isFalse);
+        h.foreground = true;
+        h.session.onAppResumed();
+        async.flushMicrotasks();
+        expect(h.state.status, RadioStatus.ready);
+        expect(h.background.radioRunning, isTrue);
+      });
+    },
+  );
 
   // 내가 먼저 눌렀고 상희가 수십 ms 뒤에 눌렀다 — 발언권은 나, 상희 알약·삑이 뜨면 안 된다
-  test('keeps_my_floor_without_pill_when_another_cop_presses_right_after_me', () {
-    inGame((async, h) {
-      h.session.start(policeReleaseAt: gameStart);
-      async.flushMicrotasks();
-      h.session.press();
-      async.flushMicrotasks();
-      h.room.emit(const RemoteUnmuted(_sanghee));
-      async.flushMicrotasks();
-      expect(h.state.speakerIdentity, isNull);
-      expect(h.beeps, 0);
-      expect(h.state.isTalking, isTrue);
-    });
-  });
+  test(
+    'keeps_my_floor_without_pill_when_another_cop_presses_right_after_me',
+    () {
+      inGame((async, h) {
+        h.session.start(policeReleaseAt: gameStart);
+        async.flushMicrotasks();
+        h.session.press();
+        async.flushMicrotasks();
+        h.room.emit(const RemoteUnmuted(_sanghee));
+        async.flushMicrotasks();
+        expect(h.state.speakerIdentity, isNull);
+        expect(h.beeps, 0);
+        expect(h.state.isTalking, isTrue);
+      });
+    },
+  );
 
   // 처음 무전을 쓰는 경찰 — 출동 때는 듣기만, 팝업은 버튼을 처음 누를 때 (#697)
   test('joins_listening_only_without_mic_popup_when_never_granted', () {
@@ -516,24 +529,27 @@ void main() {
   // ── 무전 서버 혼잡 (#722, BE #253: 503 RADIO_SERVER_BUSY) ──
 
   // 무전 서버가 과부하인 중에 경찰이 출동했다 — 방에 못 들어가고 10초마다 다시 두드린다
-  test('stays_busy_and_retries_every_10_seconds_when_police_released_during_congestion', () {
-    inGame((async, h) {
-      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
-      h.session.start(policeReleaseAt: release);
-      async.elapse(const Duration(minutes: 3));
-      expect(h.state.status, RadioStatus.serverBusy);
-      expect(h.rooms, isEmpty);
+  test(
+    'stays_busy_and_retries_every_10_seconds_when_police_released_during_congestion',
+    () {
+      inGame((async, h) {
+        h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+        h.session.start(policeReleaseAt: release);
+        async.elapse(const Duration(minutes: 3));
+        expect(h.state.status, RadioStatus.serverBusy);
+        expect(h.rooms, isEmpty);
 
-      async.elapse(const Duration(seconds: 25));
-      final at = h.api.requestedAt;
-      expect(at.length, 3);
-      expect([at[1].difference(at[0]), at[2].difference(at[1])], [
-        const Duration(seconds: 10),
-        const Duration(seconds: 10),
-      ]);
-      expect(h.state.status, RadioStatus.serverBusy);
-    });
-  });
+        async.elapse(const Duration(seconds: 25));
+        final at = h.api.requestedAt;
+        expect(at.length, 3);
+        expect(
+          [at[1].difference(at[0]), at[2].difference(at[1])],
+          [const Duration(seconds: 10), const Duration(seconds: 10)],
+        );
+        expect(h.state.status, RadioStatus.serverBusy);
+      });
+    },
+  );
 
   // 혼잡이 35초 이어져 네 번 거절당했다 — 안내는 처음 한 번만 떠야 한다
   test('enters_busy_once_when_token_is_refused_on_every_10_second_retry', () {
@@ -589,17 +605,20 @@ void main() {
   });
 
   // 이미 무전 중인 경찰 — 혼잡 중에도 서버는 재발급을 통과시킨다. 쓰던 무전은 그대로다
-  test('connected_cop_stays_ready_when_token_reissue_passes_during_congestion', () {
-    inGame((async, h) {
-      final seen = _watchStatus(h);
-      h.session.start(policeReleaseAt: gameStart);
-      async.flushMicrotasks();
-      async.elapse(const Duration(seconds: 97));
-      expect(h.api.requestedAt.length, 2);
-      expect(seen, [RadioStatus.connecting, RadioStatus.ready]);
-      expect(h.rooms.length, 1);
-    });
-  });
+  test(
+    'connected_cop_stays_ready_when_token_reissue_passes_during_congestion',
+    () {
+      inGame((async, h) {
+        final seen = _watchStatus(h);
+        h.session.start(policeReleaseAt: gameStart);
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 97));
+        expect(h.api.requestedAt.length, 2);
+        expect(seen, [RadioStatus.connecting, RadioStatus.ready]);
+        expect(h.rooms.length, 1);
+      });
+    },
+  );
 
   // 터널에서 재발급이 3분 넘게 밀린 경찰 — 신호가 돌아왔을 때 재발급이 혼잡으로 거절된다.
   // 듣고 말하던 무전은 그대로여야 한다 (버튼이 회색이 되면 안 된다)
@@ -621,23 +640,26 @@ void main() {
   // 무전 중이던 경찰의 재발급 요청이 응답을 기다리는 사이 네트워크가 끊겨 다시 붙는다.
   // 늦게 도착한 옛 요청의 혼잡 거절이 새로 붙는 세션을 혼잡으로 바꾸면 안 된다 —
   // 바꾸면 혼잡 안내와 "연결됐어요"가 잘못 뜬다.
-  test('ignores_busy_answer_of_old_reissue_when_cop_already_reconnecting_after_network_drop', () {
-    inGame((async, h) {
-      h.session.start(policeReleaseAt: gameStart);
-      async.flushMicrotasks();
-      final seen = _watchStatus(h);
-      h.api.hold = Completer<void>();
-      h.api.queued.addAll([_rejected('RADIO_SERVER_BUSY', 503), null]);
-      async.elapse(const Duration(seconds: 97)); // 재발급 요청이 나가 응답 대기 중
-      h.room.emit(const RoomDisconnected()); // 그 사이 WiFi → LTE
-      async.flushMicrotasks();
-      expect(h.api.requestedAt.length, 3);
-      h.api.hold!.complete();
-      async.flushMicrotasks();
-      expect(seen, isNot(contains(RadioStatus.serverBusy)));
-      expect(h.state.status, RadioStatus.ready);
-    });
-  });
+  test(
+    'ignores_busy_answer_of_old_reissue_when_cop_already_reconnecting_after_network_drop',
+    () {
+      inGame((async, h) {
+        h.session.start(policeReleaseAt: gameStart);
+        async.flushMicrotasks();
+        final seen = _watchStatus(h);
+        h.api.hold = Completer<void>();
+        h.api.queued.addAll([_rejected('RADIO_SERVER_BUSY', 503), null]);
+        async.elapse(const Duration(seconds: 97)); // 재발급 요청이 나가 응답 대기 중
+        h.room.emit(const RoomDisconnected()); // 그 사이 WiFi → LTE
+        async.flushMicrotasks();
+        expect(h.api.requestedAt.length, 3);
+        h.api.hold!.complete();
+        async.flushMicrotasks();
+        expect(seen, isNot(contains(RadioStatus.serverBusy)));
+        expect(h.state.status, RadioStatus.ready);
+      });
+    },
+  );
 
   test('stays_off_when_busy_answer_arrives_after_game_ended', () {
     inGame((async, h) {
@@ -654,23 +676,26 @@ void main() {
   });
 
   // 혼잡한 채 화면을 껐다 켰다 — 돌아오자마자 다시 두드리고, 여전히 혼잡이면 조용하다
-  test('retries_without_new_busy_transition_when_app_returns_during_congestion', () {
-    inGame((async, h) {
-      final seen = _watchStatus(h);
-      h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
-      h.session.start(policeReleaseAt: gameStart);
-      async.flushMicrotasks();
-      h.foreground = false;
-      async.elapse(const Duration(seconds: 10));
-      expect(h.api.requestedAt.length, 1);
+  test(
+    'retries_without_new_busy_transition_when_app_returns_during_congestion',
+    () {
+      inGame((async, h) {
+        final seen = _watchStatus(h);
+        h.api.rejectWith = _rejected('RADIO_SERVER_BUSY', 503);
+        h.session.start(policeReleaseAt: gameStart);
+        async.flushMicrotasks();
+        h.foreground = false;
+        async.elapse(const Duration(seconds: 10));
+        expect(h.api.requestedAt.length, 1);
 
-      h.foreground = true;
-      h.session.onAppResumed();
-      async.flushMicrotasks();
-      expect(h.api.requestedAt.length, 2);
-      expect(seen, [RadioStatus.connecting, RadioStatus.serverBusy]);
-    });
-  });
+        h.foreground = true;
+        h.session.onAppResumed();
+        async.flushMicrotasks();
+        expect(h.api.requestedAt.length, 2);
+        expect(seen, [RadioStatus.connecting, RadioStatus.serverBusy]);
+      });
+    },
+  );
 
   // 혼잡 중 다음 시도는 신호가 끊겨 코드 없이 실패했다 — "연결 중"으로 돌아갔다가 다시 혼잡 안내가 뜨면 안 된다
   test('stays_busy_when_next_retry_fails_without_error_code', () {
